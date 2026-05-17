@@ -1,0 +1,603 @@
+<!-- ============================================
+     MODALS - PRO 2027
+     ============================================ -->
+
+<div x-include="'assets/components/modals/settings-modal.html'"></div>
+<div x-include="'assets/components/modals/crm-modals.html'"></div>
+<div x-include="'assets/components/modals/task-modal.html'"></div>
+<div x-include="'assets/components/modals/project-modal.html'"></div>
+<div x-include="'assets/components/modals/knowledge-modal.html'"></div>
+
+<!-- Модальное окно отдела -->
+<div x-show="departmentModalOpen" x-cloak x-transition.opacity class="crm-drawer-overlay z-[80]" @keydown.escape.window="closeDepartmentModal()">
+    <div class="crm-drawer-backdrop lg-modal-backdrop" @click="closeDepartmentModal()"></div>
+    <div class="crm-drawer-shell crm-drawer-shell-lg liquid-glass-pro lg-modal-shell"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full opacity-0"
+         x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0 opacity-100"
+         x-transition:leave-end="translate-x-full opacity-0">
+        <div class="crm-modal-header crm-drawer-header">
+            <div class="min-w-0">
+                <h2 class="crm-modal-title" x-text="editingDepartment ? 'Отдел' : 'Новый отдел'"></h2>
+                <p class="crm-modal-description">Структура отдела, сотрудники и связанные сущности.</p>
+            </div>
+            <button @click="closeDepartmentModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть отдел">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="crm-modal-tabbar-shell crm-drawer-tabbar">
+            <div class="crm-tabbar">
+                <button @click="departmentModalTab = 'department'" :class="departmentModalTab === 'department' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Отдел</button>
+                <button @click="departmentModalTab = 'employees'" :class="departmentModalTab === 'employees' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Сотрудники</button>
+                <button @click="departmentModalTab = 'projects'" :class="departmentModalTab === 'projects' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Проекты</button>
+                <button @click="departmentModalTab = 'tasks'" :class="departmentModalTab === 'tasks' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Задачи</button>
+            </div>
+        </div>
+
+        <div class="crm-modal-body crm-drawer-body p-6 space-y-4">
+            <div x-show="departmentModalTab === 'department'" class="space-y-4">
+            <div>
+                <label for="department-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                <input id="department-name" name="department_name" type="text" x-model="departmentForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Маркетинг" />
+            </div>
+            <div>
+                <label for="department-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
+                <textarea id="department-description" name="department_description" x-model="departmentForm.description" rows="4" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Чем занимается отдел..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Иконка</label>
+                <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+                    <template x-for="ic in departmentIcons" :key="ic">
+                        <button type="button"
+                                @click="departmentForm.icon = ic"
+                                :class="departmentForm.icon === ic ? 'liquid-glass-pro' : 'crm-btn-ghost'"
+                                class="p-2 rounded-xl flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-html="getDepartmentIcon(ic)"></svg>
+                        </button>
+                    </template>
+                </div>
+                <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">
+                    Выбранная иконка: <span class="font-semibold" x-text="departmentForm.icon"></span>
+                </div>
+            </div>
+            </div>
+
+            <div x-show="departmentModalTab === 'employees'" class="space-y-3">
+                <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+                    <div class="p-4 font-semibold" style="color: var(--lg-text-primary)">Сотрудники отдела</div>
+                    <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
+                    <div class="p-4 space-y-2">
+                        <template x-for="u in (departmentEmployees || [])" :key="u.id">
+                            <div class="liquid-glass-pro rounded-2xl p-3 flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background: var(--lg-primary)" x-text="getInitials(u.full_name || u.login)"></div>
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="u.full_name || u.login"></div>
+                                    <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="translateRole(u.role)"></div>
+                                </div>
+                            </div>
+                        </template>
+                        <div x-show="(departmentEmployees || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока нет сотрудников.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="departmentModalTab === 'projects'" class="space-y-3">
+                <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+                    <div class="p-4 font-semibold" style="color: var(--lg-text-primary)">Проекты отдела</div>
+                    <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
+                    <div class="p-4 space-y-2">
+                        <template x-for="p in (departmentProjects || [])" :key="p.id">
+                            <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-4">
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="p.name"></div>
+                                    <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="p.description || ''"></div>
+                                </div>
+                                <button @click="openProjectModal(p)" class="crm-btn-secondary text-sm">Открыть</button>
+                            </div>
+                        </template>
+                        <div x-show="(departmentProjects || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока нет проектов.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="departmentModalTab === 'tasks'" class="space-y-3">
+                <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+                    <div class="p-4 font-semibold" style="color: var(--lg-text-primary)">Задачи отдела</div>
+                    <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
+                    <div class="p-4 space-y-2">
+                        <template x-for="t in (departmentTasks || [])" :key="t.id">
+                            <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-4">
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="t.title"></div>
+                                    <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="t.status || ''"></div>
+                                </div>
+                                <button @click="openTaskModal(t)" class="crm-btn-secondary text-sm">Открыть</button>
+                            </div>
+                        </template>
+                        <div x-show="(departmentTasks || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока нет задач.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="crm-modal-footer crm-drawer-footer">
+            <button @click="closeDepartmentModal()" class="crm-btn-secondary">Закрыть</button>
+            <button @click="saveDepartment()" class="crm-btn-primary">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно пользователя -->
+<div x-show="userModalOpen" x-cloak x-transition.opacity class="crm-drawer-overlay z-[80]" @keydown.escape.window="closeUserModal()">
+    <div class="crm-drawer-backdrop lg-modal-backdrop" @click="closeUserModal()"></div>
+    <div class="crm-drawer-shell crm-drawer-shell-lg liquid-glass-pro lg-modal-shell"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full opacity-0"
+         x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0 opacity-100"
+         x-transition:leave-end="translate-x-full opacity-0">
+        <div class="crm-modal-header crm-drawer-header">
+            <div class="min-w-0">
+                <h2 class="crm-modal-title" x-text="editingUser ? 'Сотрудник' : 'Новый сотрудник'"></h2>
+                <p class="crm-modal-description" x-text="editingUser ? (editingUser.full_name || editingUser.login || '') : 'Создание сотрудника и доступов'"></p>
+            </div>
+            <button @click="closeUserModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть карточку сотрудника">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <form id="user-modal-form" @submit.prevent="saveUser()" class="crm-modal-body crm-drawer-body p-6 space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label for="user-login" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Логин / Email</label>
+                    <input id="user-login" name="user_login" type="text" x-model="userForm.login" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="user@company.ru" autocomplete="off" />
+                </div>
+
+                <div>
+                    <label for="user-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Пароль
+                        <span class="text-xs font-normal" style="color: var(--lg-text-secondary)" x-show="editingUser">(оставьте пустым, чтобы не менять)</span>
+                    </label>
+                    <input id="user-password" name="user_password" type="password" x-model="userForm.password" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="••••••••" autocomplete="new-password" />
+                </div>
+
+                <div>
+                    <label for="user-full-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ФИО</label>
+                    <input id="user-full-name" name="full_name" type="text" x-model="userForm.full_name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Иванов Иван" />
+                </div>
+
+                <div>
+                    <label for="user-role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Роль</label>
+                    <select id="user-role" name="role" x-model="userForm.role" class="w-full px-4 py-3 rounded-xl crm-control-select" style="position: relative; z-index: 60;">
+                        <option value="" x-show="!(roles || []).filter(x => x.name !== 'root').length">— Выберите роль —</option>
+                        <template x-for="r in (roles || []).filter(x => x.name !== 'root')" :key="r.id">
+                            <option :value="r.name" x-text="r.name"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="user-department" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <select id="user-department" name="department_id" x-model="userForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="">Без отдела</option>
+                        <template x-for="d in (departments || [])" :key="d.id">
+                            <option :value="d.id" x-text="d.name"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div class="md:col-span-2">
+                    <div class="liquid-glass-pro rounded-2xl p-4 relative z-0">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="min-w-0">
+                                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Подсказка</div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-secondary)">Если роль не отображается — обновите список ролей в админке или проверьте права доступа.</div>
+                            </div>
+                            <button type="button" class="crm-btn-secondary text-sm" @click="loadRoles && loadRoles()">Обновить роли</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="crm-modal-footer crm-drawer-footer">
+            <button
+                x-show="editingUser && canDeleteUser && canDeleteUser(editingUser)"
+                @click="deleteUser && deleteUser(editingUser)"
+                class="crm-btn-secondary"
+                :disabled="usersSaving"
+                style="color: #dc2626; border-color: rgba(220, 38, 38, 0.2);">
+                Удалить сотрудника
+            </button>
+            <button @click="closeUserModal()" class="crm-btn-secondary">Закрыть</button>
+            <button type="submit" form="user-modal-form" class="crm-btn-primary" :disabled="usersSaving" x-text="usersSaving ? 'Сохранение...' : 'Сохранить'"></button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно роли -->
+<div x-show="roleModalOpen" x-cloak x-transition.opacity class="crm-drawer-overlay z-[80]" @keydown.escape.window="closeRoleModal()">
+    <div class="crm-drawer-backdrop lg-modal-backdrop" @click="closeRoleModal()"></div>
+    <div class="crm-drawer-shell crm-drawer-shell-md liquid-glass-pro lg-modal-shell"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full opacity-0"
+         x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0 opacity-100"
+         x-transition:leave-end="translate-x-full opacity-0">
+        <div class="crm-modal-header crm-drawer-header">
+            <div class="min-w-0">
+                <h2 class="crm-modal-title" x-text="editingRole ? 'Роль' : 'Новая роль'"></h2>
+                <p class="crm-modal-description">Название, описание и визуальная иконка роли.</p>
+            </div>
+            <button @click="closeRoleModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть роль">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="crm-modal-body crm-drawer-body p-6 space-y-4">
+            <div>
+                <label for="role-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                <input id="role-name" name="role_name" type="text" x-model="roleForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Менеджер" />
+            </div>
+            <div>
+                <label for="role-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
+                <textarea id="role-description" name="role_description" x-model="roleForm.description" rows="3" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Коротко о роли..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Иконка</label>
+                <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+                    <template x-for="ic in roleIcons" :key="ic">
+                        <button type="button"
+                                class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                                :class="roleForm.icon === ic ? 'liquid-glass-pro ring-2 ring-[color:var(--lg-primary)]' : 'crm-btn-ghost'"
+                                @click="roleForm.icon = ic"
+                                :title="ic">
+                            <template x-if="ic === 'shield'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 5-3 9-7 9s-7-4-7-9V7l7-4z"/></svg>
+                            </template>
+                            <template x-if="ic === 'users'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h5m6-4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            </template>
+                            <template x-if="ic === 'user-check'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11a4 4 0 100-8 4 4 0 000 8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l2 2 4-4"/></svg>
+                            </template>
+                            <template x-if="ic === 'lock'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 00-8 0v4m10 0h-8a2 2 0 00-2 2v7a2 2 0 002 2h8a2 2 0 002-2v-7a2 2 0 00-2-2z"/></svg>
+                            </template>
+                            <template x-if="ic === 'key'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a4 4 0 11-8 0 4 4 0 018 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11l-6 6v3h3l6-6"/></svg>
+                            </template>
+                            <template x-if="ic === 'briefcase'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6V5a2 2 0 012-2h2a2 2 0 012 2v1"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18"/></svg>
+                            </template>
+                            <template x-if="ic === 'folder'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                            </template>
+                            <template x-if="ic === 'document'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            </template>
+                            <template x-if="ic === 'clipboard'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+                            </template>
+                            <template x-if="ic === 'chart-bar'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 19V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 19v-4"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 19V8"/></svg>
+                            </template>
+                            <template x-if="ic === 'cog'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </template>
+                            <template x-if="ic === 'star'">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.03 6.24a1 1 0 00.95.69h6.56c.969 0 1.371 1.24.588 1.81l-5.307 3.855a1 1 0 00-.364 1.118l2.03 6.24c.3.921-.755 1.688-1.539 1.118l-5.307-3.855a1 1 0 00-1.175 0l-5.307 3.855c-.784.57-1.838-.197-1.539-1.118l2.03-6.24a1 1 0 00-.364-1.118L.93 11.667c-.783-.57-.38-1.81.588-1.81h6.56a1 1 0 00.95-.69l2.03-6.24z"/></svg>
+                            </template>
+                            <template x-if="!['shield','users','user-check','lock','key','briefcase','folder','document','clipboard','chart-bar','cog','star'].includes(ic)">
+                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
+                            </template>
+                        </button>
+                    </template>
+                </div>
+            </div>
+        </div>
+        <div class="crm-modal-footer crm-drawer-footer">
+            <button x-show="editingRole && canDeleteRole(editingRole)"
+                    @click="deleteRole(editingRole)"
+                    class="crm-btn-secondary"
+                    style="color: #dc2626; border-color: rgba(220, 38, 38, 0.2);">
+                Удалить роль
+            </button>
+            <button @click="closeRoleModal()" class="crm-btn-secondary">Закрыть</button>
+            <button @click="saveRole()" class="crm-btn-primary">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно прав роли -->
+<div x-show="rolePermissionsModalOpen" x-cloak x-transition.opacity class="crm-drawer-overlay z-[80]" @keydown.escape.window="closeRolePermissionsModal()">
+    <div class="crm-drawer-backdrop lg-modal-backdrop" @click="closeRolePermissionsModal()"></div>
+    <div class="crm-drawer-shell crm-drawer-shell-lg liquid-glass-pro lg-modal-shell"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full opacity-0"
+         x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0 opacity-100"
+         x-transition:leave-end="translate-x-full opacity-0">
+        <div class="crm-modal-header crm-drawer-header">
+            <div class="min-w-0">
+                <h2 class="crm-modal-title">Права роли</h2>
+                <p class="crm-modal-description" x-text="editingRole?.name || ''"></p>
+                <p class="mt-1 text-xs" style="color: var(--lg-text-secondary)" x-text="editingRole ? `Активных прав: ${getRoleEnabledPermissionsCount(editingRole)}` : ''"></p>
+            </div>
+            <button @click="closeRolePermissionsModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть права роли">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="crm-modal-body crm-drawer-body p-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <template x-for="section in Object.keys(rolePermissions || {})" :key="section">
+                    <div class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" style="background: var(--lg-primary)">
+                                <template x-if="section === 'tasks'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                </template>
+                                <template x-if="section === 'projects'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                </template>
+                                <template x-if="section === 'departments'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                </template>
+                                <template x-if="section === 'files'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                </template>
+                                <template x-if="section === 'knowledge'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                </template>
+                                <template x-if="section === 'chat'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                                </template>
+                                <template x-if="section === 'crm'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                </template>
+                                <template x-if="section === 'leader'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                </template>
+                                <template x-if="section === 'mail'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                </template>
+                                <template x-if="section === 'users'">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656.126-1.283.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                </template>
+                            </div>
+
+                            <div class="min-w-0">
+                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="({tasks:'Задачи',projects:'Проекты',departments:'Отделы',files:'Файлы',knowledge:'База знаний',chat:'Чат',crm:'CRM',leader:'Руководитель',mail:'Почта',users:'Пользователи',admin:'Администрирование'}[section] || section)"></div>
+                                <div class="text-xs" style="color: var(--lg-text-secondary)">Доступы к разделу</div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <template x-for="action in Object.keys(rolePermissions[section] || {})" :key="action">
+                                <label class="flex items-center justify-between gap-3">
+                                    <span class="text-sm" style="color: var(--lg-text-secondary)">
+                                        <span x-text="({view:'Просмотр',create:'Создание',edit:'Редактирование',delete:'Удаление',upload:'Загрузка',send:'Отправка',forward:'Пересылка',create_group:'Создание групп',export:'Экспорт',stages_manage:'Управление этапами',shifts_manage:'Управление сменами',full:'Полный доступ'}[action] || action)"></span>
+                                        <span class="ml-2 text-xs" style="color: var(--lg-text-tertiary)" x-text="(section==='crm' && action==='stages_manage') ? 'crm.stages.manage' : ((section==='leader' && action==='shifts_manage') ? 'leader.shifts.manage' : `${section}.${action}`)"></span>
+                                    </span>
+                                    <button type="button" class="ios-toggle" :class="rolePermissions[section][action] ? 'on' : 'off'" @click="rolePermissions[section][action] = !rolePermissions[section][action]">
+                                        <span class="ios-toggle-knob"></span>
+                                    </button>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+
+            </div>
+        </div>
+        <div class="crm-modal-footer crm-drawer-footer">
+            <button @click="closeRolePermissionsModal()" class="crm-btn-secondary">Закрыть</button>
+            <button @click="saveRolePermissions()" class="crm-btn-primary">Сохранить</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+     TASK/BOARD CONTEXT MENU
+     ============================================ -->
+<div x-show="contextMenuOpen" x-cloak
+     @click.away="closeContextMenu()"
+     @keydown.escape.window="closeContextMenu()"
+     class="fixed inset-0 z-[70]">
+    <div class="absolute inset-0" @click="closeContextMenu()"></div>
+
+    <div class="fixed liquid-glass-pro rounded-2xl shadow-2xl min-w-[220px] overflow-hidden"
+         :style="`left:${contextMenuX}px; top:${contextMenuY}px;`">
+        <div class="p-2 space-y-1">
+            <button x-show="mailContextMenuEmail" @click="openMailFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                Открыть письмо
+            </button>
+
+            <button x-show="mailContextMenuEmail" @click="replyMailFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                Ответить
+            </button>
+
+            <button x-show="mailContextMenuEmail" @click="toggleMailStarFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                <span x-text="Number(mailContextMenuEmail?.is_starred) ? 'Убрать из важного' : 'Важное'"></span>
+            </button>
+
+            <button x-show="mailContextMenuEmail" @click="deleteMailFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                Удалить
+            </button>
+
+            <div x-show="mailContextMenuEmail" class="h-px my-1" style="background: color-mix(in oklab, var(--lg-glass-border) 40%, transparent);"></div>
+
+            <button x-show="!mailContextMenuEmail" @click="createTaskFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                Создать задачу
+            </button>
+
+            <button x-show="contextMenuTask" @click="openTaskModal(contextMenuTask); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                Открыть
+            </button>
+
+            <button x-show="contextMenuTask" @click="deleteTaskFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                Удалить
+            </button>
+
+            <div class="h-px my-1" style="background: color-mix(in oklab, var(--lg-glass-border) 40%, transparent);"></div>
+
+            <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="createStageFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                Создать этап
+            </button>
+            <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="editStageFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                Переименовать этап
+            </button>
+            <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="deleteStageFromMenu(); closeContextMenu()"
+                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                Удалить этап
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+     IMAGE PREVIEW (CHAT)
+     ============================================ -->
+
+<div x-show="imagePreviewOpen" x-transition.opacity x-cloak class="fixed inset-0 z-[130] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="imagePreviewOpen=false">
+    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden chat-image-preview-shell">
+        <div class="p-4 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+                <div class="text-sm font-semibold truncate crm-text-primary" x-text="imagePreviewName || 'Изображение'"></div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <a :href="imagePreviewSrc" :download="imagePreviewName || 'image'" class="crm-btn-secondary text-sm chat-image-preview-action" @click.stop>
+                    Скачать
+                </a>
+                <button @click="imagePreviewOpen=false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
+                    <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="px-4 pb-4">
+            <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-preview-stage chat-image-preview-stage">
+                <img :src="imagePreviewSrc" class="w-full max-h-[75vh] object-contain" alt="" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+     INCOMING CALL
+     ============================================ -->
+
+<div x-show="incomingCallModal" x-transition.opacity x-cloak class="fixed inset-0 z-[140] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop">
+    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+        <div class="p-6 text-center">
+            <div class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-white font-bold text-xl crm-avatar-accent" x-text="getInitials(incomingCaller?.name || ' ')" ></div>
+            <div class="mt-4 text-lg font-bold crm-text-primary" x-text="incomingCaller?.name || 'Входящий звонок'"></div>
+            <div class="mt-1 text-sm crm-text-tertiary" x-text="incomingCaller?.type === 'video' ? 'Видеозвонок' : 'Аудиозвонок'"></div>
+
+            <div class="mt-6 flex items-center justify-center gap-6">
+                <button @click="declineIncomingCall()" class="w-16 h-16 rounded-full flex items-center justify-center crm-circle-action-danger" aria-label="Отклонить">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+                <button @click="acceptIncomingCall()" class="w-16 h-16 rounded-full flex items-center justify-center crm-circle-action-success" aria-label="Принять">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+     ACTIVE CALL
+     ============================================ -->
+
+<div x-show="showCallModal" x-transition.opacity x-cloak class="fixed inset-0 z-[141] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop">
+    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden">
+        <div class="p-5 text-center">
+            <div class="text-base font-bold crm-text-primary" x-text="callType === 'video' ? 'Видеозвонок' : 'Аудиозвонок'"></div>
+            <div class="mt-1 text-sm crm-text-tertiary" x-text="callStatus === 'connected' ? formatCallTime(callTimer) : 'Звоним…'"></div>
+        </div>
+
+        <div class="px-5"><div class="crm-divider opacity-70"></div></div>
+
+        <div class="p-5">
+            <audio id="remote-audio" autoplay playsinline></audio>
+
+            <div x-show="callType === 'video'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="relative aspect-video rounded-3xl overflow-hidden crm-video-surface">
+                    <video id="remote-video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-primary">Собеседник</div>
+                </div>
+                <div class="relative aspect-video rounded-3xl overflow-hidden crm-video-surface">
+                    <video id="local-video" autoplay muted playsinline class="w-full h-full object-cover"></video>
+                    <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-primary">Вы</div>
+                </div>
+            </div>
+
+            <div x-show="callType !== 'video'" class="py-10 text-center">
+                <div class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-white font-bold crm-avatar-accent" x-text="getInitials(activeChatRoom?.interlocutor_name || activeChatRoom?.room_name || ' ')" ></div>
+                <div class="mt-4 text-sm crm-text-tertiary">Аудио</div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-center gap-6">
+                <button @click="toggleMute()" class="w-14 h-14 rounded-full flex items-center justify-center crm-btn-ghost" :aria-label="isMuted ? 'Микрофон выключен' : 'Микрофон включен'">
+                    <svg x-show="!isMuted" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 10v2a7 7 0 01-14 0v-2"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v4m-4 0h8"/>
+                    </svg>
+                    <svg x-show="isMuted" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-9 6.71"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v4"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
+                    </svg>
+                </button>
+
+                <button x-show="callType === 'video'" @click="toggleCamera()" class="w-14 h-14 rounded-full flex items-center justify-center crm-btn-ghost" :aria-label="isCameraOff ? 'Камера выключена' : 'Камера включена'">
+                    <svg x-show="!isCameraOff" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    <svg x-show="isCameraOff" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 8H5a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2v-1"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14"/>
+                    </svg>
+                </button>
+
+                <button @click="endCall()" class="w-16 h-16 rounded-full flex items-center justify-center crm-circle-action-danger" aria-label="Завершить">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

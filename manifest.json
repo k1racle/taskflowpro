@@ -1,0 +1,41 @@
+{
+  "name": "TaskFlow Pro",
+  "short_name": "TaskFlow",
+  "description": "Система управления задачами и проектами",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0F0F12",
+  "theme_color": "#3B82F6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "app.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "app.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Задачи",
+      "short_name": "Задачи",
+      "description": "Открыть задачи",
+      "url": "/index.html?view=tasks",
+      "icons": [{"src": "app.png", "sizes": "192x192"}]
+    },
+    {
+      "name": "Проекты",
+      "short_name": "Проекты",
+      "description": "Открыть проекты",
+      "url": "/index.html?view=projects",
+      "icons": [{"src": "app.png", "sizes": "192x192"}]
+    }
+  ]
+}

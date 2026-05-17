@@ -1,0 +1,654 @@
+<!-- ============================================
+     CHAT VIEW - PRO 2027
+     ============================================ -->
+
+<div class="h-full min-h-0 flex gap-4 lg:gap-6 chat-workspace-shell"
+     :data-mobile-chat-state="activeChatRoom ? 'room' : 'list'"
+     data-chat-runtime-template="chat-view-2026-04-25-v1"
+     data-chat-runtime-version="chat-live-2026-04-25-v1">
+    
+    <!-- Список чатов -->
+    <div class="liquid-glass-pro w-full lg:w-80 xl:w-[22rem] flex flex-col min-h-0 rounded-3xl chat-sidebar-shell">
+        <!-- Хэдер -->
+        <div class="p-4 lg:p-5 crm-toolbar crm-toolbar--dense chat-sidebar-top">
+            <div class="crm-section-head flex items-start justify-between gap-3 mb-4">
+                <div class="crm-section-head__content min-w-0 flex-1">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Чаты</div>
+                            <div class="crm-toolbar-summary chat-toolbar-summary">
+                                <div class="crm-summary-tile">
+                                    <div class="crm-summary-label">Диалоги</div>
+                                    <div class="crm-summary-value" x-text="(chatRooms || []).length"></div>
+                                </div>
+                                <div class="crm-summary-tile">
+                                    <div class="crm-summary-label">Непрочитано</div>
+                                    <div class="crm-summary-value" x-text="(chatRooms || []).reduce((sum, room) => sum + Number(room.unread_count || 0), 0)"></div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                <div class="crm-section-head__meta flex items-center gap-2 flex-shrink-0">
+                    <button @click="openCreateChatModal()" class="rounded-xl crm-btn-ghost crm-icon-button" aria-label="Новый чат">
+                        <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                        </svg>
+                    </button>
+                    <button @click="openGroupModal()" class="rounded-xl crm-btn-ghost crm-icon-button" aria-label="Новая группа">
+                        <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10-4a4 4 0 10-8 0 4 4 0 008 0z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="crm-filter-field crm-filter-field--compact crm-filter-field-search chat-sidebar-search">
+                <label for="chat-sidebar-search" class="crm-filter-label">Поиск</label>
+                <div class="mt-2 flex items-center gap-3">
+                    <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                    <input id="chat-sidebar-search" name="chat_search" type="text" x-model="chatSearch"
+                           @input="searchChats()"
+                           placeholder="Имя, группа, сообщение"
+                           class="crm-control-input text-sm crm-input-no-suggest"
+                           autocomplete="off"
+                           autocapitalize="off"
+                           autocorrect="off"
+                           spellcheck="false">
+                </div>
+            </div>
+
+            <div class="pt-4"><div class="crm-divider opacity-70"></div></div>
+        </div>
+
+        <!-- Список -->
+        <div class="flex-1 min-h-0 overflow-y-auto px-3 pb-3 lg:px-4 lg:pb-4 space-y-2 chat-room-list">
+            <div x-show="chatRoomsLoading" class="crm-empty-state text-center px-4 py-8" data-state="loading">
+                <div class="crm-empty-state-title">Загружаем чаты...</div>
+                <div class="crm-empty-state-text">Подтягиваем список диалогов и непрочитанные сообщения.</div>
+            </div>
+
+            <div x-show="!chatRoomsLoading && chatRoomsError" class="crm-empty-state text-center px-4 py-8" data-state="error">
+                <div class="crm-empty-state-title">Не удалось загрузить чаты</div>
+                <div class="crm-empty-state-text" x-text="chatRoomsError"></div>
+                <div class="crm-empty-state-actions">
+                    <button @click="loadChatRooms()" class="crm-btn-secondary">Повторить</button>
+                </div>
+            </div>
+
+            <template x-for="room in getFilteredChatRooms()" :key="room.room_id || room.id">
+                <div class="chat-room-card-shell">
+                    <button @click="selectChatRoom(room)"
+                             @contextmenu.prevent="openChatRoomMenu($event, room)"
+                             :class="activeChatRoom?.room_id === (room.room_id || room.id) ? 'chat-room-card-active' : ''"
+                             class="w-full p-3 rounded-2xl transition-all chat-room-card"
+                             type="button">
+                        <div class="flex items-center gap-3 chat-room-card__content">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-semibold flex-shrink-0 chat-room-avatar"
+                                 style="background: var(--crm-accent);"
+                                   x-text="getInitials(room.interlocutor_name || room.room_name)">
+                            </div>
+                             <div class="flex-1 text-left min-w-0 emoji-text">
+                                 <div class="flex items-center gap-2">
+                                     <h3 class="font-semibold text-sm truncate emoji-text" style="color: var(--lg-text-primary)" x-text="room.interlocutor_name || room.room_name"></h3>
+                                     <span x-show="Number(room.unread_count || 0) > 0" x-cloak class="crm-inline-badge crm-inline-badge-accent chat-room-chip">Новые</span>
+                                 </div>
+                                 <p class="mt-1 text-[11px] truncate" style="color: var(--lg-text-tertiary)" x-text="getChatRoomContextLabel(room)"></p>
+                                 <p class="mt-1 text-xs truncate emoji-text" style="color: var(--lg-text-secondary)" x-text="room.last_message || 'Нет сообщений'"></p>
+                             </div>
+                             <div class="flex flex-col items-end gap-1 chat-room-card__meta-desktop">
+                                <span class="text-[11px]" style="color: var(--lg-text-tertiary)" x-text="formatChatRoomTimestamp(room.last_message_time)"></span>
+                                <span x-show="room.unread_count > 0"
+                                      class="crm-notification-badge chat-room-unread"
+                                      x-text="room.unread_count"></span>
+                             </div>
+                              <span @click.stop="openChatRoomMenu($event, room)"
+                                    @keydown.enter.stop.prevent="openChatRoomMenu($event, room)"
+                                    @keydown.space.stop.prevent="openChatRoomMenu($event, room)"
+                                    class="chat-room-card__menu rounded-xl crm-btn-ghost"
+                                    role="button"
+                                    tabindex="0"
+                                    aria-label="Действия с чатом">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5h.01M12 12h.01M12 19h.01"/>
+                                </svg>
+                              </span>
+                         </div>
+                    </button>
+                    <div class="chat-room-card__mobile-actions" role="group" aria-label="Быстрые действия с чатом">
+                        <span class="text-[11px] chat-room-card__mobile-time" style="color: var(--lg-text-tertiary)" x-text="formatChatRoomTimestamp(room.last_message_time)"></span>
+                        <span x-show="room.unread_count > 0"
+                              class="crm-notification-badge chat-room-unread"
+                              x-text="room.unread_count"></span>
+                        <button type="button"
+                                @click.stop="selectChatRoom(room)"
+                                class="chat-room-card__mobile-action rounded-xl crm-btn-secondary">
+                            Открыть
+                        </button>
+                        <button type="button"
+                                @click.stop="markChatRoomAsRead(room)"
+                                class="chat-room-card__mobile-action rounded-xl crm-btn-secondary">
+                            Прочитано
+                        </button>
+                        <button type="button"
+                                @click.stop="deleteChatRoom(room)"
+                                class="chat-room-card__mobile-action chat-room-card__mobile-action--danger rounded-xl crm-btn-danger">
+                            Удалить
+                        </button>
+                    </div>
+                </div>
+            </template>
+
+            <div x-show="!chatRoomsLoading && !chatRoomsError && chatRoomsLoaded && (getFilteredChatRooms() || []).length === 0" class="crm-empty-state text-center px-4 py-8">
+                <div class="w-14 h-14 mx-auto rounded-2xl flex items-center justify-center mb-4 chat-empty-icon">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                </div>
+                <div class="crm-empty-state-title" x-text="chatSearch ? 'По вашему запросу ничего не найдено' : 'Чаты пока не найдены'"></div>
+                <div class="crm-empty-state-text" x-text="chatSearch ? 'Попробуйте другой запрос или откройте диалог вручную.' : 'Создайте новый диалог из верхней панели.'"></div>
+            </div>
+        </div>
+
+        <!-- Контекстное меню чата -->
+        <div x-show="chatRoomMenuOpen" x-cloak @click.away="closeChatRoomMenu()" class="fixed inset-0 z-[119]">
+            <div class="absolute inset-0" @click="closeChatRoomMenu()"></div>
+            <div class="fixed liquid-glass-pro rounded-2xl shadow-2xl min-w-[220px] overflow-hidden"
+                 :style="`left:${chatRoomMenuX}px; top:${chatRoomMenuY}px;`">
+                <div class="p-2 space-y-1">
+                    <button @click.stop="const room = chatRoomMenuRoom; closeChatRoomMenu(); selectChatRoom(room)" class="w-full text-left px-4 py-2 rounded-xl crm-btn-ghost">Открыть</button>
+                    <button @click.stop="const room = chatRoomMenuRoom; closeChatRoomMenu(); markChatRoomAsRead(room)" class="w-full text-left px-4 py-2 rounded-xl crm-btn-ghost">Пометить прочитанным</button>
+                    <button @click.stop="deleteChatRoom(chatRoomMenuRoom)" class="w-full text-left px-4 py-2 rounded-xl crm-btn-danger">Удалить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: начать личный чат -->
+    <div x-show="showCreateChatModal" x-transition.opacity x-cloak class="fixed inset-0 z-[125] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="closeCreateChatModal()">
+        <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="crm-modal-header">
+                <div class="min-w-0">
+                    <div class="text-lg font-semibold" style="color: var(--lg-text-primary)">Новый чат</div>
+                    <div class="text-sm" style="color: var(--lg-text-tertiary)">Выберите сотрудника</div>
+                </div>
+                <button @click="closeCreateChatModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
+                    <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-5"><div class="crm-divider opacity-70"></div></div>
+
+            <div class="crm-modal-body crm-modal-body--compact crm-modal-form crm-modal-form--compact">
+                <label for="chat-user-search" class="sr-only">Поиск сотрудника для личного чата</label>
+                <input id="chat-user-search" name="chat_user_search" type="text" x-model="chatUserSearch" placeholder="Поиск по сотрудникам..." class="crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+                <div class="mt-4 max-h-[50vh] overflow-y-auto space-y-2">
+                    <template x-for="u in (chatUsers || []).filter(x => !chatUserSearch || (String(x.full_name||'').toLowerCase().includes(String(chatUserSearch).toLowerCase()) || String(x.login||'').toLowerCase().includes(String(chatUserSearch).toLowerCase())))" :key="u.id">
+                        <button @click="startPrivateChatWith(u.id)" class="w-full liquid-glass-pro rounded-2xl p-3 flex items-center gap-3 hover:shadow-sm transition-all">
+                            <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-semibold flex-shrink-0" style="background: var(--crm-accent);" x-text="getInitials(u.full_name || u.login)"></div>
+                            <div class="min-w-0 text-left">
+                                <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="u.full_name || u.login"></div>
+                                <div class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="u.login ? ('@' + u.login) : ''"></div>
+                            </div>
+                        </button>
+                    </template>
+                    <div x-show="(chatUsers || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Нет пользователей.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: новая группа -->
+    <div x-show="showGroupModal" x-transition.opacity x-cloak class="fixed inset-0 z-[126] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="closeGroupModal()">
+        <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
+            <div class="crm-modal-header">
+                <div class="min-w-0">
+                    <div class="text-lg font-semibold" style="color: var(--lg-text-primary)">Новая группа</div>
+                    <div class="text-sm" style="color: var(--lg-text-tertiary)">Выберите участников</div>
+                </div>
+                <button @click="closeGroupModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
+                    <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="px-5"><div class="crm-divider opacity-70"></div></div>
+
+            <div class="crm-modal-body crm-modal-body--compact crm-modal-form crm-modal-form--compact">
+                <label for="chat-group-name" class="sr-only">Название группы</label>
+                <input id="chat-group-name" name="group_name" type="text" x-model="groupForm.name" placeholder="Название группы" class="crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="sentences" autocorrect="off" spellcheck="false" />
+
+                <label for="chat-group-search" class="sr-only">Поиск сотрудников для группы</label>
+                <input id="chat-group-search" name="group_member_search" type="text" x-model="groupChatUserSearch" placeholder="Поиск сотрудников..." class="crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+
+                <div class="max-h-[46vh] overflow-y-auto space-y-2">
+                    <template x-for="u in (chatUsers || []).filter(x => !groupChatUserSearch || (String(x.full_name||'').toLowerCase().includes(String(groupChatUserSearch).toLowerCase()) || String(x.login||'').toLowerCase().includes(String(groupChatUserSearch).toLowerCase())))" :key="u.id">
+                        <button type="button" @click="toggleGroupMember(u.id)" class="w-full liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-3 hover:shadow-sm transition-all">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-semibold flex-shrink-0" style="background: var(--crm-accent);" x-text="getInitials(u.full_name || u.login)"></div>
+                                <div class="min-w-0 text-left">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="u.full_name || u.login"></div>
+                                    <div class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="u.login ? ('@' + u.login) : ''"></div>
+                                </div>
+                            </div>
+                            <div class="w-6 h-6 rounded-xl flex items-center justify-center" :style="groupForm.members.includes(u.id) ? 'background: var(--lg-primary); color: white' : 'background: color-mix(in oklab, var(--lg-glass-bg) 70%, black); color: var(--lg-text-tertiary)'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                            </div>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <div class="crm-modal-footer crm-modal-footer--compact">
+                <button @click="closeGroupModal()" class="crm-btn-secondary">Отмена</button>
+                <button @click="createGroup()" class="crm-btn-primary">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Окно чата -->
+    <div class="liquid-glass-pro flex-1 flex flex-col min-h-0 rounded-3xl chat-main-shell">
+        
+        <!-- Заглушка если чат не выбран -->
+        <div x-show="!activeChatRoom" class="flex-1 flex items-center justify-center p-6">
+            <div class="text-center crm-empty-state max-w-md w-full py-10 px-6">
+                <div class="w-20 h-20 mx-auto mb-5 rounded-3xl flex items-center justify-center chat-empty-icon">
+                    <svg class="w-10 h-10 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                </div>
+                <div class="crm-empty-state-title">Выберите чат</div>
+                <div class="crm-empty-state-text">Откройте существующий диалог слева или создайте новый, чтобы начать общение и быстрый обмен рабочими материалами.</div>
+            </div>
+        </div>
+
+        <!-- Чат -->
+            <div x-show="activeChatRoom" class="flex-1 min-h-0 flex flex-col chat-main-panel">
+            
+            <!-- Хэдер чата -->
+            <div class="p-4 lg:p-5 flex items-center justify-between relative gap-4 chat-room-header">
+                <div class="absolute left-4 right-4 -bottom-2"><div class="crm-divider opacity-70"></div></div>
+                <div class="flex items-center gap-3 min-w-0">
+                    <button @click="activeChatRoom = null; chatMessages = []; chatRoomMessagesError = ''; closeChatRoomMenu()"
+                            class="rounded-xl crm-btn-ghost crm-icon-button chat-mobile-back"
+                            aria-label="Вернуться к списку чатов">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                        </svg>
+                    </button>
+                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center text-white font-semibold flex-shrink-0"
+                         style="background: var(--crm-accent);"
+                         x-text="getInitials(activeChatRoom?.interlocutor_name || activeChatRoom?.room_name)">
+                    </div>
+                     <div class="min-w-0">
+                         <div class="flex items-center gap-2 flex-wrap">
+                             <h3 class="font-semibold truncate" style="color: var(--lg-text-primary)" x-text="activeChatRoom?.interlocutor_name || activeChatRoom?.room_name"></h3>
+                             <span class="crm-status-pill chat-status-chip" x-show="activeChatRoomPresence?.otherTyping">печатает...</span>
+                             <span class="crm-status-pill chat-status-chip" x-show="!activeChatRoomPresence?.otherTyping && activeChatRoomPresence?.otherOnline">онлайн</span>
+                         </div>
+                         <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="getChatRoomContextLabel(activeChatRoom)"></div>
+                     </div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0 chat-room-header-actions">
+                    <button @click="loadChatRooms(); if (activeChatRoom) selectChatRoom(activeChatRoom)" class="rounded-xl crm-btn-ghost crm-icon-button chat-room-header-action" aria-label="Обновить чат">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </button>
+                    <button @click="startAudioCall()" class="rounded-xl crm-btn-ghost crm-icon-button chat-room-header-action chat-room-call-action" aria-label="Аудиозвонок">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </button>
+                    <button @click="startVideoCall()" class="rounded-xl crm-btn-ghost crm-icon-button chat-room-header-action chat-room-call-action" aria-label="Видеозвонок">
+                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Сообщения -->
+            <div id="chat-messages" class="flex-1 min-h-0 overflow-y-auto p-4 lg:p-6 space-y-3 chat-messages-zone" @scroll.debounce.80ms="(function(){try{const el=$event.target; const threshold=Number(el.dataset.autoscrollStickThreshold||260); const distance=el.scrollHeight-el.scrollTop-el.clientHeight; el.dataset.autoscrollStuckToBottom=(distance<threshold)?'1':'0';}catch(e){}})()">
+                <div x-show="chatRoomMessagesLoading" class="crm-empty-state text-center px-4 py-8" data-state="loading">
+                    <div class="crm-empty-state-title">Загружаем сообщения...</div>
+                    <div class="crm-empty-state-text">Подтягиваем историю переписки и вложения выбранного чата.</div>
+                </div>
+
+                <div x-show="!chatRoomMessagesLoading && chatRoomMessagesError" class="crm-empty-state text-center px-4 py-8" data-state="error">
+                    <div class="crm-empty-state-title">Не удалось открыть чат</div>
+                    <div class="crm-empty-state-text" x-text="chatRoomMessagesError"></div>
+                    <div class="crm-empty-state-actions">
+                        <button @click="selectChatRoom(activeChatRoom)" class="crm-btn-secondary">Повторить</button>
+                    </div>
+                </div>
+
+                <div x-show="!chatRoomMessagesLoading && !chatRoomMessagesError && (chatMessages || []).length === 0" class="crm-empty-state text-center px-4 py-8">
+                    <div class="crm-empty-state-title">Сообщений пока нет</div>
+                    <div class="crm-empty-state-text">Начните переписку первым сообщением, файлом или быстрым контекстом по задаче/проекту.</div>
+                </div>
+
+                <!-- Dates -->
+                <template x-for="d in (chatTimeline || []).filter(x => x.type === 'date')" :key="d.key">
+                    <div class="flex justify-center py-1">
+                        <div class="chat-date-chip text-xs" style="color: var(--lg-text-tertiary)" x-text="d.label"></div>
+                    </div>
+                </template>
+
+                <!-- Messages -->
+                <template x-for="item in (chatTimeline || []).filter(x => x.type === 'msg')" :key="item.key">
+                    <div class="flex w-full"
+                         :class="isChatMessageOwn(item.msg) ? 'justify-end' : 'justify-start'"
+                         @touchstart.passive="onMsgPointerDown($event, item.msg)"
+                         @touchmove.passive="onMsgPointerMove($event)"
+                         @touchend="onMsgPointerUp()"
+                         @mousedown="onMsgPointerDown($event, item.msg)"
+                         @mousemove="onMsgPointerMove($event)"
+                         @mouseup="onMsgPointerUp()">
+                        <div class="max-w-[85%] sm:max-w-[78%]">
+                            <div class="chat-bubble chat-bubble-swipe px-4 py-3 relative"
+                                 :data-msg-swipe="item.msg.id"
+                                 :class="isChatMessageOwn(item.msg) ? 'chat-bubble--out' : 'chat-bubble--in'">
+
+                                <div class="absolute inset-0" @contextmenu="openChatMessageMenu($event, item.msg)"></div>
+
+                                <div class="text-xs mb-2 chat-bubble-author" style="color: var(--lg-text-tertiary)" x-show="!isChatMessageOwn(item.msg)" x-text="item.msg.sender_name"></div>
+
+                                <div x-show="item.msg.message_type === 'task' && item.msg.task_id">
+                                    <button class="w-full text-left liquid-glass-pro rounded-2xl p-4 chat-attachment-card" @click="openTaskFromMessage(item.msg.task_id)">
+                                        <div class="text-xs chat-attachment-card__eyebrow" style="color: var(--lg-text-tertiary)">Задача</div>
+                                        <div class="mt-1 font-semibold" style="color: var(--lg-text-primary)" x-text="item.msg.task_title || item.msg.message"></div>
+                                        <div class="mt-1 text-xs chat-attachment-card__meta" style="color: var(--lg-text-tertiary)" x-text="item.msg.task_status || ''"></div>
+                                    </button>
+                                </div>
+
+                                <div x-show="item.msg.message_type === 'project' && item.msg.project_id">
+                                    <button class="w-full text-left liquid-glass-pro rounded-2xl p-4 chat-attachment-card" @click="openProjectFromMessage(item.msg.project_id)">
+                                        <div class="text-xs chat-attachment-card__eyebrow" style="color: var(--lg-text-tertiary)">Проект</div>
+                                        <div class="mt-1 font-semibold" style="color: var(--lg-text-primary)" x-text="item.msg.project_name || item.msg.message"></div>
+                                    </button>
+                                </div>
+
+                                <div x-show="(item.msg.message_type === 'file' || item.msg.message_type === 'image') && item.msg.file_url" class="liquid-glass-pro rounded-2xl p-4 chat-attachment-card">
+                                    <div class="text-xs chat-attachment-card__eyebrow" style="color: var(--lg-text-tertiary)" x-text="item.msg.message_type === 'image' ? 'Изображение' : 'Файл'"></div>
+                                    <button x-show="item.msg.message_type === 'image'" class="mt-2 w-full overflow-hidden rounded-2xl" @click="previewChatImage(item.msg)">
+                                        <img :src="item.msg.file_url" class="w-full max-h-[260px] object-cover" alt="" />
+                                    </button>
+                                    <button class="mt-2 text-sm font-semibold text-left w-full truncate" style="color: var(--lg-text-primary)" @click="openFileInNewTab(item.msg.file_url)" x-text="item.msg.file_name || item.msg.message"></button>
+                                </div>
+
+                                 <div x-show="item.msg.message_type === 'sticker'" class="pt-1">
+                                     <template x-if="item.msg.sticker_type === 'emoji'">
+                                         <div class="chat-sticker chat-sticker-animated text-8xl leading-none" x-text="item.msg.sticker_url"></div>
+                                     </template>
+                                     <template x-if="item.msg.sticker_type !== 'emoji'">
+                                         <img :src="item.msg.sticker_url" class="chat-sticker chat-sticker-pulse w-32 h-32 object-contain" alt="sticker" loading="lazy" />
+                                     </template>
+                                 </div>
+
+                                 <div x-show="item.msg.message_type === 'voice' && item.msg.file_url" class="liquid-glass-pro rounded-2xl p-3 chat-attachment-card chat-attachment-card--compact">
+                                     <div class="flex items-center gap-3">
+                                         <button class="w-10 h-10 rounded-2xl crm-btn-ghost flex items-center justify-center"
+                                                  @click="toggleVoicePlayback(item.msg)"
+                                                  :aria-label="(playingVoiceId === item.msg.id) ? 'Пауза' : 'Воспроизвести'">
+                                             <svg x-show="playingVoiceId !== item.msg.id" class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                                             </svg>
+                                             <svg x-show="playingVoiceId === item.msg.id" class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"/>
+                                             </svg>
+                                         </button>
+                                         <div class="flex-1 min-w-0">
+                                             <div class="text-xs chat-attachment-card__eyebrow" style="color: var(--lg-text-tertiary)">Голосовое</div>
+                                             <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="formatVoiceDuration(item.msg.voice_duration || 0)"></div>
+                                         </div>
+                                     </div>
+                                 </div>
+
+                                <div x-show="!['task','project','file','image','sticker','voice'].includes(item.msg.message_type)" class="chat-bubble-text whitespace-pre-wrap break-words" style="color: var(--lg-text-primary)" x-text="item.msg.message"></div>
+
+                                <div class="mt-2 flex items-center justify-end gap-2 chat-bubble-meta text-xs">
+                                    <span x-text="formatTime(item.msg.created_at)"></span>
+                                    <span x-show="isChatMessageOwn(item.msg)" x-html="getMessageStatusIcon(item.msg)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+                <div id="chat-bottom-anchor" class="h-px w-full"></div>
+            </div>
+
+            <!-- Контекстное меню сообщения -->
+            <div x-show="chatMsgMenuOpen" x-cloak @click.away="closeChatMessageMenu()" class="fixed inset-0 z-[120]">
+                <div class="absolute inset-0" @click="closeChatMessageMenu()"></div>
+                <div class="fixed liquid-glass-pro rounded-2xl shadow-2xl min-w-[220px] overflow-hidden"
+                     :style="`left:${chatMsgMenuX}px; top:${chatMsgMenuY}px;`">
+                    <div class="p-2 space-y-1">
+                        <button @click="replyTo(chatMsgMenuMsg); closeChatMessageMenu()" class="w-full text-left px-4 py-2 rounded-xl crm-btn-ghost">Ответить</button>
+                        <button @click="prepareForward(chatMsgMenuMsg); closeChatMessageMenu()" class="w-full text-left px-4 py-2 rounded-xl crm-btn-ghost">Переслать</button>
+                        <button x-show="String(chatMsgMenuMsg?.sender_id ?? '') === String(currentUser?.id ?? '')" @click="startEditMessage(chatMsgMenuMsg); closeChatMessageMenu()" class="w-full text-left px-4 py-2 rounded-xl crm-btn-ghost">Редактировать</button>
+                        <button x-show="String(chatMsgMenuMsg?.sender_id ?? '') === String(currentUser?.id ?? '')" @click="deleteMessage(chatMsgMenuMsg.id); closeChatMessageMenu()" class="w-full text-left px-4 py-2 rounded-xl crm-btn-danger">Удалить</button>
+                        <button @click="copyText(chatMsgMenuMsg?.message || '') ; closeChatMessageMenu()" class="w-full text-left px-4 py-2 rounded-xl crm-btn-ghost">Копировать</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ввод сообщения -->
+            <div class="p-4 lg:p-5 relative chat-composer-shell">
+                <div class="absolute left-4 right-4 -top-2"><div class="crm-divider opacity-70"></div></div>
+                <div class="relative">
+                    <!-- Reply/Edit preview -->
+                    <div x-show="replyToMessage || editingMessage" x-transition.opacity class="mb-2 liquid-glass-pro rounded-2xl px-3 py-2 flex items-center justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)" x-text="editingMessage ? 'Редактирование' : 'Ответ'">
+                            </div>
+                            <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="(editingMessage?.message || replyToMessage?.message || '').slice(0,120)"></div>
+                        </div>
+                        <button @click="cancelEditOrReply()" class="crm-btn-ghost crm-icon-button" aria-label="Отменить">
+                            <svg class="w-4 h-4" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 mb-3 text-xs flex-wrap" style="color: var(--lg-text-tertiary)">
+                        <span class="crm-inline-badge" x-show="replyToMessage">Режим ответа</span>
+                        <span class="crm-inline-badge" x-show="editingMessage">Режим редактирования</span>
+                    </div>
+
+                    <div class="chat-composer chat-composer-workspace">
+                        <button @click="showAttachmentMenu = !showAttachmentMenu" class="chat-composer-button" aria-label="Вложения">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.9-9.9a4 4 0 015.66 5.66l-9.9 9.9a2 2 0 102.83 2.83l9.19-9.19"/>
+                            </svg>
+                        </button>
+
+                        <label for="chat-message-input" class="sr-only">Сообщение</label>
+                        <textarea id="chat-message-input"
+                                  name="chat_message"
+                                  x-model="chatMessage"
+                                  rows="1"
+                                  @input="autoResize($event.target); notifyTyping()"
+                                  @keydown.enter.prevent="if (!$event.shiftKey) sendChatMessage(); else chatMessage += '\n'"
+                                  :placeholder="chatSending ? 'Отправка...' : 'Сообщение…'"
+                                  :disabled="chatSending"
+                                  class="chat-composer-textarea crm-input-no-suggest"
+                                  autocomplete="off"
+                                  autocapitalize="sentences"
+                                  autocorrect="off"
+                                  spellcheck="false"></textarea>
+
+                        <button @click="showEmojiPicker = !showEmojiPicker; composerMediaTab = 'emoji'" class="chat-composer-button" aria-label="Эмодзи и стикеры">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 22a10 10 0 110-20 10 10 0 010 20z"/>
+                            </svg>
+                        </button>
+
+                        <button x-show="chatMessage.trim().length === 0 || recordingVoice"
+                                @click="recordingVoice ? stopVoiceRecording() : startVoiceRecording()"
+                                class="chat-composer-button" :aria-label="recordingVoice ? 'Остановить запись' : 'Начать запись'">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 10v2a7 7 0 01-14 0v-2"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v4"/>
+                            </svg>
+                        </button>
+
+                        <button x-show="chatMessage.trim().length > 0 && !recordingVoice" @click="sendChatMessage()" class="chat-composer-button send-button" :disabled="chatSending" :aria-label="chatSending ? 'Отправка сообщения' : 'Отправить'">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div x-show="chatSending" class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Сообщение отправляется...</div>
+
+                    <div x-show="recordingVoice" x-transition.opacity class="mt-2 flex items-center justify-between text-xs" style="color: var(--lg-text-tertiary)">
+                        <div>Запись: <span x-text="formatVoiceDuration(voiceRecordTime)"></span></div>
+                        <button @click="cancelVoiceRecording()" class="crm-btn-secondary text-xs">Отмена</button>
+                    </div>
+
+                    <div x-show="showAttachmentMenu" x-transition.opacity @click.away="showAttachmentMenu = false" class="absolute left-3 bottom-20 z-10 chat-sheet chat-sheet--compact p-2 w-[260px]">
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button @click="attachFile('image'); showAttachmentMenu=false" class="px-3 py-2.5 rounded-xl chat-composer-button chat-sheet-action text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <span>Фото</span>
+                            </button>
+                            <button @click="attachFile('file'); showAttachmentMenu=false" class="px-3 py-2.5 rounded-xl chat-composer-button chat-sheet-action text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
+                                </svg>
+                                <span>Файл</span>
+                            </button>
+                            <button @click="sendTask();" class="px-3 py-2.5 rounded-xl chat-composer-button chat-sheet-action text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                </svg>
+                                <span>Задача</span>
+                            </button>
+                            <button @click="sendProject();" class="px-3 py-2.5 rounded-xl chat-composer-button chat-sheet-action text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                </svg>
+                                <span>Проект</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Emoji + Stickers panel -->
+                    <div x-show="showEmojiPicker" x-transition.opacity @click.away="showEmojiPicker = false" class="absolute right-3 bottom-20 z-10 chat-sheet chat-sheet--compact p-0 w-[380px] rounded-2xl overflow-hidden" style="max-height: 420px;">
+                        <!-- Tabs header -->
+                        <div class="flex items-center gap-1 p-2" style="border-bottom: 1px solid color-mix(in oklab, var(--lg-glass-bg) 60%, black);">
+                            <button @click="composerMediaTab = 'emoji'" 
+                                    class="flex-1 px-3 py-2 rounded-xl text-xs font-medium transition-all"
+                                    :style="composerMediaTab === 'emoji' ? 'background: var(--lg-primary); color: #fff' : 'color: var(--lg-text-secondary)'">Эмодзи</button>
+                            <button @click="composerMediaTab = 'stickers'" 
+                                    class="flex-1 px-3 py-2 rounded-xl text-xs font-medium transition-all"
+                                    :style="composerMediaTab === 'stickers' ? 'background: var(--lg-primary); color: #fff' : 'color: var(--lg-text-secondary)'">Стикеры</button>
+                        </div>
+
+                        <div x-show="composerMediaTab === 'emoji'" class="p-3 grid grid-cols-8 gap-1 text-lg emoji-text max-h-[300px] overflow-y-auto">
+                            <template x-for="e in ['☺','☻','☹','❤','★','☆','✦','✧','✓','✗','☕','☎','✉','✈','','♪','☀','','☂','☾','☯','','✪','✺','✨','⭐','💫','','💕','💗','💓','💔','🔥','⭐','✅','❌','️','💡','❓','']" :key="e">
+                                <button @click="addEmoji(e)" class="w-10 h-10 rounded-xl chat-composer-button flex items-center justify-center hover:bg-white/10" x-text="e"></button>
+                            </template>
+                        </div>
+
+                        <div x-show="composerMediaTab === 'stickers'" class="flex flex-col max-h-[380px]">
+                            <!-- Pack tabs -->
+                            <div class="flex items-center gap-1.5 p-3 overflow-x-auto" style="border-bottom: 1px solid color-mix(in oklab, var(--lg-glass-bg) 60%, black);">
+                                <template x-for="p in (stickerPacks || [])" :key="p.id">
+                                    <button @click="activeStickerPackId = p.id"
+                                            class="px-4 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 flex-shrink-0 transition-all"
+                                            :style="activeStickerPackId === p.id ? 'background: var(--lg-primary); color:#fff' : 'background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); color: var(--lg-text-secondary)'">
+                                        <span x-text="p.icon"></span>
+                                        <span x-text="p.name"></span>
+                                    </button>
+                                </template>
+                            </div>
+
+                            <div class="grid grid-cols-4 gap-2 p-3 overflow-y-auto">
+                                <template x-for="sid in ((stickerPacks || []).find(x => x.id === activeStickerPackId)?.items || [])" :key="sid">
+                                    <div>
+                                        <button x-show="(stickers || []).find(s => String(s.id) === String(sid))"
+                                                @click="sendSticker((stickers || []).find(s => String(s.id) === String(sid)))"
+                                                class="rounded-xl p-3 flex items-center justify-center hover:bg-white/10 transition-all text-4xl leading-none w-full"
+                                                :title="((stickers || []).find(s => String(s.id) === String(sid)) || {}).name || ''">
+                                            <span x-text="((stickers || []).find(s => String(s.id) === String(sid)) || {}).emoji || ''"></span>
+                                        </button>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Выбор задачи -->
+            <div x-show="showTaskSelector" x-transition.opacity x-cloak class="fixed inset-0 z-[127] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="showTaskSelector=false">
+                <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
+                    <div class="crm-modal-header">
+                        <div class="min-w-0">
+                            <div class="text-lg font-bold" style="color: var(--lg-text-primary)">Прикрепить задачу</div>
+                            <div class="text-sm" style="color: var(--lg-text-tertiary)">Выберите задачу</div>
+                        </div>
+                        <button @click="showTaskSelector=false" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
+                            <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="px-5"><div class="crm-divider opacity-70"></div></div>
+                    <div class="crm-modal-body p-5">
+                        <label for="chat-task-search" class="sr-only">Поиск задач для прикрепления</label>
+                        <input id="chat-task-search" name="chat_task_search" type="text" x-model="messageSearchQuery" placeholder="Поиск задач…" class="w-full px-4 py-3 rounded-2xl crm-control-input" />
+                        <div class="mt-4 max-h-[50vh] overflow-y-auto space-y-2">
+                            <template x-for="t in (tasks || []).filter(x => !messageSearchQuery || String(x.title||'').toLowerCase().includes(String(messageSearchQuery).toLowerCase()))" :key="t.id">
+                                <button @click="attachTaskToMessage(t.id)" class="w-full liquid-glass-pro rounded-2xl p-3 text-left hover:shadow-sm transition-all">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="t.title"></div>
+                                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">ID: <span x-text="t.id"></span></div>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Выбор проекта -->
+            <div x-show="showProjectSelector" x-transition.opacity x-cloak class="fixed inset-0 z-[127] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="showProjectSelector=false">
+                <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
+                    <div class="crm-modal-header">
+                        <div class="min-w-0">
+                            <div class="text-lg font-bold" style="color: var(--lg-text-primary)">Прикрепить проект</div>
+                            <div class="text-sm" style="color: var(--lg-text-tertiary)">Выберите проект</div>
+                        </div>
+                        <button @click="showProjectSelector=false" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
+                            <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="px-5"><div class="crm-divider opacity-70"></div></div>
+                    <div class="crm-modal-body p-5">
+                        <label for="chat-project-search" class="sr-only">Поиск проектов для прикрепления</label>
+                        <input id="chat-project-search" name="chat_project_search" type="text" x-model="messageSearchQuery" placeholder="Поиск проектов…" class="w-full px-4 py-3 rounded-2xl crm-control-input" />
+                        <div class="mt-4 max-h-[50vh] overflow-y-auto space-y-2">
+                            <template x-for="p in (projects || []).filter(x => !messageSearchQuery || String(x.name||'').toLowerCase().includes(String(messageSearchQuery).toLowerCase()))" :key="p.id">
+                                <button @click="attachProjectToMessage(p.id)" class="w-full liquid-glass-pro rounded-2xl p-3 text-left hover:shadow-sm transition-all">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="p.name"></div>
+                                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">ID: <span x-text="p.id"></span></div>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

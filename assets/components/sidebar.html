@@ -1,0 +1,236 @@
+<!-- ============================================
+     SIDEBAR NAVIGATION - PRO 2027
+     ============================================ -->
+
+    <aside class="crm-sidebar fixed lg:static inset-y-0 left-0 z-50 w-72 liquid-glass-pro transition-transform duration-300 ease-out lg:rounded-2xl lg:shadow-sm flex flex-col" style="max-height: 100vh;"
+           x-show="!mobileMoreOpen || isDesktop"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+
+    <div class="crm-sidebar-brand px-4 pt-4 pb-2">
+        <button @click="currentView = 'tasks'; sidebarOpen = false"
+                class="crm-sidebar-brand-link w-full flex items-center gap-3 text-left">
+            <img :src="settings?.logo ? ('uploads/' + settings.logo) : 'app.png'"
+                 class="crm-sidebar-brand-logo"
+                 :alt="settings?.app_name || 'WorkHub'"
+                 @error="$el.src='app.png'">
+            <div class="min-w-0 flex-1">
+                <div class="crm-sidebar-brand-title" x-text="settings?.app_name || 'TaskFlow'"></div>
+                <div class="crm-sidebar-brand-subtitle" x-text="settings?.company_name || 'TaskFlow Pro'"></div>
+            </div>
+        </button>
+    </div>
+
+    <!-- Навигация -->
+    <nav class="flex-1 p-3 pt-2 space-y-3 overflow-y-auto relative min-h-0" style="overscroll-behavior: contain; -webkit-overflow-scrolling: touch; max-height: 100%;">
+
+        <details class="crm-sidebar-group" open
+                 x-show="(navItems || []).some(item => ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+            <summary class="crm-sidebar-group-toggle">
+                <span>Рабочая область</span>
+                <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </summary>
+            <div class="mt-2 space-y-1">
+                <template x-for="item in (navItems || []).filter(item => ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                             :class="[(currentView === item.id ? 'crm-nav-item-active' : ''), (item.id === 'chat' ? 'crm-nav-item-chat' : '')].join(' ')"
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        </svg>
+                        <span class="flex-1 text-left font-medium" x-text="item.label"></span>
+                        <span x-show="item.badge" class="crm-nav-badge" x-text="item.badge"></span>
+                    </button>
+                </template>
+            </div>
+        </details>
+
+        <details class="crm-sidebar-group" open
+                 x-show="(navItems || []).some(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+            <summary class="crm-sidebar-group-toggle">
+                <span>CRM</span>
+                <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </summary>
+            <div class="mt-2 space-y-1">
+                <template x-for="item in (navItems || []).filter(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                             :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        </svg>
+                        <span class="flex-1 text-left font-medium" x-text="item.label"></span>
+                        <span x-show="item.badge" class="crm-nav-badge" x-text="item.badge"></span>
+                    </button>
+                </template>
+            </div>
+        </details>
+
+        <details class="crm-sidebar-group" open
+                 x-show="(navItems || []).some(item => ['mail', 'conferences', 'chat'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+            <summary class="crm-sidebar-group-toggle">
+                <span>Коммуникации</span>
+                <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </summary>
+            <div class="mt-2 space-y-1">
+                <template x-for="item in (navItems || []).filter(item => ['mail', 'conferences', 'chat'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                             :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        </svg>
+                        <span class="flex-1 text-left font-medium" x-text="item.label"></span>
+                        <span x-show="item.badge" class="crm-nav-badge" x-text="item.badge"></span>
+                    </button>
+                </template>
+            </div>
+        </details>
+
+        <details class="crm-sidebar-group" open>
+            <summary class="crm-sidebar-group-toggle">
+                <span>Сервисы</span>
+                <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </summary>
+            <div class="mt-2 space-y-1">
+                <template x-for="item in (navItems || []).filter(item => ['files', 'knowledge', 'documents'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                             :class="currentView === item.id ? 'crm-nav-item-active' : ''"
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        </svg>
+                        <span class="flex-1 text-left font-medium" x-text="item.label"></span>
+                        <span x-show="item.badge" class="crm-nav-badge" x-text="item.badge"></span>
+                    </button>
+                </template>
+
+                <button @click="currentView = 'helpdesk'; sidebarOpen = false; if (ensureHelpdeskLoaded) ensureHelpdeskLoaded()"
+                        :class="currentView === 'helpdesk' ? 'crm-nav-item-active' : ''"
+                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                    <span class="flex-1 text-left font-medium">Заявки</span>
+                </button>
+
+                <button @click="currentView = 'my-shift'; sidebarOpen = false; if (ensureLeaderLoaded) ensureLeaderLoaded()"
+                        :class="currentView === 'my-shift' ? 'crm-nav-item-active' : ''"
+                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="flex-1 text-left font-medium">Моя смена</span>
+                </button>
+
+            </div>
+        </details>
+
+        <details class="crm-sidebar-group" open
+                 x-show="(navItems || []).some(item => ['widgets'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+            <summary class="crm-sidebar-group-toggle">
+                <span>Сайт и каналы</span>
+                <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+            </summary>
+            <div class="mt-2 space-y-1">
+                <template x-for="item in (navItems || []).filter(item => ['widgets'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false"
+                             :class="currentView === item.id ? 'crm-nav-item-active' : ''"
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                        </svg>
+                        <span class="flex-1 text-left font-medium" x-text="item.label"></span>
+                        <span x-show="item.badge" class="crm-nav-badge" x-text="item.badge"></span>
+                    </button>
+                </template>
+            </div>
+        </details>
+
+        <div class="my-2 border-t" style="border-color: var(--crm-border)"></div>
+
+        <!-- Админ меню -->
+        <template x-if="can && can('admin.full')">
+            <details class="crm-sidebar-group" :open="adminMenuOpen">
+                <summary class="crm-sidebar-group-toggle"
+                         @click.prevent="adminMenuOpen = !adminMenuOpen">
+                    <span>Администрирование</span>
+                    <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </summary>
+
+                <div x-show="adminMenuOpen" class="mt-2 space-y-1">
+                    <template x-for="item in adminNavItems" :key="item.id">
+                        <button @click="currentView = item.id; sidebarOpen = false"
+                                :class="currentView === item.id ? 'crm-nav-item-active' : ''"
+                                class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+                            </svg>
+                            <span class="flex-1 text-left font-medium" x-text="item.label"></span>
+                        </button>
+                    </template>
+                </div>
+            </details>
+        </template>
+    </nav>
+
+    <!-- Профиль пользователя -->
+    <div class="p-3 pt-2">
+        <div class="px-2 pb-4"><div class="crm-divider opacity-70"></div></div>
+
+        <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+            <div class="flex items-center justify-between gap-3 px-4 py-3.5">
+                <button @click="openProfile()" class="flex items-center min-w-0">
+                    <img x-show="currentUser?.avatar && currentUser.avatar !== 'null' && currentUser.avatar !== ''"
+                         :src="currentUser?.avatar && currentUser.avatar !== 'null' ? ('uploads/avatars/' + currentUser.avatar) : ''"
+                         class="w-10 h-10 rounded-full object-cover border-2 border-primary/20"
+                         alt="Аватар"
+                         @error="$el.style.display='none'">
+                    <div x-show="!currentUser?.avatar || currentUser.avatar === 'null' || currentUser.avatar === ''"
+                         class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold"
+                         x-text="getInitials(currentUser?.full_name || currentUser?.login)">
+                    </div>
+                </button>
+
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button @click="widgetStoreOpen = true"
+                            class="rounded-xl crm-btn-ghost crm-icon-button"
+                            title="Виджеты">
+                        <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                    </button>
+
+                    <button @click="loadSettings(); settingsModalOpen = true"
+                            class="rounded-xl crm-btn-ghost crm-icon-button"
+                            title="Настройки">
+                        <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </button>
+
+                    <button @click="logout()"
+                            class="rounded-xl crm-btn-ghost crm-icon-button"
+                            title="Выход">
+                        <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H9"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 20H6a2 2 0 01-2-2V6a2 2 0 012-2h7"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</aside>

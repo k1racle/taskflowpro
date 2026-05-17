@@ -1,0 +1,312 @@
+<!-- ============================================
+     MY TASKS VIEW - Чистый компонент
+     ============================================ -->
+
+<div x-data="{ filtersOpen: false }" class="space-y-4 crm-my-tasks-screen">
+
+    <!-- Панель (как у задач) -->
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div>
+                    <div class="crm-title">Мои задачи</div>
+                    <div class="crm-subtitle">Быстрый доступ к задачам и фильтрам</div>
+                </div>
+            </div>
+
+            <div class="crm-toolbar-actions">
+                <div class="crm-tabbar">
+                    <button @click="myTasksView = 'kanban'"
+                            :class="myTasksView === 'kanban' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m6 10a2 2 0 01-2 2h-2a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m6 10a2 2 0 01-2 2h-2a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                        Канбан
+                    </button>
+                    <button @click="myTasksView = 'list'"
+                            :class="myTasksView === 'list' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                        </svg>
+                        Список
+                    </button>
+                    <button @click="myTasksView = 'gantt'; $nextTick(() => initGantt('my-tasks-gantt', filteredMyTasks))"
+                            :class="myTasksView === 'gantt' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16m16-8H4m6-6v12m4-10v10m4-8v8" />
+                        </svg>
+                        Гант
+                    </button>
+                    <button @click="myTasksView = 'calendar'; $nextTick(() => initCalendar('my-tasks-calendar', filteredMyTasks))"
+                            :class="myTasksView === 'calendar' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        Календарь
+                    </button>
+                </div>
+                <button @click="filtersOpen = !filtersOpen"
+                        :class="(myTaskFilters.project_id || myTaskFilters.status || myTaskFilters.department_id) ? 'crm-filter-toggle-active' : ''"
+                        class="crm-btn-secondary">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V19a1 1 0 01-.553.894l-4 2A1 1 0 018 21v-7.5L3.2 4.6A1 1 0 013 4z"/>
+                    </svg>
+                    Фильтры
+                </button>
+                <button @click="openTaskModal()" class="crm-btn-primary">Создать задачу</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры (те же, но my_tasks=true) -->
+    <div x-show="filtersOpen" x-cloak x-transition.opacity class="liquid-glass-pro rounded-3xl p-5 crm-screen-section crm-task-filters-panel">
+        <div class="crm-section-head mb-4">
+            <div class="crm-section-head__content">
+                <div class="crm-section-head__title">Фильтры</div>
+                <div class="crm-section-head__text">Быстрый отбор по проекту, статусу и отделу</div>
+            </div>
+        </div>
+        <div class="crm-filterbar crm-filterbar-wide">
+            <div class="crm-filter-field crm-filter-field--compact">
+                <label class="crm-filter-label">Проект</label>
+                <select x-model="myTaskFilters.project_id" class="crm-control-select">
+                    <option value="">Все</option>
+                    <template x-for="p in projects" :key="p.id">
+                        <option :value="p.id" x-text="p.name"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="crm-filter-field crm-filter-field--compact">
+                <label class="crm-filter-label">Статус</label>
+                <select x-model="myTaskFilters.status" class="crm-control-select">
+                    <option value="">Все</option>
+                    <template x-for="s in stages" :key="s.id">
+                        <option :value="s.name" x-text="s.name"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="crm-filter-field crm-filter-field--compact">
+                <label class="crm-filter-label">Отдел</label>
+                <select x-model="myTaskFilters.department_id" class="crm-control-select">
+                    <option value="">Все</option>
+                    <template x-for="d in departments" :key="d.id">
+                        <option :value="d.id" x-text="d.name"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="crm-filter-field crm-filter-field--compact" style="align-self: end;">
+                <button @click="myTaskFilters.project_id=''; myTaskFilters.status=''; myTaskFilters.department_id='';" class="crm-btn-secondary w-full">Сбросить</button>
+            </div>
+        </div>
+
+        <div class="mt-4 crm-action-bar crm-task-filters-summary">
+            <div class="flex items-center gap-2 flex-wrap crm-task-filter-pills">
+                <span class="crm-badge">Показано: <span class="ml-1" x-text="filteredMyTasks.length"></span></span>
+
+                <template x-if="myTaskFilters.project_id">
+                    <button @click="myTaskFilters.project_id = ''" class="crm-filter-pill crm-filter-pill-active">
+                        Проект <span class="opacity-70">✕</span>
+                    </button>
+                </template>
+                <template x-if="myTaskFilters.status">
+                    <button @click="myTaskFilters.status = ''" class="crm-filter-pill crm-filter-pill-active">
+                        Статус <span class="opacity-70">✕</span>
+                    </button>
+                </template>
+                <template x-if="myTaskFilters.department_id">
+                    <button @click="myTaskFilters.department_id = ''" class="crm-filter-pill crm-filter-pill-active">
+                        Отдел <span class="opacity-70">✕</span>
+                    </button>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Канбан -->
+    <div x-show="myTasksView === 'kanban'" class="flex gap-6 overflow-x-auto pb-6 kanban-scroll crm-task-kanban-board">
+        <template x-for="stage in stages" :key="stage.id">
+            <div class="liquid-glass-pro flex-shrink-0 w-80 p-4 crm-kanban-column"
+                 @contextmenu.prevent.stop="openContextMenu($event, null, stage.name)">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="`background:${stage.color || 'var(--lg-primary)'}`"></span>
+                        <h3 class="font-bold text-gray-800 dark:text-white truncate" x-text="stage.name"></h3>
+                    </div>
+                    <span class="px-2 py-1 text-xs rounded-full font-semibold"
+                          style="background: color-mix(in oklab, var(--primary-color) 14%, transparent); color: var(--primary-color)"
+                          x-text="getMyTasksByStage(stage.name).length"></span>
+                </div>
+                <div class="space-y-3 min-h-[40px]"
+                     @dragover.prevent
+                     @dragenter.prevent
+                     @dragleave.prevent
+                     @drop="moveTask($event, stage.name)">
+                    <template x-for="task in getMyTasksByStage(stage.name)" :key="task.id">
+                        <div @click="openTaskModal(task)"
+                             @contextmenu.prevent.stop="openContextMenu($event, task, stage.name)"
+                             draggable="true"
+                             @dragstart="draggingTask = task.id; $event.dataTransfer.effectAllowed='move'; $event.dataTransfer.setData('text/plain', String(task.id))"
+                               class="p-4 cursor-pointer crm-kanban-card relative">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800 dark:text-white text-sm" x-text="task.title"></h4>
+                                <span :class="'priority-' + task.priority" class="px-2 py-0.5 rounded-full text-xs capitalize" x-text="translatePriority(task.priority)"></span>
+                            </div>
+                            <div class="crm-task-mobile-meta-row mb-3">
+                                <span class="crm-status-pill text-[11px] inline-flex crm-task-mobile-meta-chip"
+                                      :style="'background: color-mix(in oklab, ' + task.status_color + ' 12%, var(--crm-surface)); color: ' + task.status_color + '; border-color: color-mix(in oklab, ' + task.status_color + ' 24%, var(--crm-border))'"
+                                      x-text="task.status"></span>
+                                <span class="crm-task-mobile-meta-chip" x-show="task.deadline" :class="isOverdue(task.deadline) ? 'crm-task-mobile-meta-chip-overdue' : ''">
+                                    <span x-text="formatDate(task.deadline)"></span>
+                                    <span class="opacity-70">•</span>
+                                    <span x-text="getDaysUntilDeadline(task.deadline)"></span>
+                                </span>
+                            </div>
+                            <div class="flex items-center justify-between gap-3 mb-2">
+                                <div class="min-w-0">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-2" style="max-width: 220px">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                        </svg>
+                                        <span class="truncate" x-text="task.project_name || '—'"></span>
+                                    </div>
+                                    <div class="text-[11px] text-gray-500 dark:text-gray-400 truncate flex items-center gap-2">
+                                        <svg class="w-3.5 h-3.5 flex-shrink-0" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                        </svg>
+                                        <span class="truncate" x-text="task.department_name || ''"></span>
+                                    </div>
+                                </div>
+
+                                <div class="text-right flex-shrink-0">
+                                    <div x-show="(task.active_timer_seconds != null) || (task.timer_seconds != null)" class="text-[11px] text-gray-500 dark:text-gray-400">
+                                        <span class="font-semibold" x-text="formatTimer(task.active_timer_seconds ?? task.timer_seconds ?? 0)"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div x-show="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); return (cl||[]).length > 0; } catch(e){ return false; } })()" class="mb-2">
+                                <div class="w-full h-1.5 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--lg-glass-bg) 70%, black);">
+                                    <div class="h-full rounded-full"
+                                         :style="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i => i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
+                                </div>
+                                <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
+                                     x-text="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i => i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
+                            </div>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2" x-text="task.description"></p>
+
+                            <!-- Status color accent -->
+                            <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-[var(--lg-radius)]"
+                                 :style="`background: ${task.status_color || 'transparent'}`"></div>
+                            <div class="flex items-center justify-between mt-3 crm-task-card-footer">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 truncate" x-text="task.assignee_name || ''"></span>
+                                </div>
+                                <div class="text-right crm-task-card-deadline">
+                                    <div class="text-xs text-gray-400" x-text="formatDate(task.deadline)"></div>
+                                    <div class="text-[11px] text-gray-500 dark:text-gray-400" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : ''"></div>
+                                </div>
+                            </div>
+
+                            <div x-show="isOverdue(task.deadline)" class="mt-2 text-[11px] font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
+                                <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+                                Просрочено
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Список -->
+    <div x-show="myTasksView === 'list'" class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell mobile-card-view crm-task-list-shell">
+        <div class="crm-table-toolbar crm-table-toolbar--compact">
+            <div class="crm-section-head">
+                <div class="crm-section-head__content">
+                    <div class="crm-section-head__title">Список задач</div>
+                    <div class="crm-section-head__text">Все задачи, доступные в персональном списке</div>
+                </div>
+                <div class="crm-section-head__meta">
+                    <span class="crm-badge">Показано: <span class="ml-1" x-text="filteredMyTasks.length"></span></span>
+                </div>
+            </div>
+        </div>
+        <table x-show="filteredMyTasks.length" class="w-full crm-data-table">
+            <thead>
+                <tr>
+                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Задача</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Статус</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Приоритет</th>
+                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Срок</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200/50 dark:divide-gray-700/50">
+                    <template x-for="task in filteredMyTasks" :key="task.id">
+                    <tr @click="openTaskModal(task)" class="cursor-pointer crm-task-row" :class="isOverdue(task.deadline) ? 'crm-task-row-overdue' : ''">
+                        <td class="px-6 py-4" data-label="Задача">
+                            <div>
+                                <h4 class="font-semibold text-gray-800 dark:text-white text-sm" x-text="task.title"></h4>
+                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="task.project_name"></p>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4" data-label="Статус">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium" :style="'background: ' + task.status_color + '20; color: ' + task.status_color" x-text="task.status"></span>
+                        </td>
+                        <td class="px-6 py-4" data-label="Приоритет">
+                            <span :class="'priority-' + task.priority" class="px-3 py-1 rounded-full text-xs capitalize" x-text="translatePriority(task.priority)"></span>
+                        </td>
+                        <td class="px-6 py-4" data-label="Срок">
+                            <div>
+                                <span class="text-sm text-gray-700 dark:text-gray-300" x-text="formatDate(task.deadline)"></span>
+                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+        <div x-show="!filteredMyTasks.length" class="px-6 pb-6" x-cloak>
+            <div class="crm-empty-state">
+                <div class="crm-empty-state-title">Задачи не найдены</div>
+                <div class="crm-empty-state-text">Попробуйте изменить фильтры или сбросить текущий отбор.</div>
+                <div class="crm-empty-state-actions">
+                    <button @click="myTaskFilters.project_id=''; myTaskFilters.status=''; myTaskFilters.department_id='';" class="crm-btn-secondary">Сбросить фильтры</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Гант -->
+    <div x-show="myTasksView === 'gantt'" x-cloak class="liquid-glass-pro rounded-3xl crm-screen-section overflow-hidden">
+        <div class="crm-toolbar">
+            <div class="crm-toolbar-main">
+                <div>
+                    <div class="crm-title">Диаграмма Ганта</div>
+                    <div class="crm-subtitle">По срокам задач (deadline)</div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="initGantt('my-tasks-gantt', filteredMyTasks)" class="crm-btn-secondary">Обновить</button>
+            </div>
+        </div>
+
+        <div class="mt-4 overflow-x-auto">
+            <div id="my-tasks-gantt" class="min-w-[980px]"></div>
+        </div>
+    </div>
+
+    <!-- Календарь -->
+    <div x-show="myTasksView === 'calendar'" x-transition.opacity x-cloak
+         x-init="$watch('tasks', () => { if (myTasksView === 'calendar') $nextTick(() => initCalendar('my-tasks-calendar', filteredMyTasks)); })"
+         class="liquid-glass-pro p-4">
+        <div id="my-tasks-calendar" class="min-h-[640px]"></div>
+    </div>
+
+</div>

@@ -1,0 +1,1181 @@
+<!--
+/**
+ * index.html - TaskFlow Pro (МОДУЛЬНАЯ ВЕРСИЯ)
+ * Компактный индекс - только загрузка компонентов
+ */
+-->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Pro</title>
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="app.png">
+    <link rel="manifest" href="manifest.json">
+
+        <!-- Main application theme -->
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=2">
+    <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        accent: '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- FullCalendar (v6 инжектит стили через JS, отдельный main.css больше не нужен) -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+
+    <!-- Основные скрипты приложения (загружаются ДО Alpine) -->
+    <script src="assets/js/core/auth.js?v=13"></script>
+    <script src="assets/js/utils.js?v=13"></script>
+    <script src="assets/js/api.js?v=15"></script>
+    <script src="assets/js/core/module-loader.js?v=2"></script>
+    <script src="assets/js/modules/app/menu-order.js?v=1"></script>
+    <script src="assets/js/modules/app/shell-navigation-meta.js?v=1"></script>
+    <script src="assets/js/modules/app/mobile-shell.js?v=2"></script>
+    <script src="assets/js/modules/app/view-meta.js?v=1"></script>
+    <script src="assets/js/modules/app/view-runtime.js?v=2"></script>
+    <script src="assets/js/modules/app/shell-navigation.js?v=1"></script>
+    <script src="assets/js/modules/app/topbar-search.js?v=2"></script>
+    <script src="assets/js/modules/app/smart-topbar.js?v=1"></script>
+    <script src="assets/js/modules/app/auth-session.js?v=1"></script>
+    <script src="assets/js/modules/app/init-lifecycle.js?v=1"></script>
+    <script src="assets/js/modules/app/residual-core.js?v=1"></script>
+    <script src="assets/js/modules/app/notifications-panel.js?v=2"></script>
+    <script src="assets/js/modules/shared/formatters.js?v=1"></script>
+    <script src="assets/js/modules/shared/ui.js?v=1"></script>
+    <script src="assets/js/modules/tasks/index.js?v=1"></script>
+    <script src="assets/js/modules/files/index.js?v=1"></script>
+    <script src="assets/js/modules/documents/index.js?v=1"></script>
+    <script src="assets/js/modules/helpdesk/index.js?v=1"></script>
+    <script src="assets/js/modules/chat/index.js?v=1"></script>
+    <script src="assets/js/modules/stages/index.js?v=1"></script>
+    <script src="assets/js/modules/admin/index.js?v=1"></script>
+    <script src="assets/js/modules/leader/index.js?v=1"></script>
+    <script src="assets/js/modules/crm/dashboard-sales.js?v=1"></script>
+    <script src="assets/js/modules/crm/list-filters.js?v=2"></script>
+    <script src="assets/js/modules/crm/client-card.js?v=2"></script>
+    <script src="assets/js/modules/crm/funnels.js?v=2"></script>
+    <script src="assets/js/modules/crm/forms-modals.js?v=2"></script>
+    <script src="assets/js/modules/crm/mutations.js?v=2"></script>
+    <script src="assets/js/modules/crm/store.js?v=2"></script>
+    <script src="assets/js/modules/projects/index.js?v=1"></script>
+    <script src="assets/js/modules/departments/index.js?v=1"></script>
+    <script src="assets/js/modules/conferences/index.js?v=1"></script>
+    <script src="assets/js/modules/shifts/my-shift.js?v=1"></script>
+    <script src="assets/js/modules/knowledge/index.js?v=1"></script>
+    <script src="assets/js/modules/widgets/site-widgets.js?v=1"></script>
+    <script src="assets/js/modules/mail/index.js?v=1"></script>
+    <script src="assets/js/modules/mail/folders-ui.js?v=1"></script>
+    <script src="assets/js/app_combined.js?v=34"></script>
+    <script src="assets/js/app.methods.js?v=17"></script>
+    <script src="assets/js/mail-premium.js?v=15"></script>
+
+    <!-- x-include: simple HTML partial loader (before Alpine init) -->
+    <script>
+        (function () {
+            function setLoading(el, isLoading) {
+                if (isLoading) el.setAttribute('data-include-loading', '1');
+                else el.removeAttribute('data-include-loading');
+            }
+
+            async function includeOne(el) {
+                if (!el || el.getAttribute('data-include-loading') === '1') return;
+
+                const raw = el.getAttribute('x-include');
+                if (!raw) return;
+
+                let url = raw;
+                if ((url.startsWith("'") && url.endsWith("'")) || (url.startsWith('"') && url.endsWith('"'))) {
+                    url = url.slice(1, -1);
+                }
+
+                if (!url || url === 'null' || url === 'undefined') return;
+
+                setLoading(el, true);
+                try {
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (!res.ok) throw new Error(`Include failed: ${url} (${res.status})`);
+                    const html = await res.text();
+                    el.innerHTML = html;
+                    el.setAttribute('data-include-loaded', url);
+                    await includeAll(el);
+                    if (window.Alpine && typeof window.Alpine.initTree === 'function') {
+                        window.Alpine.initTree(el);
+                    }
+                } catch (e) {
+                    console.error('[x-include]', e);
+                    el.innerHTML = '<div class="p-4 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">Ошибка загрузки компонента</div>';
+                } finally {
+                    setLoading(el, false);
+                }
+            }
+
+            async function includeAll(root = document) {
+                const nodes = Array.from(root.querySelectorAll('[x-include]')).filter((el) => {
+                    return el.getAttribute('data-include-loading') !== '1';
+                });
+                for (const el of nodes) await includeOne(el);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => includeAll(document));
+        })();
+    </script>
+
+    <!-- PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3B82F6">
+</head>
+<body class="min-h-screen transition-colors crm-theme"
+       x-data="app()"
+       :class="{ 'dark': isDark }">
+
+    <!-- Loading Screen (перед логином) -->
+    <div x-show="preAuthLoading && !isAuthenticated" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 crm-auth-backdrop">
+        <div class="crm-auth-panel crm-loading-shell">
+            <div class="crm-auth-badge">CRM workspace</div>
+            <div class="crm-auth-header mt-5">
+                <div class="crm-auth-mark mx-auto">
+                    <img src="app.png" alt="TaskFlow Pro">
+                </div>
+                <h1 class="crm-auth-title" x-text="settings.company_name || 'TaskFlow Pro'"></h1>
+                <p class="crm-auth-subtitle">Подготавливаем рабочее пространство и подключаем данные CRM.</p>
+            </div>
+            <div class="crm-loading-progress"></div>
+            <div class="crm-loading-meta">Загрузка модулей, интерфейса и последних данных</div>
+        </div>
+    </div>
+
+    <!-- Login transition (после ввода логина/пароля) -->
+    <div x-show="loginTransitionOpen && !isAuthenticated" x-cloak x-transition.opacity class="fixed inset-0 z-[60] flex items-center justify-center p-4 crm-auth-backdrop">
+        <div class="glass-card crm-auth-panel p-8 w-full max-w-md">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-[26px] mb-5 crm-float crm-brand-mark-frame overflow-hidden">
+                    <img src="app.png" alt="TaskFlow Pro" class="w-14 h-14 object-contain">
+                </div>
+
+                <div class="text-3xl font-semibold">Привет, <span x-text="loginTransitionName || 'друг'"></span></div>
+                <div class="mt-2 text-sm crm-text-muted" x-text="loginTransitionWish"></div>
+
+                <div class="mt-8 flex items-center justify-center">
+                    <div class="relative w-14 h-14 crm-glow">
+                        <div class="absolute inset-0 border-4 rounded-full border-[color:var(--crm-border)]"></div>
+                        <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div x-show="!isAuthenticated && !preAuthLoading && !loginTransitionOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 crm-auth-backdrop">
+        <div class="crm-auth-panel crm-auth-shell overflow-hidden">
+            <div class="crm-auth-header">
+                <div class="crm-auth-mark mx-auto mt-4">
+                    <img src="app.png" alt="TaskFlow Pro">
+                </div>
+                <div class="crm-auth-title" x-text="settings.company_name || 'TaskFlow Pro'"></div>
+                <div class="crm-auth-subtitle">Войдите в рабочее пространство CRM, чтобы продолжить работу.</div>
+            </div>
+
+            <form @submit.prevent="login" class="crm-auth-form">
+                <div x-show="loginError" x-transition.opacity class="liquid-glass-pro p-4 rounded-2xl crm-notice-danger">
+                    <div class="text-sm font-semibold" style="color: color-mix(in oklab, #ef4444 85%, var(--lg-text-primary));" x-text="loginError"></div>
+                </div>
+
+                <div class="crm-auth-field">
+                    <label class="crm-auth-label" for="login-form-login">Логин или e-mail</label>
+                    <div class="crm-input-wrap">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h10"/>
+                        </svg>
+                        <input id="login-form-login" name="login" type="text" x-model="loginForm.login" required autocomplete="username" placeholder="Введите логин" />
+                    </div>
+                </div>
+
+                <div class="crm-auth-field">
+                    <label class="crm-auth-label" for="login-form-password">Пароль</label>
+                    <div class="crm-input-wrap">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V8a4 4 0 10-8 0v3m14 0H6a2 2 0 00-2 2v5a2 2 0 002 2h12a2 2 0 002-2v-5a2 2 0 00-2-2z"/>
+                        </svg>
+                        <input id="login-form-password" name="password" type="password" x-model="loginForm.password" required autocomplete="current-password" placeholder="Введите пароль" />
+                    </div>
+                </div>
+
+                <button type="submit" :disabled="loading" class="crm-btn-primary crm-btn-lg crm-btn-block disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span x-show="!loading">Войти в CRM</span>
+                    <span x-show="loading" class="inline-flex items-center justify-center gap-2">
+                        <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Входим...
+                    </span>
+                </button>
+            </form>
+
+            <div class="mt-6 text-center">
+                <a href="install.php" class="text-sm hover:underline crm-text-faint">Установка системы</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основное приложение -->
+    <div x-show="isAuthenticated && permissionsReady" x-cloak class="crm-app-shell flex h-screen overflow-hidden p-3 lg:p-4 gap-3 lg:gap-4">
+
+        <!-- Sidebar -->
+        <aside x-show="sidebarOpen" @click="sidebarOpen = false" 
+               class="fixed inset-0 bg-black/50 z-40 lg:hidden"></aside>
+        
+        <div class="crm-sidebar-host" x-include="'assets/components/sidebar.html'"></div>
+
+        <!-- Main Content -->
+         <main class="crm-main-shell flex-1 flex flex-col overflow-hidden min-w-0">
+             
+             <!-- Header -->
+              <div class="crm-header-host" x-include="'assets/components/header.html'"></div>
+
+              <!-- Dynamic Views -->
+              <div class="crm-content-shell crm-workspace crm-mobile-content-shell flex-1 overflow-y-auto pt-1 min-h-0">
+                
+                <!-- ЗАДАЧИ -->
+                <div x-show="currentView === 'tasks'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/tasks-view.html'"></div>
+                </div>
+
+                <!-- МОИ ЗАДАЧИ -->
+                <div x-show="currentView === 'my-tasks'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/my-tasks-view.html'"></div>
+                </div>
+
+                <!-- ПРОЕКТЫ -->
+                <div x-show="currentView === 'projects'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/projects-view.html'"></div>
+                </div>
+
+                <!-- ОТДЕЛЫ -->
+                <div x-show="currentView === 'departments'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/departments-view.html'"></div>
+                </div>
+
+                <!-- ФАЙЛЫ -->
+                <div x-show="currentView === 'files'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/files-view.html'"></div>
+                </div>
+
+                <!-- БАЗА ЗНАНИЙ -->
+                <div x-show="currentView === 'knowledge'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/knowledge-view.html'"></div>
+                </div>
+
+                <!-- ДОКУМЕНТЫ -->
+                <div x-show="currentView === 'documents'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/documents-view.html'"></div>
+                </div>
+
+                <!-- ВИДЖЕТЫ САЙТА -->
+                <div x-show="currentView === 'widgets'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/widgets-view.html'"></div>
+                </div>
+
+                <!-- ПОЧТА -->
+                <div x-show="currentView === 'mail'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/mail-interface.html'"></div>
+                </div>
+
+                <!-- КОНФЕРЕНЦИИ -->
+                <div x-show="currentView === 'conferences'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/conferences-view.html'"></div>
+                </div>
+
+                <!-- МОЯ СМЕНА -->
+                <div x-show="currentView === 'my-shift'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/my-shift-view.html'"></div>
+                </div>
+
+                <!-- CRM: ДАШБОРД -->
+                <div x-show="currentView === 'crm-dashboard'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/crm-dashboard-view.html'"></div>
+                </div>
+
+                <!-- CRM: КЛИЕНТЫ -->
+                <div x-show="currentView === 'crm-clients'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/crm-clients-view.html'"></div>
+                </div>
+
+                <!-- CRM: ВОРОНКИ -->
+                <div x-show="currentView === 'crm-funnels'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/crm-funnels-view.html'"></div>
+                </div>
+
+                <!-- CRM: ПРОДАЖИ -->
+                <div x-show="currentView === 'crm-sales'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/crm-sales-view.html'"></div>
+                </div>
+
+                <!-- CRM: ИНТЕРНЕТ-МАГАЗИН -->
+                <div x-show="currentView === 'crm-store'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/crm-store-view.html'"></div>
+                </div>
+
+                <!-- LEADER DASHBOARD -->
+                <div x-show="currentView === 'leader-dashboard'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/leader-dashboard-view.html'"></div>
+                </div>
+
+                <!-- HELPDESK: ЗАЯВКИ -->
+                <div x-show="currentView === 'helpdesk'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/helpdesk-view.html'"></div>
+                </div>
+
+        <!-- ЧАТ (встроенный, чтобы шапка/сайдбар оставались на месте) -->
+        <div x-show="currentView === 'chat'" x-transition.opacity x-cloak class="h-full min-h-0">
+            <div class="h-full min-h-0">
+                <div x-include="'assets/components/chat-view.html'" class="h-full"></div>
+            </div>
+        </div>
+
+                <!-- АДМИН: ПОЛЬЗОВАТЕЛИ -->
+                <div x-show="currentView === 'users'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/users-view.html'"></div>
+                </div>
+
+                <!-- АДМИН: РОЛИ И ПРАВА -->
+                <div x-show="currentView === 'roles'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/roles-view.html'"></div>
+                </div>
+
+                <!-- АДМИН: ЭТАПЫ -->
+                <div x-show="currentView === 'stages-manager'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/stages-view.html'"></div>
+                </div>
+
+                <!-- АДМИН: НАСТРОЙКИ -->
+                <div x-show="currentView === 'settings'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/settings-view.html'"></div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Mobile bottom navigation -->
+        <div class="crm-mobile-bottom-nav lg:hidden" x-show="isAuthenticated && permissionsReady" x-cloak>
+            <div class="crm-mobile-bottom-nav__inner liquid-glass-pro">
+                <div class="crm-mobile-bottom-nav__rail crm-mobile-bottom-nav__rail--left">
+                <template x-for="item in getMobilePrimaryNavItems().slice(0, 2)" :key="item.id">
+                    <button type="button"
+                            @click="navigateMobilePrimary(item.id)"
+                            class="crm-mobile-bottom-nav__item"
+                            :class="isMobileNavActive(item.id) ? 'is-active' : ''"
+                            :aria-current="isMobileNavActive(item.id) ? 'page' : 'false'"
+                            :title="item.label">
+                        <span class="crm-mobile-bottom-nav__icon-wrap">
+                            <svg class="crm-mobile-bottom-nav__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            </svg>
+                        </span>
+                        <span class="crm-mobile-bottom-nav__label" x-text="item.label"></span>
+                    </button>
+                </template>
+                </div>
+
+                <button type="button"
+                        @click="openMobileMore()"
+                        class="crm-mobile-bottom-nav__fab"
+                        :class="mobileMoreOpen ? 'is-active' : ''"
+                        :aria-expanded="mobileMoreOpen ? 'true' : 'false'"
+                        title="Быстрые действия">
+                    <span class="crm-mobile-bottom-nav__fab-icon">+</span>
+                </button>
+
+                <div class="crm-mobile-bottom-nav__rail crm-mobile-bottom-nav__rail--right">
+                <template x-for="item in getMobilePrimaryNavItems().slice(2, 4)" :key="item.id">
+                    <button type="button"
+                            @click="navigateMobilePrimary(item.id)"
+                            class="crm-mobile-bottom-nav__item"
+                            :class="isMobileNavActive(item.id) ? 'is-active' : ''"
+                            :aria-current="isMobileNavActive(item.id) ? 'page' : 'false'"
+                            :title="item.label">
+                        <span class="crm-mobile-bottom-nav__icon-wrap">
+                            <svg class="crm-mobile-bottom-nav__icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                            </svg>
+                        </span>
+                        <span class="crm-mobile-bottom-nav__label" x-text="item.label"></span>
+                    </button>
+                </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile more hub -->
+        <div x-show="mobileMoreOpen" x-transition.opacity class="fixed inset-0 z-[75] lg:hidden" x-cloak @keydown.escape.window="closeMobileMore()">
+            <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="closeMobileMore()"></div>
+            <div class="absolute inset-x-0 bottom-0 crm-mobile-more-sheet liquid-glass-pro rounded-t-[2rem] shadow-2xl">
+                <div class="crm-mobile-more-sheet__handle"></div>
+                <div class="crm-mobile-more-sheet__header crm-mobile-more-sheet__header--compact">
+                    <div>
+                        <div class="crm-mobile-more-sheet__eyebrow">Навигация</div>
+                        <div class="crm-mobile-more-sheet__title">Еще</div>
+                    </div>
+                    <button type="button" class="rounded-xl ios-glass-button crm-icon-button" @click="closeMobileMore()" aria-label="Закрыть">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="crm-mobile-more-sheet__quick-actions">
+                    <button type="button" class="crm-mobile-more-quick-action" @click="handleMobileQuickAction('task')">
+                        <span class="crm-mobile-more-quick-action__icon">+</span>
+                        <span>Новая задача</span>
+                    </button>
+                    <button type="button" class="crm-mobile-more-quick-action" @click="handleMobileQuickAction('client')" x-show="canCrm">
+                        <span class="crm-mobile-more-quick-action__icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V18a4 4 0 00-5-3.87M17 20H7m10 0v-2c0-.653-.126-1.277-.356-1.848M7 20H2V18a4 4 0 015-3.87M7 20v-2c0-.653.126-1.277.356-1.848m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </span>
+                        <span>Новый клиент</span>
+                    </button>
+                    <button type="button" class="crm-mobile-more-quick-action" @click="handleMobileQuickAction('search')">
+                        <span class="crm-mobile-more-quick-action__icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"></path>
+                            </svg>
+                        </span>
+                        <span>Поиск</span>
+                    </button>
+                    <button type="button" class="crm-mobile-more-quick-action" @click="handleMobileQuickAction('notifications')">
+                        <span class="crm-mobile-more-quick-action__icon">!</span>
+                        <span>Уведомления</span>
+                    </button>
+                    <button type="button" class="crm-mobile-more-quick-action" @click="handleMobileQuickAction('chat')">
+                        <span class="crm-mobile-more-quick-action__icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                            </svg>
+                        </span>
+                        <span>Чат</span>
+                    </button>
+                    <button type="button" class="crm-mobile-more-quick-action" @click="handleMobileQuickAction('widgets')">
+                        <span class="crm-mobile-more-quick-action__icon">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                            </svg>
+                        </span>
+                        <span>Виджеты</span>
+                    </button>
+                </div>
+
+                <div class="crm-mobile-more-sheet__content">
+                    <template x-for="group in getMobileMoreGroups()" :key="group.id">
+                        <section class="crm-mobile-more-group">
+                            <div class="crm-mobile-more-group__title" x-text="group.label"></div>
+                            <div class="crm-mobile-more-group__items">
+                                <template x-for="item in group.items" :key="item.id">
+                                    <button type="button"
+                                            class="crm-mobile-more-link"
+                                            :class="isMobileMoreViewActive(item.id) ? 'is-active' : ''"
+                                            @click="navigateMobileMore(item.id)">
+                                        <span class="crm-mobile-more-link__icon">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                                            </svg>
+                                        </span>
+                                        <span class="crm-mobile-more-link__body">
+                                            <span class="crm-mobile-more-link__label" x-text="item.label"></span>
+                                        </span>
+                                        <span class="crm-mobile-more-link__chevron">›</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </section>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div x-include="'assets/components/modals.html'"></div>
+    <div x-include="'assets/components/mail-modals.html'"></div>
+    <div x-include="'assets/components/file-preview.html'"></div>
+
+    <!-- Магазин виджетов -->
+    <div x-show="widgetStoreOpen" x-cloak x-transition.opacity
+         class="fixed inset-0 z-[150] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop"
+         @click.self="widgetStoreOpen = false" @keydown.escape.window="widgetStoreOpen = false">
+        <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+            <!-- Header -->
+            <div class="p-6 flex items-center justify-between gap-3 relative">
+                <div class="absolute left-6 right-6 -bottom-2"><div class="ios-glass-separator opacity-70"></div></div>
+                <div>
+                    <div class="text-2xl font-bold crm-text-primary">Магазин виджетов</div>
+                    <div class="text-sm crm-panel-subtitle">Добавляйте и настраивайте виджеты для боковой панели</div>
+                </div>
+                <button @click="widgetStoreOpen = false" class="p-2 rounded-xl ios-glass-button crm-icon-button">
+                    <svg class="w-6 h-6 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Доступные виджеты -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Время -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('time') ? 'border-green-500/50 bg-green-500/5' : 'border-gray-500/20'">
+                        <div class="crm-widget-store-item">
+                            <div class="crm-widget-store-item__meta">
+                                <div class="crm-widget-store-item__icon crm-widget-store-item__icon--neutral" style="--widget-accent: var(--lg-primary)">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold crm-text-primary">Время и дата</div>
+                                    <div class="text-xs crm-text-tertiary">Текущее время и дата</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('time')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button crm-widget-toggle"
+                                    :class="enabledWidgets.includes('time') ? 'is-active' : ''"
+                                    x-text="enabledWidgets.includes('time') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Погода -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('weather') ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-500/20'">
+                        <div class="crm-widget-store-item">
+                            <div class="crm-widget-store-item__meta">
+                                <div class="crm-widget-store-item__icon" style="--widget-accent: #3B82F6">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 011-7.874V7a5 5 0 019.879-1.343M3 15a4 4 0 001 7.874V21a2 2 0 002 2h10a2 2 0 002-2v-2.126A4 4 0 0021 15"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold crm-text-primary">Погода</div>
+                                    <div class="text-xs crm-text-tertiary">Прогноз на сегодня</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('weather')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button crm-widget-toggle"
+                                    :class="enabledWidgets.includes('weather') ? 'is-active' : ''"
+                                    x-text="enabledWidgets.includes('weather') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Моя смена -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('my-shift') ? 'border-green-500/50 bg-green-500/5' : 'border-gray-500/20'">
+                        <div class="crm-widget-store-item">
+                            <div class="crm-widget-store-item__meta">
+                                <div class="crm-widget-store-item__icon" style="--widget-accent: #10B981">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold crm-text-primary">Моя смена</div>
+                                    <div class="text-xs crm-text-tertiary">Старт, перерыв, завершение</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('my-shift')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button crm-widget-toggle"
+                                    :class="enabledWidgets.includes('my-shift') ? 'is-active' : ''"
+                                    x-text="enabledWidgets.includes('my-shift') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Календарь компании -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('company-calendar') ? 'border-purple-500/50 bg-purple-500/5' : 'border-gray-500/20'">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #8B5CF6 20%, var(--lg-glass-bg))">
+                                    <svg class="w-6 h-6" style="color: #8B5CF6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold" style="color: var(--lg-text-primary)">Дни рождения</div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Сотрудники в этом месяце</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('company-calendar')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
+                                    :style="enabledWidgets.includes('company-calendar') ? 'background: var(--lg-success); color: white' : ''"
+                                    x-text="enabledWidgets.includes('company-calendar') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Быстрые действия -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('quick-actions') ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-500/20'">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #3B82F6 20%, var(--lg-glass-bg))">
+                                    <svg class="w-6 h-6" style="color: #3B82F6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold" style="color: var(--lg-text-primary)">Быстрые действия</div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Задача, проект, письмо</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('quick-actions')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
+                                    :style="enabledWidgets.includes('quick-actions') ? 'background: var(--lg-success); color: white' : ''"
+                                    x-text="enabledWidgets.includes('quick-actions') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Кликер -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('clicker') ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-gray-500/20'">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #F59E0B 20%, var(--lg-glass-bg))">
+                                    <svg class="w-6 h-6" style="color: #F59E0B" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 22a10 10 0 110-20 10 10 0 010 20z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold" style="color: var(--lg-text-primary)">Кликер</div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Мини-игра для отдыха</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('clicker')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
+                                    :style="enabledWidgets.includes('clicker') ? 'background: var(--lg-success); color: white' : ''"
+                                    x-text="enabledWidgets.includes('clicker') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Внешние ресурсы -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('external-links') ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-gray-500/20'">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #6366F1 20%, var(--lg-glass-bg))">
+                                    <svg class="w-6 h-6" style="color: #6366F1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold" style="color: var(--lg-text-primary)">Внешние ресурсы</div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)">1С, CRM, другие сервисы</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('external-links')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
+                                    :style="enabledWidgets.includes('external-links') ? 'background: var(--lg-success); color: white' : ''"
+                                    x-text="enabledWidgets.includes('external-links') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+
+                    <!-- Горящие задачи -->
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('hot-tasks') ? 'border-red-500/50 bg-red-500/5' : 'border-gray-500/20'">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
+                                    <svg class="w-6 h-6" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="font-semibold" style="color: var(--lg-text-primary)">Горящие задачи</div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Срочные задачи с приоритетом</div>
+                                </div>
+                            </div>
+                            <button @click="toggleWidget('hot-tasks')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
+                                    :style="enabledWidgets.includes('hot-tasks') ? 'background: var(--lg-success); color: white' : ''"
+                                    x-text="enabledWidgets.includes('hot-tasks') ? '✓' : '+'"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Настройки внешних ресурсов -->
+                <div x-show="enabledWidgets.includes('external-links')" class="mt-6 liquid-glass-pro rounded-2xl p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="font-semibold crm-text-primary">Внешние ресурсы</div>
+                        <button @click="addExternalResource()" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button">+ Добавить</button>
+                    </div>
+                    <div class="space-y-2">
+                        <template x-for="(res, idx) in externalResources" :key="idx">
+                            <div class="flex items-center gap-2">
+                                <input type="text" x-model="res.name" placeholder="Название (1С)" class="flex-1 px-3 py-2 rounded-xl ios-glass-input text-sm" />
+                                <input type="text" x-model="res.url" placeholder="https://..." class="flex-1 px-3 py-2 rounded-xl ios-glass-input text-sm" />
+                                <button @click="removeExternalResource(idx)" class="p-2 rounded-xl ios-glass-button text-red-500">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="externalResources.length === 0" class="text-sm crm-text-secondary">Нет добавленных ресурсов</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="p-6 flex items-center justify-end gap-3 relative">
+                <div class="absolute left-6 right-6 -top-2"><div class="ios-glass-separator opacity-70"></div></div>
+                <button @click="resetWidgets()" class="px-5 py-2 rounded-xl ios-glass-button">Сбросить</button>
+                <button @click="saveWidgets(); widgetStoreOpen = false" class="px-5 py-2 rounded-xl font-medium ios-glass-button">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toasts / iOS-like banners (top-center) -->
+    <div x-show="isAuthenticated && permissionsReady" x-cloak class="lg-toast-container top-center fixed z-[150] pointer-events-none space-y-2">
+        <template x-for="t in (toasts || [])" :key="t.id">
+            <div class="lg-toast liquid-glass-pro"
+                 :class="t.visible ? '' : 'lg-toast-exit'"
+                 style="pointer-events: auto;">
+                    <div class="flex-1 min-w-0">
+                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title || (t.type === 'call' ? 'Звонок' : 'Уведомление')"></div>
+                    <div class="text-sm mt-0.5 crm-text-secondary" x-text="t.message"></div>
+                </div>
+                <div class="flex items-center gap-2" x-show="t.type === 'call'">
+                    <button class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold" style="background:#22c55e" @click="acceptIncomingCall(); closeToast(t.id)">Принять</button>
+                    <button class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold" style="background:#ef4444" @click="declineIncomingCall(); closeToast(t.id)">Сбросить</button>
+                </div>
+                <button class="p-2 rounded-xl ios-glass-button crm-icon-button-sm" aria-label="Закрыть" @click="closeToast(t.id)">
+                    <svg class="w-4 h-4 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </template>
+    </div>
+
+    <!-- Side panels: notifications (right) + widgets (right) -->
+    <div x-show="isAuthenticated && permissionsReady" x-cloak>
+        <!-- Notifications panel (right) -->
+        <div x-show="notificationsPanelOpen" x-transition.opacity class="fixed inset-0 z-[65]" @keydown.escape.window="closeAllPanels()">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="closeAllPanels()"></div>
+            <div class="absolute top-4 bottom-4 right-4 w-[408px] max-w-[94vw] liquid-glass-pro rounded-2xl shadow-2xl overflow-hidden flex flex-col notifications-panel-shell" role="dialog" aria-modal="true" aria-label="Панель уведомлений">
+                <div class="notifications-panel-mobile-handle lg:hidden"></div>
+                <div class="p-4 flex items-start justify-between gap-3 notifications-panel-header">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-3">
+                            <div class="notifications-panel-bell">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <div class="font-semibold notifications-panel-title">Уведомления</div>
+                                    <span x-show="notifications.length" class="notifications-panel-counter" x-text="notifications.length"></span>
+                                </div>
+                                <div class="notifications-panel-subtitle" x-text="notifications.length ? ('Новых и требующих внимания: ' + notifications.length) : 'Все уведомления обработаны'"></div>
+                            </div>
+                        </div>
+                        <div x-show="browserNotificationPromptVisible" class="mt-3 flex items-center gap-2 text-xs" style="color: var(--lg-text-secondary)">
+                            <span>Включите уведомления браузера, чтобы не пропускать новые события.</span>
+                            <button @click="requestNotificationPermission(true)" class="notifications-header-action ios-glass-button" type="button">Включить</button>
+                        </div>
+                        <div class="lg:hidden mt-3 text-xs" style="color: var(--lg-text-secondary)">Открывайте карточки уведомлений, чтобы сразу перейти в задачу, CRM, чат или другой связанный контур.</div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0 notifications-panel-header-actions">
+                        <button x-show="notifications.length" @click="markAllNotificationsRead()" class="notifications-header-action ios-glass-button notifications-header-action--bulk" type="button">Отметить все</button>
+                        <button @click="closeAllPanels()" class="p-2 rounded-xl ios-glass-button" type="button" aria-label="Закрыть панель уведомлений">✕</button>
+                    </div>
+                </div>
+                <div class="px-4"><div class="ios-glass-separator opacity-70"></div></div>
+                <div class="flex-1 overflow-y-auto p-3 notifications-panel-list">
+                    <template x-for="n in notifications" :key="n.id">
+                        <article class="notification-card liquid-glass-pro rounded-2xl p-4" :class="['notification-type-' + (n.type || 'info'), !n.read ? 'notification-card-unread' : '', canOpenNotificationTarget(n) ? 'notification-card-clickable' : '']">
+                            <div class="flex items-start gap-3">
+                                <div class="notification-card-icon" :class="'notification-icon-' + (n.type || 'info')">
+                                    <span x-text="getNotificationTypeIcon(n)"></span>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-start justify-between gap-3 mb-2 notification-card-head">
+                                        <div class="min-w-0">
+                                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                                <span class="notification-type-chip" :class="'notification-chip-' + (n.type || 'info')" x-text="getNotificationTypeLabel(n)"></span>
+                                                <span x-show="!n.read" class="notification-status-chip">Новое</span>
+                                            </div>
+                                            <button x-show="canOpenNotificationTarget(n)" @click="openNotificationTarget(n)" class="notification-card-title-button" type="button">
+                                                <span class="notification-card-title" x-text="n.title || 'Уведомление'"></span>
+                                            </button>
+                                            <div x-show="!canOpenNotificationTarget(n)" class="notification-card-title" x-text="n.title || 'Уведомление'"></div>
+                                            <div class="notification-card-subtitle" x-text="getNotificationSubtitle(n)"></div>
+                                        </div>
+                                        <div class="notification-card-timebox">
+                                            <div class="notification-card-time" x-text="getNotificationRelativeTime(n.created_at)"></div>
+                                            <div class="notification-card-time-hint" x-text="getNotificationAbsoluteTime(n.created_at)"></div>
+                                        </div>
+                                    </div>
+                                    <div class="notification-card-message" x-text="getNotificationMessage(n)"></div>
+                                    <div class="notification-card-meta" x-show="getNotificationEntityLabel(n)">
+                                        <span class="notification-card-meta-label">Связано:</span>
+                                        <span x-text="getNotificationEntityLabel(n)"></span>
+                                    </div>
+                                    <div class="notification-card-actions">
+                                        <button x-show="canOpenNotificationTarget(n)" @click="openNotificationTarget(n)" class="notification-action-primary" type="button" x-text="getNotificationActionLabel(n)"></button>
+                                        <button x-show="!(n.read ?? n.is_read)" @click="markNotificationRead(n.id)" class="notification-action-secondary ios-glass-button" type="button">Отметить прочитанным</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    </template>
+                    <div x-show="notifications.length === 0" class="notifications-empty-state">
+                        <div class="notifications-empty-card">
+                            <div class="notifications-empty-icon">✓</div>
+                            <div class="notifications-empty-title">Все уведомления разобраны</div>
+                            <div class="notifications-empty-text">Когда появятся новые события по задачам, проектам, чату или CRM, они появятся здесь.</div>
+                            <button type="button" class="notifications-empty-action ios-glass-button lg:hidden" @click="closeAllPanels()">Вернуться к работе</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Widgets panel -->
+        <div x-show="widgetsPanelOpen" x-transition.opacity class="fixed inset-0 z-[65]" @keydown.escape.window="closeAllPanels()">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="closeAllPanels()"></div>
+            <div class="absolute top-4 bottom-4 right-4 w-[380px] max-w-[90vw] liquid-glass-pro rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+                <div class="p-4 flex items-center justify-between relative">
+                    <div class="absolute left-4 right-4 -bottom-2"><div class="ios-glass-separator opacity-70"></div></div>
+                    <div class="crm-panel-title">Виджеты</div>
+                    <div class="flex items-center gap-2">
+                        <button @click="widgetStoreOpen = true; closeAllPanels()" class="p-2 rounded-xl ios-glass-button crm-icon-button" title="Магазин виджетов">
+                            <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </button>
+                        <button @click="closeAllPanels()" class="p-2 rounded-xl ios-glass-button">✕</button>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                    <!-- Виджет: Время -->
+                    <div x-show="enabledWidgets.includes('time')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold crm-text-tertiary">Время и дата</div>
+                        <div class="mt-1 text-4xl font-bold crm-text-primary" x-text="currentTime.hours"></div>
+                        <div class="mt-1 text-sm crm-text-secondary" x-text="currentDate.full"></div>
+                    </div>
+
+                    <!-- Виджет: Погода -->
+                    <div x-show="enabledWidgets.includes('weather')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Погода, <span x-text="weatherCity"></span></div>
+                                <div class="mt-1 text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="weather.temp ? weather.temp + '°C' : '—'"></div>
+                                <div class="text-sm" style="color: var(--lg-text-secondary)" x-text="weather.desc || 'Загрузка...'"></div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-show="weather.humidity">Влажность: <span x-text="weather.humidity"></span>% • Ветер: <span x-text="weather.wind"></span> м/с</div>
+                            </div>
+                            <img x-show="weather.icon" :src="weather.icon ? ('https://openweathermap.org/img/wn/' + weather.icon + '@2x.png') : ''" class="w-20 h-20" alt="weather icon" />
+                            <svg x-show="!weather.icon" class="w-16 h-16" style="color: #F59E0B" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm0 16a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zm9-7a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5 12a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zm14.95-4.536a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zm-12.728 0a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zM12 7a5 5 0 100 10 5 5 0 000-10z"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Виджет: Моя смена -->
+                    <div x-show="enabledWidgets.includes('my-shift')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Моя смена</div>
+                        <div class="mt-2 flex items-center justify-between gap-2">
+                            <button x-show="shiftStatus === 'offline'" @click="startShift()" class="flex-1 px-3 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white text-sm font-semibold">Начать</button>
+                            <button x-show="shiftStatus === 'working'" @click="startBreak()" class="flex-1 px-3 py-2 rounded-xl ios-glass-button text-sm">Перерыв</button>
+                            <button x-show="shiftStatus === 'break'" @click="endBreak()" class="flex-1 px-3 py-2 rounded-xl ios-glass-button text-sm">Вернуться</button>
+                            <button x-show="shiftStatus !== 'offline'" @click="endShift()" class="flex-1 px-3 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-red-600 text-white text-sm font-semibold">Завершить</button>
+                        </div>
+                        <div class="mt-2 text-xs text-center crm-text-secondary" x-text="shiftStatus === 'offline' ? 'Не на смене' : (shiftStatus === 'working' ? 'На смене' : 'Перерыв')"></div>
+                    </div>
+
+                    <!-- Виджет: Дни рождения -->
+                    <div x-show="enabledWidgets.includes('company-calendar')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Дни рождения</div>
+                        <div class="mt-2 space-y-2">
+                            <template x-for="b in (birthdays || []).slice(0, 3)" :key="b.user_id">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold crm-birthday-avatar" x-text="getInitials(b.full_name)"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-sm font-semibold truncate crm-text-primary" x-text="b.full_name"></div>
+                                        <div class="text-xs crm-text-tertiary" x-text="formatDate(b.birthday)"></div>
+                                    </div>
+                                    <span class="text-xs px-2 py-0.5 rounded-full crm-birthday-badge">🎉</span>
+                                </div>
+                            </template>
+                            <div x-show="!(birthdays || []).length" class="text-sm crm-text-secondary">В этом месяце нет дней рождений</div>
+                        </div>
+                    </div>
+
+                    <!-- Виджет: Быстрые действия -->
+                    <div x-show="enabledWidgets.includes('quick-actions')" class="hidden lg:block liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Быстрые действия</div>
+                        <div class="mt-2 grid grid-cols-3 gap-2">
+                            <button @click="openTaskModal(); closeAllPanels()" class="px-2 py-3 rounded-xl ios-glass-button text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Задача
+                            </button>
+                            <button @click="currentView='projects'; closeAllPanels()" class="px-2 py-3 rounded-xl ios-glass-button text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                                </svg>
+                                Проект
+                            </button>
+                            <button @click="currentView='mail'; openMailComposeModal(); closeAllPanels()" class="px-2 py-3 rounded-xl ios-glass-button text-xs flex flex-col items-center gap-1">
+                                <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                </svg>
+                                Письмо
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Виджет: Кликер -->
+                    <div x-show="enabledWidgets.includes('clicker')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Кликер</div>
+                        <div class="mt-2 text-center">
+                            <div class="text-3xl font-bold crm-text-primary" x-text="clickerScore"></div>
+                            <div class="text-xs crm-text-secondary">очков (×<span x-text="clickerMultiplier"></span>)</div>
+                            <button @click="clickerClick()" class="mt-3 w-full px-4 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-600 text-white font-semibold">Клик! 👆</button>
+                            <button @click="clickerBuyUpgrade()" class="mt-2 w-full px-4 py-2 rounded-xl ios-glass-button text-xs">Улучшить (10 очков)</button>
+                        </div>
+                    </div>
+
+                    <!-- Виджет: Внешние ресурсы -->
+                    <div x-show="enabledWidgets.includes('external-links')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Внешние ресурсы</div>
+                        <div class="mt-2 space-y-2">
+                            <template x-for="res in externalResources" :key="res.url">
+                                <button @click="openExternalResource(res.url)" class="w-full px-3 py-2 rounded-xl ios-glass-button text-sm text-left flex items-center gap-2">
+                                    <svg class="w-4 h-4 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                                    </svg>
+                                    <span x-text="res.name || 'Ссылка'"></span>
+                                </button>
+                            </template>
+                            <div x-show="!externalResources.length" class="text-sm crm-text-secondary">Нет ресурсов</div>
+                        </div>
+                    </div>
+
+                    <!-- Виджет: Горящие задачи -->
+                    <div x-show="enabledWidgets.includes('hot-tasks')" class="liquid-glass-pro rounded-2xl p-4">
+                        <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Горящие задачи</div>
+                        <div class="mt-2 space-y-2">
+                            <template x-for="t in (tasks || []).filter(x => x.priority === 'urgent').slice(0, 3)" :key="t.id">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
+                                        <div class="text-xs crm-text-tertiary" x-text="t.deadline ? 'До: ' + formatDate(t.deadline) : ''"></div>
+                                    </div>
+                                </div>
+                            </template>
+                            <div x-show="!(tasks || []).filter(x => x.priority === 'urgent').length" class="text-sm crm-text-secondary">Нет горящих задач</div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="mobileProfileOpen" x-transition.opacity class="fixed inset-0 z-[76] lg:hidden" x-cloak @keydown.escape.window="closeMobileProfile()">
+            <div class="absolute inset-0 bg-black/45 backdrop-blur-sm" @click="closeMobileProfile()"></div>
+            <div class="absolute inset-x-0 bottom-0 crm-mobile-profile-sheet liquid-glass-pro rounded-t-[2rem] shadow-2xl">
+                <div class="crm-mobile-more-sheet__handle"></div>
+
+                <div class="crm-mobile-profile-sheet__header">
+                    <div class="crm-mobile-profile-sheet__identity min-w-0">
+                        <div class="crm-mobile-profile-sheet__avatar-wrap">
+                            <img x-show="currentUser?.avatar && currentUser.avatar !== 'null' && currentUser.avatar !== ''"
+                                 :src="currentUser?.avatar && currentUser.avatar !== 'null' ? ('uploads/avatars/' + currentUser.avatar) : ''"
+                                 class="crm-mobile-profile-sheet__avatar"
+                                 alt="Аватар"
+                                 @error="$el.style.display='none'">
+                            <div x-show="!currentUser?.avatar || currentUser.avatar === 'null' || currentUser.avatar === ''"
+                                 class="crm-mobile-profile-sheet__avatar crm-mobile-profile-sheet__avatar--fallback"
+                                 x-text="getInitials(currentUser?.full_name || currentUser?.login)"></div>
+                        </div>
+
+                        <div class="min-w-0">
+                            <div class="crm-mobile-profile-sheet__eyebrow">Личный контур</div>
+                            <div class="crm-mobile-profile-sheet__name" x-text="currentUser?.full_name || currentUser?.login || 'Пользователь'"></div>
+                            <div class="crm-mobile-profile-sheet__meta">
+                                <span x-text="currentUser?.role || 'Сотрудник'"></span>
+                                <span x-show="currentUser?.phone">·</span>
+                                <span x-show="currentUser?.phone" x-text="currentUser?.phone"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="rounded-xl ios-glass-button crm-icon-button" @click="closeMobileProfile()" aria-label="Закрыть профиль">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="crm-mobile-profile-sheet__summary">
+                    <button type="button" class="crm-mobile-profile-sheet__summary-card" @click="handleMobileProfileAction('profile')">
+                        <span class="crm-mobile-profile-sheet__summary-label">Профиль и настройки</span>
+                        <span class="crm-mobile-profile-sheet__summary-value" x-text="settingsForm?.full_name || currentUser?.full_name || currentUser?.login || 'Открыть'"></span>
+                    </button>
+                    <button type="button" class="crm-mobile-profile-sheet__summary-card" @click="handleMobileProfileAction('theme')">
+                        <span class="crm-mobile-profile-sheet__summary-label">Тема интерфейса</span>
+                        <span class="crm-mobile-profile-sheet__summary-value" x-text="isDark ? 'Тёмная' : 'Светлая'"></span>
+                    </button>
+                </div>
+
+                <div class="crm-mobile-profile-sheet__actions">
+                    <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('profile')">
+                        <span class="crm-mobile-profile-action__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A11.953 11.953 0 0112 15c2.5 0 4.824.765 6.879 2.072M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 1a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </span>
+                        <span class="crm-mobile-profile-action__body">
+                            <span class="crm-mobile-profile-action__title">Редактировать профиль</span>
+                            <span class="crm-mobile-profile-action__description">Открывает существующую модалку профиля и персональных настроек.</span>
+                        </span>
+                    </button>
+
+                    <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('theme')">
+                        <span class="crm-mobile-profile-action__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 1012 21a8.962 8.962 0 008.354-5.646z"></path></svg>
+                        </span>
+                        <span class="crm-mobile-profile-action__body">
+                            <span class="crm-mobile-profile-action__title">Переключить тему</span>
+                            <span class="crm-mobile-profile-action__description">Моментально применяет уже существующую светлую или тёмную тему.</span>
+                        </span>
+                        <span class="crm-mobile-profile-action__status" x-text="isDark ? 'Dark' : 'Light'"></span>
+                    </button>
+
+                    <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('notifications')">
+                        <span class="crm-mobile-profile-action__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                        </span>
+                        <span class="crm-mobile-profile-action__body">
+                            <span class="crm-mobile-profile-action__title">Уведомления</span>
+                            <span class="crm-mobile-profile-action__description">Быстрый вход в уже существующую панель событий и напоминаний.</span>
+                        </span>
+                        <span class="crm-mobile-profile-action__status" x-text="notificationCount > 99 ? '99+' : notificationCount"></span>
+                    </button>
+
+                    <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('search')">
+                        <span class="crm-mobile-profile-action__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"></path></svg>
+                        </span>
+                        <span class="crm-mobile-profile-action__body">
+                            <span class="crm-mobile-profile-action__title">Глобальный поиск</span>
+                            <span class="crm-mobile-profile-action__description">Переход к задачам, клиентам, файлам и сотрудникам через текущий search flow.</span>
+                        </span>
+                    </button>
+
+                    <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('widgets')">
+                        <span class="crm-mobile-profile-action__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                        </span>
+                        <span class="crm-mobile-profile-action__body">
+                            <span class="crm-mobile-profile-action__title">Виджеты и рабочая среда</span>
+                            <span class="crm-mobile-profile-action__description">Открывает существующую панель виджетов без изменения конфигурационных контрактов.</span>
+                        </span>
+                    </button>
+
+                    <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('chat')">
+                        <span class="crm-mobile-profile-action__icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                        </span>
+                        <span class="crm-mobile-profile-action__body">
+                            <span class="crm-mobile-profile-action__title">Личные сообщения</span>
+                            <span class="crm-mobile-profile-action__description">Переход в уже встроенный чат внутри текущего shell.</span>
+                        </span>
+                    </button>
+                </div>
+
+                <div class="crm-mobile-profile-sheet__footer">
+                    <button type="button" class="crm-mobile-profile-logout" @click="handleMobileProfileAction('logout')">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H9"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 20H6a2 2 0 01-2-2V6a2 2 0 012-2h7"></path>
+                        </svg>
+                        <span>Выйти из аккаунта</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    <!-- Floating chat button (opens встроенный чат, чтобы шапка/сайдбар оставались видны) -->
+    <div x-show="isAuthenticated && permissionsReady" x-cloak>
+        <div class="fixed bottom-24 lg:bottom-6 right-4 lg:right-6 z-[70]" x-show="currentView !== 'chat'" x-transition.opacity>
+            <button @click="currentView = 'chat'; sidebarOpen = false"
+                    class="w-14 h-14 crm-chat-fab shadow-lg flex items-center justify-center transition-all hover:scale-[1.02]"
+                    aria-label="Открыть чат">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <span x-show="chatUnreadCount > 0"
+                      class="absolute -top-2 -right-2 px-2 py-0.5 text-xs rounded-full text-white font-semibold"
+                      style="background: #ef4444"
+                      x-text="chatUnreadCount > 99 ? '99+' : chatUnreadCount"></span>
+            </button>
+        </div>
+    </div>
+
+    <div x-show="confirmModalOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[160] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="confirmModalOpen = false; pendingAction = null" @keydown.escape.window="confirmModalOpen = false; pendingAction = null">
+        <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="p-5 flex items-start justify-between gap-4 relative">
+                <div class="absolute left-5 right-5 -bottom-2"><div class="ios-glass-separator opacity-70"></div></div>
+                <div class="min-w-0">
+                    <div class="text-lg font-semibold crm-text-primary" x-text="pendingAction?.title || 'Подтверждение'"></div>
+                    <div class="text-sm mt-1 crm-text-secondary" x-text="pendingAction?.message || ''"></div>
+                </div>
+                <button type="button" @click="confirmModalOpen = false; pendingAction = null" class="p-2 rounded-xl ios-glass-button" aria-label="Закрыть подтверждение">
+                    <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="p-5 flex items-center justify-end gap-3">
+                <button type="button" @click="confirmModalOpen = false; pendingAction = null" class="px-4 py-2 rounded-2xl ios-glass-button" x-text="pendingAction?.cancelText || 'Отмена'"></button>
+                <button type="button" @click="runConfirm()" class="px-4 py-2 rounded-2xl text-white font-semibold"
+                        :class="pendingAction?.danger ? 'bg-gradient-to-r from-rose-500 to-red-600' : 'bg-gradient-to-r from-blue-500 to-indigo-600'"
+                        x-text="pendingAction?.confirmText || 'Подтвердить'"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+                try { reg.update(); } catch (_) {}
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (sessionStorage.getItem('sw-reloaded')) return;
+                sessionStorage.setItem('sw-reloaded', '1');
+                window.location.reload();
+            });
+        }
+    </script>
+
+    <!-- Chart.js - для графиков и диаграмм -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <!-- Alpine.js - стандартная инициализация с defer -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // Регистрируем app() для Alpine
+        document.addEventListener('alpine:init', () => {
+            if (typeof window.app !== 'function') {
+                console.error('[Alpine] app() недоступна к моменту инициализации');
+            }
+        });
+    </script>
+    <style>[x-cloak] { display: none !important; }</style>
+</body>
+</html>

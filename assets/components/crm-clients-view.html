@@ -1,0 +1,121 @@
+<div class="space-y-4">
+  <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="crm-toolbar crm-toolbar--dense">
+      <div class="crm-toolbar-main">
+        <div class="crm-toolbar-summary">
+          <div class="crm-summary-tile">
+            <div class="crm-summary-label">Клиенты</div>
+            <div class="crm-summary-value" x-text="(crmClients || []).length"></div>
+          </div>
+        </div>
+      </div>
+      <div class="crm-toolbar-actions">
+        <button @click="crmOpenClientModal()" class="crm-btn-primary text-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Новый клиент
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-5 crm-filterbar crm-filterbar-wide">
+      <div class="crm-filter-field crm-filter-field--compact">
+        <div class="crm-filter-label">Поиск</div>
+        <div class="mt-2 flex items-center gap-3">
+          <svg class="w-5 h-5 crm-ui-filter-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/>
+          </svg>
+          <label for="crm-clients-search" class="sr-only">Поиск клиентов</label>
+          <input id="crm-clients-search" name="crm_clients_search" x-model.debounce.300ms="crmClientsQuery" @input="crmLoadClients()" placeholder="Поиск: имя, email, телефон, сайт, адрес" class="crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        </div>
+      </div>
+
+      <div class="crm-filter-field crm-filter-field--compact">
+        <div class="crm-filter-label">Статус</div>
+        <div class="mt-2 flex items-center gap-3">
+          <svg class="w-5 h-5 crm-ui-filter-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M6 12h12M10 18h4"/>
+          </svg>
+          <label for="crm-clients-status" class="sr-only">Фильтр клиентов по статусу</label>
+          <select id="crm-clients-status" name="crm_clients_status" x-model="crmClientsStatus" @change="crmLoadClients()" class="crm-control-select">
+            <option value="">Все статусы</option>
+            <option value="active">Активен</option>
+            <option value="lead">Лид</option>
+            <option value="inactive">Не активен</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="crm-filter-field crm-filter-field--compact">
+        <div class="crm-filter-label">Теги</div>
+        <div class="mt-2 flex items-center gap-3">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--lg-text-tertiary)">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h10a2 2 0 012 2v10a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2z"/>
+          </svg>
+          <label for="crm-clients-tag" class="sr-only">Фильтр клиентов по тегу</label>
+          <input id="crm-clients-tag" name="crm_clients_tag" x-model.debounce.300ms="crmClientsTag" @input="crmLoadClients()" placeholder="Тег (например: VIP)" class="crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-start crm-segment-grid">
+    <template x-for="segment in [
+      { key: 'regular', title: 'Регулярные', subtitle: 'Частые взаимодействия' },
+      { key: 'rare', title: 'Редкие', subtitle: 'С редкими продажами' },
+      { key: 'inactive', title: 'Неактивные', subtitle: '180+ дней без активности' },
+      { key: 'never', title: 'Без взаимодействий', subtitle: '0 взаимодействий' }
+    ]" :key="segment.key">
+      <div class="liquid-glass-pro rounded-3xl p-4 crm-table-shell">
+        <div class="crm-table-toolbar crm-table-toolbar--compact">
+          <div class="crm-section-head__content">
+            <div class="crm-section-head__title" x-text="segment.title"></div>
+            <div class="crm-section-head__text" x-text="segment.subtitle"></div>
+          </div>
+          <div class="crm-section-head__meta">
+            <span class="crm-inline-badge" x-text="((crmClients || []).filter((c) => c.segment === segment.key).length) + ' шт.'"></span>
+          </div>
+        </div>
+
+        <div class="mt-4 space-y-2 max-h-[72vh] overflow-y-auto pr-1 crm-client-list-scroll">
+          <template x-for="c in (crmClients || []).filter((item) => item.segment === segment.key)" :key="c.id">
+            <button @click="crmOpenClientDrawer(c.id, c)" class="w-full text-left liquid-glass-pro rounded-2xl p-3 transition-all crm-client-list-item"
+                    :class="String(crmClientId) === String(c.id) ? 'crm-list-accent crm-client-list-item-active' : ''"
+                    :style="String(crmClientId) === String(c.id) ? '' : 'border:1px solid var(--lg-border)'">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <div class="font-semibold truncate" style="color: var(--lg-text-primary)" x-text="c.name"></div>
+                  <div class="text-xs mt-1 crm-client-list-contact" style="color: var(--lg-text-secondary)" x-text="(c.email || c.phone || '—')"></div>
+                </div>
+                <div class="crm-status-pill crm-status-pill-soft text-[11px]" x-text="({
+                  'active': 'Активен',
+                  'lead': 'Лид',
+                  'inactive': 'Не активен'
+                }[c.status] || c.status)"></div>
+              </div>
+              <div class="mt-3 flex items-center justify-between gap-2 text-[11px] crm-client-list-meta" style="color: var(--lg-text-tertiary)">
+                <span>ID: <span x-text="c.id"></span></span>
+                <span x-text="crmFormatMoney(c.total_sales || 0)"></span>
+              </div>
+              <div class="mt-2 flex items-center justify-between gap-2 text-[11px]" style="color: var(--lg-text-secondary)">
+                <span x-text="c.referral_code ? ('Ref: ' + c.referral_code) : 'Ref не создан'"></span>
+                <span x-show="(c.referral_orders_count || 0) > 0" x-text="(c.referral_orders_count || 0) + ' заказ.'"></span>
+              </div>
+              <div class="mt-2 flex flex-wrap gap-1" x-show="(c.tags || []).length">
+                <template x-for="t in (c.tags || []).slice(0,5)" :key="t">
+                  <span class="crm-chip crm-tone-accent text-[11px]" x-text="t"></span>
+                </template>
+              </div>
+            </button>
+          </template>
+
+          <div x-show="(crmClients || []).filter((item) => item.segment === segment.key).length === 0" class="crm-empty-state text-center">
+            <div class="crm-empty-state-title">Пусто</div>
+            <div class="crm-empty-state-text">В этой группе пока нет клиентов.</div>
+          </div>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>

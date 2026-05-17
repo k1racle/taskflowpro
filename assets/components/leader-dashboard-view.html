@@ -1,0 +1,653 @@
+<!-- ============================================
+     LEADER DASHBOARD - РУКОВОДИТЕЛЬ
+     ============================================ -->
+
+<div class="space-y-4">
+    <!-- Header с вкладками -->
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar">
+            <div class="crm-toolbar-main">
+                <div class="crm-toolbar-heading">
+                    <h2 class="text-2xl font-bold" style="color: var(--lg-text-primary)">Руководитель</h2>
+                </div>
+            </div>
+
+            <!-- Вкладки -->
+            <div class="crm-toolbar-actions">
+                <div class="crm-tabbar">
+                    <button @click="leaderTab = 'dashboard'"
+                            :class="leaderTab === 'dashboard' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                        </svg>
+                        Дашборд
+                    </button>
+                    <button @click="leaderTab = 'schedules'; loadWorkSchedules()"
+                            :class="leaderTab === 'schedules' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Графики
+                    </button>
+                    <button @click="leaderTab = 'analytics'; loadAnalytics()"
+                            :class="leaderTab === 'analytics' ? 'crm-tabbar-button-active' : ''"
+                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                        </svg>
+                        Аналитика
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== Вкладка: ДАШБОРД ======================== -->
+    <div x-show="leaderTab === 'dashboard'" x-transition.opacity class="space-y-6">
+
+    <!-- CRM Статистика -->
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar">
+            <div class="crm-toolbar-main">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #3B82F6 20%, var(--lg-glass-bg))">
+                        <svg class="w-4 h-4" style="color: #3B82F6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <div class="crm-title">CRM показатели</div>
+                        <div class="crm-subtitle">Ключевые метрики по CRM</div>
+                    </div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="currentView = 'crm-dashboard'" class="crm-btn-secondary">Открыть CRM</button>
+            </div>
+        </div>
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="rounded-2xl p-4" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
+                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Клиентов</div>
+                <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.crm?.clients || 0"></div>
+            </div>
+            <div class="rounded-2xl p-4" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
+                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Сумма в воронке</div>
+                <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="formatMoney(leaderOverview?.crm?.pipeline_sum)"></div>
+            </div>
+            <div class="rounded-2xl p-4" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
+                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Win rate</div>
+                <div class="text-2xl font-bold" style="color: var(--lg-success)"><span x-text="leaderOverview?.crm?.win_rate || 0"></span>%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Статистика -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #10B981 20%, var(--lg-glass-bg))">
+                    <svg class="w-5 h-5" style="color: #10B981" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">На смене</div>
+            </div>
+            <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.on_shift?.length || 0"></div>
+            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Сотрудников работает сейчас</div>
+        </div>
+
+        <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #3B82F6 20%, var(--lg-glass-bg))">
+                    <svg class="w-5 h-5" style="color: #3B82F6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                </div>
+                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">В работе</div>
+            </div>
+            <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.tasks_in_progress || 0"></div>
+            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Задач в работе</div>
+        </div>
+
+        <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
+                    <svg class="w-5 h-5" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                </div>
+                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">Горят</div>
+            </div>
+            <div class="text-3xl font-bold" style="color: #EF4444" x-text="leaderOverview?.tasks_burning?.length || 0"></div>
+            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Срочных задач</div>
+        </div>
+
+        <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #8B5CF6 20%, var(--lg-glass-bg))">
+                    <svg class="w-5 h-5" style="color: #8B5CF6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                </div>
+                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">Проектов</div>
+            </div>
+            <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.projects?.length || 0"></div>
+            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Активных проектов</div>
+        </div>
+    </div>
+
+    <!-- Крупные панели дашборда -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div class="liquid-glass-pro rounded-3xl p-4 h-[300px] flex flex-col">
+            <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
+                <div class="crm-section-head__content">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #10B981 20%, var(--lg-glass-bg))">
+                            <svg class="w-4 h-4" style="color: #10B981" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Кто на смене</div>
+                    </div>
+                </div>
+                <div class="crm-section-head__meta">
+                    <div class="text-xs px-3 py-1 rounded-full" style="background: color-mix(in oklab, #10B981 20%, var(--lg-glass-bg)); color: #10B981">Live</div>
+                </div>
+            </div>
+            <div class="space-y-2 flex-1 min-h-0 overflow-y-auto">
+                <template x-for="s in (leaderOverview?.on_shift || [])" :key="s.id">
+                    <div class="liquid-glass-pro rounded-2xl p-2" style="border:1px solid var(--lg-border)">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background: var(--lg-primary)" x-text="getInitials(s.full_name)"></div>
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="s.full_name || 'Сотрудник'"></div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(s.started_at)"></div>
+                                </div>
+                            </div>
+                            <div class="text-xs px-3 py-1 rounded-xl flex-shrink-0"
+                                 :style="s.status === 'working' ? 'background: color-mix(in oklab, #10B981 20%, var(--lg-glass-bg)); color: #10B981' : 'background: color-mix(in oklab, #F59E0B 20%, var(--lg-glass-bg)); color: #F59E0B'"
+                                 x-text="s.status === 'working' ? 'РАБОТА' : 'ПЕРЕРЫВ'"></div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="!(leaderOverview?.on_shift || []).length" class="crm-empty-state text-center py-6">
+                    <div class="crm-empty-state-title">Сейчас никого нет на смене</div>
+                    <div class="crm-empty-state-text">Активные смены появятся здесь, когда сотрудники начнут рабочий день или вернутся с перерыва.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="liquid-glass-pro rounded-3xl p-4 h-[300px] flex flex-col">
+            <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
+                <div class="crm-section-head__content">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
+                            <svg class="w-4 h-4" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Горящие задачи</div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-2 flex-1 min-h-0 overflow-y-auto">
+                <template x-for="t in (leaderOverview?.tasks_burning || [])" :key="t.id">
+                    <div class="liquid-glass-pro rounded-2xl p-2" style="border:1px solid var(--lg-border)">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0 flex-1">
+                                <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="t.title"></div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="(t.project_name || 'Без проекта') + ' • ' + (t.assignee_name || '—')"></div>
+                            </div>
+                            <div class="text-xs px-3 py-1 rounded-xl flex-shrink-0" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg)); color: #EF4444" x-text="t.deadline"></div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="!(leaderOverview?.tasks_burning || []).length" class="crm-empty-state text-center py-6">
+                    <div class="crm-empty-state-title">Всё в порядке</div>
+                    <div class="crm-empty-state-text">Сейчас нет просроченных или горящих задач, требующих немедленного внимания.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Нарушения по смене -->
+        <div class="liquid-glass-pro rounded-3xl p-4 h-[300px] flex flex-col" x-show="can('leader.shifts.manage') || can('leader.view')">
+            <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
+                <div class="crm-section-head__content">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
+                            <svg class="w-4 h-4" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        </div>
+                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Нарушения графика</div>
+                    </div>
+                </div>
+            </div>
+            <div class="space-y-2 flex-1 min-h-0 overflow-y-auto">
+                <template x-for="violation in getShiftViolations()" :key="violation.id">
+                    <div class="liquid-glass-pro rounded-2xl p-2" style="border:1px solid var(--lg-border)">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background: var(--lg-primary)" x-text="getInitials(violation.user_name)"></div>
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="violation.user_name"></div>
+                                    <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDate(violation.schedule_date) + ' • ' + violation.shift_start + ' - ' + violation.shift_end"></div>
+                                </div>
+                            </div>
+                            <div class="text-xs px-3 py-1 rounded-xl flex-shrink-0" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg)); color: #EF4444" x-text="violation.reason"></div>
+                        </div>
+                    </div>
+                </template>
+                <div x-show="!getShiftViolations().length" class="crm-empty-state text-center py-6">
+                    <div class="crm-empty-state-title">Нарушений нет</div>
+                    <div class="crm-empty-state-text">По текущим данным отклонения по сменам не обнаружены.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- ======================== Вкладка: ГРАФИКИ РАБОТ ======================== -->
+    <div x-show="leaderTab === 'schedules'" x-transition.opacity class="space-y-6">
+        <div class="liquid-glass-pro rounded-3xl crm-screen-section" x-show="can('leader.shifts.manage') || can('leader.view')">
+            <div class="crm-toolbar">
+                <div class="crm-toolbar-main">
+                    <div>
+                        <div class="crm-title">Графики работы</div>
+                        <div class="crm-subtitle">Планирование смен</div>
+                    </div>
+                </div>
+                <div class="crm-toolbar-actions">
+                    <button @click="loadWorkSchedules()" class="crm-btn-secondary">Обновить</button>
+                    <button @click="openScheduleModal()" class="crm-btn-primary" x-show="can('leader.shifts.manage')">+ Смена</button>
+                </div>
+            </div>
+
+            <div class="mt-4 crm-filterbar crm-filterbar-wide">
+                <div class="crm-filter-field">
+                    <label for="schedule-filter-user" class="crm-filter-label">Сотрудник</label>
+                    <select id="schedule-filter-user" name="schedule_filter_user" x-model="scheduleFilters.user_id" @change="loadWorkSchedules()" class="crm-control-select">
+                        <option value="">Все сотрудники</option>
+                        <template x-for="u in users" :key="u.id">
+                            <option :value="u.id" x-text="u.full_name"></option>
+                        </template>
+                    </select>
+                </div>
+                <div class="crm-filter-field">
+                    <label for="schedule-filter-date-from" class="crm-filter-label">С</label>
+                    <input id="schedule-filter-date-from" name="schedule_filter_date_from" type="date" x-model="scheduleFilters.date_from" @change="loadWorkSchedules()" class="crm-control-input" />
+                </div>
+                <div class="crm-filter-field">
+                    <label for="schedule-filter-date-to" class="crm-filter-label">По</label>
+                    <input id="schedule-filter-date-to" name="schedule_filter_date_to" type="date" x-model="scheduleFilters.date_to" @change="loadWorkSchedules()" class="crm-control-input" />
+                </div>
+                <div class="crm-filter-field">
+                    <label for="schedule-filter-month" class="crm-filter-label">Месяц</label>
+                    <input id="schedule-filter-month" name="schedule_filter_month" type="month" x-model="scheduleFilters.month" @change="loadWorkSchedules()" class="crm-control-input" />
+                </div>
+            </div>
+
+            <div class="mt-4 liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+                <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Графики смен</div>
+                        <div class="crm-section-head__text">Табличный срез смен по выбранным фильтрам и периоду.</div>
+                    </div>
+                    <div class="crm-section-head__meta">
+                        <span class="crm-inline-badge">Показано: <span x-text="(workSchedules || []).length"></span></span>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full crm-data-table">
+                        <thead>
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Сотрудник</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Дата</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Смена</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Перерыв</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Статус</th>
+                                <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Заметка</th>
+                                <th class="px-4 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y" style="border-color: var(--lg-border)">
+                            <template x-for="s in (workSchedules || [])" :key="s.id">
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background: var(--lg-primary)" x-text="getInitials(s.user_name)"></div>
+                                            <span class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="s.user_name"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm" style="color: var(--lg-text-secondary)" x-text="formatDate(s.schedule_date)"></td>
+                                    <td class="px-4 py-3 text-sm" style="color: var(--lg-text-primary)">
+                                        <span x-text="(s.shift_start || '—') + ' - ' + (s.shift_end || '—')"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm" style="color: var(--lg-text-secondary)" x-text="(s.break_start || '—') + ' - ' + (s.break_end || '—')"></td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-3 py-1 rounded-full text-xs font-medium"
+                                              :class="s.is_day_off ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'"
+                                              x-text="s.is_day_off ? 'Выходной' : 'Рабочий'"></span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm truncate max-w-[200px]" style="color: var(--lg-text-secondary)" x-text="s.note || '—'"></td>
+                                    <td class="px-4 py-3 text-right">
+                                        <button x-show="can('leader.shifts.manage')" @click="editSchedule(s)" class="crm-btn-ghost text-xs">✏️</button>
+                                        <button x-show="can('leader.shifts.manage')" @click="deleteSchedule(s)" class="crm-btn-ghost text-xs">🗑️</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <div x-show="(workSchedules || []).length === 0" class="p-5">
+                        <div class="crm-empty-state text-center">
+                            <div class="crm-empty-state-title">Нет графиков на выбранный период</div>
+                            <div class="crm-empty-state-text">Измените фильтры, выберите другой диапазон дат или добавьте новую смену вручную.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== Вкладка: АНАЛИТИКА ======================== -->
+    <div x-show="leaderTab === 'analytics'" x-transition.opacity class="space-y-6">
+
+        <!-- Выбор периода -->
+        <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+            <div class="crm-toolbar">
+                <div class="crm-toolbar-main">
+                    <div>
+                        <div class="crm-title">Аналитика</div>
+                        <div class="crm-subtitle">Сравнение показателей за разные периоды</div>
+                    </div>
+                </div>
+                <div class="crm-toolbar-actions">
+                    <button @click="loadAnalytics()" class="crm-btn-secondary">Обновить</button>
+                </div>
+            </div>
+
+            <div class="mt-4 crm-filterbar crm-filterbar-wide">
+                <div class="crm-filter-field">
+                    <label for="analytics-period" class="crm-filter-label">Период</label>
+                    <select id="analytics-period" name="analytics_period" x-model="analyticsPeriod" @change="loadAnalytics()" class="crm-control-select">
+                        <option value="month">Месяц</option>
+                        <option value="quarter">Квартал</option>
+                        <option value="year">Год</option>
+                        <option value="week">Неделя</option>
+                        <option value="custom">Произвольный</option>
+                    </select>
+                </div>
+                <div class="crm-filter-field">
+                    <label for="analytics-compare" class="crm-filter-label">Сравнение</label>
+                    <select id="analytics-compare" name="analytics_compare" x-model="analyticsCompare" @change="loadAnalytics()" class="crm-control-select">
+                        <option value="previous">Сравнить с предыдущим</option>
+                        <option value="none">Без сравнения</option>
+                    </select>
+                </div>
+
+                <!-- Кастомные даты -->
+                <template x-if="analyticsPeriod === 'custom'">
+                    <div class="contents">
+                        <div class="crm-filter-field">
+                            <label for="analytics-custom-from" class="crm-filter-label">С</label>
+                            <input id="analytics-custom-from" name="analytics_custom_from" type="date" x-model="analyticsCustomFrom" class="crm-control-input" />
+                        </div>
+                        <div class="crm-filter-field">
+                            <label for="analytics-custom-to" class="crm-filter-label">По</label>
+                            <input id="analytics-custom-to" name="analytics_custom_to" type="date" x-model="analyticsCustomTo" class="crm-control-input" />
+                        </div>
+                        <div class="crm-filter-field" style="align-self: end;">
+                            <button @click="loadAnalytics()" class="crm-btn-primary w-full">Применить</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Ключевые метрики с сравнением -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Задачи созданы -->
+            <div class="liquid-glass-pro rounded-3xl p-5">
+                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Задачи созданы</div>
+                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="analyticsData?.current?.tasks_created || 0"></div>
+                <template x-if="analyticsData?.compare">
+                    <div class="text-xs mt-2 flex items-center gap-1"
+                         :style="(analyticsData.current.tasks_created - analyticsData.compare.tasks_created) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
+                        <span x-text="(analyticsData.current.tasks_created - analyticsData.compare.tasks_created) >= 0 ? '↑' : '↓'"></span>
+                        <span x-text="Math.abs(analyticsData.current.tasks_created - analyticsData.compare.tasks_created)"></span>
+                        <span style="color: var(--lg-text-tertiary)">к прошлому</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Задачи завершены -->
+            <div class="liquid-glass-pro rounded-3xl p-5">
+                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Задачи завершены</div>
+                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="analyticsData?.current?.tasks_completed || 0"></div>
+                <template x-if="analyticsData?.compare">
+                    <div class="text-xs mt-2 flex items-center gap-1"
+                         :style="(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
+                        <span x-text="(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed) >= 0 ? '↑' : '↓'"></span>
+                        <span x-text="Math.abs(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed)"></span>
+                        <span style="color: var(--lg-text-tertiary)">к прошлому</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Часы работы -->
+            <div class="liquid-glass-pro rounded-3xl p-5">
+                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Часы работы</div>
+                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="(analyticsData?.current?.total_worked_hours || 0) + 'ч'"></div>
+                <template x-if="analyticsData?.compare">
+                    <div class="text-xs mt-2 flex items-center gap-1"
+                         :style="(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
+                        <span x-text="(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours) >= 0 ? '↑' : '↓'"></span>
+                        <span x-text="Math.abs(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours).toFixed(1)"></span>
+                        <span style="color: var(--lg-text-tertiary)">ч к прошлому</span>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Новые клиенты -->
+            <div class="liquid-glass-pro rounded-3xl p-5">
+                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Новые клиенты</div>
+                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="analyticsData?.current?.new_clients || 0"></div>
+                <template x-if="analyticsData?.compare">
+                    <div class="text-xs mt-2 flex items-center gap-1"
+                         :style="(analyticsData.current.new_clients - analyticsData.compare.new_clients) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
+                        <span x-text="(analyticsData.current.new_clients - analyticsData.compare.new_clients) >= 0 ? '↑' : '↓'"></span>
+                        <span x-text="Math.abs(analyticsData.current.new_clients - analyticsData.compare.new_clients)"></span>
+                        <span style="color: var(--lg-text-tertiary)">к прошлому</span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- График: Создание и завершение задач по дням -->
+        <div class="liquid-glass-pro rounded-3xl p-6">
+            <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
+                <div class="crm-section-head__content">
+                    <div class="crm-section-head__title">Создание и завершение задач по дням</div>
+                </div>
+            </div>
+            <div class="relative" style="height: 350px;">
+                <canvas id="chartTasksDaily"></canvas>
+            </div>
+        </div>
+
+        <!-- Два графика в ряд -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Задачи по статусам -->
+            <div class="liquid-glass-pro rounded-3xl p-6">
+                <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Задачи по статусам</div>
+                    </div>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="chartTasksStatus"></canvas>
+                </div>
+            </div>
+
+            <!-- Задачи по приоритетам -->
+            <div class="liquid-glass-pro rounded-3xl p-6">
+                <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Задачи по приоритетам</div>
+                    </div>
+                </div>
+                <div class="relative" style="height: 300px;">
+                    <canvas id="chartTasksPriority"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Часы работы по дням -->
+        <div class="liquid-glass-pro rounded-3xl p-6">
+            <div class="text-lg font-bold mb-4" style="color: var(--lg-text-primary)">Часы работы по дням</div>
+            <div class="relative" style="height: 350px;">
+                <canvas id="chartShiftsDaily"></canvas>
+            </div>
+        </div>
+
+        <!-- CRM воронка -->
+        <div class="liquid-glass-pro rounded-3xl p-6">
+            <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
+                <div class="crm-section-head__content">
+                    <div class="crm-section-head__title">CRM воронка</div>
+                    <div class="crm-section-head__text">Сводка по этапам CRM в выбранном аналитическом периоде.</div>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="relative" style="height: 300px;">
+                    <canvas id="chartCRMFunnel"></canvas>
+                </div>
+                <div class="space-y-3">
+                    <template x-for="stage in (analyticsCRMData?.funnel || [])" :key="stage.name">
+                        <div class="rounded-2xl p-3" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="stage.name"></div>
+                                <div class="text-sm" style="color: var(--lg-text-secondary)">
+                                    <span x-text="stage.cnt"></span> сделок ·
+                                    <span x-text="formatMoney(stage.total_amount)"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="!(analyticsCRMData?.funnel?.length)" class="crm-empty-state text-center py-8">
+                        <div class="crm-empty-state-title">Нет данных</div>
+                        <div class="crm-empty-state-text">В выбранном периоде пока нет данных по CRM-воронке для этой аналитической сводки.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Эффективность сотрудников -->
+        <div class="liquid-glass-pro rounded-3xl p-6">
+            <div class="text-lg font-bold mb-4" style="color: var(--lg-text-primary)">Эффективность сотрудников</div>
+            <div class="relative" style="height: 350px;">
+                <canvas id="chartEmployeeEfficiency"></canvas>
+            </div>
+        </div>
+
+        <!-- Задачи по проектам -->
+        <div class="liquid-glass-pro rounded-3xl p-6">
+            <div class="text-lg font-bold mb-4" style="color: var(--lg-text-primary)">Задачи по проектам</div>
+            <div class="relative" style="height: 350px;">
+                <canvas id="chartTasksByProject"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ======================== МОДАЛЬНОЕ ОКНО: ДОБАВИТЬ/РЕДАКТИРОВАТЬ СМЕНУ ======================== -->
+<div x-show="scheduleModalOpen" x-cloak class="fixed inset-0 z-[120] flex items-center justify-center p-4" @keydown.escape.window="scheduleModalOpen=false">
+    <div class="absolute inset-0 lg-modal-backdrop" @click="scheduleModalOpen=false"></div>
+    <div class="relative w-full max-w-xl liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl overflow-hidden">
+        <div class="crm-modal-header">
+            <div class="min-w-0">
+                <h2 class="crm-modal-title" x-text="editingSchedule ? 'Редактировать смену' : 'Добавить смену'"></h2>
+                <p class="crm-modal-description">Запланируйте смену сотрудника</p>
+            </div>
+            <button @click="scheduleModalOpen=false" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="crm-modal-body crm-modal-body--compact crm-modal-form crm-modal-form--compact overflow-y-auto max-h-[75vh]">
+            <!-- Сотрудник -->
+            <div class="crm-form-stack--compact">
+                <label for="schedule-user-id" class="crm-filter-label">Сотрудник</label>
+                <select id="schedule-user-id" name="user_id" x-model="scheduleForm.user_id" class="crm-control-select">
+                    <option value="">Выберите сотрудника</option>
+                    <template x-for="u in users" :key="u.id">
+                        <option :value="u.id" x-text="u.full_name"></option>
+                    </template>
+                </select>
+            </div>
+
+            <!-- Шаблоны автозаполнения -->
+            <div class="crm-form-stack--compact">
+                <label class="crm-filter-label">Автозаполнение графика</label>
+                <div class="grid grid-cols-4 gap-2">
+                    <button @click="applyScheduleTemplate('5/2')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
+                            style="background: color-mix(in oklab, #3B82F6 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #3B82F6 30%, var(--lg-border)); color: var(--lg-text-primary);">
+                        5/2 <span style="color: var(--lg-text-tertiary)">(Пн-Пт)</span>
+                    </button>
+                    <button @click="applyScheduleTemplate('2/2')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
+                            style="background: color-mix(in oklab, #8B5CF6 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #8B5CF6 30%, var(--lg-border)); color: var(--lg-text-primary);">
+                        2/2 <span style="color: var(--lg-text-tertiary)">(2 раб/2 вых)</span>
+                    </button>
+                    <button @click="applyScheduleTemplate('1/3')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
+                            style="background: color-mix(in oklab, #F59E0B 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #F59E0B 30%, var(--lg-border)); color: var(--lg-text-primary);">
+                        1/3 <span style="color: var(--lg-text-tertiary)">(1 раб/3 вых)</span>
+                    </button>
+                    <button @click="applyScheduleTemplate('3/3')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
+                            style="background: color-mix(in oklab, #10B981 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #10B981 30%, var(--lg-border)); color: var(--lg-text-primary);">
+                        3/3 <span style="color: var(--lg-text-tertiary)">(3 раб/3 вых)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Период для автозаполнения -->
+            <div class="grid grid-cols-2 gap-3 crm-form-grid--compact">
+                <div class="crm-form-stack--compact">
+                    <label for="schedule-period-start" class="crm-filter-label">Период с</label>
+                    <input id="schedule-period-start" name="period_start" type="date" x-model="scheduleForm.period_start" class="crm-control-input" />
+                </div>
+                <div class="crm-form-stack--compact">
+                    <label for="schedule-period-end" class="crm-filter-label">Период по</label>
+                    <input id="schedule-period-end" name="period_end" type="date" x-model="scheduleForm.period_end" class="crm-control-input" />
+                </div>
+            </div>
+
+            <!-- Одиночная дата (если не автозаполнение) -->
+            <div class="crm-form-stack--compact">
+                <label for="schedule-date" class="crm-filter-label">Или укажите одну дату</label>
+                <input id="schedule-date" name="schedule_date" type="date" x-model="scheduleForm.schedule_date" class="crm-control-input" />
+            </div>
+
+            <!-- Время смены -->
+            <div class="grid grid-cols-2 gap-3 crm-form-grid--compact">
+                <div class="crm-form-stack--compact">
+                    <label for="schedule-shift-start" class="crm-filter-label">Начало смены</label>
+                    <input id="schedule-shift-start" name="shift_start" type="time" x-model="scheduleForm.shift_start" class="crm-control-input" />
+                </div>
+                <div class="crm-form-stack--compact">
+                    <label for="schedule-shift-end" class="crm-filter-label">Конец смены</label>
+                    <input id="schedule-shift-end" name="shift_end" type="time" x-model="scheduleForm.shift_end" class="crm-control-input" />
+                </div>
+            </div>
+
+            <!-- Выходной -->
+            <label class="crm-filter-field crm-filter-field--compact flex items-center gap-3">
+                <input id="schedule-day-off" name="is_day_off" type="checkbox" x-model="scheduleForm.is_day_off" class="w-5 h-5" />
+                <div>
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Выходной</div>
+                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Сотрудник не работает в этот день</div>
+                </div>
+            </label>
+
+            <!-- Заметка -->
+            <div class="crm-form-stack--compact">
+                <label for="schedule-note" class="crm-filter-label">Заметка</label>
+                <textarea id="schedule-note" name="note" x-model="scheduleForm.note" rows="2" class="crm-control-textarea" placeholder="Необязательно"></textarea>
+            </div>
+        </div>
+
+        <div class="crm-modal-footer crm-modal-footer--compact">
+            <button @click="scheduleModalOpen=false" class="crm-btn-secondary">Отмена</button>
+            <button @click="saveSchedule()" class="crm-btn-primary">Сохранить</button>
+        </div>
+    </div>
+</div>

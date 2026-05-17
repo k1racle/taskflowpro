@@ -1,0 +1,396 @@
+<!-- ============================================
+     CONFERENCES VIEW - PRO 2027
+     ============================================ -->
+
+<div class="space-y-4 lg:space-y-6">
+    
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section conference-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div class="crm-section-head__content">
+                    <div class="crm-section-head__title">Конференции</div>
+                    <div class="crm-section-head__text">Рабочие видеовстречи, быстрый доступ к комнатам и контроль приглашений без смены экрана.</div>
+                </div>
+                <div class="crm-toolbar-summary">
+                    <div class="crm-summary-tile"><div class="crm-summary-label">Всего встреч</div><div class="crm-summary-value" x-text="(conferences || []).length"></div></div>
+                    <div class="crm-summary-tile"><div class="crm-summary-label">Активные</div><div class="crm-summary-value" x-text="(conferences || []).filter(conf => conf.status === 'active').length"></div></div>
+                    <div class="crm-summary-tile"><div class="crm-summary-label">Ожидают</div><div class="crm-summary-value" x-text="(conferences || []).filter(conf => conf.status === 'waiting').length"></div></div>
+                    <div class="crm-summary-tile"><div class="crm-summary-label">Участники</div><div class="crm-summary-value" x-text="(conferences || []).reduce((sum, conf) => sum + Number(conf.participants_count || 0), 0)"></div></div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="openCreateConferenceModal()"
+                        class="crm-btn-primary text-sm flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                    Создать встречу
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap items-center gap-2 crm-dense-meta">
+            <span class="crm-inline-badge">Запросов на вход: <span class="ml-1" x-text="(conferences || []).reduce((sum, conf) => sum + Number(conf.pending_requests || 0), 0)"></span></span>
+        </div>
+
+        <div x-show="lastCreatedConference" x-cloak class="mt-5 px-4 py-4 rounded-2xl crm-panel-muted conference-link-banner">
+            <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)">Гостевая ссылка для последней встречи</div>
+                    <div class="text-xs truncate mt-1" style="color: var(--lg-text-secondary)" x-text="guestJoinUrl(lastCreatedConference?.room_id)"></div>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <button @click="copyGuestLink(lastCreatedConference.room_id)" class="crm-soft-action text-sm">Копировать</button>
+                    <div class="px-3 py-2 rounded-xl conference-pin-inline">
+                        <span class="text-xs" style="color: var(--lg-text-tertiary)">PIN</span>
+                        <button @click="copyText(lastCreatedConference?.guest_pin || '')" class="ml-2 text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="lastCreatedConference?.guest_pin || ''"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список конференций -->
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4 lg:gap-5">
+        <template x-for="conf in conferences" :key="conf.id">
+            <div class="liquid-glass-pro rounded-3xl p-5 crm-record-card crm-card-compact crm-card-equal conference-card">
+                 <div class="crm-project-card-head conference-card-head">
+                    <div class="crm-section-head items-start gap-4">
+                        <div class="flex items-start gap-4 min-w-0 flex-1 crm-section-head__content">
+                            <div class="conference-card-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 flex-wrap mb-2">
+                                    <h3 class="crm-section-head__title truncate" style="color: var(--lg-text-primary)" x-text="conf.title"></h3>
+                                    <span :class="conf.status === 'active' ? 'conference-status-active' : (conf.status === 'waiting' ? 'conference-status-waiting' : 'conference-status-ended')"
+                                          class="conference-status-pill" x-text="conf.status === 'active' ? 'Активна' : (conf.status === 'waiting' ? 'Ожидает' : 'Завершена')"></span>
+                                </div>
+                                <p class="crm-section-head__text leading-[1.5] line-clamp-2" style="color: var(--lg-text-secondary)" x-text="conf.description || 'Описание отсутствует'"></p>
+                            </div>
+                        </div>
+                        <div class="crm-section-head__meta flex flex-wrap items-center gap-2 conference-card-actions-top">
+                             <button x-show="conf.status !== 'active'" x-cloak @click="startConference(conf.id)" class="crm-soft-action text-sm">Начать</button>
+                             <button x-show="conf.status === 'active'" x-cloak @click="endConference(conf.id)" class="crm-soft-action text-sm">Завершить</button>
+                             <button x-show="conf.status !== 'active'" x-cloak @click="deleteConference(conf.id)" class="crm-btn-danger text-sm conference-action-danger">Удалить</button>
+                        </div>
+                    </div>
+                 </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="crm-stat-card crm-card-compact crm-card-equal">
+                        <div class="crm-summary-label">Создана</div>
+                        <div class="mt-2 text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="formatDate(conf.created_at)"></div>
+                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Последнее обновление карточки встречи</div>
+                    </div>
+                    <div class="crm-stat-card crm-card-compact crm-card-equal">
+                        <div class="crm-summary-label">Состав</div>
+                        <div class="mt-2 text-sm font-semibold" style="color: var(--lg-text-primary)"><span x-text="conf.participants_count || 0"></span> участ.</div>
+                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)"><span x-text="conf.pending_requests || 0"></span> ожидают подтверждения</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 px-4 py-3 rounded-2xl crm-panel-muted conference-card-toolbar crm-table-toolbar crm-table-toolbar--compact">
+                    <div class="flex items-center justify-between gap-3 flex-wrap">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="crm-inline-badge">Room ID: <span class="ml-1" x-text="conf.room_id"></span></span>
+                            <span class="crm-inline-badge" x-show="(conf.pending_requests || 0) > 0" x-cloak><span x-text="conf.pending_requests"></span> ждут</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2 conference-card-actions-bottom">
+                            <button @click="openInviteModal(conf)" class="crm-soft-action text-sm whitespace-nowrap">Пригласить</button>
+                            <button @click="copyGuestLink(conf.room_id)" class="crm-soft-action text-sm whitespace-nowrap">Ссылка</button>
+                            <button @click="togglePin(conf)" class="crm-soft-action text-sm whitespace-nowrap" x-text="(revealedPins && revealedPins[conf.id]) ? 'Скрыть PIN' : 'Показать PIN'"></button>
+                            <button @click="joinConference(conf)"
+                                    :disabled="conf.status !== 'active'"
+                                    class="crm-btn-primary text-sm whitespace-nowrap conference-join-action disabled:opacity-50 disabled:cursor-not-allowed">
+                                Войти
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="revealedPins && revealedPins[conf.id]" x-transition.opacity class="mt-4 liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-3 conference-pin-panel">
+                    <div class="min-w-0">
+                        <div class="text-xs" style="color: var(--lg-text-tertiary)">PIN для гостевой ссылки</div>
+                        <div class="text-lg font-bold tracking-wider" style="color: var(--lg-text-primary)" x-text="revealedPins[conf.id]"></div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <button @click="copyText(revealedPins[conf.id])" class="crm-soft-action text-sm">Копировать</button>
+                        <button @click="rotatePin(conf)" class="crm-soft-action text-sm">Сменить</button>
+                    </div>
+                 </div>
+              </div>
+          </template>
+      </div>
+
+    <!-- Нет конференций -->
+    <div x-show="conferences.length === 0" class="liquid-glass-pro rounded-3xl p-12 text-center crm-empty-state">
+        <div class="w-20 h-20 mx-auto mb-5 rounded-3xl flex items-center justify-center chat-empty-icon conference-empty-icon">
+            <svg class="w-10 h-10 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+            </svg>
+        </div>
+        <div class="crm-empty-state-title">Нет конференций</div>
+        <div class="crm-empty-state-text">Создайте первую видеовстречу, чтобы сразу получить ссылку, PIN и рабочую карточку комнаты.</div>
+        <div class="crm-empty-state-actions">
+            <button @click="openCreateConferenceModal()" class="crm-btn-primary">
+                Создать встречу
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка приглашения сотрудников -->
+<div x-show="inviteModalOpen" x-transition.opacity x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="closeInviteModal()">
+    <div class="liquid-glass-pro lg-modal-shell rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
+        <div class="p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+                <div class="text-lg font-bold truncate" style="color: var(--lg-text-primary)">Пригласить сотрудников</div>
+                <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="currentConference?.title || ''"></div>
+            </div>
+            <button @click="closeInviteModal()" class="crm-btn-ghost crm-icon-button">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <label for="conference-invite-search" class="sr-only">Поиск участника для приглашения</label>
+            <input id="conference-invite-search" name="conference_invite_search" type="text" x-model="inviteSearch" placeholder="Поиск по имени или логину" class="w-full px-4 py-3 rounded-xl crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+            <div class="max-h-72 overflow-y-auto space-y-2">
+                <template x-for="u in filteredInviteUsers()" :key="u.id">
+                    <button type="button" @click="toggleInviteUser(u)" class="w-full liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-3 hover:shadow-sm transition-all">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <template x-if="u.avatar && u.avatar !== 'null'">
+                                <img :src="u.avatar" class="w-10 h-10 rounded-xl object-cover" alt="">
+                            </template>
+                            <template x-if="!u.avatar || u.avatar === 'null'">
+                                <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold" style="background: var(--lg-primary-gradient)" x-text="getInitials(u.full_name || u.login)"></div>
+                            </template>
+                            <div class="min-w-0 text-left">
+                                <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="u.full_name || u.login"></div>
+                                <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="u.login ? '@' + u.login : ''"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 flex-shrink-0">
+                            <div class="px-3 py-1 rounded-full text-xs font-semibold" :class="(inviteSelected||[]).some(s => String(s.id) === String(u.id)) ? 'bg-green-500/20 text-green-600 dark:text-green-400' : 'bg-gray-500/10 text-gray-500'"
+                                 x-text="(inviteSelected||[]).some(s => String(s.id) === String(u.id)) ? 'Выбран' : 'Выбрать'"></div>
+                        </div>
+                    </button>
+                </template>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
+            <div class="text-sm" style="color: var(--lg-text-tertiary)">Выбрано: <span class="font-semibold" x-text="(inviteSelected || []).length"></span></div>
+            <div class="flex items-center gap-2">
+                <button @click="closeInviteModal()" class="crm-btn-secondary">Отмена</button>
+                <button @click="sendInvites()" class="crm-btn-primary">Пригласить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно конференции (улучшенное) -->
+<div x-show="conferenceModalOpen"
+     x-transition.opacity
+     x-cloak
+     class="fixed inset-0 z-[100] flex items-center justify-center p-2 backdrop-blur-sm lg-modal-backdrop"
+     @keydown.escape.window="leaveConference()"
+     @click.self="leaveConference()">
+
+     <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-[96vw] h-[94vh] overflow-hidden flex flex-col">
+
+        <!-- Header -->
+        <div class="p-5 flex items-center justify-between gap-3" style="border-bottom:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 65%, transparent);">
+            <div class="min-w-0">
+                <div class="text-lg font-bold truncate" style="color: var(--lg-text-primary)" x-text="currentConference?.title || 'Встреча'"></div>
+                <div class="text-xs truncate" style="color: var(--lg-text-tertiary)">
+                    <span x-text="currentConference?.status === 'active' ? 'Активна' : (currentConference?.status === 'ended' ? 'Завершена' : 'Ожидает')"></span>
+                    <span class="mx-2">•</span>
+                    <span x-text="(conferenceParticipants || []).length + ' участ.'"></span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button @click="copyGuestLink(currentConference?.room_id)" class="crm-btn-secondary text-sm">Ссылка</button>
+                <button @click="togglePin(currentConference)" class="crm-btn-secondary text-sm" 
+                        x-show="currentConference?.status === 'active'"
+                        x-text="(revealedPins && currentConference?.id && revealedPins[currentConference.id]) ? 'Скрыть PIN' : 'Показать PIN'"></button>
+                <button @click="leaveConference()" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
+                    <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-hidden flex flex-col">
+            <!-- Video Grid -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    <!-- Local video -->
+                    <div class="relative aspect-video rounded-3xl overflow-hidden" style="border:1px solid var(--lg-border); background: color-mix(in oklab, #000 35%, var(--lg-glass-bg));">
+                        <video x-ref="localVideo" autoplay muted playsinline class="w-full h-full object-cover"></video>
+                        <div class="absolute left-3 top-3 px-3 py-1.5 rounded-2xl text-xs font-semibold" style="background: color-mix(in oklab, var(--lg-glass-bg) 75%, transparent); border:1px solid var(--lg-border); color: var(--lg-text-primary)">Вы</div>
+                        <div class="absolute bottom-3 left-3 px-3 py-1.5 rounded-2xl text-xs" style="background: color-mix(in oklab, var(--lg-glass-bg) 75%, transparent); border:1px solid var(--lg-border); color: var(--lg-text-secondary)" x-text="currentUser?.full_name || currentUser?.login || 'Вы'"></div>
+                    </div>
+
+                    <!-- Remote participants -->
+                    <template x-for="p in (conferenceParticipants || []).filter(x => x.user_id !== currentUser?.id)" :key="p.id">
+                        <div class="relative aspect-video rounded-3xl overflow-hidden" style="border:1px solid var(--lg-border); background: color-mix(in oklab, #000 35%, var(--lg-glass-bg));">
+                            <template x-if="p.stream">
+                                <video :srcObject="p.stream" autoplay playsinline class="w-full h-full object-cover"></video>
+                            </template>
+                            <template x-if="!p.stream">
+                                <div class="w-20 h-20 rounded-3xl flex items-center justify-center text-white" style="background: var(--lg-primary-gradient);">
+                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                            </template>
+                            <div class="absolute bottom-3 left-3 px-3 py-1.5 rounded-2xl text-xs" style="background: color-mix(in oklab, var(--lg-glass-bg) 75%, transparent); border:1px solid var(--lg-border); color: var(--lg-text-secondary)" x-text="p.guest_name || p.full_name || 'Участник'"></div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Empty state -->
+                <div x-show="(conferenceParticipants || []).length <= 1" class="text-center py-12">
+                    <div class="text-sm" style="color: var(--lg-text-secondary)">Пока только вы в конференции</div>
+                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Пригласите участников через панель справа</div>
+                </div>
+            </div>
+
+            <!-- Controls Bar -->
+            <div class="p-4" style="border-top:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 65%, transparent);">
+                <div class="flex items-center justify-center gap-3">
+                </div>
+
+                <div class="px-4 pb-3 flex items-center gap-2">
+                    <button @click="conferenceSidebarTab = 'participants'" class="crm-btn-secondary text-sm font-semibold transition-all"
+                            :class="conferenceSidebarTab === 'participants' ? 'liquid-glass-pro' : ''">Участники</button>
+                    <button @click="conferenceSidebarTab = 'requests'" class="crm-btn-secondary text-sm font-semibold transition-all flex items-center gap-2"
+                            :class="conferenceSidebarTab === 'requests' ? 'liquid-glass-pro' : ''">
+                        <span>Запросы</span>
+                        <span x-show="(conferenceJoinRequests || []).length" x-cloak class="px-2 py-0.5 rounded-full text-xs font-bold" style="background: color-mix(in oklab, var(--lg-primary) 25%, transparent); color: var(--lg-text-primary)" x-text="(conferenceJoinRequests || []).length"></span>
+                    </button>
+                </div>
+
+                <div class="px-4"><div class="crm-divider opacity-60"></div></div>
+
+                <div x-show="conferenceSidebarTab === 'participants'" class="p-4 space-y-2 max-h-[360px] overflow-y-auto">
+                    <template x-for="p in (conferenceParticipants || [])" :key="p.id">
+                        <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="p.full_name || p.guest_name || ('Участник #' + p.id)"></div>
+                                <div class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="p.role"></div>
+                            </div>
+                            <div class="text-xs px-2.5 py-1 rounded-full font-semibold" :style="p.status === 'joined' ? 'background: color-mix(in oklab, #22c55e 22%, transparent); color: #16a34a' : (p.status === 'waiting' ? 'background: color-mix(in oklab, #f59e0b 18%, transparent); color: #d97706' : 'background: color-mix(in oklab, #64748b 18%, transparent); color: #475569')" x-text="p.status"></div>
+                        </div>
+                    </template>
+                    <div x-show="!(conferenceParticipants||[]).length" class="text-sm" style="color: var(--lg-text-tertiary)">Пока никого нет</div>
+                </div>
+
+                <div x-show="conferenceSidebarTab === 'requests'" class="p-4 space-y-2 max-h-[360px] overflow-y-auto">
+                    <template x-for="r in (conferenceJoinRequests || [])" :key="r.id">
+                        <div class="liquid-glass-pro rounded-2xl p-3">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="r.guest_name || 'Гость'"></div>
+                                    <div class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="r.guest_email || ''"></div>
+                                </div>
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <button @click="reviewJoinRequest(r.id, 'approved')" class="crm-btn-secondary text-sm" style="border-color: color-mix(in oklab, #22c55e 40%, var(--lg-border)); color: #16a34a">Принять</button>
+                                    <button @click="reviewJoinRequest(r.id, 'rejected')" class="crm-btn-secondary text-sm" style="border-color: color-mix(in oklab, #ef4444 40%, var(--lg-border)); color: #ef4444">Отклонить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="!(conferenceJoinRequests||[]).length" class="text-sm" style="color: var(--lg-text-tertiary)">Нет ожидающих запросов</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls bar -->
+        <div class="p-5 flex flex-wrap items-center justify-between gap-3" style="border-top:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 65%, transparent);">
+            <div class="flex items-center gap-3">
+                <button @click="toggleAudio()" class="px-4 py-3 rounded-2xl transition-all"
+                        :class="conferenceAudioEnabled ? 'crm-btn-secondary' : 'liquid-glass-pro'"
+                        :style="conferenceAudioEnabled ? '' : 'border-color: color-mix(in oklab, #ef4444 45%, var(--lg-border)); color:#ef4444'">
+                    <span class="text-sm font-semibold" x-text="conferenceAudioEnabled ? 'Микрофон' : 'Микрофон выкл.'"></span>
+                </button>
+                <button @click="toggleVideo()" class="px-4 py-3 rounded-2xl transition-all"
+                        :class="conferenceVideoEnabled ? 'crm-btn-secondary' : 'liquid-glass-pro'"
+                        :style="conferenceVideoEnabled ? '' : 'border-color: color-mix(in oklab, #f59e0b 45%, var(--lg-border)); color:#d97706'">
+                    <span class="text-sm font-semibold" x-text="conferenceVideoEnabled ? 'Камера' : 'Камера выкл.'"></span>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button @click="leaveConference()" class="crm-btn-secondary text-sm">Выйти</button>
+                <button x-show="currentConference?.status === 'active'" x-cloak
+                        @click="endConference(currentConference.id); leaveConference();"
+                        class="px-5 py-3 rounded-2xl text-sm font-semibold"
+                        style="background: color-mix(in oklab, #ef4444 16%, var(--lg-glass-bg)); border:1px solid color-mix(in oklab, #ef4444 45%, var(--lg-border)); color:#ef4444">
+                    Завершить встречу
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Модалка создания конференции -->
+<div x-show="createConferenceModalOpen" x-transition.opacity x-cloak class="fixed inset-0 z-[120] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="closeCreateConferenceModal()">
+    <div class="liquid-glass-pro lg-modal-shell rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
+        <div class="p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
+            <div class="text-lg font-bold" style="color: var(--lg-text-primary)">Новая встреча</div>
+            <button @click="closeCreateConferenceModal()" class="crm-btn-ghost crm-icon-button">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <div class="space-y-2">
+                <label for="conference-title" class="block text-sm font-semibold" style="color: var(--lg-text-secondary)">Название</label>
+                <input id="conference-title" name="title" type="text" x-model="createConferenceForm.title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Еженедельный созвон">
+            </div>
+            <div class="space-y-2">
+                <label for="conference-description" class="block text-sm font-semibold" style="color: var(--lg-text-secondary)">Описание</label>
+                <textarea id="conference-description" name="description" x-model="createConferenceForm.description" class="w-full px-4 py-3 rounded-xl crm-control-textarea" rows="3" placeholder="Коротко о встрече"></textarea>
+            </div>
+
+            <div x-show="lastCreatedConference" x-cloak class="liquid-glass-pro rounded-2xl p-4">
+                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Гостевой доступ</div>
+                <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Ссылка</div>
+                <div class="text-xs break-all" style="color: var(--lg-text-secondary)" x-text="guestJoinUrl(lastCreatedConference?.room_id)"></div>
+
+                <div class="mt-3 flex items-center justify-between gap-3">
+                    <div>
+                        <div class="text-xs" style="color: var(--lg-text-tertiary)">PIN</div>
+                        <div class="text-lg font-bold tracking-wider" style="color: var(--lg-text-primary)" x-text="lastCreatedConference?.guest_pin"></div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button @click="copyGuestLink(lastCreatedConference.room_id)" class="crm-btn-secondary text-sm">Копировать ссылку</button>
+                        <button @click="copyText(lastCreatedConference?.guest_pin || '')" class="crm-btn-secondary text-sm">Копировать PIN</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center justify-end gap-2">
+            <button @click="closeCreateConferenceModal()" class="crm-btn-secondary">Закрыть</button>
+            <button @click="submitCreateConference()" :disabled="createConferenceSubmitting" class="crm-btn-primary transition-all disabled:opacity-50">
+                <span x-show="!createConferenceSubmitting">Создать</span>
+                <span x-show="createConferenceSubmitting">Создаём…</span>
+            </button>
+        </div>
+    </div>
+</div>

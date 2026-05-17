@@ -1,0 +1,262 @@
+<!-- ============================================
+     PROJECTS VIEW - PRO 2027
+     ============================================ -->
+
+<div x-data="{ projectSearch: '', filtersOpen: false }" class="space-y-4">
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div class="crm-toolbar-heading">
+                    <div class="crm-screen-title">Проекты</div>
+                </div>
+                <div class="crm-toolbar-summary">
+                    <div class="crm-summary-tile">
+                        <div class="crm-summary-label">В выборке</div>
+                        <div class="crm-summary-value" x-text="filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase())).length"></div>
+                    </div>
+                    <div class="crm-summary-tile">
+                        <div class="crm-summary-label">Высокий приоритет</div>
+                        <div class="crm-summary-value" x-text="filteredProjects.filter(project => ['high', 'urgent'].includes(project.priority) && (!projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))).length"></div>
+                    </div>
+                    <div class="crm-summary-tile">
+                        <div class="crm-summary-label">С дедлайном</div>
+                        <div class="crm-summary-value" x-text="filteredProjects.filter(project => project.deadline && (!projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))).length"></div>
+                    </div>
+                    <div class="crm-summary-tile">
+                        <div class="crm-summary-label">Внимание</div>
+                        <div class="crm-summary-value" x-text="filteredProjects.filter(project => Math.round(project.calculated_progress ?? project.progress ?? 0) < 50 && (!projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))).length"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="filtersOpen = !filtersOpen"
+                        :class="(projectFilters.department_id || projectSearch) ? 'crm-filter-toggle-active' : ''"
+                        class="crm-btn-secondary text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V19a1 1 0 01-.553.894l-4 2A1 1 0 018 21v-7.5L3.2 4.6A1 1 0 013 4z"/>
+                    </svg>
+                    Фильтры
+                </button>
+                <div class="crm-tabbar">
+                    <button @click="projectsView = 'cards'" :class="projectsView === 'cards' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5h7v7H4V5zm9 0h7v4h-7V5zM4 14h7v5H4v-5zm9-2h7v7h-7v-7z"/></svg>
+                        <span>Карточки</span>
+                    </button>
+                    <button @click="projectsView = 'list'" :class="projectsView === 'list' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <span>Список</span>
+                    </button>
+                </div>
+                <button @click="openProjectModal()"
+                        class="crm-btn-primary text-sm font-medium flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Новый проект
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 crm-dense-meta">
+            <span class="crm-inline-badge">Просроченный дедлайн: <span class="ml-1" x-text="filteredProjects.filter(project => project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 && (!projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))).length"></span></span>
+        </div>
+    </div>
+
+    <div x-show="filtersOpen" x-cloak x-transition.opacity class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+        <div class="crm-section-head">
+            <div class="crm-section-head__content">
+                <h2 class="crm-section-head__title">Фильтры проектов</h2>
+                <div class="crm-section-head__text">Локальный поиск и срез по отделу для текущего списка проектов.</div>
+            </div>
+            <div class="crm-section-head__meta">
+                <button @click="projectFilters.department_id = ''; projectSearch = ''" class="crm-btn-secondary text-sm">Сбросить все</button>
+            </div>
+        </div>
+
+        <div class="mt-4 crm-filterbar crm-filterbar-wide">
+            <div class="crm-filter-field crm-filter-field-search">
+                <div class="crm-filter-label">Поиск</div>
+                <div class="mt-2 flex items-center gap-3">
+                    <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                    <input type="text" x-model="projectSearch" placeholder="Название, описание" class="crm-control-input text-sm crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                </div>
+            </div>
+            <div class="crm-filter-field">
+                <div class="crm-filter-label">Отдел</div>
+                <div class="mt-2"><select x-model="projectFilters.department_id" class="crm-control-select text-sm"><option value="">Все отделы</option><template x-for="department in departments" :key="department.id"><option :value="department.id" x-text="department.name"></option></template></select></div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="projectsView === 'cards'" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="project.id">
+            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-3xl p-5 cursor-pointer group crm-record-card crm-card-compact crm-card-equal">
+                <div class="crm-project-card-head">
+                    <div class="flex items-start gap-4 min-w-0">
+                        <div class="crm-project-avatar">
+                            <span x-text="project.name.charAt(0).toUpperCase()"></span>
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h3 class="text-lg font-bold leading-tight truncate" style="color: var(--lg-text-primary)" x-text="project.name"></h3>
+                                <span :class="'priority-' + project.priority" class="text-xs capitalize" x-text="translatePriority(project.priority)"></span>
+                                <span class="crm-inline-badge" x-text="(() => { const progress = Math.round(project.calculated_progress ?? project.progress ?? 0); if (progress >= 100) return 'Завершен'; if (project.deadline && new Date(project.deadline) < new Date()) return 'Просрочен'; if (progress >= 65) return 'В графике'; return 'Требует внимания'; })()"></span>
+                            </div>
+                            <p class="mt-2 text-sm leading-[1.45] line-clamp-2" style="color: var(--lg-text-secondary)" x-text="project.description || ''"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 grid grid-cols-2 gap-3">
+                    <div class="crm-stat-card crm-card-compact crm-card-equal">
+                        <div class="crm-summary-label">Прогресс</div>
+                        <div class="mt-2 flex items-end justify-between gap-3">
+                            <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Статус исполнения</div>
+                        </div>
+                        <div class="mt-3 w-full h-2 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));">
+                            <div class="h-full rounded-full transition-all duration-500" style="background: var(--lg-primary)" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
+                        </div>
+                    </div>
+                    <div class="crm-stat-card crm-card-compact crm-card-equal">
+                        <div class="crm-summary-label">Deadline</div>
+                        <div class="mt-2 text-base font-semibold" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" style="color: var(--lg-text-primary)" x-text="project.deadline ? formatDate(project.deadline) : 'Не задан'"></div>
+                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)" x-text="project.departments && project.departments.length ? project.departments.map(department => department.name).join(', ') : 'Без отдела'"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4 grid grid-cols-1 md:grid-cols-[minmax(0,1fr),auto] gap-4 items-end">
+                    <div class="crm-panel-stack crm-panel-stack--compact min-w-0">
+                        <div>
+                            <div class="crm-summary-label">Подразделения</div>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <template x-if="project.departments && project.departments.length">
+                                    <template x-for="department in project.departments.slice(0, 3)" :key="department.id">
+                                        <span class="crm-inline-badge" x-text="department.name"></span>
+                                    </template>
+                                </template>
+                                <template x-if="!project.departments || project.departments.length === 0">
+                                    <span class="crm-inline-badge">Не назначены</span>
+                                </template>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="crm-summary-label">Команда</div>
+                            <div class="mt-2 flex items-center gap-3 flex-wrap">
+                                <div class="flex -space-x-2">
+                                    <template x-for="member in (project.members || []).slice(0, 5)" :key="member.id">
+                                        <div>
+                                            <img x-show="member.avatar"
+                                                 :src="member.avatar ? ('uploads/avatars/' + member.avatar) : ''"
+                                                 class="w-8 h-8 rounded-full border-2 border-white/60 dark:border-black/20"
+                                                 :alt="member.full_name"
+                                                 :title="member.full_name">
+                                            <div x-show="!member.avatar"
+                                                 class="w-8 h-8 rounded-full border-2 border-white/60 dark:border-black/20 flex items-center justify-center text-white text-xs font-bold"
+                                                 :style="'background: var(--lg-primary)'"
+                                                 :title="member.full_name"
+                                                 x-text="getInitials(member.full_name || member.login)"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                                <span class="text-xs" style="color: var(--lg-text-tertiary)" x-text="(project.members || []).length ? ((project.members || []).length + ' участников') : 'Команда не назначена'"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="crm-record-card-action">
+                        <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <div x-show="projectsView === 'list'" class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+        <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
+            <div class="crm-section-head__content">
+                <h2 class="crm-section-head__title">Список проектов</h2>
+                <div class="crm-section-head__text">Табличный режим для просмотра статуса, команды и сроков по всем найденным проектам.</div>
+            </div>
+            <div class="crm-section-head__meta">
+                <span class="crm-inline-badge">В работе: <span class="ml-1" x-text="filteredProjects.filter(project => Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 && (!projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))).length"></span></span>
+                <span class="crm-inline-badge">Завершено: <span class="ml-1" x-text="filteredProjects.filter(project => Math.round(project.calculated_progress ?? project.progress ?? 0) >= 100 && (!projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))).length"></span></span>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full crm-data-table">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left">Проект</th>
+                        <th class="px-4 py-3 text-left">Отделы</th>
+                        <th class="px-4 py-3 text-left">Команда</th>
+                        <th class="px-4 py-3 text-left">Прогресс</th>
+                        <th class="px-4 py-3 text-left">Срок</th>
+                        <th class="px-4 py-3 text-left">Приоритет</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y" style="border-color: var(--lg-border)">
+                    <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="'list-' + project.id">
+                        <tr @click="openProjectModal(project)" class="cursor-pointer">
+                            <td class="px-4 py-4 min-w-[280px]">
+                                <div class="min-w-0">
+                                    <div class="font-semibold truncate" style="color: var(--lg-text-primary)" x-text="project.name"></div>
+                                    <div class="text-xs mt-1 truncate" style="color: var(--lg-text-tertiary)" x-text="project.description || ''"></div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4">
+                                <div class="flex flex-wrap gap-2">
+                                    <template x-if="project.departments && project.departments.length">
+                                        <template x-for="department in project.departments.slice(0, 2)" :key="department.id">
+                                            <span class="crm-inline-badge" x-text="department.name"></span>
+                                        </template>
+                                    </template>
+                                    <template x-if="!project.departments || project.departments.length === 0">
+                                        <span class="text-sm" style="color: var(--lg-text-secondary)">Без отдела</span>
+                                    </template>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="flex -space-x-2">
+                                        <template x-for="member in (project.members || []).slice(0, 3)" :key="member.id">
+                                            <div class="w-8 h-8 rounded-full border-2 border-white/70 dark:border-black/20 flex items-center justify-center text-white text-xs font-bold overflow-hidden" :style="'background: var(--lg-primary)'">
+                                                <img x-show="member.avatar" :src="member.avatar ? ('uploads/avatars/' + member.avatar) : ''" class="w-full h-full object-cover" :alt="member.full_name">
+                                                <span x-show="!member.avatar" x-text="getInitials(member.full_name || member.login)"></span>
+                                            </div>
+                                        </template>
+                                    </div>
+                                    <span class="text-sm" style="color: var(--lg-text-secondary)" x-text="(project.members || []).length ? (project.members || []).length : '0'"></span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 min-w-[180px]">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1 h-2 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));">
+                                        <div class="h-full rounded-full" style="background: var(--lg-primary)" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
+                                    </div>
+                                    <span class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-sm" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" style="color: var(--lg-text-secondary)" x-text="project.deadline ? formatDate(project.deadline) : 'Не задан'"></td>
+                            <td class="px-4 py-4"><span :class="'priority-' + project.priority" class="text-xs capitalize" x-text="translatePriority(project.priority)"></span></td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div x-show="filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase())).length === 0" class="liquid-glass-pro rounded-3xl p-12 text-center crm-empty-state">
+        <svg class="w-24 h-24 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+        </svg>
+        <div class="crm-empty-state-title">Нет проектов</div>
+        <div class="crm-empty-state-text">Создайте первый проект, чтобы начать работу.</div>
+        <div class="crm-empty-state-actions">
+            <button @click="openProjectModal()" class="crm-btn-secondary">
+                Создать проект
+            </button>
+        </div>
+    </div>
+</div>

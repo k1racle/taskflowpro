@@ -1,0 +1,368 @@
+<!-- Модальное окно задачи -->
+<div x-show="taskModalOpen" x-cloak x-transition.opacity class="crm-drawer-overlay z-[80]" @keydown.escape.window="closeTaskModal()">
+    <div class="crm-drawer-backdrop lg-modal-backdrop" @click="closeTaskModal()"></div>
+    <div class="crm-drawer-shell crm-drawer-shell-xl liquid-glass-pro lg-modal-shell"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full opacity-0"
+         x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0 opacity-100"
+         x-transition:leave-end="translate-x-full opacity-0">
+        <div class="crm-modal-header crm-drawer-header crm-task-modal-header">
+            <div class="min-w-0 flex-1 crm-task-modal-header__title">
+                <h2 class="crm-modal-title" x-text="editingTask ? 'Задача' : 'Новая задача'"></h2>
+                <p class="crm-modal-description" x-text="editingTask?.id ? ('ID: ' + editingTask.id) : 'Создание и сопровождение задачи'"></p>
+            </div>
+            <div class="crm-modal-actions task-modal-header-actions crm-task-modal-header__actions">
+                <div class="task-modal-timer crm-task-modal-timer liquid-glass-pro rounded-2xl px-4 py-2 flex items-center gap-3"
+                     :class="taskTimerRunning ? 'ring-2 ring-emerald-500/60' : ''">
+                    <div class="text-sm font-bold whitespace-nowrap"
+                         :class="taskTimerRunning ? 'text-emerald-600 dark:text-emerald-400' : ''"
+                         x-text="formatTimer(taskTimerSeconds)"></div>
+                    <button @click="toggleTaskTimer()" class="crm-btn-secondary whitespace-nowrap"
+                            :class="taskTimerRunning ? 'liquid-glass-pro' : ''">
+                        <span x-text="taskTimerRunning ? 'Стоп' : 'Старт'"></span>
+                    </button>
+                </div>
+                <button @click="closeTaskModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть задачу">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="crm-modal-tabbar-shell crm-drawer-tabbar">
+            <div class="crm-tabbar">
+                <button @click="taskTab = 'task'" :class="taskTab === 'task' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Данные</button>
+                <button @click="taskTab = 'checklist'" :class="taskTab === 'checklist' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Чек-лист</button>
+                <button @click="taskTab = 'substages'; loadTaskSubstages(editingTask.id)" :class="taskTab === 'substages' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Подэтапы</button>
+                <button @click="taskTab = 'comments'" :class="taskTab === 'comments' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Комментарии</button>
+                <button @click="taskTab = 'files'" :class="taskTab === 'files' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Файлы</button>
+                <button @click="taskTab = 'history'" :class="taskTab === 'history' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">История</button>
+            </div>
+        </div>
+
+        <div class="crm-modal-body crm-drawer-body p-6">
+            <div x-show="taskTab === 'task'" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                        <input type="text" x-model="taskForm.title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Подготовить отчёт" />
+                    </div>
+
+                    <input type="hidden" x-model="taskForm.client_id">
+                    <input type="hidden" x-model="taskForm.deal_id">
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
+                        <textarea x-model="taskForm.description" rows="4" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Коротко по сути..."></textarea>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <div class="liquid-glass-pro rounded-2xl p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                <span class="text-sm font-semibold">CRM связь</span>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Сделка</label>
+                                    <select x-model="taskForm.deal_id" @change="taskForm.client_id = crmDeals.find(d => String(d.id) === String(taskForm.deal_id))?.client_id || taskForm.client_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                                        <option value="">- Не выбрана -</option>
+                                        <template x-for="deal in (crmDeals || [])" :key="deal.id">
+                                            <option :value="deal.id" x-text="deal.title + ' (' + (deal.client_name || 'Клиент') + ')'"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Клиент</label>
+                                    <select x-model="taskForm.client_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                                        <option value="">- Не выбран -</option>
+                                        <template x-for="client in (crmClients || [])" :key="client.id">
+                                            <option :value="client.id" x-text="client.name"></option>
+                                        </template>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div x-show="taskForm.deal_id || taskForm.client_id" class="mt-3 flex items-center gap-2 text-xs crm-text-tertiary">
+                                <span x-show="taskForm.deal_id" class="crm-association-chip">
+                                    <span x-text="(crmDeals.find(d => String(d.id) === String(taskForm.deal_id))?.title) || 'Сделка #' + taskForm.deal_id"></span>
+                                </span>
+                                <span x-show="taskForm.client_id" class="crm-association-chip crm-association-chip-accent">
+                                    <span x-text="(crmClients.find(c => String(c.id) === String(taskForm.client_id))?.name) || 'Клиент #' + taskForm.client_id"></span>
+                                </span>
+                            </div>
+
+                            <div x-show="editingTask?.id && taskCanOpenDocuments(editingTask)" class="mt-4 flex justify-end">
+                                <button @click="documentsOpenForTask(editingTask); closeTaskModal()" class="crm-btn-secondary text-sm">Открыть документы</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Проект</label>
+                        <select x-model="taskForm.project_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                            <option value="">-</option>
+                            <template x-for="p in projects" :key="p.id">
+                                <option :value="p.id" x-text="p.name"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Статус</label>
+                        <select x-model="taskForm.status" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                            <template x-for="s in stages" :key="s.id">
+                                <option :value="s.name" x-text="s.name"></option>
+                            </template>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Приоритет</label>
+                        <select x-model="taskForm.priority" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                            <option value="low">Низкий</option>
+                            <option value="medium">Средний</option>
+                            <option value="high">Высокий</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Срок</label>
+                        <input type="date" x-model="taskForm.deadline" class="w-full px-4 py-3 rounded-xl crm-control-input" />
+                    </div>
+
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                            <select x-model="taskForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                                <option value="">- Не выбран -</option>
+                                <template x-for="d in (departments || [])" :key="d.id">
+                                    <option :value="d.id" x-text="d.name"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ответственный</label>
+                            <select x-model="taskForm.assigned_to" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                                <option value="">- Не назначен -</option>
+                                <template x-for="u in (users || []).filter(u => u.id !== currentUser?.id)" :key="u.id">
+                                    <option :value="u.id" x-text="u.full_name || u.login || 'Без имени'"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Выберите отдел и ответственного исполнителя.</div>
+                        </div>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Участники (упоминания)</label>
+
+                        <div class="liquid-glass-pro rounded-2xl p-3">
+                            <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">
+                                Пользователей: <span x-text="(users || []).length"></span>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2 mb-2" x-show="(taskForm.responsible_ids || []).length">
+                                <template x-for="uid in (taskForm.responsible_ids || [])" :key="uid">
+                                    <button type="button"
+                                            @click="taskForm.responsible_ids = (taskForm.responsible_ids || []).filter(x => String(x) !== String(uid))"
+                                            class="mention-chip">
+                                        <span x-text="(users.find(u => String(u.id) === String(uid))?.full_name) || '—'"></span>
+                                        <span class="mention-chip-x">X</span>
+                                    </button>
+                                </template>
+                            </div>
+
+                                <select multiple
+                                    x-model="taskForm.responsible_ids"
+                                    class="w-full px-4 py-3 rounded-xl crm-control-select mention-select"
+                                    size="5">
+                                <template x-for="u in (users || []).filter(u => u.id !== currentUser?.id)" :key="u.id">
+                                    <option :value="u.id" x-text="u.full_name || u.login || 'Без имени'"></option>
+                                </template>
+                            </select>
+
+                            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">
+                                Добавляй участников - они увидят задачу и смогут помогать, но исполнитель остаётся отдельным.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="taskTab === 'checklist'" class="space-y-4">
+                <div class="liquid-glass-pro rounded-2xl p-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div>
+                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Чек-лист</div>
+                            <div class="text-xs" style="color: var(--lg-text-secondary)">Подзадачи по задаче</div>
+                        </div>
+                        <button @click="addChecklistItem()" class="crm-btn-secondary">Добавить</button>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="crm-task-progress-track">
+                            <div class="crm-task-progress-fill"
+                                 :style="`width:${(taskForm.checklist || []).length ? Math.round(((taskForm.checklist || []).filter(i => i.done).length / (taskForm.checklist || []).length) * 100) : 0}%`">
+                            </div>
+                        </div>
+                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)" x-show="(taskForm.checklist || []).length">
+                            Выполнено: <span class="font-semibold" x-text="(taskForm.checklist || []).filter(i => i.done).length"></span>/<span x-text="(taskForm.checklist || []).length"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-3 space-y-2">
+                        <template x-for="(item, idx) in (taskForm.checklist || [])" :key="item.id">
+                            <div class="flex items-center gap-3 liquid-glass-pro rounded-xl p-3">
+                                <label class="sr-only" :for="`task-checklist-done-${item.id || idx}`">Отметить пункт выполненным</label>
+                                <input :id="`task-checklist-done-${item.id || idx}`" :name="`task_checklist_done_${item.id || idx}`" type="checkbox" x-model="item.done" @change="saveTaskChecklist()" class="w-4 h-4" />
+                                <label class="sr-only" :for="`task-checklist-text-${item.id || idx}`">Текст пункта чеклиста</label>
+                                <input :id="`task-checklist-text-${item.id || idx}`" :name="`task_checklist_text_${item.id || idx}`" type="text" x-model="item.text" @input.debounce.500ms="saveTaskChecklist()"
+                                        class="flex-1 px-3 py-2 rounded-xl crm-control-input text-sm" placeholder="Пункт..." />
+                                <button @click="removeChecklistItem(idx)" class="crm-btn-danger crm-icon-button" aria-label="Удалить пункт">
+                                    X
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="(taskForm.checklist || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока пусто.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="taskTab === 'substages' && editingTask" class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <select :value="editingTask?.current_substage_id || ''" @change="editingTask && updateTaskSubstage(editingTask.id, $event.target.value)"
+                            class="flex-1 px-4 py-3 rounded-xl crm-control-select"
+                            :disabled="!editingTask"
+                            x-show="editingTask"
+                            x-cloak>
+                        <option value="">- Выбрать подэтап -</option>
+                        <template x-for="s in (taskSubstages || [])" :key="s.id">
+                            <option :value="s.id" x-text="s.name"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div class="space-y-2" x-show="editingTask && editingTask.current_substage_id">
+                    <div class="liquid-glass-pro rounded-2xl p-4 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 flex-1">
+                            <div class="w-3 h-3 rounded-full" :style="'background:' + ((taskSubstages || []).find(s => String(s.id) === String(editingTask?.current_substage_id))?.color || '#6B7280')"></div>
+                            <span class="text-lg font-semibold" style="color: var(--lg-text-primary)"
+                                  x-text="(taskSubstages || []).find(s => String(s.id) === String(editingTask?.current_substage_id))?.name || ''"></span>
+                        </div>
+                        <span class="text-xs px-3 py-1 rounded-full crm-current-stage-pill">Текущий этап</span>
+                    </div>
+                </div>
+
+                <div x-show="!(taskSubstages || []).length" class="text-sm" style="color: var(--lg-text-secondary)">
+                    Справочник подэтапов пуст. Добавьте подэтапы в Администрирование -> Этапы.
+                </div>
+            </div>
+
+            <div x-show="taskTab === 'comments'" class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <label for="task-comment-input" class="sr-only">Комментарий к задаче</label>
+                    <input id="task-comment-input" name="task_comment" type="text" x-model="newCommentText" class="flex-1 px-4 py-3 rounded-xl crm-control-input" placeholder="Комментарий..." />
+                    <button @click="addCommentToTask()" class="crm-btn-primary">Отправить</button>
+                </div>
+
+                <div class="space-y-3">
+                    <template x-for="c in (taskComments || []).filter(x => !x.parent_id)" :key="c.id">
+                        <div class="liquid-glass-pro p-4 rounded-2xl">
+                            <div class="flex items-center justify-between gap-4">
+                                <div class="text-sm font-semibold text-gray-800 dark:text-white" x-text="c.author_name || '—'"></div>
+                                <div class="text-xs text-gray-500" x-text="formatDateTime(c.created_at)"></div>
+                            </div>
+                            <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap" x-text="c.message"></div>
+
+                            <div class="mt-3 flex items-center justify-between gap-3">
+                                <button type="button" class="crm-btn-secondary text-xs" @click="replyToTaskComment(c)">Ответить</button>
+                                <button @click="deleteCommentFromTask(c.id)" class="crm-btn-danger text-xs">Удалить</button>
+                            </div>
+
+                            <div x-show="commentReplyId === c.id" class="mt-3 ml-4" x-cloak>
+                                <div class="liquid-glass-pro rounded-xl p-3">
+                                    <div class="text-xs font-semibold mb-2" style="color: var(--lg-text-secondary)">Ответ на комментарий</div>
+                                    <textarea x-model="commentReplyText" rows="2" class="w-full px-3 py-2 rounded-lg crm-control-textarea text-sm" placeholder="Ваш ответ..."></textarea>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <button @click="addCommentToTask(c.id)" class="crm-btn-primary text-xs">Отправить</button>
+                                        <button @click="cancelReply()" class="crm-btn-secondary text-xs">Отмена</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mt-3 space-y-2" x-show="(taskComments || []).some(r => String(r.parent_id) === String(c.id))">
+                                <template x-for="r in (taskComments || []).filter(x => String(x.parent_id) === String(c.id))" :key="r.id">
+                                    <div class="liquid-glass-pro rounded-2xl p-3 ml-4">
+                                        <div class="flex items-center justify-between gap-4">
+                                            <div class="text-xs font-semibold" style="color: var(--lg-text-primary)" x-text="r.author_name || '—'"></div>
+                                            <div class="text-[11px]" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(r.created_at)"></div>
+                                        </div>
+                                        <div class="mt-1 text-xs whitespace-pre-wrap" style="color: var(--lg-text-secondary)" x-text="r.message"></div>
+                                        <div class="mt-2 flex justify-end">
+                                            <button @click="deleteCommentFromTask(r.id)" class="crm-btn-danger text-[11px]">Удалить</button>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="taskComments.length === 0" class="text-sm text-gray-500 dark:text-gray-400">Комментариев пока нет.</div>
+                </div>
+            </div>
+
+            <div x-show="taskTab === 'files'" class="space-y-4">
+                <div class="flex items-center justify-between gap-3">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Файлы задачи</div>
+                    <label class="crm-btn-primary cursor-pointer">
+                        <input type="file" class="hidden" @change="attachFileToCurrentTask($event.target.files[0])" />
+                        Прикрепить файл
+                    </label>
+                </div>
+
+                <div class="space-y-2">
+                    <template x-for="f in taskFiles" :key="f.id">
+                        <div class="liquid-glass-pro p-3 rounded-2xl flex items-center justify-between gap-4">
+                            <button class="text-left min-w-0" @click="previewFile(f)">
+                                <div class="text-sm font-semibold text-gray-800 dark:text-white truncate" x-text="f.filename || f.name"></div>
+                                <div class="text-xs text-gray-500" x-text="formatFileSize(Number(f.size || 0))"></div>
+                            </button>
+                            <button @click="deleteFileFromTask(f.id)" class="crm-btn-danger text-xs">Удалить</button>
+                        </div>
+                    </template>
+                    <div x-show="taskFiles.length === 0" class="text-sm text-gray-500 dark:text-gray-400">Файлов пока нет.</div>
+                </div>
+            </div>
+
+            <div x-show="taskTab === 'history'" class="space-y-3">
+                <template x-for="h in taskHistory" :key="h.id">
+                    <div class="liquid-glass-pro p-4 rounded-2xl">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="text-sm font-semibold text-gray-800 dark:text-white" x-text="getHistoryActionText(h)"></div>
+                            <div class="text-xs text-gray-500" x-text="formatDateTime(h.created_at)"></div>
+                        </div>
+                        <div class="mt-1 text-xs text-gray-500" x-text="h.user_name || ''"></div>
+                    </div>
+                </template>
+                <div x-show="taskHistory.length === 0" class="text-sm text-gray-500 dark:text-gray-400">История пустая.</div>
+            </div>
+        </div>
+        <div class="crm-modal-footer crm-drawer-footer">
+            <button x-show="editingTask" @click="deleteTask()" class="crm-btn-secondary text-red-600 dark:text-red-400">Удалить</button>
+            <div class="ml-auto flex items-center gap-3">
+                <button @click="closeTaskModal()" class="crm-btn-secondary">Закрыть</button>
+                <button @click="saveTask()" class="crm-btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>

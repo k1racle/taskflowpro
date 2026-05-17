@@ -1,0 +1,124 @@
+<!-- Модальное окно базы знаний (Статья / Видео / Презентация / FAQ) -->
+<div x-show="knowledgeModalOpen" x-cloak x-transition.opacity class="crm-drawer-overlay z-[80]" @keydown.escape.window="closeKnowledgeModal()">
+    <div class="crm-drawer-backdrop lg-modal-backdrop" @click="closeKnowledgeModal()"></div>
+    <div class="crm-drawer-shell crm-drawer-shell-lg liquid-glass-pro lg-modal-shell"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="translate-x-full opacity-0"
+         x-transition:enter-end="translate-x-0 opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="translate-x-0 opacity-100"
+         x-transition:leave-end="translate-x-full opacity-0">
+        <div class="crm-modal-header crm-drawer-header">
+            <div class="min-w-0">
+                <h2 class="crm-modal-title" x-text="editingKnowledge ? 'Материал' : 'Новый материал'"></h2>
+                <p class="crm-modal-description" x-text="editingKnowledge?.title || 'База знаний и FAQ'"></p>
+            </div>
+            <button @click="closeKnowledgeModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть материал">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="crm-modal-tabbar-shell crm-drawer-tabbar">
+            <div class="crm-tabbar">
+                <button @click="knowledgeModalTab = 'article'" :class="knowledgeModalTab === 'article' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Статья</button>
+                <button @click="knowledgeModalTab = 'video'" :class="knowledgeModalTab === 'video' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Видео</button>
+                <button @click="knowledgeModalTab = 'slides'" :class="knowledgeModalTab === 'slides' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Презентация</button>
+                <button @click="knowledgeModalTab = 'faq'" :class="knowledgeModalTab === 'faq' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">FAQ</button>
+            </div>
+        </div>
+
+        <div class="crm-modal-body crm-modal-body--compact crm-drawer-body crm-modal-form crm-modal-form--compact">
+            <div x-show="knowledgeModalTab === 'article'" class="crm-form-stack--compact">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Заголовок</label>
+                    <input type="text" x-model="knowledgeForm.title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Как оформить отпуск" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Текст</label>
+                    <textarea x-model="knowledgeForm.content" rows="10" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Текст статьи..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="">Все отделы</option>
+                        <template x-for="d in (departments || [])" :key="d.id">
+                            <option :value="d.id" x-text="d.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+
+            <div x-show="knowledgeModalTab === 'video'" class="crm-form-stack--compact">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                    <input type="text" x-model="knowledgeMediaForm.video_title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Инструкция по CRM" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ссылка на видео</label>
+                    <input type="url" x-model="knowledgeMediaForm.video_url" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="https://..." />
+                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">YouTube / Vimeo / прямой mp4.</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="">Все отделы</option>
+                        <template x-for="d in (departments || [])" :key="d.id">
+                            <option :value="d.id" x-text="d.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+
+            <div x-show="knowledgeModalTab === 'slides'" class="crm-form-stack--compact">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                    <input type="text" x-model="knowledgeMediaForm.slides_title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Презентация продукта" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ссылка на презентацию</label>
+                    <input type="url" x-model="knowledgeMediaForm.slides_url" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="https://..." />
+                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Google Slides / PDF / ссылка на файл.</div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="">Все отделы</option>
+                        <template x-for="d in (departments || [])" :key="d.id">
+                            <option :value="d.id" x-text="d.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+
+            <div x-show="knowledgeModalTab === 'faq'" class="crm-form-stack--compact">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Вопрос</label>
+                    <input type="text" x-model="knowledgeMediaForm.faq_question" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Где взять доступ?" />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ответ</label>
+                    <textarea x-model="knowledgeMediaForm.faq_answer" rows="8" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Ответ..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="">Все отделы</option>
+                        <template x-for="d in (departments || [])" :key="d.id">
+                            <option :value="d.id" x-text="d.name"></option>
+                        </template>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="crm-modal-footer crm-modal-footer--compact crm-drawer-footer">
+            <button x-show="editingKnowledge" @click="deleteKnowledge()" class="crm-btn-secondary text-red-600 dark:text-red-400">Удалить</button>
+            <div class="ml-auto flex items-center gap-3">
+                <button @click="closeKnowledgeModal()" class="crm-btn-secondary">Закрыть</button>
+                <button @click="saveKnowledge()" class="crm-btn-primary">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>

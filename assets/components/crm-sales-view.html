@@ -1,0 +1,123 @@
+<div class="space-y-4">
+  <div class="liquid-glass-pro rounded-3xl p-6 crm-screen-section">
+    <div class="crm-toolbar">
+      <div class="crm-toolbar-main">
+        <div>
+          <div class="text-xl font-bold crm-ui-title">Продажи по месяцам</div>
+          <div class="text-sm mt-1 crm-ui-muted">Помесячная аналитика клиентской базы из Excel-импорта.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+      <div class="crm-filter-field">
+        <div class="crm-filter-label">Клиент</div>
+        <label for="crm-sales-client" class="sr-only">Фильтр продаж по клиенту</label>
+        <select id="crm-sales-client" name="crm_sales_client" x-model="crmSalesFilters.client_id" @change="crmLoadSalesAnalytics()" class="crm-control-select mt-2">
+          <option value="">Все клиенты</option>
+          <template x-for="client in (crmSalesAnalytics?.clients || [])" :key="client.id">
+            <option :value="String(client.id)" x-text="client.name"></option>
+          </template>
+        </select>
+      </div>
+
+      <div class="crm-filter-field">
+        <div class="crm-filter-label">Поиск по клиенту</div>
+        <label for="crm-sales-query" class="sr-only">Поиск клиента в аналитике продаж</label>
+        <input id="crm-sales-query" name="crm_sales_query" x-model.debounce.300ms="crmSalesFilters.q" @input="crmLoadSalesAnalytics()" placeholder="Название клиента" class="crm-control-input mt-2 crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" />
+      </div>
+
+      <div class="crm-filter-field">
+        <div class="crm-filter-label">От месяца</div>
+        <label for="crm-sales-from-month" class="sr-only">Начальный месяц продаж</label>
+        <select id="crm-sales-from-month" name="crm_sales_from_month" x-model="crmSalesFilters.from_month" @change="crmLoadSalesAnalytics()" class="crm-control-select mt-2">
+          <option value="">Авто</option>
+          <template x-for="month in (crmSalesAnalytics?.available_months || [])" :key="'from-' + month">
+            <option :value="month" x-text="crmMonthLabel(month)"></option>
+          </template>
+        </select>
+      </div>
+
+      <div class="crm-filter-field">
+        <div class="crm-filter-label">До месяца</div>
+        <label for="crm-sales-to-month" class="sr-only">Конечный месяц продаж</label>
+        <select id="crm-sales-to-month" name="crm_sales_to_month" x-model="crmSalesFilters.to_month" @change="crmLoadSalesAnalytics()" class="crm-control-select mt-2">
+          <option value="">Авто</option>
+          <template x-for="month in (crmSalesAnalytics?.available_months || [])" :key="'to-' + month">
+            <option :value="month" x-text="crmMonthLabel(month)"></option>
+          </template>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+      <div class="crm-summary-label">Сумма за период</div>
+      <div class="mt-2 crm-ui-kpi-value" x-text="crmFormatMoney(crmSalesAnalytics?.summary?.total_amount || 0)"></div>
+    </div>
+    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+      <div class="crm-summary-label">Клиентов в выборке</div>
+      <div class="mt-2 crm-ui-kpi-value" x-text="crmSalesAnalytics?.summary?.clients_count || 0"></div>
+    </div>
+    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+      <div class="crm-summary-label">Последний месяц</div>
+      <div class="mt-2 crm-ui-kpi-value" x-text="crmMonthLabel(crmSalesAnalytics?.summary?.last_sale_month)"></div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.4fr),380px] gap-4 items-start">
+    <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-card">
+      <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
+        <div class="crm-section-head__content">
+          <div class="crm-section-head__title">График продаж по месяцам</div>
+          <div class="crm-section-head__text" x-text="(crmSalesAnalytics?.period?.from_month ? crmMonthLabel(crmSalesAnalytics.period.from_month) : 'Авто') + ' - ' + (crmSalesAnalytics?.period?.to_month ? crmMonthLabel(crmSalesAnalytics.period.to_month) : 'Авто')"></div>
+        </div>
+        <div class="crm-section-head__meta">
+          <div class="crm-ui-segmented">
+          <button
+            type="button"
+            @click="crmSetSalesChartMetric('amount')"
+            class="crm-ui-segmented__button"
+            :class="crmSalesChartMetric === 'amount' ? 'is-active' : ''"
+          >
+            Сумма продаж
+          </button>
+          <button
+            type="button"
+            @click="crmSetSalesChartMetric('clients')"
+            class="crm-ui-segmented__button"
+            :class="crmSalesChartMetric === 'clients' ? 'is-active' : ''"
+          >
+            Количество клиентов
+          </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5">
+        <div x-show="(crmSalesAnalytics?.monthly_totals || []).length > 0" class="relative min-h-[300px]">
+          <canvas x-ref="crmSalesChartCanvas" class="w-full h-[300px] md:h-[340px]"></canvas>
+        </div>
+        <div x-show="(crmSalesAnalytics?.monthly_totals || []).length === 0" class="mt-4 crm-empty-state text-center">
+          <div class="crm-empty-state-title">Нет данных для графика</div>
+          <div class="crm-empty-state-text">Измените фильтры или выполните импорт продаж в администрировании.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="liquid-glass-pro rounded-3xl p-5 crm-queue-card">
+      <div class="font-bold crm-ui-title">Топ клиентов</div>
+      <div class="mt-4 space-y-2">
+        <template x-for="item in (crmSalesAnalytics?.top_clients || [])" :key="item.client_id">
+          <button @click="currentView='crm-clients'; ensureCrmLoaded(); await crmOpenClientDrawer(item.client_id)" class="w-full text-left rounded-2xl p-3 crm-detail-card crm-ui-subcard">
+            <div class="font-semibold truncate crm-ui-title" x-text="item.client_name"></div>
+            <div class="text-xs mt-1 crm-ui-muted" x-text="crmFormatMoney(item.total_amount)"></div>
+            <div class="text-[11px] mt-1 crm-ui-faint" x-text="'Месяцев: ' + (item.months_count || 0) + ' • Последний: ' + crmMonthLabel(item.last_sale_month)"></div>
+          </button>
+        </template>
+        <div x-show="(crmSalesAnalytics?.top_clients || []).length === 0" class="text-sm crm-ui-muted">Список пока пуст.</div>
+      </div>
+    </div>
+  </div>
+</div>

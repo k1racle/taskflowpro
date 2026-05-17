@@ -1,0 +1,142 @@
+<!-- ============================================
+     MY SHIFT VIEW - УЧЕТ ВРЕМЕНИ
+     ============================================ -->
+
+<div class="space-y-4">
+    <!-- Header -->
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div>
+                    <div class="crm-title">Моя смена</div>
+                    <div class="crm-subtitle">Таймер, перерывы, заметки и история — аккуратно и по делу.</div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="loadMyShift()" class="crm-btn-secondary">Обновить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main cards -->
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        <!-- Live timer + actions -->
+        <div class="xl:col-span-1 liquid-glass-pro rounded-3xl p-6">
+            <div class="flex items-center justify-between">
+                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">Статус</div>
+                <div class="text-xs px-3 py-1 rounded-xl crm-surface-card-soft" style="color: var(--lg-text-secondary)"
+                     x-text="({
+                       'offline': 'Не на смене',
+                       'working': 'Работа',
+                       'break': 'Перерыв'
+                     }[shiftStatus] || shiftStatus)"></div>
+            </div>
+
+            <div class="mt-5">
+                <div class="text-5xl font-semibold tracking-tight" style="color: var(--lg-text-primary)" x-text="shiftTimer"></div>
+                <div class="mt-2 text-sm" style="color: var(--lg-text-tertiary)">
+                    <span>Старт:</span>
+                    <span class="font-semibold" style="color: var(--lg-text-secondary)" x-text="shiftStart ? formatDateTime(shiftStart) : '—'"></span>
+                </div>
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-3">
+                <div class="rounded-2xl p-4 crm-surface-card-soft">
+                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Перерыв</div>
+                    <div class="mt-1 text-lg font-semibold" style="color: var(--lg-text-primary)" x-text="breakTime"></div>
+                </div>
+                <div class="rounded-2xl p-4 crm-surface-card-soft">
+                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Отработано</div>
+                    <div class="mt-1 text-lg font-semibold" style="color: var(--lg-text-primary)" x-text="workedTime"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-2 gap-3">
+                <button x-show="shiftStatus === 'offline'" @click="startShift()" class="crm-btn-primary">Начать</button>
+                <button x-show="shiftStatus !== 'offline'" @click="endShift()" class="crm-btn-danger">Завершить</button>
+
+                <button x-show="shiftStatus === 'working'" @click="startBreak()" class="crm-btn-secondary">Перерыв</button>
+                <button x-show="shiftStatus === 'break'" @click="endBreak()" class="crm-btn-secondary">Вернуться</button>
+            </div>
+        </div>
+
+        <!-- Notes + schedule -->
+        <div class="xl:col-span-2 space-y-6 crm-panel-stack crm-panel-stack--compact">
+            <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Заметка по смене</div>
+                        <div class="crm-section-head__text">Что делал(а), что важно, что горит.</div>
+                    </div>
+                    <div class="crm-section-head__meta">
+                        <button @click="saveShiftNote()" class="crm-btn-primary">Сохранить</button>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <textarea x-model="shiftNote" rows="4" class="w-full px-4 py-3 rounded-2xl crm-control-textarea" placeholder="Например: закрываю 2 задачи по проекту X, жду ответ от клиента, завтра созвон..."></textarea>
+                </div>
+            </div>
+
+            <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Неделя</div>
+                        <div class="crm-section-head__text">Быстрый ориентир по дням.</div>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 md:grid-cols-7 gap-2">
+                    <template x-for="day in weekSchedule" :key="day.date">
+                        <div class="rounded-2xl p-3 text-center" :style="day.isToday ? 'border:1px solid color-mix(in oklab, var(--lg-primary) 40%, var(--lg-border)); background: color-mix(in oklab, var(--lg-primary) 10%, var(--crm-surface));' : 'border:1px solid var(--lg-border); background: color-mix(in oklab, var(--crm-surface-alt) 80%, var(--crm-surface));'">
+                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="day.name"></div>
+                            <div class="text-[11px] mt-1" style="color: var(--lg-text-tertiary)" x-text="day.status"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- История смен -->
+    <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+        <div class="crm-table-toolbar crm-toolbar crm-toolbar--dense crm-table-toolbar--compact">
+            <div class="crm-section-head__content">
+                <div class="crm-section-head__title">История смен</div>
+                <div class="crm-section-head__text">Последние 60 записей по вашим сменам и статусам.</div>
+            </div>
+            <div class="crm-section-head__meta">
+                <span class="crm-inline-badge">Последние 60</span>
+            </div>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full crm-data-table">
+                <thead>
+                    <tr>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Дата</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Начало</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Конец</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Перерыв</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Отработано</th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Статус</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200/50 dark:divide-gray-700/50">
+                    <template x-for="shift in (shiftHistory || [])" :key="shift.id">
+                        <tr>
+                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-white" x-text="shift.date"></td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400" x-text="shift.start"></td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400" x-text="shift.end"></td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400" x-text="shift.break"></td>
+                            <td class="px-6 py-4 text-sm font-semibold text-green-500" x-text="shift.worked"></td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-medium"
+                                      :class="shift.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'"
+                                      x-text="shift.status === 'completed' ? 'Завершена' : 'В процессе'"></span>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,3 @@
+[03-Apr-2026 19:48:13 Europe/Berlin] API endpoint:  => resource=, action=, id=, subaction=
+[03-Apr-2026 19:48:48 Europe/Berlin] API endpoint: auth/login => resource=auth, action=login, id=, subaction=
+[03-Apr-2026 19:51:34 Europe/Berlin] API endpoint: auth/login => resource=auth, action=login, id=, subaction=

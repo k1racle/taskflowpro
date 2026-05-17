@@ -1,0 +1,273 @@
+<!-- ============================================
+     ПОЧТОВЫЙ КЛИЕНТ - PREMIUM 2027
+     ============================================ -->
+
+<div x-show="currentView === 'mail'" 
+     x-init="initMail()"
+     x-transition.opacity 
+     x-cloak
+     class="h-full flex flex-col">
+
+    <!-- Хэдер почты -->
+    <div class="liquid-glass-pro mb-6 p-6 rounded-3xl">
+        <div class="flex items-center justify-between mb-4">
+            <h1 class="text-3xl font-semibold" style="color: var(--lg-text-primary)">Почта</h1>
+            <button @click="openMailComposeModal()"
+                     class="crm-btn-primary crm-btn-lg flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Написать письмо
+            </button>
+        </div>
+
+        <!-- Поиск писем -->
+        <div class="relative">
+            <input type="text" 
+                   x-model="mailSearch"
+                   @input="searchMail()"
+                   placeholder="Поиск писем..."
+                   class="w-full px-6 py-4 pl-14 rounded-2xl crm-control-input transition-all">
+            <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 crm-text-faint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+            </svg>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="flex-1 flex gap-6 overflow-hidden">
+        
+        <!-- Боковая панель -->
+        <div class="w-72 liquid-glass-pro rounded-3xl p-4 overflow-y-auto">
+            <nav class="space-y-2">
+                <template x-for="folder in mailFolders" :key="folder.id">
+                    <button @click="loadMailFromFolder(folder.id)"
+                            :class="currentMailFolder === folder.id ? 'crm-surface-card-soft' : ''"
+                            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all crm-menu-item">
+                        <!-- Иконки папок -->
+                        <svg x-show="folder.id === 'inbox'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                        </svg>
+                        <svg x-show="folder.id === 'sent'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                        <svg x-show="folder.id === 'drafts'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <svg x-show="folder.id === 'spam'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                        <svg x-show="folder.id === 'trash'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        <span class="flex-1 text-left" x-text="folder.name"></span>
+                        <span x-show="folder.count > 0" 
+                              class="px-2 py-0.5 rounded-full text-xs font-semibold crm-btn-danger"
+                              x-text="folder.count"></span>
+                    </button>
+                </template>
+            </nav>
+
+            <!-- Разделитель -->
+            <div class="my-4 border-t border-[color:var(--crm-border)]"></div>
+
+            <!-- SMTP Аккаунты -->
+            <div class="space-y-2">
+                <h3 class="text-sm font-semibold px-4 crm-text-muted">Аккаунты</h3>
+                <template x-for="account in mailAccounts" :key="account.id">
+                    <div class="liquid-glass-pro p-3 text-sm rounded-2xl">
+                        <p class="font-medium" style="color: var(--lg-text-primary)" x-text="account.email"></p>
+                        <p class="text-xs crm-text-faint" x-text="account.smtp_host"></p>
+                    </div>
+                </template>
+                <button @click="openMailSettings()"
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl crm-text-muted hover:bg-[color:color-mix(in_oklab,var(--crm-surface-alt)_82%,var(--crm-surface))] transition-all">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>Настройки почты</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Список писем -->
+        <div class="flex-1 liquid-glass-pro rounded-3xl overflow-hidden flex flex-col">
+            <!-- Хэдер списка -->
+            <div class="p-4 border-b border-[color:var(--crm-border)] flex items-center justify-between">
+                <h2 class="text-xl font-semibold" style="color: var(--lg-text-primary)" x-text="getFolderName(currentMailFolder)"></h2>
+                <div class="flex items-center gap-2">
+                    <button @click="refreshMail()" class="crm-btn-ghost crm-icon-button transition-all" aria-label="Обновить">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Список -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-3">
+                <!-- Загрузка -->
+                <div x-show="mailLoading" class="flex items-center justify-center h-full">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                </div>
+
+                <!-- Нет писем -->
+                <div x-show="!mailLoading && mailList.length === 0" class="flex items-center justify-center h-full">
+                    <div class="text-center">
+                        <svg class="w-24 h-24 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <p class="text-lg crm-text-muted">Нет писем</p>
+                    </div>
+                </div>
+
+                <!-- Письма -->
+                <template x-for="email in mailList" :key="email.id">
+                    <div @click="openEmail(email.id)"
+                         class="mail-item-premium cursor-pointer"
+                         :class="!email.is_read ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''">
+                        <div class="flex items-start gap-4">
+                            <!-- Аватар -->
+                            <div class="w-12 h-12 rounded-full crm-brand-mark flex items-center justify-center text-white font-semibold flex-shrink-0"
+                                 x-text="getInitials(email.sender_name || email.recipient_name)">
+                            </div>
+
+                            <!-- Информация -->
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between gap-2 mb-1">
+                                    <h3 class="font-semibold truncate" style="color: var(--lg-text-primary)"
+                                        x-text="email.sender_name || email.recipient_name"></h3>
+                                    <span class="text-xs crm-text-faint whitespace-nowrap" 
+                                          x-text="formatDate(email.sent_at)"></span>
+                                </div>
+                                <p class="text-sm truncate" style="color: var(--lg-text-secondary)" x-text="email.subject"></p>
+                                <p class="text-xs crm-text-faint truncate mt-1" x-text="email.body"></p>
+                            </div>
+
+                            <!-- Иконки -->
+                            <div class="flex items-center gap-2 flex-shrink-0">
+                                <svg x-show="email.is_starred" class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                <svg x-show="email.has_attachments" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 00-6 6 6 6 0 006 6 6 6 0 006-6 6 6 0 00-6-6 6 6 0 00-6 6z"/>
+                                </svg>
+                                <svg x-show="!email.is_read" class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно написания письма -->
+    <div x-show="mailComposeModalOpen"
+         x-transition.opacity
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+         @click.self="mailComposeModalOpen = false">
+        
+        <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl">
+            <!-- Хэдер -->
+            <div class="p-6 border-b border-[color:var(--crm-border)] flex items-center justify-between">
+                <h3 class="text-xl font-semibold" style="color: var(--lg-text-primary)">Новое письмо</h3>
+                <button @click="mailComposeModalOpen = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Форма -->
+            <div class="p-6 space-y-4 overflow-y-auto flex-1">
+                <div>
+                    <label class="block text-sm font-medium crm-text-muted mb-2">Получатель *</label>
+                    <input type="email" x-model="mailForm.to"
+                           class="w-full px-4 py-3 rounded-xl crm-control-input">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium crm-text-muted mb-2">Тема *</label>
+                    <input type="text" x-model="mailForm.subject"
+                           class="w-full px-4 py-3 rounded-xl crm-control-input">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium crm-text-muted mb-2">Текст *</label>
+                    <textarea x-model="mailForm.body" rows="10"
+                              class="w-full px-4 py-3 rounded-xl crm-control-textarea"></textarea>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="useSmtp" x-model="mailForm.use_smtp" class="rounded">
+                    <label for="useSmtp" class="text-sm crm-text-muted">
+                        Отправить через SMTP
+                    </label>
+                </div>
+            </div>
+
+            <!-- Футер -->
+            <div class="p-6 border-t border-[color:var(--crm-border)] flex items-center justify-end gap-3">
+                <button @click="mailComposeModalOpen = false"
+                        class="crm-btn-secondary">
+                    Отмена
+                </button>
+                <button @click="sendMail()"
+                        class="crm-btn-primary">
+                    Отправить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно просмотра письма -->
+    <div x-show="emailViewModalOpen"
+         x-transition.opacity
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+         @click.self="emailViewModalOpen = false">
+        
+        <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl">
+            <!-- Хэдер -->
+            <div class="p-6 border-b border-[color:var(--crm-border)] flex items-center justify-between">
+                <h3 class="text-xl font-semibold" style="color: var(--lg-text-primary)" x-text="viewingEmail?.subject"></h3>
+                <button @click="emailViewModalOpen = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Контент -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-full crm-brand-mark flex items-center justify-center text-white font-semibold"
+                         x-text="getInitials(viewingEmail?.sender_name)">
+                    </div>
+                    <div>
+                        <p class="font-semibold" style="color: var(--lg-text-primary)" x-text="viewingEmail?.sender_name"></p>
+                        <p class="text-sm crm-text-faint" x-text="formatDate(viewingEmail?.sent_at)"></p>
+                    </div>
+                </div>
+
+                <div class="prose dark:prose-invert max-w-none">
+                    <p x-text="viewingEmail?.body" class="whitespace-pre-wrap"></p>
+                </div>
+            </div>
+
+            <!-- Футер -->
+            <div class="p-6 border-t border-[color:var(--crm-border)] flex items-center justify-end gap-3">
+                <button @click="replyToEmail()"
+                        class="crm-btn-secondary">
+                    Ответить
+                </button>
+                <button @click="deleteEmail(viewingEmail?.id)"
+                        class="crm-btn-danger">
+                    Удалить
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

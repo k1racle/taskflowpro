@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>HelpDesk — TaskFlow Pro</title>
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="app.png">
+
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=2">
+    <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=5">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        accent: '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>[x-cloak] { display: none !important; }</style>
+
+    <!-- Auth & API Modules -->
+    <script src="assets/js/core/auth.js?v=1"></script>
+    <script src="assets/js/api.js?v=1"></script>
+
+</head>
+<body class="min-h-screen crm-theme crm-page-backdrop"
+      x-data="helpdeskApp()"
+      x-init="init()"
+      :class="{ 'dark': isDark }">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 liquid-glass-pro crm-public-header">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Логотип -->
+                <a href="index.html" class="flex items-center gap-3">
+                    <div class="w-10 h-10 crm-brand-mark flex items-center justify-center overflow-hidden rounded-xl">
+                        <img src="app.png" alt="TaskFlow" class="w-8 h-8 rounded-lg object-cover">
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-semibold" style="color: var(--lg-text-primary)">TaskFlow Pro</h1>
+                        <p class="text-xs crm-text-faint">Служба поддержки</p>
+                    </div>
+                </a>
+
+                <!-- Правая часть -->
+                <div class="flex items-center gap-3">
+                    <!-- Тема -->
+                    <button @click="toggleTheme()" class="p-2 rounded-xl ios-glass-button">
+                        <svg x-show="!isDark" class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <svg x-show="isDark" class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+
+                    <!-- Вход для админа -->
+                    <a href="index.html" class="px-4 py-2 rounded-xl ios-glass-button text-sm">
+                        <span>Войти</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+
+        <!-- Заголовок -->
+        <div class="liquid-glass-pro crm-panel p-6 mb-8 crm-fade-in">
+            <h2 class="crm-heading-xl mb-2" x-text="t.title"></h2>
+            <p class="text-sm mb-6 crm-text-muted" x-text="t.subtitle"></p>
+
+            <!-- Категории -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <template x-for="category in categories" :key="category.id">
+                    <button @click="selectCategory(category.id)"
+                            class="crm-selection-card transition-all crm-fade-in"
+                            :class="selectedCategory === category.id ? 'is-active' : ''">
+                        <div class="text-3xl mb-2" x-text="category.icon"></div>
+                        <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="category.name"></div>
+                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="category.description"></div>
+                    </button>
+                </template>
+            </div>
+        </div>
+
+        <!-- Форма заявки -->
+        <div x-show="selectedCategory" x-transition.opacity class="liquid-glass-pro crm-panel p-6 mb-8 crm-fade-in">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="text-3xl" x-text="getSelectedCategoryIcon()"></div>
+                <div>
+                    <h3 class="text-xl font-semibold" style="color: var(--lg-text-primary)" x-text="getSelectedCategoryName()"></h3>
+                    <p class="text-xs crm-text-faint">Заполните форму заявки</p>
+                </div>
+            </div>
+
+            <form @submit.prevent="submitTicket()" class="space-y-4">
+                <div>
+                    <label for="helpdesk-name" class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" x-text="t.yourName"></label>
+                    <input id="helpdesk-name" name="name" type="text" x-model="form.name" required
+                           class="w-full px-4 py-3 rounded-2xl ios-glass-input"
+                           :placeholder="t.namePlaceholder">
+                </div>
+
+                <div>
+                    <label for="helpdesk-email" class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" x-text="t.email"></label>
+                    <input id="helpdesk-email" name="email" type="email" x-model="form.email" required
+                           class="w-full px-4 py-3 rounded-2xl ios-glass-input"
+                           :placeholder="t.emailPlaceholder">
+                </div>
+
+                <div>
+                    <label for="helpdesk-phone" class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" x-text="t.phone"></label>
+                    <input id="helpdesk-phone" name="phone" type="tel" x-model="form.phone" required
+                           class="w-full px-4 py-3 rounded-2xl ios-glass-input"
+                           :placeholder="t.phonePlaceholder">
+                </div>
+
+                <div x-show="selectedCategory === 'price'" class="crm-fade-in">
+                    <label for="helpdesk-company" class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Компания</label>
+                    <input id="helpdesk-company" name="company" type="text" x-model="form.company"
+                           class="w-full px-4 py-3 rounded-2xl ios-glass-input"
+                           placeholder="Название вашей компании">
+                </div>
+
+                <div>
+                    <label for="helpdesk-message" class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" x-text="t.message"></label>
+                    <textarea id="helpdesk-message" name="message" x-model="form.message" rows="5" required
+                              class="w-full px-4 py-3 rounded-2xl ios-glass-input"
+                              :placeholder="t.messagePlaceholder"></textarea>
+                </div>
+
+                <div class="flex items-start gap-2">
+                    <input type="checkbox" x-model="form.agree" required id="agree" class="mt-1 rounded">
+                    <label for="agree" class="text-xs" style="color: var(--lg-text-tertiary)" x-text="t.agreeHint"></label>
+                </div>
+
+                <button type="submit"
+                        :disabled="loading"
+                        class="crm-btn-primary crm-btn-lg crm-btn-block disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span x-show="!loading" x-text="t.submit"></span>
+                    <span x-show="loading" class="inline-flex items-center justify-center gap-2">
+                        <svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span x-text="t.sending"></span>
+                    </span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Информация -->
+        <div class="liquid-glass-pro crm-panel p-6 crm-fade-in">
+            <h3 class="text-lg font-semibold mb-4" style="color: var(--lg-text-primary)" x-text="t.contactInfo"></h3>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span style="color: var(--lg-text-primary)">support@taskflow.pro</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    <span style="color: var(--lg-text-primary)">+7 (999) 123-45-67</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span style="color: var(--lg-text-primary)">Пн-Пт: 9:00 - 18:00 (МСК)</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 py-8 border-t border-[color:var(--crm-border)]">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm" style="color: var(--lg-text-tertiary)">
+                TaskFlow Pro © <span x-text="new Date().getFullYear()"></span> — Служба поддержки
+            </p>
+        </div>
+    </footer>
+
+    <!-- Уведомления -->
+    <div x-show="notification.show"
+         x-transition
+         x-cloak
+         class="fixed bottom-4 right-4 z-[120] liquid-glass-pro px-6 py-4 rounded-2xl"
+         :class="notification.type === 'success' ? 'crm-notice-success' : 'crm-notice-danger'">
+        <div class="flex items-center gap-3">
+            <svg x-show="notification.type === 'success'" class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <svg x-show="notification.type === 'error'" class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span x-text="notification.message"></span>
+        </div>
+    </div>
+
+    <script>
+        function helpdeskApp() {
+            return {
+                isDark: false,
+                loading: false,
+                selectedCategory: null,
+                categories: [],
+                form: {
+                    name: '',
+                    email: '',
+                    phone: '',
+                    company: '',
+                    message: '',
+                    agree: false
+                },
+                notification: {
+                    show: false,
+                    type: 'success',
+                    message: ''
+                },
+                translations: {
+                    ru: {
+                        title: 'Служба поддержки',
+                        subtitle: 'Выберите категорию и заполните форму заявки',
+                        yourName: 'Ваше имя',
+                        namePlaceholder: 'Иван Иванов',
+                        email: 'Email',
+                        emailPlaceholder: 'ivan@example.com',
+                        phone: 'Телефон',
+                        phonePlaceholder: '+7 (999) 123-45-67',
+                        message: 'Сообщение',
+                        messagePlaceholder: 'Опишите ваш вопрос...',
+                        agreeHint: 'Я согласен на обработку персональных данных',
+                        submit: 'Отправить заявку',
+                        sending: 'Отправка...',
+                        contactInfo: 'Контактная информация',
+                        success: 'Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.',
+                        error: 'Ошибка при отправке. Попробуйте ещё раз.'
+                    },
+                    en: {
+                        title: 'HelpDesk',
+                        subtitle: 'Select a category and fill out the ticket form',
+                        yourName: 'Your Name',
+                        namePlaceholder: 'John Doe',
+                        email: 'Email',
+                        emailPlaceholder: 'john@example.com',
+                        phone: 'Phone',
+                        phonePlaceholder: '+1 (555) 123-4567',
+                        message: 'Message',
+                        messagePlaceholder: 'Describe your issue...',
+                        agreeHint: 'I agree to personal data processing',
+                        submit: 'Submit Ticket',
+                        sending: 'Sending...',
+                        contactInfo: 'Contact Information',
+                        success: 'Ticket submitted successfully! We will contact you soon.',
+                        error: 'Error submitting. Please try again.'
+                    }
+                },
+                language: 'ru',
+
+                get t() {
+                    return this.translations[this.language] || this.translations.ru;
+                },
+
+                async init() {
+                    this.loadTheme();
+                    this.language = navigator.language?.startsWith('en') ? 'en' : 'ru';
+                    await this.loadCategories();
+                },
+
+                async loadCategories() {
+                    try {
+                        const res = await fetch('api/helpdesk.php?action=categories');
+                        const text = await res.text();
+
+                        let data;
+                        try {
+                            data = JSON.parse(text);
+                        } catch (e) {
+                            data = { success: false, error: 'Invalid JSON' };
+                        }
+
+                        if (data.success && Array.isArray(data.data)) {
+                            // Маппинг иконок: если "?" или пустая, используем emoji по умолчанию
+                            const defaultIcons = {
+                                1: '💼',
+                                2: '📋',
+                                3: '🤝',
+                                4: '🔧',
+                                5: '💳',
+                                6: '📝'
+                            };
+                            
+                            this.categories = data.data.map(c => ({
+                                id: c.id,
+                                name: c.name,
+                                description: c.description || '',
+                                icon: (c.icon === '?' || !c.icon || c.icon.trim() === '') ? defaultIcons[c.id] || '📝' : c.icon
+                            }));
+                        } else {
+                            console.warn('Categories not loaded, using defaults');
+                        }
+                    } catch (e) {
+                        console.error('Ошибка загрузки категорий:', e);
+                    }
+                    
+                    // Категории по умолчанию если не загрузились
+                    if (this.categories.length === 0) {
+                        this.categories = [
+                            { id: 1, name: 'Консультация менеджера', description: 'Помощь в выборе решения', icon: '💼' },
+                            { id: 2, name: 'Заявка на прайс', description: 'Получить прайс-лист', icon: '📋' },
+                            { id: 3, name: 'Партнерство', description: 'Сотрудничество и партнёрство', icon: '🤝' },
+                            { id: 4, name: 'Техподдержка', description: 'Технические вопросы', icon: '🔧' },
+                            { id: 5, name: 'Биллинг', description: 'Оплата и счета', icon: '💳' },
+                            { id: 6, name: 'Другое', description: 'Прочие вопросы', icon: '📝' }
+                        ];
+                    }
+                    
+                    // Если категории загрузились из API но их меньше 6, добавим недостающие
+                    const defaultCategories = [
+                        { id: 1, name: 'Консультация менеджера', description: 'Помощь в выборе решения', icon: '💼' },
+                        { id: 2, name: 'Заявка на прайс', description: 'Получить прайс-лист', icon: '📋' },
+                        { id: 3, name: 'Партнерство', description: 'Сотрудничество и партнёрство', icon: '🤝' },
+                        { id: 4, name: 'Техподдержка', description: 'Технические вопросы', icon: '🔧' },
+                        { id: 5, name: 'Биллинг', description: 'Оплата и счета', icon: '💳' },
+                        { id: 6, name: 'Другое', description: 'Прочие вопросы', icon: '📝' }
+                    ];
+                    
+                    // Маппинг старых категорий на новые
+                    const categoryMap = {
+                        'Техническая поддержка': 'Техподдержка',
+                        'Доработка функционала': 'Техподдержка',
+                        'Заказ разработки': 'Партнерство',
+                        'Консультация': 'Консультация менеджера',
+                        'Прочее': 'Другое'
+                    };
+                    
+                    this.categories = this.categories.map(c => ({
+                        id: c.id,
+                        name: categoryMap[c.name] || c.name,
+                        description: c.description || '',
+                        icon: c.icon || '📝'
+                    }));
+                },
+
+                loadTheme() {
+                    const saved = localStorage.getItem('theme');
+                    this.isDark = saved === 'dark' ||
+                                 (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                    this.applyTheme();
+                },
+
+                toggleTheme() {
+                    this.isDark = !this.isDark;
+                    this.applyTheme();
+                },
+
+                applyTheme() {
+                    if (this.isDark) {
+                        document.documentElement.classList.add('dark');
+                        localStorage.setItem('theme', 'dark');
+                    } else {
+                        document.documentElement.classList.remove('dark');
+                        localStorage.setItem('theme', 'light');
+                    }
+                },
+
+                selectCategory(id) {
+                    this.selectedCategory = id;
+                    this.form.message = '';
+                },
+
+                getSelectedCategoryIcon() {
+                    const cat = this.categories.find(c => c.id === this.selectedCategory);
+                    return cat ? cat.icon : '📝';
+                },
+
+                getSelectedCategoryName() {
+                    const cat = this.categories.find(c => c.id === this.selectedCategory);
+                    return cat ? cat.name : '';
+                },
+
+                async submitTicket() {
+                    if (!this.selectedCategory) {
+                        this.showNotification('error', 'Выберите категорию');
+                        return;
+                    }
+
+                    this.loading = true;
+
+                    try {
+                        const token = localStorage.getItem('token');
+                        const payload = {
+                            category_id: this.selectedCategory,
+                            client_name: this.form.name,
+                            client_email: this.form.email,
+                            client_phone: this.form.phone,
+                            client_company: this.form.company || null,
+                            subject: `Заявка: ${this.getSelectedCategoryName()}`,
+                            description: this.form.message
+                        };
+
+                        const res = await fetch('api/helpdesk.php?action=tickets', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${token || ''}`
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const text = await res.text();
+                        
+                        let data;
+                        try {
+                            data = JSON.parse(text);
+                        } catch (e) {
+                            console.error('JSON parse error:', e);
+                            throw new Error('Некорректный ответ сервера');
+                        }
+
+                        if (data.success) {
+                            this.showNotification('success', this.t.success);
+                            this.form = {
+                                name: '',
+                                email: '',
+                                phone: '',
+                                company: '',
+                                message: '',
+                                agree: false
+                            };
+                            this.selectedCategory = null;
+                        } else {
+                            this.showNotification('error', data.error || this.t.error);
+                        }
+                    } catch (e) {
+                        this.showNotification('error', this.t.error);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+
+                showNotification(type, message) {
+                    this.notification = {
+                        show: true,
+                        type,
+                        message
+                    };
+
+                    setTimeout(() => {
+                        this.notification.show = false;
+                    }, 5000);
+                }
+            };
+        }
+    </script>
+
+</body>
+</html>

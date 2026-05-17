@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Присоединиться к конференции - TaskFlow Pro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1A1A2E 0%, #252542 50%, #1A1A2E 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .card {
+            background: rgba(20, 20, 25, 0.95);
+            backdrop-filter: blur(32px) saturate(180%);
+            -webkit-backdrop-filter: blur(32px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        }
+
+        .logo-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+
+        h1 {
+            color: #FFFFFF;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3B82F6;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .status.waiting {
+            background: rgba(255, 214, 10, 0.1);
+            border: 1px solid rgba(255, 214, 10, 0.3);
+            color: #FFD60A;
+        }
+
+        .status.approved {
+            background: rgba(48, 209, 88, 0.1);
+            border: 1px solid rgba(48, 209, 88, 0.3);
+            color: #30D158;
+        }
+
+        .status.error {
+            background: rgba(255, 69, 58, 0.1);
+            border: 1px solid rgba(255, 69, 58, 0.3);
+            color: #FF453A;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .preview-container {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .video-preview {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .control-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .control-btn.active {
+            background: rgba(48, 209, 88, 0.2);
+            border-color: rgba(48, 209, 88, 0.3);
+        }
+
+        .control-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                    </svg>
+                </div>
+                <h1>Присоединиться к конференции</h1>
+                <p class="subtitle">Введите ваше имя для входа</p>
+            </div>
+
+            <!-- Форма входа -->
+            <form id="joinForm">
+                <div class="form-group">
+                    <label for="guestName">Ваше имя *</label>
+                    <input type="text" id="guestName" required placeholder="Иван Иванов">
+                </div>
+
+                <div class="form-group">
+                    <label for="guestPin">PIN *</label>
+                    <input type="text" id="guestPin" inputmode="numeric" autocomplete="one-time-code" required placeholder="6 цифр">
+                </div>
+
+                <div class="form-group">
+                    <label for="guestEmail">Email (необязательно)</label>
+                    <input type="email" id="guestEmail" placeholder="example@mail.ru">
+                </div>
+
+                <button type="submit" class="btn" id="joinBtn">
+                    Присоединиться
+                </button>
+            </form>
+
+            <!-- Статус -->
+            <div id="status" class="status"></div>
+
+            <!-- Предпросмотр камеры -->
+            <div id="previewContainer" class="preview-container">
+                <div class="video-preview">
+                    <video id="videoPreview" autoplay muted playsinline></video>
+                </div>
+
+                <div class="controls">
+                    <button type="button" class="control-btn active" id="videoToggle">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        Видео
+                    </button>
+                    <button type="button" class="control-btn active" id="audioToggle">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                        </svg>
+                        Аудио
+                    </button>
+                </div>
+
+                <button type="button" class="btn" id="enterBtn">
+                    Войти в конференцию
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Получаем room_id из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomId = urlParams.get('room');
+
+        if (!roomId) {
+            showStatus('Ошибка: не указан идентификатор конференции', 'error');
+        }
+
+        let conferenceId = null;
+        let participantId = null;
+        let localStream = null;
+        let videoEnabled = true;
+        let audioEnabled = true;
+        let checkStatusInterval = null;
+
+        // Элементы
+        const joinForm = document.getElementById('joinForm');
+        const joinBtn = document.getElementById('joinBtn');
+        const statusEl = document.getElementById('status');
+        const previewContainer = document.getElementById('previewContainer');
+        const videoPreview = document.getElementById('videoPreview');
+        const videoToggle = document.getElementById('videoToggle');
+        const audioToggle = document.getElementById('audioToggle');
+        const enterBtn = document.getElementById('enterBtn');
+
+        // Отправка формы
+            joinForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const guestName = document.getElementById('guestName').value;
+                const guestPin = document.getElementById('guestPin').value;
+                const guestEmail = document.getElementById('guestEmail').value;
+
+            joinBtn.disabled = true;
+            joinBtn.innerHTML = '<span class="spinner"></span> Отправка запроса...';
+
+            try {
+                // Получаем информацию о конференции
+                const confResponse = await fetch(`api/conferences/room/${roomId}`);
+                const confData = await confResponse.json();
+
+                if (!confData.success) {
+                    throw new Error('Конференция не найдена');
+                }
+
+                conferenceId = confData.data.id;
+
+                // Отправляем запрос на присоединение
+                const response = await fetch(`api/conferences/${conferenceId}/join-request`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        guest_name: guestName,
+                        guest_pin: guestPin,
+                        guest_email: guestEmail
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    participantId = data.data.participant_id;
+                    showStatus('Запрос отправлен. Ожидайте одобрения организатора...', 'waiting');
+                    
+                    // Начинаем проверку статуса
+                    startStatusCheck();
+                    
+                    // Инициализируем камеру
+                    await initCamera();
+                } else {
+                    throw new Error(data.error || 'Ошибка присоединения');
+                }
+            } catch (error) {
+                showStatus(error.message, 'error');
+                joinBtn.disabled = false;
+                joinBtn.textContent = 'Присоединиться';
+            }
+        });
+
+        // Проверка статуса
+        async function startStatusCheck() {
+            checkStatusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch(`api/conferences/${conferenceId}/participants`);
+                    const data = await response.json();
+
+                    if (data.success) {
+                        const participant = data.data.find(p => p.id === participantId);
+                        
+                        if (participant) {
+                            if (participant.status === 'joined') {
+                                showStatus('Ваш запрос одобрен! Нажмите "Войти в конференцию"', 'approved');
+                                clearInterval(checkStatusInterval);
+                                enterBtn.disabled = false;
+                            } else if (participant.status === 'rejected') {
+                                showStatus('Организатор отклонил ваш запрос', 'error');
+                                clearInterval(checkStatusInterval);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Ошибка проверки статуса:', error);
+                }
+            }, 3000); // Проверка каждые 3 секунды
+        }
+
+        // Инициализация камеры
+        async function initCamera() {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    video: true,
+                    audio: true
+                });
+
+                videoPreview.srcObject = localStream;
+                previewContainer.style.display = 'block';
+                joinForm.style.display = 'none';
+            } catch (error) {
+                console.error('Ошибка доступа к камере:', error);
+                showStatus('Не удалось получить доступ к камере/микрофону', 'error');
+            }
+        }
+
+        // Переключение видео
+        videoToggle.addEventListener('click', () => {
+            if (localStream) {
+                const videoTrack = localStream.getVideoTracks()[0];
+                if (videoTrack) {
+                    videoEnabled = !videoEnabled;
+                    videoTrack.enabled = videoEnabled;
+                    videoToggle.classList.toggle('active', videoEnabled);
+                }
+            }
+        });
+
+        // Переключение аудио
+        audioToggle.addEventListener('click', () => {
+            if (localStream) {
+                const audioTrack = localStream.getAudioTracks()[0];
+                if (audioTrack) {
+                    audioEnabled = !audioEnabled;
+                    audioTrack.enabled = audioEnabled;
+                    audioToggle.classList.toggle('active', audioEnabled);
+                }
+            }
+        });
+
+        // Вход в конференцию
+        enterBtn.addEventListener('click', () => {
+            // Перенаправляем на страницу конференции (Zoom-style)
+            window.location.href = `conference-room.html?room=${roomId}&participant=${participantId}`;
+        });
+
+        // Показ статуса
+        function showStatus(message, type) {
+            statusEl.textContent = message;
+            statusEl.className = `status ${type}`;
+            statusEl.style.display = 'block';
+        }
+
+        // Очистка при закрытии
+        window.addEventListener('beforeunload', () => {
+            if (checkStatusInterval) {
+                clearInterval(checkStatusInterval);
+            }
+            if (localStream) {
+                localStream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>

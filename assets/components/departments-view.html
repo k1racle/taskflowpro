@@ -1,0 +1,85 @@
+<!-- ============================================
+     DEPARTMENTS VIEW - PRO 2027
+     ============================================ -->
+
+<div class="space-y-4">
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div>
+                    <div class="crm-title">Отделы</div>
+                    <div class="crm-subtitle">Структура компании и статистика</div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="openDepartmentModal()" class="crm-btn-primary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Создать отдел
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+        <div class="crm-table-toolbar crm-toolbar crm-toolbar--dense crm-table-toolbar--compact">
+            <div class="crm-section-head__content">
+                <h2 class="crm-section-head__title">Список отделов</h2>
+                <div class="crm-section-head__text">Карточки отделов с краткой сводкой по людям, проектам и задачам.</div>
+            </div>
+            <div class="crm-section-head__meta">
+                <span class="crm-inline-badge">Всего: <span class="ml-1" x-text="(departments || []).length"></span></span>
+            </div>
+        </div>
+
+        <div x-show="(departments || []).length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+            <template x-for="dept in departments" :key="dept.id">
+                <div class="liquid-glass-pro p-6 cursor-pointer crm-card-compact crm-card-equal"
+                     @click="openDepartmentModal(dept)"
+                     @contextmenu.prevent.stop="openDepartmentContextMenu($event, dept)">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-html="getDepartmentIcon(dept.icon)"></svg>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-2" x-text="dept.name"></h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4" x-text="dept.description || 'Описание отсутствует'"></p>
+
+                    <div class="flex items-center gap-3 text-xs" style="color: var(--lg-text-tertiary)">
+                        <div class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                            <span x-text="dept.employees_count || 0"></span>
+                        </div>
+                        <div class="w-px h-4" style="background: color-mix(in oklab, var(--lg-border) 70%, transparent);"></div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                            </svg>
+                            <span x-text="dept.projects_count || 0"></span>
+                        </div>
+                        <div class="w-px h-4" style="background: color-mix(in oklab, var(--lg-border) 70%, transparent);"></div>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            <span x-text="dept.tasks_count || 0"></span>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <div x-show="(departments || []).length === 0" class="crm-empty-state text-center m-6">
+            <div class="crm-empty-state-title">Пока нет отделов</div>
+            <div class="crm-empty-state-text">Создайте первый отдел, чтобы собрать структуру компании и связать сотрудников с проектами.</div>
+            <div class="crm-empty-state-actions">
+                <button @click="openDepartmentModal()" class="crm-btn-secondary">
+                    Создать отдел
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

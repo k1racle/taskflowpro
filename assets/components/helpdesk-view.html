@@ -1,0 +1,625 @@
+<!-- ============================================
+     HELPDESK - ЗАЯВКИ КЛИЕНТОВ
+     ============================================ -->
+
+<div class="space-y-4">
+    <!-- Header со статистикой -->
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div class="crm-toolbar-summary">
+                    <div class="crm-summary-tile">
+                        <div class="crm-summary-label">Всего</div>
+                        <div class="crm-summary-value" x-text="helpdeskStats?.total || 0"></div>
+                    </div>
+                    <div class="crm-summary-tile crm-tone-info">
+                        <div class="crm-summary-label" style="color: currentColor">Новые</div>
+                        <div class="crm-summary-value" style="color: currentColor" x-text="getStatByStatus('Новая') || 0"></div>
+                    </div>
+                    <div class="crm-summary-tile crm-tone-warning">
+                        <div class="crm-summary-label" style="color: currentColor">В работе</div>
+                        <div class="crm-summary-value" style="color: currentColor" x-text="getStatByStatus('В работе') || 0"></div>
+                    </div>
+                    <div class="crm-summary-tile crm-tone-success">
+                        <div class="crm-summary-label" style="color: currentColor">Решено</div>
+                        <div class="crm-summary-value" style="color: currentColor" x-text="getStatByStatus('Решена') || 0"></div>
+                    </div>
+                    <div class="crm-summary-tile crm-tone-danger">
+                        <div class="crm-summary-label" style="color: currentColor">Просрочено</div>
+                        <div class="crm-summary-value" style="color: currentColor" x-text="helpdeskStats?.overdue || 0"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="crm-toolbar-actions">
+                <button @click="openCreateTicketModal()" class="crm-btn-primary text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                    </svg>
+                    Создать заявку
+                </button>
+                <a href="helpdesk.html" target="_blank" class="crm-btn-secondary text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    Портал
+                </a>
+                <button @click="loadHelpdeskTickets(); loadHelpdeskStats()" :disabled="helpdeskLoading" class="crm-btn-secondary text-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" :class="helpdeskLoading ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Обновить
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+        <div class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+            <div class="crm-section-head">
+                <div class="crm-section-head__content">
+                    <h2 class="crm-section-head__title">Фильтры очереди</h2>
+                    <div class="crm-section-head__text">Поиск и срез очереди заявок по статусу, категории и приоритету.</div>
+                </div>
+            </div>
+
+        <div class="mt-4 crm-filterbar crm-filterbar-wide">
+            <div class="crm-filter-field crm-filter-field-search">
+                <div class="crm-filter-label">Поиск</div>
+                <div class="mt-2 flex items-center gap-3">
+                    <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                    <label for="helpdesk-search" class="sr-only">Поиск по заявкам</label>
+                    <input id="helpdesk-search" name="helpdesk_search" type="text" x-model="helpdeskSearch" @input.debounce.300ms="loadHelpdeskTickets()" placeholder="Номер, тема, клиент, email" class="crm-control-input text-sm crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                </div>
+                <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)" x-text="getHelpdeskLastUpdateLabel()"></div>
+            </div>
+            <div class="crm-filter-field">
+                <div class="crm-filter-label">Статус</div>
+                <label for="helpdesk-filter-status" class="sr-only">Фильтр по статусу заявки</label>
+                <div class="mt-2"><select id="helpdesk-filter-status" name="helpdesk_filter_status" x-model="helpdeskFilters.status_id" @change="loadHelpdeskTickets()" class="crm-control-select text-sm"><option value="">Все статусы</option><template x-for="s in helpdeskStatuses" :key="s.id"><option :value="s.id" x-text="s.name"></option></template></select></div>
+            </div>
+            <div class="crm-filter-field">
+                <div class="crm-filter-label">Категория</div>
+                <label for="helpdesk-filter-category" class="sr-only">Фильтр по категории заявки</label>
+                <div class="mt-2"><select id="helpdesk-filter-category" name="helpdesk_filter_category" x-model="helpdeskFilters.category_id" @change="loadHelpdeskTickets()" class="crm-control-select text-sm"><option value="">Все категории</option><template x-for="c in helpdeskCategories" :key="c.id"><option :value="c.id" x-text="c.name"></option></template></select></div>
+            </div>
+            <div class="crm-filter-field">
+                <div class="crm-filter-label">Приоритет</div>
+                <label for="helpdesk-filter-priority" class="sr-only">Фильтр по приоритету заявки</label>
+                <div class="mt-2"><select id="helpdesk-filter-priority" name="helpdesk_filter_priority" x-model="helpdeskFilters.priority" @change="loadHelpdeskTickets()" class="crm-control-select text-sm"><option value="">Все приоритеты</option><option value="low">Низкий</option><option value="medium">Обычный</option><option value="high">Высокий</option><option value="urgent">Срочно</option></select></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Список заявок -->
+    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.6fr),360px] gap-4 items-start">
+        <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+            <div class="crm-table-toolbar crm-toolbar crm-toolbar--dense">
+                <div class="crm-section-head__content">
+                    <h2 class="crm-section-head__title">Очередь заявок</h2>
+                    <div class="crm-section-head__text">Общий список обращений с быстрым открытием карточки и контролем приоритетов.</div>
+                </div>
+                <div class="crm-section-head__meta flex items-center gap-2 flex-wrap">
+                    <span class="crm-inline-badge">Срочные: <span class="ml-1" x-text="(helpdeskTickets || []).filter(ticket => ticket.priority === 'urgent').length"></span></span>
+                </div>
+            </div>
+            <div x-show="helpdeskError" class="mx-4 mt-4 crm-empty-state" data-state="error">
+                <div class="crm-empty-state-title">Не удалось загрузить заявки</div>
+                <div class="crm-empty-state-text" x-text="helpdeskError"></div>
+            </div>
+            <div x-show="helpdeskLoading" class="px-4 py-6">
+                <div class="crm-empty-state" data-state="loading">
+                    <div class="crm-empty-state-title">Загружаем заявки...</div>
+                    <div class="crm-empty-state-text">Подтягиваем очередь, статусы, категории и текущую фильтрацию.</div>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full crm-data-table">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Номер</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Клиент</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Тема</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Категория</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Статус</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Приоритет</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Ответственный</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase" style="color: var(--lg-text-tertiary)">Дата</th>
+                        <th class="px-4 py-3"></th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y" style="border-color: var(--lg-border)">
+                    <template x-for="ticket in helpdeskTickets" :key="ticket.id">
+                        <tr class="transition-colors cursor-pointer" @click="openTicketDetail(ticket)">
+                            <td class="px-4 py-3">
+                                <div class="space-y-1">
+                                    <span class="text-sm font-mono font-semibold" style="color: var(--lg-primary)" x-text="ticket.ticket_number"></span>
+                                    <div class="text-[11px]" style="color: var(--lg-text-tertiary)">ID <span x-text="ticket.id"></span></div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="ticket.client_name"></div>
+                                    <div class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="ticket.client_email || '—'"></div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="min-w-0 max-w-[250px]">
+                                    <div class="text-sm truncate" style="color: var(--lg-text-primary)" x-text="ticket.subject"></div>
+                                    <div class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="formatDate(ticket.created_at)"></div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="crm-status-pill text-xs"
+                                      :style="'background: color-mix(in oklab, ' + (ticket.category_color || '#6B7280') + ' 15%, var(--lg-glass-bg)); color: ' + (ticket.category_color || '#6B7280')">
+                                    <span x-text="ticket.category_name || '—'"></span>
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="crm-status-pill text-xs"
+                                      :style="'background: color-mix(in oklab, ' + (ticket.status_color || '#6B7280') + ' 15%, var(--lg-glass-bg)); color: ' + (ticket.status_color || '#6B7280')">
+                                    <span class="crm-status-pill-dot" :style="'background: ' + (ticket.status_color || '#6B7280')"></span>
+                                    <span x-text="ticket.status_name"></span>
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <span class="crm-priority-pill text-xs" 
+                                       :class="{
+                                            'text-green-500': ticket.priority === 'low',
+                                            'text-blue-500': ticket.priority === 'medium',
+                                            'text-yellow-500': ticket.priority === 'high',
+                                            'text-red-500': ticket.priority === 'urgent'
+                                       }"
+                                       x-text="({low:'Низкий', medium:'Обычный', high:'Высокий', urgent:'Срочно'})[ticket.priority]"></span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="space-y-1">
+                                    <span class="text-sm" style="color: var(--lg-text-secondary)" x-text="ticket.assigned_to_name || 'Не назначен'"></span>
+                                    <div class="text-[11px]" style="color: var(--lg-text-tertiary)" x-text="ticket.assigned_department_name || 'Без отдела'"></div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm" style="color: var(--lg-text-tertiary)" x-text="formatDate(ticket.created_at)"></td>
+                            <td class="px-4 py-3 text-right">
+                                <button @click.stop="openTicketDetail(ticket)" class="crm-soft-action text-xs">
+                                    Открыть
+                                </button>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+            <div x-show="!helpdeskLoading && (!helpdeskTickets || helpdeskTickets.length === 0)" class="crm-empty-state text-center">
+                <div class="crm-empty-state-title">Заявок не найдено</div>
+                <div class="crm-empty-state-text">Измените фильтры или создайте новую заявку вручную.</div>
+                <div class="crm-empty-state-actions">
+                    <button @click="openCreateTicketModal()" class="crm-btn-secondary text-sm">Создать заявку</button>
+                </div>
+            </div>
+        </div>
+        </div>
+
+        <div class="crm-detail-panel crm-panel-stack crm-panel-stack--compact">
+            <div class="liquid-glass-pro rounded-3xl p-5 crm-detail-card crm-card-compact crm-card-equal">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Карточка заявки</div>
+                        <div class="crm-section-head__text">Краткая сводка по выбранному обращению перед переходом в полную карточку.</div>
+                    </div>
+                    <div class="crm-section-head__meta">
+                        <span class="crm-inline-badge" x-text="selectedTicket ? 'Выбрана' : 'Нет выбора'"></span>
+                    </div>
+                </div>
+
+                <div x-show="selectedTicket" class="mt-4 crm-panel-stack crm-panel-stack--compact">
+                    <div class="rounded-2xl p-4 crm-panel-block">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="text-sm font-mono font-semibold truncate" style="color: var(--lg-primary)" x-text="selectedTicket?.ticket_number"></div>
+                                <div class="mt-1 text-sm font-semibold line-clamp-2" style="color: var(--lg-text-primary)" x-text="selectedTicket?.subject"></div>
+                            </div>
+                            <span class="crm-status-pill text-xs"
+                                  :style="'background: color-mix(in oklab, ' + (selectedTicket?.status_color || '#6B7280') + ' 15%, var(--lg-glass-bg)); color: ' + (selectedTicket?.status_color || '#6B7280')">
+                                <span class="crm-status-pill-dot" :style="'background: ' + (selectedTicket?.status_color || '#6B7280')"></span>
+                                <span x-text="selectedTicket?.status_name"></span>
+                            </span>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-3 text-xs">
+                            <div><div style="color: var(--lg-text-tertiary)">Клиент</div><div class="mt-1 font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.client_name || '—'"></div></div>
+                            <div><div style="color: var(--lg-text-tertiary)">Исполнитель</div><div class="mt-1 font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.assigned_to_name || 'Не назначен'"></div></div>
+                            <div><div style="color: var(--lg-text-tertiary)">Категория</div><div class="mt-1 font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.category_name || '—'"></div></div>
+                            <div><div style="color: var(--lg-text-tertiary)">Срок</div><div class="mt-1 font-medium" :class="isOverdue(selectedTicket?.deadline) ? 'text-red-500' : ''" style="color: var(--lg-text-primary)" x-text="selectedTicket?.deadline ? formatDate(selectedTicket?.deadline) : 'Не задан'"></div></div>
+                        </div>
+                        <div class="mt-3 text-xs line-clamp-4" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.description || 'Описание отсутствует'"></div>
+                    </div>
+
+                    <button @click="openTicketDetail(selectedTicket)" class="crm-btn-primary crm-btn-block text-sm">Открыть полную карточку</button>
+                </div>
+
+                <div x-show="!selectedTicket" class="mt-4 crm-empty-state text-center">
+                    <div class="crm-empty-state-title">Заявка не выбрана</div>
+                    <div class="crm-empty-state-text">Выберите обращение из очереди, чтобы увидеть краткую сводку и перейти в полную карточку.</div>
+                </div>
+            </div>
+
+            <div class="liquid-glass-pro rounded-3xl p-5 crm-queue-card crm-card-compact crm-card-equal">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <div class="crm-section-head__title">Фокус очереди</div>
+                        <div class="crm-section-head__text">Быстрый срез по обращениям, которые требуют реакции в первую очередь.</div>
+                    </div>
+                </div>
+                <div class="mt-4 space-y-3">
+                    <div class="crm-queue-row">
+                        <div><div class="text-xs" style="color: var(--lg-text-tertiary)">Срочные</div><div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Требуют реакции</div></div>
+                        <div class="crm-inline-badge" x-text="(helpdeskTickets || []).filter(ticket => ticket.priority === 'urgent').length"></div>
+                    </div>
+                    <div class="crm-queue-row">
+                        <div><div class="text-xs" style="color: var(--lg-text-tertiary)">В работе</div><div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Активная обработка</div></div>
+                        <div class="crm-inline-badge" x-text="(helpdeskTickets || []).filter(ticket => ticket.status_name === 'В работе').length"></div>
+                    </div>
+                    <div class="crm-queue-row">
+                        <div><div class="text-xs" style="color: var(--lg-text-tertiary)">Без назначения</div><div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Нужно взять в работу</div></div>
+                        <div class="crm-inline-badge" x-text="(helpdeskTickets || []).filter(ticket => !ticket.assigned_to_name).length"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: Детали заявки -->
+<div x-show="ticketDetailModalOpen" x-cloak x-transition.opacity
+     class="fixed inset-0 z-[150] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop"
+     @click.self="ticketDetailModalOpen = false">
+    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <!-- Header -->
+        <div class="p-6 flex items-start justify-between gap-4 relative">
+            <div class="absolute left-6 right-6 -bottom-2"><div class="crm-divider opacity-70"></div></div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="text-lg font-mono font-bold" style="color: var(--lg-primary)" x-text="selectedTicket?.ticket_number"></span>
+                    <span class="px-3 py-1 rounded-full text-xs font-medium"
+                          :style="'background: color-mix(in oklab, ' + (selectedTicket?.status_color || '#6B7280') + ' 20%, var(--lg-glass-bg)); color: ' + (selectedTicket?.status_color || '#6B7280')"
+                          x-text="selectedTicket?.status_name"></span>
+                </div>
+                <h3 class="text-xl font-bold truncate" style="color: var(--lg-text-primary)" x-text="selectedTicket?.subject"></h3>
+                <div class="flex items-center gap-4 mt-2 text-sm" style="color: var(--lg-text-secondary)">
+                    <span x-text="selectedTicket?.client_name"></span>
+                    <span>•</span>
+                    <span x-text="formatDate(selectedTicket?.created_at)"></span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+                <button @click="openConvertModal()" class="crm-btn-secondary text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                    </svg>
+                    Конвертировать
+                </button>
+                <button @click="ticketDetailModalOpen = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Основная информация -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Описание -->
+                    <div class="liquid-glass-pro rounded-2xl p-5">
+                        <div class="text-sm font-semibold mb-3" style="color: var(--lg-text-primary)">Описание проблемы</div>
+                        <div class="text-sm whitespace-pre-wrap" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.description"></div>
+                    </div>
+
+                    <!-- Комментарии -->
+                    <div class="liquid-glass-pro rounded-2xl p-5">
+                        <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
+                            <div class="crm-section-head__content">
+                                <div class="crm-section-head__title">Комментарии</div>
+                                <div class="crm-section-head__text">Лента обсуждения по заявке с внутренними и клиентскими сообщениями.</div>
+                            </div>
+                            <div class="crm-section-head__meta">
+                                <button @click="showCommentForm = !showCommentForm" class="crm-btn-secondary text-sm">
+                                    <span x-text="showCommentForm ? 'Отмена' : 'Добавить комментарий'"></span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Форма комментария -->
+                        <div x-show="showCommentForm" class="mb-4">
+                            <label for="helpdesk-new-comment" class="sr-only">Комментарий к заявке</label>
+                            <textarea id="helpdesk-new-comment" name="helpdesk_new_comment" x-model="newComment" rows="3" class="w-full px-4 py-3 rounded-xl crm-control-textarea text-sm" 
+                                       placeholder="Введите комментарий..."></textarea>
+                            <div class="flex items-center gap-3 mt-3">
+                                <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                                    <input type="checkbox" x-model="commentIsInternal" class="w-4 h-4">
+                                    Внутренний (не виден клиенту)
+                                </label>
+                                <button @click="addComment()" class="ml-auto crm-btn-primary text-sm">
+                                    Отправить
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Список комментариев -->
+                        <div class="space-y-3">
+                            <template x-for="comment in ticketComments" :key="comment.id">
+                                <div class="rounded-xl p-4" 
+                                     :style="comment.is_internal ? 'background: color-mix(in oklab, var(--lg-warning) 10%, var(--lg-glass-bg)); border:1px solid var(--lg-border);' : 'background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);'">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <span class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="comment.user_name || 'Клиент'"></span>
+                                                <span class="text-xs px-2 py-0.5 rounded-full" 
+                                                      :style="comment.is_internal ? 'background: color-mix(in oklab, var(--lg-warning) 20%, transparent); color: var(--lg-warning);' : 'background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent); color: var(--lg-text-tertiary);'"
+                                                      x-text="formatDateTime(comment.created_at)"></span>
+                                                <span x-show="comment.is_internal" class="text-xs px-2 py-0.5 rounded-full" style="background: color-mix(in oklab, var(--lg-warning) 20%, transparent); color: var(--lg-warning);">Внутренний</span>
+                                            </div>
+                                            <div class="text-sm whitespace-pre-wrap" style="color: var(--lg-text-secondary)" x-text="comment.message"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                         </template>
+                            <div x-show="!ticketComments || ticketComments.length === 0" class="crm-empty-state text-center py-8">
+                                <div class="crm-empty-state-title">Комментариев пока нет</div>
+                                <div class="crm-empty-state-text">Когда по заявке появятся новые сообщения, они будут показаны в этой ленте.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- История -->
+                    <div class="liquid-glass-pro rounded-2xl p-5">
+                        <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
+                            <div class="crm-section-head__content">
+                                <div class="crm-section-head__title">История изменений</div>
+                                <div class="crm-section-head__text">Последовательность обновлений статуса, исполнителя и служебных действий по заявке.</div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <template x-for="h in ticketHistory" :key="h.id">
+                                <div class="flex items-start gap-3 text-sm">
+                                    <span class="text-xs px-2 py-1 rounded" style="background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent); color: var(--lg-text-tertiary)" x-text="formatDateTime(h.created_at)"></span>
+                                    <span style="color: var(--lg-text-secondary)" x-text="formatHistoryAction(h)"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Боковая панель -->
+                <div class="space-y-4">
+                    <!-- Действия -->
+                    <div class="liquid-glass-pro rounded-2xl p-5">
+                        <div class="text-sm font-semibold mb-4" style="color: var(--lg-text-primary)">Действия</div>
+                        
+                        <template x-if="selectedTicket">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs mb-1.5" style="color: var(--lg-text-tertiary)">Статус</label>
+                                    <select x-model="selectedTicket.status_id" @change="changeTicketStatus()" class="w-full px-3 py-2 rounded-xl crm-control-select text-sm">
+                                        <template x-for="s in helpdeskStatuses" :key="s.id">
+                                            <option :value="s.id" x-text="s.name"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs mb-1.5" style="color: var(--lg-text-tertiary)">Ответственный</label>
+                                    <select x-model="selectedTicket.assigned_to" @change="assignTicket()" class="w-full px-3 py-2 rounded-xl crm-control-select text-sm">
+                                        <option value="">Не назначен</option>
+                                        <template x-for="u in users" :key="u.id">
+                                            <option :value="u.id" x-text="u.full_name"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label class="block text-xs mb-1.5" style="color: var(--lg-text-tertiary)">Отдел</label>
+                                    <select x-model="selectedTicket.assigned_department_id" @change="assignTicket()" class="w-full px-3 py-2 rounded-xl crm-control-select text-sm">
+                                        <option value="">Не назначен</option>
+                                        <template x-for="d in departments" :key="d.id">
+                                            <option :value="d.id" x-text="d.name"></option>
+                                        </template>
+                                    </select>
+                                </div>
+
+                                <button @click="openResolveModal()" class="crm-btn-primary crm-btn-block">
+                                    Завершить заявку
+                                </button>
+                            </div>
+                        </template>
+                        <div x-show="!selectedTicket" class="text-xs" style="color: var(--lg-text-secondary)">
+                            Выберите заявку, чтобы изменить статус и назначение.
+                        </div>
+                    </div>
+
+                    <!-- Информация -->
+                    <div class="liquid-glass-pro rounded-2xl p-5 space-y-4">
+                        <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Информация</div>
+                        
+                        <div>
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Клиент</div>
+                            <div class="text-sm font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.client_name"></div>
+                            <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.client_email"></div>
+                            <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.client_phone"></div>
+                        </div>
+
+                        <div x-show="selectedTicket?.client_company">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Компания</div>
+                            <div class="text-sm" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.client_company"></div>
+                        </div>
+
+                        <div x-show="selectedTicket?.budget">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Бюджет</div>
+                            <div class="text-sm font-medium" style="color: var(--lg-text-primary)" x-text="formatMoney(selectedTicket?.budget)"></div>
+                        </div>
+
+                        <div x-show="selectedTicket?.deadline">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Срок</div>
+                            <div class="text-sm" :class="isOverdue(selectedTicket?.deadline) ? 'text-red-500 font-medium' : 'text-gray-600'" x-text="formatDate(selectedTicket?.deadline)"></div>
+                        </div>
+
+                        <div x-show="selectedTicket?.task_id || selectedTicket?.crm_client_id || selectedTicket?.crm_deal_id" class="pt-3 border-t" style="border-color: var(--lg-border)">
+                            <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Связанные объекты</div>
+                            <div class="space-y-1">
+                                <a x-show="selectedTicket?.task_id" @click.stop="openTask(selectedTicket.task_id)" class="block text-sm text-primary hover:underline">Задача #<span x-text="selectedTicket?.task_id"></span></a>
+                                <a x-show="selectedTicket?.crm_client_id" @click.stop="openClient(selectedTicket.crm_client_id)" class="block text-sm text-primary hover:underline">Клиент CRM #<span x-text="selectedTicket?.crm_client_id"></span></a>
+                                <a x-show="selectedTicket?.crm_deal_id" @click.stop="openDeal(selectedTicket.crm_deal_id)" class="block text-sm text-primary hover:underline">Сделка #<span x-text="selectedTicket?.crm_deal_id"></span></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: Конвертация -->
+<div x-show="convertModalOpen" x-cloak x-transition.opacity
+     class="fixed inset-0 z-[160] flex items-center justify-center p-4 backdrop-blur-sm"
+     @click.self="convertModalOpen = false">
+    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-md p-6">
+        <div class="text-lg font-semibold mb-2" style="color: var(--lg-text-primary)">Конвертировать заявку</div>
+        <div class="text-sm mb-6" style="color: var(--lg-text-secondary)">Создайте связанный объект</div>
+        
+        <div class="space-y-3">
+            <button @click="convertTicket('task')" class="w-full px-4 py-3 rounded-xl flex items-center gap-3 crm-surface-card-soft">
+                <svg class="w-5 h-5" style="color: var(--lg-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <div class="text-left">
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Задача</div>
+                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Создать задачу из заявки</div>
+                </div>
+            </button>
+
+            <button @click="convertTicket('client')" class="w-full px-4 py-3 rounded-xl flex items-center gap-3 crm-surface-card-soft">
+                <svg class="w-5 h-5" style="color: var(--lg-success)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <div class="text-left">
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Клиент CRM</div>
+                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Добавить в базу клиентов</div>
+                </div>
+            </button>
+
+            <button @click="convertTicket('deal')" class="w-full px-4 py-3 rounded-xl flex items-center gap-3 crm-surface-card-soft">
+                <svg class="w-5 h-5" style="color: var(--lg-warning)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="text-left">
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Сделка</div>
+                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Создать сделку в CRM</div>
+                </div>
+            </button>
+        </div>
+
+        <div class="mt-6">
+            <button @click="convertModalOpen = false" class="crm-btn-secondary crm-btn-block">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: Завершение заявки -->
+<div x-show="resolveModalOpen" x-cloak x-transition.opacity
+     class="fixed inset-0 z-[160] flex items-center justify-center p-4 backdrop-blur-sm"
+     @click.self="resolveModalOpen = false">
+    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-lg p-6">
+        <div class="text-lg font-semibold mb-2" style="color: var(--lg-text-primary)">Завершение заявки</div>
+        <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Опишите решение проблемы</div>
+        
+        <div class="mb-4">
+            <label for="helpdesk-resolve-status" class="block text-xs mb-1.5" style="color: var(--lg-text-tertiary)">Статус после завершения</label>
+            <select id="helpdesk-resolve-status" name="resolve_status" x-model="resolveStatus" class="w-full px-3 py-2 rounded-xl crm-control-select text-sm">
+                <template x-for="s in helpdeskStatuses" :key="s.id">
+                    <option :value="s.id" x-text="s.name"></option>
+                </template>
+            </select>
+        </div>
+
+        <div class="mb-6">
+            <label for="helpdesk-resolution-text" class="block text-xs mb-1.5" style="color: var(--lg-text-tertiary)">Решение</label>
+            <textarea id="helpdesk-resolution-text" name="resolution_text" x-model="resolutionText" rows="4" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Опишите как была решена проблема..."></textarea>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button @click="resolveModalOpen = false" class="crm-btn-secondary flex-1">Отмена</button>
+            <button @click="resolveTicket()" class="flex-1 px-4 py-2.5 rounded-xl crm-btn-primary">Завершить</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка: Создание заявки -->
+<div x-show="createTicketModalOpen" x-cloak x-transition.opacity
+     class="fixed inset-0 z-[150] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop"
+     @click.self="createTicketModalOpen = false">
+    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
+        <div class="p-6 flex items-center justify-between gap-3 relative">
+            <div class="absolute left-6 right-6 -bottom-2"><div class="crm-divider opacity-70"></div></div>
+            <div>
+                <div class="text-xl font-semibold" style="color: var(--lg-text-primary)">Новая заявка</div>
+                <div class="text-sm" style="color: var(--lg-text-secondary)">Создание заявки от клиента</div>
+            </div>
+            <button @click="createTicketModalOpen = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="helpdesk-client-name" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Имя клиента *</label>
+                    <input id="helpdesk-client-name" name="client_name" type="text" x-model="newTicketForm.client_name" class="w-full px-4 py-3 rounded-xl crm-control-input">
+                </div>
+                <div>
+                    <label for="helpdesk-client-email" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Email</label>
+                    <input id="helpdesk-client-email" name="client_email" type="email" x-model="newTicketForm.client_email" class="w-full px-4 py-3 rounded-xl crm-control-input">
+                </div>
+            </div>
+
+            <div>
+                <label for="helpdesk-ticket-subject" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Тема *</label>
+                <input id="helpdesk-ticket-subject" name="subject" type="text" x-model="newTicketForm.subject" class="w-full px-4 py-3 rounded-xl crm-control-input">
+            </div>
+
+            <div>
+                <label for="helpdesk-ticket-description" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Описание *</label>
+                <textarea id="helpdesk-ticket-description" name="description" x-model="newTicketForm.description" rows="4" class="w-full px-4 py-3 rounded-xl crm-control-textarea"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="helpdesk-ticket-category" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Категория</label>
+                    <select id="helpdesk-ticket-category" name="category_id" x-model="newTicketForm.category_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="">Не выбрана</option>
+                        <template x-for="c in helpdeskCategories" :key="c.id">
+                            <option :value="c.id" x-text="c.name"></option>
+                        </template>
+                    </select>
+                </div>
+                <div>
+                    <label for="helpdesk-ticket-priority" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Приоритет</label>
+                    <select id="helpdesk-ticket-priority" name="priority" x-model="newTicketForm.priority" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <option value="low">Низкий</option>
+                        <option value="medium" selected>Обычный</option>
+                        <option value="high">Высокий</option>
+                        <option value="urgent">Срочно</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 flex items-center justify-end gap-3 relative">
+            <div class="absolute left-6 right-6 -top-2"><div class="crm-divider opacity-70"></div></div>
+            <button @click="createTicketModalOpen = false" class="crm-btn-secondary">Отмена</button>
+            <button @click="createTicket()" :disabled="helpdeskSubmitting" class="crm-btn-primary disabled:opacity-60 disabled:cursor-not-allowed" x-text="helpdeskSubmitting ? 'Создание...' : 'Создать'"></button>
+        </div>
+    </div>
+</div>

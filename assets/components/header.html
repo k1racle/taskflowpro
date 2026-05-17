@@ -1,0 +1,280 @@
+<!-- ============================================
+     HEADER - Компонент шапки
+     ============================================ -->
+
+<header class="crm-header liquid-glass-pro px-5 lg:px-6 py-3 rounded-2xl mb-2 sticky top-3 lg:top-4 z-30 ios-nav-bar">
+    <!-- License banner (domain-based) -->
+    <div x-show="license?.checked && license?.enabled && !license?.valid"
+         x-transition.opacity
+         class="mb-3">
+        <div class="liquid-glass-pro rounded-2xl px-4 py-3 flex items-start justify-between gap-4 crm-banner-danger">
+            <div class="min-w-0">
+                <div class="text-sm font-semibold crm-text-primary">Лицензия не активна для этого домена</div>
+                <div class="text-xs mt-1 crm-text-secondary">
+                    Ожидается домен:
+                    <span class="font-semibold" x-text="license?.licensed_domain || '—'"></span>
+                    · Текущий:
+                    <span class="font-semibold" x-text="license?.request_domain || '—'"></span>
+                </div>
+            </div>
+            <button type="button" class="crm-btn-secondary text-xs"
+                    @click="checkLicenseStatus()">
+                Проверить
+            </button>
+        </div>
+    </div>
+
+    <div class="flex flex-col gap-3">
+        <div class="crm-header-main-row flex items-start justify-between gap-4 flex-col lg:flex-row lg:items-center">
+        <!-- Заголовок -->
+        <div class="flex items-center justify-between gap-3 min-w-0 w-full lg:w-auto">
+            <div class="flex items-center gap-3 min-w-0 flex-1">
+            <div class="crm-mobile-brand lg:hidden" aria-label="TaskFlow Pro">
+                <img src="app.png" alt="TaskFlow Pro" class="crm-mobile-brand__logo">
+            </div>
+
+            <div class="min-w-0 flex-1 hidden lg:block">
+                <div class="crm-breadcrumbs mb-1.5 hidden lg:flex">
+                    <span>Главная</span>
+                    <span class="crm-breadcrumb-sep">/</span>
+                    <span x-text="getCurrentViewTitle()"></span>
+                </div>
+
+                <div class="crm-mobile-context-chip lg:hidden" x-text="getMobileContextTag()"></div>
+
+                <div class="flex items-center gap-3 min-w-0">
+                    <h1 class="text-[clamp(1.5rem,2vw,1.875rem)] font-bold leading-[1.15] truncate crm-text-primary" x-text="getCurrentViewTitle()"></h1>
+                </div>
+                <p class="crm-mobile-view-subtitle lg:hidden" x-show="getCurrentViewSubtitle()" x-text="getCurrentViewSubtitle()"></p>
+            </div>
+            </div>
+
+            <div class="crm-mobile-header-icons lg:hidden">
+                <button type="button"
+                        class="crm-mobile-header-icons__action"
+                        :class="topbarSearchOpen ? 'is-active' : ''"
+                        @click="handleMobileHeaderAction('search')"
+                        aria-label="Поиск">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                </button>
+                <button type="button"
+                        class="crm-mobile-header-icons__action"
+                        @click="toggleTheme()"
+                        aria-label="Смена темы">
+                    <svg x-show="!isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                    </svg>
+                    <svg x-show="isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+                <button type="button"
+                        class="crm-mobile-header-icons__action crm-mobile-header-icons__action--alerts"
+                        @click="handleMobileHeaderAction('notifications')"
+                        aria-label="Уведомления">
+                    <span class="crm-mobile-header-icons__icon-wrap">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        <span x-show="notificationCount > 0" class="crm-mobile-header-icons__badge" x-text="notificationCount > 9 ? '9+' : notificationCount"></span>
+                    </span>
+                </button>
+                <button type="button"
+                        class="crm-mobile-header-icons__action"
+                        @click="toggleWidgetsPanel()"
+                        aria-label="Виджеты">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Правая часть -->
+        <div class="crm-header-actions-row hidden lg:flex items-center gap-3 self-stretch w-full lg:w-auto justify-between lg:justify-end">
+            <!-- Кнопки -->
+            <div class="relative flex items-center">
+                <div class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                    <button @click="topbarSearchOpen ? closeTopbarSearch() : openTopbarSearch()"
+                            class="rounded-xl crm-btn-ghost crm-icon-button"
+                            :class="topbarSearchOpen ? 'liquid-glass-pro' : ''"
+                            title="Поиск">
+                        <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                        </svg>
+                    </button>
+
+                    <button @click="toggleTheme()" class="rounded-xl crm-btn-ghost crm-icon-button" title="Тема">
+                        <svg x-show="!isDark" class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+                        </svg>
+                        <svg x-show="isDark" class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- раскрывающийся инпут уезжает налево от иконок -->
+                <div class="hidden lg:flex justify-end">
+                    <div x-show="topbarSearchOpen" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-x-3 scale-95" x-transition:enter-end="opacity-100 translate-x-0 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-x-0 scale-100" x-transition:leave-end="opacity-0 translate-x-3 scale-95" class="absolute right-[104px] top-1/2 -translate-y-1/2">
+                        <div class="crm-search-field" style="width: 320px;">
+                            <label for="topbar-search-input" class="sr-only">Глобальный поиск</label>
+                            <input id="topbar-search-input"
+                                    name="global_search"
+                                    type="text"
+                                    x-model="globalSearch"
+                                    @input.debounce.200ms="performGlobalSearch()"
+                                    @keydown.escape.window="closeTopbarSearch()"
+                                    placeholder="Поиск..."
+                                    class="text-sm crm-control-input crm-input-no-suggest"
+                                    autocomplete="off"
+                                    autocapitalize="off"
+                                    autocorrect="off"
+                                    spellcheck="false">
+                            <span class="crm-search-field-icon" aria-hidden="true">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                                </svg>
+                            </span>
+                            <button type="button" @click="closeTopbarSearch()" class="crm-search-field-clear" title="Закрыть" aria-label="Очистить поиск">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- results dropdown -->
+                        <div x-show="lastSearchResults" x-transition.opacity class="absolute left-0 right-0 mt-2 liquid-glass-pro rounded-2xl overflow-hidden shadow-2xl">
+                            <div class="p-2 max-h-[340px] overflow-y-auto">
+                                <template x-for="section in getTopbarSearchSections()" :key="section">
+                                    <div x-show="(lastSearchResults?.[section] || []).length" class="mb-2 last:mb-0">
+                                        <div class="px-3 py-2 text-xs font-semibold crm-text-tertiary" x-text="getTopbarSearchSectionTitle(section)"></div>
+                                        <div class="space-y-1">
+                                            <template x-for="item in (lastSearchResults?.[section] || []).slice(0, 6)" :key="getTopbarSearchItemKey(section, item)">
+                                                <button type="button"
+                                                        class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all"
+                                                        @click="await navigateFromSearch(section, item)">
+                                                    <div class="text-sm font-semibold truncate crm-text-primary"
+                                                         x-text="getTopbarSearchItemTitle(item)"></div>
+                                                    <div class="text-xs truncate crm-text-secondary"
+                                                         x-text="getTopbarSearchItemDescription(item)"></div>
+                                                </button>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </template>
+                                <div class="px-3 py-3 text-sm crm-text-secondary" x-show="!hasTopbarSearchResults()">Ничего не найдено.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Уведомления -->
+            <button @click="toggleNotificationsPanel()"
+                    class="relative rounded-xl crm-btn-ghost crm-icon-button"
+                    :class="notificationCount > 0 ? 'notifications-trigger-active' : ''"
+                    type="button"
+                    title="Уведомления">
+                <svg class="w-5 h-5 crm-icon-color" :class="notificationCount > 0 ? 'text-primary' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                </svg>
+                <span x-show="notificationCount > 0"
+                      class="absolute -top-1 -right-1 crm-notification-badge"
+                      x-text="notificationCount > 9 ? '9+' : notificationCount">
+                </span>
+            </button>
+
+            <button x-show="browserNotificationPromptVisible"
+                    @click="requestNotificationPermission(true)"
+                    class="hidden lg:inline-flex items-center gap-2 crm-btn-secondary text-xs font-semibold"
+                    type="button"
+                    title="Включить уведомления браузера">
+                <span>Разрешить уведомления</span>
+            </button>
+
+            <!-- Виджеты -->
+            <button @click="toggleWidgetsPanel()" class="rounded-xl crm-btn-ghost crm-icon-button" type="button">
+                <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                </svg>
+            </button>
+        </div>
+
+        </div>
+
+        <div x-show="topbarSearchOpen"
+             x-transition.opacity
+             class="crm-mobile-search-overlay lg:hidden"
+             x-cloak
+             @keydown.escape.window="closeTopbarSearch()">
+            <div class="crm-mobile-search-overlay__backdrop" @click="closeTopbarSearch()"></div>
+            <div class="crm-mobile-search-sheet liquid-glass-pro" @click.stop>
+                <div class="crm-mobile-search-sheet__handle"></div>
+                <div class="crm-mobile-search-sheet__header">
+                    <div class="crm-search-field crm-mobile-search-field">
+                        <label for="topbar-search-input-mobile" class="sr-only">Глобальный поиск на мобильном</label>
+                        <input id="topbar-search-input-mobile"
+                               name="global_search_mobile"
+                               type="text"
+                               x-model="globalSearch"
+                               @input.debounce.200ms="performGlobalSearch()"
+                               @keydown.escape.window="closeTopbarSearch()"
+                               placeholder="Задачи, клиенты, сделки, файлы..."
+                               class="text-sm crm-control-input crm-input-no-suggest"
+                               autocomplete="off"
+                               autocapitalize="off"
+                               autocorrect="off"
+                               spellcheck="false">
+                        <span class="crm-search-field-icon" aria-hidden="true">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                            </svg>
+                        </span>
+                    </div>
+                    <button type="button"
+                            class="crm-mobile-search-sheet__close"
+                            @click="closeTopbarSearch()"
+                            aria-label="Закрыть">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="crm-mobile-search-sheet__body">
+                    <div class="crm-mobile-search-results" x-show="globalSearch">
+                        <template x-for="section in getTopbarSearchSections()" :key="section + '-mobile'">
+                            <div x-show="(lastSearchResults?.[section] || []).length" class="crm-mobile-search-results__section">
+                                <div class="crm-mobile-search-results__section-title" x-text="getTopbarSearchSectionTitle(section)"></div>
+                                <div class="crm-mobile-search-results__list">
+                                     <template x-for="item in (lastSearchResults?.[section] || []).slice(0, 6)" :key="getTopbarSearchItemKey(section, item)">
+                                         <button type="button"
+                                                 class="crm-mobile-search-result-item"
+                                                 @click="await navigateFromSearch(section, item)">
+                                             <div class="crm-mobile-search-result-item__meta">
+                                                 <span class="crm-mobile-search-result-item__section" x-text="getTopbarSearchSectionItemTitle(section)"></span>
+                                             </div>
+                                             <div class="crm-mobile-search-result-item__title" x-text="getTopbarSearchItemTitle(item)"></div>
+                                            <div class="crm-mobile-search-result-item__description"
+                                                 x-show="getTopbarSearchItemDescription(item)"
+                                                 x-text="getTopbarSearchItemDescription(item)"></div>
+                                         </button>
+                                     </template>
+                                 </div>
+                             </div>
+                         </template>
+
+                        <div class="crm-mobile-search-results__empty"
+                             x-show="globalSearch.length >= 2 && !hasTopbarSearchResults()">
+                            Ничего не найдено. Попробуйте другой запрос.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

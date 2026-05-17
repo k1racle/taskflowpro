@@ -1,0 +1,41 @@
+# TaskFlow Pro API
+# Разрешаем все запросы
+
+# Отключаем mod_security
+<IfModule mod_security2.c>
+    SecRuleEngine Off
+</IfModule>
+
+# Разрешаем доступ
+<IfModule mod_authz_core.c>
+    Require all granted
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /api/
+
+    # Передаем Authorization заголовок в PHP
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Пропускаем существующие файлы
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^ - [L]
+
+    # Все запросы на index.php
+    RewriteRule ^(.*)$ index.php?endpoint=$1 [L,QSA]
+</IfModule>
+
+# CORS
+<IfModule mod_headers.c>
+    Header set Access-Control-Allow-Origin "*"
+    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
+    Header set Access-Control-Allow-Credentials "true"
+</IfModule>
+
+# MIME
+<IfModule mod_mime.c>
+    AddType application/json json
+</IfModule>

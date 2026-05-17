@@ -1,0 +1,63 @@
+<!-- Универсальный предпросмотр файлов (глобальное) -->
+<div x-show="filePreviewOpen" x-cloak x-transition.opacity
+     class="fixed inset-0 z-[150] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop"
+     @click.self="filePreviewOpen = false" @keydown.escape.window="filePreviewOpen = false">
+    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="p-5 flex items-center justify-between gap-3 relative">
+            <div class="absolute left-5 right-5 -bottom-2"><div class="crm-divider opacity-70"></div></div>
+            <div class="min-w-0">
+                <div class="text-lg font-bold" style="color: var(--lg-text-primary)" x-text="filePreviewName"></div>
+                <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="filePreviewType"></div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a :href="filePreviewSrc" download class="crm-btn-secondary text-sm" @click.stop>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                </a>
+                <button @click="filePreviewOpen = false" class="crm-btn-ghost crm-icon-button">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="flex-1 overflow-y-auto p-6 bg-black/20" style="min-height: 400px;">
+            <div x-show="filePreviewType === 'image'" class="flex items-center justify-center h-full">
+                <img :src="filePreviewSrc" class="max-w-full max-h-[70vh] object-contain rounded-2xl" />
+            </div>
+            <div x-show="filePreviewType === 'video'" class="flex items-center justify-center h-full">
+                <video controls class="max-w-full max-h-[70vh] rounded-2xl" style="background: #000;">
+                    <source :src="filePreviewSrc" />
+                </video>
+            </div>
+            <div x-show="filePreviewType === 'audio'" class="flex items-center justify-center h-full">
+                <div class="liquid-glass-pro rounded-3xl p-8 text-center">
+                    <svg class="w-16 h-16 mx-auto mb-4" style="color: var(--lg-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                    </svg>
+                    <audio controls class="w-full max-w-md">
+                        <source :src="filePreviewSrc" />
+                    </audio>
+                </div>
+            </div>
+            <div x-show="filePreviewType === 'pdf'" class="flex items-center justify-center h-full">
+                <iframe :src="filePreviewSrc + '#toolbar=0'" class="w-full h-[70vh] rounded-2xl" style="background: #fff;"></iframe>
+            </div>
+            <div x-show="filePreviewType === 'document'" class="flex items-center justify-center h-full">
+                <div class="liquid-glass-pro rounded-3xl p-8 text-center">
+                    <svg class="w-24 h-24 mx-auto mb-4 opacity-50" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <div class="text-lg font-semibold mb-4" style="color: var(--lg-text-primary)">Предпросмотр недоступен</div>
+                    <a :href="filePreviewSrc" download class="px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold inline-flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        Скачать файл
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
