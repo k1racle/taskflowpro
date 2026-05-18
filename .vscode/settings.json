@@ -1,0 +1,5 @@
+{
+    "powerquery.client.additionalSymbolsDirectories": [
+        "c:/Proj/taskflow/taskflowpro/.vscode/excel-pq-symbols"
+    ]
+}
