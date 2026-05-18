@@ -1,0 +1,15 @@
+.git
+.github/
+*.md
+Dockerfile
+portainer-stack.yml
+.gitattributes
+.dockerignore
+instructions/
+old/
+plans/
+backups/*
+uploads/*
+api/logs/*
+runtime/*
+*.log

@@ -30,7 +30,8 @@
 
 Для коробочной эксплуатации особенно важны:
 
-- `api/config.php` — install-specific конфигурация;
+- `runtime/install.lock` — install-specific bootstrap конфигурация;
+- `api/config.php` — bootstrap/DB helper code;
 - `manifest.json` — базовый public manifest;
 - `uploads/` — пользовательские и прикладные файлы;
 - `docs/` — шаблоны документов;
@@ -47,7 +48,7 @@
 - каталог проекта открывается сервером корректно;
 - PHP исполняется без фатальных ошибок;
 - чувствительные каталоги не опубликованы как файловый листинг;
-- папки `uploads/`, `backups/`, `api/logs/` доступны приложению на запись.
+- папки `uploads/`, `backups/`, `runtime/`, `api/logs/` доступны приложению на запись.
 
 ## Шаг 2. Выполнить первичную установку
 
@@ -55,7 +56,7 @@
 
 После установки убедитесь, что:
 
-- создан `api/config.php`;
+- создан `runtime/install.lock`;
 - приложение открывается по основному адресу;
 - можно войти под административной учётной записью;
 - базовые таблицы созданы корректно.
@@ -93,8 +94,8 @@ curl -sS http://<host>/api/ready
 2. `install.php` не остаётся в production-поставке без необходимости;
 3. `api/debug.php` не используется на production;
 4. `backups/` не раздаётся напрямую из веба;
-5. `api/config.php` не доступен на чтение через веб-сервер;
-6. права на `uploads/`, `backups/`, `api/logs/` минимально достаточные.
+5. `runtime/install.lock` и `api/config.php` не доступны на чтение через веб-сервер;
+6. права на `uploads/`, `backups/`, `runtime/`, `api/logs/` минимально достаточные.
 
 Подробный baseline описан в `instructions/17-security-baseline.md`.
 

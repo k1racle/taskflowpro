@@ -7,7 +7,7 @@
 - базу данных;
 - `uploads/` с пользовательскими и прикладными файлами;
 - `docs/` с файловыми шаблонами документов;
-- install-specific конфиги `api/config.php` и `manifest.json`.
+- install-specific bootstrap lock `runtime/install.lock` и `manifest.json`.
 
 ## Что входит в резервную копию
 
@@ -23,8 +23,8 @@ backups/
       uploads/
       docs/
     config/
-      api/
-        config.php
+      runtime/
+        install.lock
       manifest.json
 ```
 
@@ -33,7 +33,7 @@ backups/
 - `db/database.sql` — SQL dump всей текущей MySQL БД;
 - `files/uploads/` — все загруженные и сгенерированные файлы приложения;
 - `files/docs/` — шаблоны документов с диска;
-- `config/api/config.php` — параметры подключения к БД, JWT/license-related настройки текущей установки;
+- `config/runtime/install.lock` — параметры подключения к БД, JWT/license-related настройки текущей установки;
 - `config/manifest.json` — текущий PWA/delivery manifest, если он есть.
 
 ## Что сознательно не входит
@@ -134,10 +134,10 @@ php tools/migrate.php status
 ## Ограничения и допущения
 
 - Restore рассчитан на **совместимый код приложения**, уже развернутый на сервере.
-- Восстановление БД выполняется в **текущую БД из `api/config.php`**.
+- Восстановление БД выполняется в **текущую БД из `runtime/install.lock`** или из environment variables, если они заданы.
 - SQL restore перезаписывает таблицы из dump (`DROP TABLE IF EXISTS` + `CREATE TABLE` + `INSERT`).
 - Restore файлов делает копирование поверх существующих файлов, но **не удаляет лишние файлы**, которых нет в backup.
-- Если нужно восстановить на другой сервер/инстанс, сначала надо развернуть совместимую версию кода, затем при необходимости подменить `api/config.php` из backup и только потом выполнять restore.
+- Если нужно восстановить на другой сервер/инстанс, сначала надо развернуть совместимую версию кода, затем при необходимости подменить `runtime/install.lock` из backup и только потом выполнять restore.
 
 ## Когда этого уже мало
 

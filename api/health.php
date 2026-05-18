@@ -101,6 +101,7 @@ function appBuildReadyPayload(): array {
         ],
         appHealthCheckDirectory($projectRoot, 'uploads', true),
         appHealthCheckDirectory($projectRoot, 'backups', true),
+        appHealthCheckDirectory($projectRoot, 'runtime', true),
         appHealthCheckDirectory($projectRoot, 'api/logs', true),
         appHealthCheckDirectory($projectRoot, 'migrations', false),
         appHealthCheckFile($projectRoot, 'manifest.json'),

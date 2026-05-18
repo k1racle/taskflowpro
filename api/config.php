@@ -9,20 +9,46 @@ require_once __DIR__ . '/app_version.php';
 require_once __DIR__ . '/migrations.php';
 require_once __DIR__ . '/audit.php';
 
-// Значения ниже используются только как значения по умолчанию.
-// При установке через install.php файл перезаписывается реальными данными.
-define('DB_HOST', 'localhost');           // Хост MySQL (обычно localhost)
-define('DB_NAME', 'taskflow');            // Имя базы данных
-define('DB_USER', 'taskflow');            // Пользователь MySQL
-define('DB_PASS', '');                    // Пароль MySQL
+function appConfigReadInstallLock(): ?array {
+    $lockPath = dirname(__DIR__) . '/runtime/install.lock';
+    if (!is_file($lockPath) || !is_readable($lockPath)) {
+        return null;
+    }
+
+    $contents = file_get_contents($lockPath);
+    if ($contents === false) {
+        return null;
+    }
+
+    $decoded = json_decode($contents, true);
+    return is_array($decoded) ? $decoded : null;
+}
+
+function appConfigInstallLockValue(string $key): ?string {
+    $lock = appConfigReadInstallLock();
+    if (!$lock || !array_key_exists($key, $lock)) {
+        return null;
+    }
+
+    $value = trim((string)$lock[$key]);
+    return $value !== '' ? $value : null;
+}
+
+// Основной источник конфигурации - environment variables.
+// Это позволяет деплоить инстанс прямо из Git без перезаписи файлов в контейнере.
+// Если env не заданы, берём значения из runtime/install.lock, созданного инсталлятором.
+define('DB_HOST', getenv('DB_HOST') ?: (appConfigInstallLockValue('db_host') ?: 'localhost'));
+define('DB_NAME', getenv('DB_NAME') ?: (appConfigInstallLockValue('db_name') ?: 'taskflow'));
+define('DB_USER', getenv('DB_USER') ?: (appConfigInstallLockValue('db_user') ?: 'taskflow'));
+define('DB_PASS', getenv('DB_PASS') ?: (appConfigInstallLockValue('db_pass') ?: ''));
 
 // DSN для подключения к БД
 define('DB_DSN', 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4');
 
 // JWT_SECRET из переменной окружения или значение по умолчанию.
 // ВАЖНО: секрет должен быть стабильным, иначе после перезапуска PHP все токены станут невалидными.
-// При установке через install.php он генерируется и записывается в этот файл.
-define('JWT_SECRET', getenv('JWT_SECRET') ?: '');
+// При установке через install.php он генерируется и записывается в runtime/install.lock.
+define('JWT_SECRET', getenv('JWT_SECRET') ?: (appConfigInstallLockValue('jwt_secret') ?: 'change-me'));
 define('JWT_EXPIRY', 86400); // 24 часа
 
 // Минимальный login abuse protection foundation.
@@ -40,7 +66,7 @@ define('AUDIT_RETENTION_DAYS', max(1, (int)(getenv('AUDIT_RETENTION_DAYS') ?: 18
 
 // License: allowed domain (hostname) for this installation.
 // If empty - license checks are disabled (useful for local/dev).
-define('LICENSE_DOMAIN', getenv('LICENSE_DOMAIN') ?: '');
+define('LICENSE_DOMAIN', getenv('LICENSE_DOMAIN') ?: (appConfigInstallLockValue('license_domain') ?: ''));
 
 // MVP referral integration settings.
 // REFERRAL_SHARED_SECRET должен совпадать с настройкой WooCommerce plugin.
@@ -58,7 +84,7 @@ if (!defined('REFERRAL_QUERY_PARAM')) {
 // Секрет для шифрования чувствительных данных (например, паролей почты).
 // По умолчанию используем JWT_SECRET, чтобы не плодить ещё один ключ.
 // ВАЖНО: если сменить секрет, расшифровка старых данных станет невозможной.
-define('APP_ENC_KEY', getenv('APP_ENC_KEY') ?: (JWT_SECRET ?: ''));
+define('APP_ENC_KEY', getenv('APP_ENC_KEY') ?: (appConfigInstallLockValue('app_enc_key') ?: (JWT_SECRET ?: 'change-me')));
 
 function appEncrypt(?string $plaintext): ?string {
     if ($plaintext === null || $plaintext === '') return null;

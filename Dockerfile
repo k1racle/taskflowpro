@@ -41,8 +41,22 @@ RUN apt-get update \
     && a2enconf taskflow \
     && rm -rf /var/lib/apt/lists/*
 
+COPY . .
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh \
+    && chmod +x /usr/local/bin/docker-entrypoint.sh \
+    && rm -f /var/www/html/docker-entrypoint.sh
+
 RUN mkdir -p /var/www/html/uploads \
     /var/www/html/backups \
-    /var/www/html/api/logs
+    /var/www/html/api/logs \
+    /var/www/html/runtime \
+    && chown -R www-data:www-data /var/www/html/uploads \
+    /var/www/html/backups \
+    /var/www/html/api/logs \
+    /var/www/html/runtime
+
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 80

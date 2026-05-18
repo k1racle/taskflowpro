@@ -2,9 +2,9 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(?:backups|docs|instructions|tools|migrations|vendor|old|plans|integrations)(?:/|$) - [F,L]
+    RewriteRule ^(?:backups|docs|instructions|tools|migrations|vendor|old|plans|integrations|runtime|\.github)(?:/|$) - [F,L]
 </IfModule>
 
-<FilesMatch "^config\.php$">
+<FilesMatch "^(config\.php|docker-entrypoint\.sh|Dockerfile|portainer-stack\.yml|\.dockerignore|\.gitattributes)$">
     Require all denied
 </FilesMatch>

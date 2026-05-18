@@ -1,6 +1,8 @@
 # TaskFlow Pro API
 # Разрешаем все запросы
 
+Options -Indexes
+
 # Отключаем mod_security
 <IfModule mod_security2.c>
     SecRuleEngine Off
@@ -18,6 +20,8 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /api/
+
+    RewriteRule ^logs(?:/|$) - [F,L]
 
     # Передаем Authorization заголовок в PHP
     RewriteCond %{HTTP:Authorization} .

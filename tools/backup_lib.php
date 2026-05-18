@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../api/config.php';
 require_once __DIR__ . '/../api/app_version.php';
+require_once __DIR__ . '/../api/security.php';
 
 function backupProjectRoot(): string {
     return dirname(__DIR__);
@@ -14,8 +15,9 @@ function backupDefaultBaseDir(): string {
 
 function backupCriticalItems(): array {
     $root = backupProjectRoot();
+    $bootstrapItem = backupBootstrapItem();
 
-    return [
+    $items = [
         [
             'key' => 'uploads',
             'type' => 'dir',
@@ -33,14 +35,6 @@ function backupCriticalItems(): array {
             'description' => 'Document templates stored on disk',
         ],
         [
-            'key' => 'api_config',
-            'type' => 'file',
-            'source' => $root . '/api/config.php',
-            'target' => 'config/api/config.php',
-            'required' => true,
-            'description' => 'Install-specific DB/JWT/license config',
-        ],
-        [
             'key' => 'manifest',
             'type' => 'file',
             'source' => $root . '/manifest.json',
@@ -49,6 +43,42 @@ function backupCriticalItems(): array {
             'description' => 'PWA manifest/delivery metadata',
         ],
     ];
+
+    if ($bootstrapItem !== null) {
+        $items[] = $bootstrapItem;
+    }
+
+    return $items;
+}
+
+function backupBootstrapItem(): ?array {
+    $root = backupProjectRoot();
+    $lock = appConfigReadInstallLock();
+    if (is_array($lock) && trim((string)($lock['installed_at'] ?? '')) !== '') {
+        return [
+            'key' => 'install_lock',
+            'type' => 'file',
+            'source' => $root . '/runtime/install.lock',
+            'target' => 'config/runtime/install.lock',
+            'required' => true,
+            'description' => 'Bootstrap lock with DB/JWT/license config',
+        ];
+    }
+
+    $legacyDbName = trim((string)(appSecurityReadConfigValue('DB_NAME') ?? ''));
+    $legacyJwtSecret = trim((string)(appSecurityReadConfigValue('JWT_SECRET') ?? ''));
+    if ($legacyDbName !== '' && appSecurityHasStableSecret($legacyJwtSecret)) {
+        return [
+            'key' => 'legacy_config',
+            'type' => 'file',
+            'source' => $root . '/api/config.php',
+            'target' => 'config/api/config.php',
+            'required' => true,
+            'description' => 'Legacy install-specific config.php',
+        ];
+    }
+
+    return null;
 }
 
 function backupUsage(string $scriptName, bool $includeRestoreCommands = false): void {

@@ -17,7 +17,7 @@
    - `Strict-Transport-Security`, если текущий запрос идёт по HTTPS
 2. Для API сохраняется текущий CORS baseline и no-cache policy.
 3. JWT cookie выставляется с `HttpOnly`, `SameSite=Lax`, а `Secure` включается автоматически на HTTPS-запросах.
-4. `install.php` автоматически блокируется после того, как инстанс уже настроен (`api/config.php` существует и содержит рабочие DB/JWT значения).
+4. `install.php` автоматически блокируется после того, как инстанс уже настроен (`runtime/install.lock` существует и содержит рабочие DB/JWT значения).
 5. `api/debug.php` больше не доступен извне и разрешён только с localhost.
 6. В `/api/ready` добавлены runtime security checks, чтобы быстро увидеть очевидные проблемы после деплоя.
 7. Для логина включён минимальный brute-force hardening: после `5` неуспешных попыток для сочетания `login + IP` за `10` минут включается временная блокировка на `15` минут.
@@ -41,6 +41,7 @@
 В readiness-ответ добавлены security-related checks:
 
 - `config_present`
+- `bootstrap_configured`
 - `jwt_secret_configured`
 - `https_detection`
 - `installer_exposed`
@@ -48,7 +49,8 @@
 
 Интерпретация простая:
 
-- `installer_exposed.ok=false` означает, что `install.php` физически ещё лежит в проекте после настройки инстанса. Runtime уже блокирует его, но файл всё равно стоит удалить из production-поставки.
+- `bootstrap_configured.ok=false` означает, что не найден `runtime/install.lock` или он не содержит валидные bootstrap-значения.
+- `installer_exposed` показывает, лежит ли `install.php` в проекте. Runtime уже блокирует его после настройки инстанса, но файл всё равно стоит удалить из production-поставки.
 - `debug_endpoint_exposed.ok=false` означает, что `api/debug.php` всё ещё присутствует. Он ограничен localhost-only, но для production его лучше убрать совсем.
 - `jwt_secret_configured.ok=false` означает критическую проблему конфигурации.
 

@@ -1,15 +1,22 @@
 services:
   app:
-    image: taskflowpro-php:8.2
+    image: ghcr.io/k1racle/taskflowpro:latest
     restart: unless-stopped
     ports:
       - "127.0.0.1:8085:80"
-    volumes:
-      - ${TASKFLOW_APP_PATH}:/var/www/html
     depends_on:
       - db
     environment:
       TZ: Europe/Moscow
+      DB_HOST: db
+      DB_NAME: ${MARIADB_DATABASE}
+      DB_USER: ${MARIADB_USER}
+      DB_PASS: ${MARIADB_PASSWORD}
+    volumes:
+      - taskflow_runtime_data:/var/www/html/runtime
+      - taskflow_uploads_data:/var/www/html/uploads
+      - taskflow_backups_data:/var/www/html/backups
+      - taskflow_api_logs:/var/www/html/api/logs
 
   db:
     image: mariadb:10.11
@@ -25,3 +32,7 @@ services:
 
 volumes:
   taskflow_db_data:
+  taskflow_runtime_data:
+  taskflow_uploads_data:
+  taskflow_backups_data:
+  taskflow_api_logs:
