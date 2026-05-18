@@ -43,6 +43,7 @@ Portainer потом только pull-ит этот image. Никаких build
 - image берётся из GHCR;
 - данные MySQL/MariaDB хранятся в named volume `taskflow_db_data`;
 - runtime-данные хранятся в named volumes внутри Docker, а не в bind mount на VPS.
+- после изменения `portainer-stack.yml` нужно нажать `Update the stack` / `Redeploy`, иначе старый mapping портов останется активным.
 
 ## Шаг 3. Настроить доступ по IP или через NGINX
 
@@ -51,6 +52,8 @@ Portainer потом только pull-ит этот image. Никаких build
 `http://<VPS-IP>:8085`
 
 Для этого в stack порт приложения публикуется наружу на `8085:80`.
+
+Ещё нужно открыть inbound TCP `8085` в firewall VPS и в панели провайдера, если там есть отдельная сетeвая защита.
 
 Если позже появится домен, NGINX можно поставить поверх как reverse proxy к этому же порту.
 
