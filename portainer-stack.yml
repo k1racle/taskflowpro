@@ -1,0 +1,27 @@
+services:
+  app:
+    image: taskflowpro-php:8.2
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8085:80"
+    volumes:
+      - ${TASKFLOW_APP_PATH}:/var/www/html
+    depends_on:
+      - db
+    environment:
+      TZ: Europe/Moscow
+
+  db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      TZ: Europe/Moscow
+    volumes:
+      - taskflow_db_data:/var/lib/mysql
+
+volumes:
+  taskflow_db_data:

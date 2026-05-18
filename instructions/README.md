@@ -27,6 +27,7 @@
 21. [19-deployment-and-admin-guide.md](instructions/19-deployment-and-admin-guide.md) - единый deployment/admin guide для коробочного запуска: развёртывание, первичная настройка, health/security checks и передача в эксплуатацию.
 22. [20-integrations-and-support-runbook.md](instructions/20-integrations-and-support-runbook.md) - integration guide и runbook первой линии: что фиксировать при подключении интеграций и как support диагностирует типовые жалобы.
 23. [21-no-code-customization-boundaries.md](instructions/21-no-code-customization-boundaries.md) - текущие границы кастомизации без кода: что администратор уже может менять сам, а что пока требует разработки.
+24. [22-portainer-vps-install.md](instructions/22-portainer-vps-install.md) - практический сценарий установки TaskFlow Pro на VPS через Portainer с ручной настройкой NGINX.
 
 ## Как использовать эту папку
 

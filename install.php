@@ -2152,8 +2152,22 @@ function createConfigFile($host, $user, $pass, $dbname, $licenseDomain = ''): vo
     $licenseDomainEsc = str_replace("'", "\\'", $licenseDomain);
     $appEncKey = bin2hex(random_bytes(32));
     
-    $configTemplatePath = __DIR__ . '/api/config.php';
-    $existing = file_exists($configTemplatePath) ? file_get_contents($configTemplatePath) : null;
+    $configTemplatePaths = [
+        __DIR__ . '/api/config.template.php',
+        __DIR__ . '/api/config.php',
+    ];
+    $existing = null;
+    foreach ($configTemplatePaths as $configTemplatePath) {
+        if (!file_exists($configTemplatePath)) {
+            continue;
+        }
+
+        $templateContent = file_get_contents($configTemplatePath);
+        if ($templateContent !== false) {
+            $existing = $templateContent;
+            break;
+        }
+    }
 
     // Пишем полный config.php, сохраняя вспомогательные функции (appEncrypt/appDecrypt и т.д.)
     // и обновляя только параметры БД/JWT.

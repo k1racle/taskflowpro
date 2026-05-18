@@ -1,0 +1,10 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:backups|docs|instructions|tools|migrations|vendor|old|plans|integrations)(?:/|$) - [F,L]
+</IfModule>
+
+<FilesMatch "^config\.php$">
+    Require all denied
+</FilesMatch>

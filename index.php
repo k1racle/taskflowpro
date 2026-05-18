@@ -4,9 +4,10 @@
  * Работает если .htaccess отключён
  */
 
-// Проверяем, существует ли config.php
-if (!file_exists(__DIR__ . '/api/config.php')) {
-    // Перенаправляем на установщик
+require_once __DIR__ . '/api/security.php';
+
+// Если инстанс ещё не настроен, отправляем на установщик.
+if (!appSecurityIsConfigured()) {
     header('Location: install.php');
     exit;
 }
