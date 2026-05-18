@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Онлайн-запись — TaskFlow Pro</title>
+
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="apple-touch-icon" href="app.png">
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=2">
+    <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        accent: '#8B5CF6',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="assets/js/api.js?v=15"></script>
+    <script src="assets/js/modules/shared/formatters.js?v=1"></script>
+    <script src="assets/js/modules/booking/index.js?v=1"></script>
+
+    <script>
+        (function () {
+            function setLoading(el, isLoading) {
+                if (isLoading) el.setAttribute('data-include-loading', '1');
+                else el.removeAttribute('data-include-loading');
+            }
+
+            async function includeOne(el) {
+                if (!el || el.getAttribute('data-include-loading') === '1') return;
+
+                const raw = el.getAttribute('x-include');
+                if (!raw) return;
+
+                let url = raw;
+                if ((url.startsWith("'") && url.endsWith("'")) || (url.startsWith('"') && url.endsWith('"'))) {
+                    url = url.slice(1, -1);
+                }
+
+                if (!url || url === 'null' || url === 'undefined') return;
+
+                setLoading(el, true);
+                try {
+                    const res = await fetch(url, { cache: 'no-store' });
+                    if (!res.ok) throw new Error(`Include failed: ${url} (${res.status})`);
+                    const html = await res.text();
+                    el.innerHTML = html;
+                    el.setAttribute('data-include-loaded', url);
+                    await includeAll(el);
+                    if (window.Alpine && typeof window.Alpine.initTree === 'function') {
+                        window.Alpine.initTree(el);
+                    }
+                } catch (e) {
+                    console.error('[x-include]', e);
+                    el.innerHTML = '<div class="p-4 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">Ошибка загрузки компонента</div>';
+                } finally {
+                    setLoading(el, false);
+                }
+            }
+
+            async function includeAll(root = document) {
+                const nodes = Array.from(root.querySelectorAll('[x-include]')).filter((el) => {
+                    return el.getAttribute('data-include-loading') !== '1';
+                });
+                for (const el of nodes) await includeOne(el);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => includeAll(document));
+        })();
+    </script>
+
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>[x-cloak] { display: none !important; }</style>
+</head>
+<body class="min-h-screen transition-colors crm-theme crm-page-backdrop"
+      x-data="bookingApp()"
+      x-init="init()"
+      :class="{ 'dark': isDark }">
+
+    <header class="sticky top-0 z-40 liquid-glass-pro">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between gap-3">
+                <a href="index.html" class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 crm-brand-mark flex items-center justify-center overflow-hidden rounded-xl">
+                        <img src="app.png" alt="TaskFlow" class="w-8 h-8 rounded-lg object-cover">
+                    </div>
+                    <div class="min-w-0">
+                        <div class="font-semibold crm-text-primary truncate">TaskFlow Pro</div>
+                        <div class="text-xs crm-text-tertiary truncate">Онлайн-запись</div>
+                    </div>
+                </a>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" @click="toggleTheme()" class="p-2 rounded-xl ios-glass-button" aria-label="Переключить тему">
+                        <svg x-show="!isDark" class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m8.66-8.66l-.7-.7M4.04 4.04l-.7-.7m16.02 16.02l-.7-.7M4.04 19.96l-.7.7M21 12h-1M4 12H3m15.66 4.66l-.7-.7M4.04 4.04l-.7-.7"/>
+                        </svg>
+                        <svg x-show="isDark" class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3a9 9 0 100 18 9 9 0 000-18z"/>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="crm-btn-secondary text-sm flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M4 10v10h16V10"/>
+                        </svg>
+                        Войти в систему
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <div class="liquid-glass-pro rounded-3xl p-6">
+            <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+                <div>
+                    <div class="crm-inline-badge">Публичная форма</div>
+                    <h1 class="mt-2 text-3xl font-bold crm-text-primary">Запись на услуги</h1>
+                    <p class="mt-2 text-sm crm-text-secondary max-w-3xl">Выберите услугу, заполните контакты и оставьте удобное время. Заявка сразу попадет в очередь на обработку.</p>
+                </div>
+                <div class="text-xs crm-text-tertiary max-w-md md:text-right">
+                    Без расписания, CRM-автоматизации, SMS и предоплат. Только минимальный поток: заявка, проверка, решение.
+                </div>
+            </div>
+        </div>
+
+        <div x-include="'assets/components/booking-view.html'"></div>
+    </main>
+
+    <div x-show="bookingNotice.show"
+         x-transition
+         x-cloak
+         class="fixed bottom-4 right-4 z-[120] liquid-glass-pro px-6 py-4 rounded-2xl shadow-2xl max-w-md"
+         :class="bookingNotice.type === 'success' ? 'crm-tone-success' : bookingNotice.type === 'error' ? 'crm-tone-danger' : 'crm-tone-info'">
+        <div class="flex items-start gap-3">
+            <svg x-show="bookingNotice.type === 'success'" class="w-6 h-6 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            <svg x-show="bookingNotice.type === 'error'" class="w-6 h-6 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <svg x-show="bookingNotice.type !== 'success' && bookingNotice.type !== 'error'" class="w-6 h-6 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 21a9 9 0 100-18 9 9 0 000 18z"/>
+            </svg>
+            <div class="min-w-0">
+                <div class="font-semibold" x-text="bookingNotice.message"></div>
+                <div class="text-xs mt-1" style="color: var(--lg-text-secondary)">Минимальная форма записи и ручного подтверждения.</div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-6 py-6 border-t" style="border-color: var(--lg-border)">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm" style="color: var(--lg-text-tertiary)">
+            TaskFlow Pro © <span x-text="new Date().getFullYear()"></span> — Онлайн-запись
+        </div>
+    </footer>
+
+    <script>
+        function bookingApp() {
+            const view = window.TaskFlowBooking.createView();
+            const originalInit = view.init;
+
+            view.isDark = false;
+
+            view.loadTheme = function () {
+                const saved = localStorage.getItem('theme');
+                this.isDark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                this.applyTheme();
+            };
+
+            view.toggleTheme = function () {
+                this.isDark = !this.isDark;
+                this.applyTheme();
+            };
+
+            view.applyTheme = function () {
+                if (this.isDark) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+            };
+
+            view.init = async function () {
+                this.loadTheme();
+                if (typeof originalInit === 'function') {
+                    await originalInit.call(this);
+                }
+            };
+
+            return view;
+        }
+    </script>
+</body>
+</html>

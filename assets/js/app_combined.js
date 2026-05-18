@@ -1315,6 +1315,10 @@ window.app = function() {
             return window.TaskFlowHelpdesk.ensureLoaded(this);
         },
 
+        async ensureBookingLoaded() {
+            return window.TaskFlowBooking?.ensureLoaded?.(this);
+        },
+
         async loadHelpdeskTickets() {
             return window.TaskFlowHelpdesk.loadTickets(this);
         },
@@ -1329,6 +1333,47 @@ window.app = function() {
 
         async loadHelpdeskStats() {
             return window.TaskFlowHelpdesk.loadStats(this);
+        },
+
+        async loadBookingData(force = false) {
+            return window.TaskFlowBooking?.loadData?.(this, force);
+        },
+
+        async refreshBookingData() {
+            return window.TaskFlowBooking?.refresh?.(this);
+        },
+
+        async submitBookingRequest() {
+            return window.TaskFlowBooking?.submitBookingRequest?.(this);
+        },
+
+        async approveBookingRequest(request) {
+            return window.TaskFlowBooking?.approveRequest?.(this, request);
+        },
+
+        async rejectBookingRequest(request) {
+            return window.TaskFlowBooking?.rejectRequest?.(this, request);
+        },
+
+        selectBookingRequest(request) {
+            if (!request?.id) return;
+            this.bookingSelectedRequestId = request.id;
+        },
+
+        getSelectedBookingRequest() {
+            return (this.bookingRequests || []).find((item) => String(item.id) === String(this.bookingSelectedRequestId || '')) || null;
+        },
+
+        getBookingStatusLabel(status) {
+            return window.TaskFlowBooking?.getStatusLabel?.(status) || 'Новая';
+        },
+
+        getBookingStatusTone(status) {
+            return window.TaskFlowBooking?.getStatusTone?.(status) || 'info';
+        },
+
+        getBookingServiceIcon(icon) {
+            return window.TaskFlowBooking?.getServiceIcon?.(icon) || '📅';
         },
 
         getStatByStatus(statusName) {
@@ -1796,6 +1841,17 @@ window.app = function() {
         createTicketModalOpen: false,
         newTicketForm: { client_name: '', client_email: '', subject: '', description: '', category_id: '', priority: 'medium' },
         ticketDetailModalOpen: false,
+        // Booking
+        bookingLoading: false,
+        bookingSubmitting: false,
+        bookingError: '',
+        bookingServiceTypes: [],
+        bookingRequests: [],
+        bookingStats: { total: 0, new: 0, approved: 0, rejected: 0 },
+        bookingCanManage: false,
+        bookingLastLoadedAt: '',
+        bookingForm: { service_type_id: '', client_name: '', client_email: '', client_phone: '', client_company: '', preferred_datetime: '', notes: '' },
+        bookingSelectedRequestId: null,
         birthdays: [],  // Дни рождения сотрудников
 
         async loadMyShift() {

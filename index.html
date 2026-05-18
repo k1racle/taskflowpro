@@ -62,6 +62,7 @@
     <script src="assets/js/modules/files/index.js?v=1"></script>
     <script src="assets/js/modules/documents/index.js?v=1"></script>
     <script src="assets/js/modules/helpdesk/index.js?v=1"></script>
+    <script src="assets/js/modules/booking/index.js?v=1"></script>
     <script src="assets/js/modules/chat/index.js?v=1"></script>
     <script src="assets/js/modules/stages/index.js?v=1"></script>
     <script src="assets/js/modules/admin/index.js?v=1"></script>
@@ -341,6 +342,11 @@
                 <!-- HELPDESK: ЗАЯВКИ -->
                 <div x-show="currentView === 'helpdesk'" x-transition.opacity x-cloak>
                     <div x-include="'assets/components/helpdesk-view.html'"></div>
+                </div>
+
+                <!-- ОНЛАЙН-ЗАПИСЬ -->
+                <div x-show="currentView === 'booking'" x-transition.opacity x-cloak>
+                    <div x-include="'assets/components/booking-view.html'"></div>
                 </div>
 
         <!-- ЧАТ (встроенный, чтобы шапка/сайдбар оставались на месте) -->

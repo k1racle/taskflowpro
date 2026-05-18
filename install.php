@@ -12,6 +12,7 @@ ini_set('log_errors', 1);
 
 require_once __DIR__ . '/api/security.php';
 require_once __DIR__ . '/api/migrations.php';
+require_once __DIR__ . '/api/booking-schema.php';
 
 appSecurityEnsureInstallerAvailable();
 

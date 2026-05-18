@@ -1,0 +1,347 @@
+<!-- ============================================
+     BOOKING - ОНЛАЙН-ЗАПИСЬ
+     ============================================ -->
+
+<div class="space-y-4">
+    <div x-show="bookingLoading" x-cloak class="liquid-glass-pro rounded-3xl p-6">
+        <div class="crm-empty-state text-center py-8">
+            <div class="crm-empty-state-title inline-flex items-center gap-2 justify-center">
+                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Загружаем запись...
+            </div>
+            <div class="crm-empty-state-text">Подтягиваем список услуг и текущие заявки.</div>
+        </div>
+    </div>
+
+    <div x-show="bookingError" x-cloak class="liquid-glass-pro rounded-3xl p-5 border border-red-500/30 bg-red-500/5">
+        <div class="crm-empty-state text-center py-4">
+            <div class="crm-empty-state-title">Не удалось загрузить онлайн-запись</div>
+            <div class="crm-empty-state-text" x-text="bookingError"></div>
+            <button type="button" @click="refreshBookingData()" class="crm-btn-secondary mt-4 text-sm">Повторить</button>
+        </div>
+    </div>
+
+    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+        <div class="crm-toolbar crm-toolbar--dense">
+            <div class="crm-toolbar-main">
+                <div class="crm-toolbar-heading">
+                    <h2 class="text-2xl font-bold" style="color: var(--lg-text-primary)">Онлайн-запись</h2>
+                    <div class="text-sm crm-panel-subtitle">Минимальная форма заявки с ручным подтверждением и audit-логикой.</div>
+                </div>
+            </div>
+
+            <div class="crm-toolbar-actions">
+                <a href="booking.html" target="_blank" x-show="bookingCanManage" class="crm-btn-secondary text-sm flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                    </svg>
+                    Публичная страница
+                </a>
+                <button type="button" @click="refreshBookingData()" :disabled="bookingLoading || bookingSubmitting" class="crm-btn-secondary text-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" :class="bookingLoading || bookingSubmitting ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                    Обновить
+                </button>
+            </div>
+        </div>
+
+        <div x-show="bookingCanManage" class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
+            <div class="crm-summary-tile">
+                <div class="crm-summary-label">Всего</div>
+                <div class="crm-summary-value" x-text="bookingStats?.total || 0"></div>
+            </div>
+            <div class="crm-summary-tile crm-tone-info">
+                <div class="crm-summary-label" style="color: currentColor">Новые</div>
+                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.new || 0"></div>
+            </div>
+            <div class="crm-summary-tile crm-tone-success">
+                <div class="crm-summary-label" style="color: currentColor">Одобрены</div>
+                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.approved || 0"></div>
+            </div>
+            <div class="crm-summary-tile crm-tone-danger">
+                <div class="crm-summary-label" style="color: currentColor">Отклонены</div>
+                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.rejected || 0"></div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-xs" style="color: var(--lg-text-tertiary)" x-show="bookingLastLoadedAt">
+            Обновлено <span x-text="formatDateTime(bookingLastLoadedAt)"></span>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr),minmax(320px,0.9fr)] gap-4 items-start">
+        <div class="space-y-4">
+            <div class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <h2 class="crm-section-head__title">Выбор услуги</h2>
+                        <div class="crm-section-head__text">Выберите тип записи, который нужен клиенту. Дальше заявка уйдёт в общую очередь.</div>
+                    </div>
+                    <div class="crm-section-head__meta">
+                        <span class="crm-inline-badge">Доступно: <span class="ml-1" x-text="bookingServiceTypes.length"></span></span>
+                    </div>
+                </div>
+
+                <div x-show="bookingServiceTypes && bookingServiceTypes.length > 0" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <template x-for="service in bookingServiceTypes" :key="service.id">
+                        <button type="button"
+                                class="w-full text-left rounded-2xl p-4 border transition-all"
+                                @click="bookingForm.service_type_id = String(service.id)"
+                                :class="String(bookingForm.service_type_id || '') === String(service.id) ? 'border-blue-500/50 bg-blue-500/10' : 'border-[color:var(--lg-border)] bg-[color:color-mix(in_oklab,var(--lg-glass-bg)_70%,transparent)] hover:border-blue-400/40'">
+                            <div class="flex items-start gap-3">
+                                <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background: color-mix(in oklab, var(--lg-primary) 18%, var(--lg-glass-bg));">
+                                    <span x-text="getBookingServiceIcon(service.icon)"></span>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div>
+                                            <div class="font-semibold crm-text-primary" x-text="service.type_name"></div>
+                                            <div class="text-xs mt-1 crm-text-tertiary" x-text="service.description || 'Без описания'"></div>
+                                        </div>
+                                        <span x-show="String(bookingForm.service_type_id || '') === String(service.id)" class="crm-status-pill crm-status-pill-info text-[11px]">Выбрано</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </button>
+                    </template>
+                </div>
+
+                <div x-show="!bookingLoading && (!bookingServiceTypes || bookingServiceTypes.length === 0)" class="mt-4 crm-empty-state text-center py-8">
+                    <div class="crm-empty-state-title">Услуги не найдены</div>
+                    <div class="crm-empty-state-text">Проверьте справочник booking_service_types или загрузите страницу ещё раз.</div>
+                </div>
+            </div>
+
+            <div class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <h2 class="crm-section-head__title">Новая заявка</h2>
+                        <div class="crm-section-head__text">Оставьте контакты клиента. Для связи нужен телефон или email.</div>
+                    </div>
+                </div>
+
+                <form @submit.prevent="submitBookingRequest()" class="mt-4 space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-name">Имя клиента</label>
+                            <input id="booking-client-name" type="text" x-model="bookingForm.client_name" required class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Иван Иванов">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-company">Компания</label>
+                            <input id="booking-client-company" type="text" x-model="bookingForm.client_company" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Название компании">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-email">Email</label>
+                            <input id="booking-client-email" type="email" x-model="bookingForm.client_email" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="ivan@example.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-phone">Телефон</label>
+                            <input id="booking-client-phone" type="tel" x-model="bookingForm.client_phone" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="+7 (999) 123-45-67">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-preferred-datetime">Желаемое время</label>
+                        <input id="booking-preferred-datetime" type="datetime-local" x-model="bookingForm.preferred_datetime" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-notes">Комментарий</label>
+                        <textarea id="booking-notes" x-model="bookingForm.notes" rows="4" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Кратко опишите пожелания клиента или детали записи"></textarea>
+                    </div>
+
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="text-xs" style="color: var(--lg-text-tertiary)">
+                            Для отправки достаточно указать имя, услугу и один способ связи.
+                        </div>
+                        <button type="submit" :disabled="bookingSubmitting || bookingLoading || !bookingServiceTypes.length" class="crm-btn-primary crm-btn-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span x-show="!bookingSubmitting" class="inline-flex items-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                Отправить заявку
+                            </span>
+                            <span x-show="bookingSubmitting" class="inline-flex items-center gap-2">
+                                <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Отправка...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <div class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <h2 class="crm-section-head__title">Контакты и правила</h2>
+                        <div class="crm-section-head__text">Простая форма без расписания, предоплат и сложной автоматизации.</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 space-y-3">
+                    <div class="crm-panel-block rounded-2xl p-4">
+                        <div class="text-sm font-semibold crm-text-primary">Как это работает</div>
+                        <div class="mt-2 space-y-2 text-sm" style="color: var(--lg-text-secondary)">
+                            <div>1. Клиент выбирает услугу.</div>
+                            <div>2. Оставляет телефон или email.</div>
+                            <div>3. Администратор подтверждает или отклоняет заявку.</div>
+                        </div>
+                    </div>
+
+                    <div class="crm-panel-block rounded-2xl p-4">
+                        <div class="text-sm font-semibold crm-text-primary">Связь</div>
+                        <div class="mt-3 space-y-2 text-sm" style="color: var(--lg-text-secondary)">
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">✉</span>
+                                <span>support@taskflow.pro</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">☎</span>
+                                <span>+7 (999) 123-45-67</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-lg">🕒</span>
+                                <span>Пн-Пт: 9:00 - 18:00 (МСК)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="crm-panel-block rounded-2xl p-4">
+                        <div class="text-sm font-semibold crm-text-primary">Статус обработки</div>
+                        <div class="mt-2 text-sm" style="color: var(--lg-text-secondary)">Заявки попадают в одну очередь. Каждое решение фиксируется в audit-логе.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="bookingCanManage" class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <h2 class="crm-section-head__title">Очередь заявок</h2>
+                        <div class="crm-section-head__text">Администратор видит список заявок и может быстро принять решение.</div>
+                    </div>
+                    <div class="crm-section-head__meta">
+                        <span class="crm-inline-badge">Новых: <span class="ml-1" x-text="bookingStats?.new || 0"></span></span>
+                    </div>
+                </div>
+
+                <div class="mt-4 space-y-2 max-h-[560px] overflow-y-auto pr-1">
+                    <template x-for="request in bookingRequests" :key="request.id">
+                        <button type="button"
+                                @click="selectBookingRequest(request)"
+                                class="w-full text-left rounded-2xl p-4 border transition-all"
+                                :class="String(bookingSelectedRequestId || '') === String(request.id) ? 'border-blue-500/50 bg-blue-500/10' : 'border-[color:var(--lg-border)] bg-[color:color-mix(in_oklab,var(--lg-glass-bg)_72%,transparent)] hover:border-blue-400/40'">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <span class="font-semibold crm-text-primary" x-text="request.request_number"></span>
+                                        <span class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(request.created_at)"></span>
+                                    </div>
+                                    <div class="mt-1 text-sm crm-text-secondary" x-text="request.client_name"></div>
+                                    <div class="mt-1 text-xs crm-text-tertiary" x-text="request.service_type_name"></div>
+                                </div>
+                                <span class="crm-status-pill text-xs" :class="'crm-status-pill-' + getBookingStatusTone(request.status)">
+                                    <span x-text="getBookingStatusLabel(request.status)"></span>
+                                </span>
+                            </div>
+                            <div class="mt-3 flex items-center justify-between gap-3 text-xs" style="color: var(--lg-text-tertiary)">
+                                <span x-text="request.client_phone || request.client_email || 'Без контакта'"></span>
+                                <span x-text="request.preferred_datetime ? formatDateTime(request.preferred_datetime) : 'Без времени'"></span>
+                            </div>
+                        </button>
+                    </template>
+
+                    <div x-show="!bookingRequests || bookingRequests.length === 0" class="crm-empty-state text-center py-8">
+                        <div class="crm-empty-state-title">Очередь пуста</div>
+                        <div class="crm-empty-state-text">Новых заявок пока нет.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="bookingCanManage" class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+                <div class="crm-section-head">
+                    <div class="crm-section-head__content">
+                        <h2 class="crm-section-head__title">Карточка заявки</h2>
+                        <div class="crm-section-head__text">Просмотр деталей и действия approve/reject с аудитом.</div>
+                    </div>
+                </div>
+
+                <template x-if="getSelectedBookingRequest()">
+                    <div class="mt-4 space-y-4">
+                        <div class="rounded-2xl p-4 crm-panel-block">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap mb-1">
+                                        <span class="text-lg" x-text="getBookingServiceIcon(getSelectedBookingRequest().service_type_icon)"></span>
+                                        <span class="font-semibold crm-text-primary" x-text="getSelectedBookingRequest().request_number"></span>
+                                    </div>
+                                    <div class="text-sm crm-text-secondary" x-text="getSelectedBookingRequest().client_name"></div>
+                                    <div class="text-xs mt-1 crm-text-tertiary" x-text="getSelectedBookingRequest().service_type_name"></div>
+                                </div>
+                                <span class="crm-status-pill text-xs" :class="'crm-status-pill-' + getBookingStatusTone(getSelectedBookingRequest().status)">
+                                    <span x-text="getBookingStatusLabel(getSelectedBookingRequest().status)"></span>
+                                </span>
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
+                                <div>
+                                    <div style="color: var(--lg-text-tertiary)">Телефон</div>
+                                    <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().client_phone || '—'"></div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--lg-text-tertiary)">Email</div>
+                                    <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().client_email || '—'"></div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--lg-text-tertiary)">Компания</div>
+                                    <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().client_company || '—'"></div>
+                                </div>
+                                <div>
+                                    <div style="color: var(--lg-text-tertiary)">Желаемое время</div>
+                                    <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().preferred_datetime ? formatDateTime(getSelectedBookingRequest().preferred_datetime) : '—'"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 text-sm" style="color: var(--lg-text-secondary)">
+                                <div class="text-xs mb-1" style="color: var(--lg-text-tertiary)">Комментарий</div>
+                                <div x-text="getSelectedBookingRequest().notes || 'Без комментария'"></div>
+                            </div>
+
+                            <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="crm-panel-block rounded-xl p-3">
+                                    <div style="color: var(--lg-text-tertiary)">Создана</div>
+                                    <div class="mt-1 crm-text-primary" x-text="formatDateTime(getSelectedBookingRequest().created_at)"></div>
+                                </div>
+                                <div class="crm-panel-block rounded-xl p-3">
+                                    <div style="color: var(--lg-text-tertiary)">Обработана</div>
+                                    <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().reviewed_at ? formatDateTime(getSelectedBookingRequest().reviewed_at) : '—'"></div>
+                                </div>
+                            </div>
+
+                            <div class="mt-4 flex flex-col sm:flex-row gap-2" x-show="getSelectedBookingRequest().status === 'new'">
+                                <button type="button" @click="approveBookingRequest(getSelectedBookingRequest())" :disabled="bookingSubmitting" class="crm-btn-primary text-sm disabled:opacity-60 disabled:cursor-not-allowed">Одобрить</button>
+                                <button type="button" @click="rejectBookingRequest(getSelectedBookingRequest())" :disabled="bookingSubmitting" class="crm-btn-secondary text-sm disabled:opacity-60 disabled:cursor-not-allowed">Отклонить</button>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <div x-show="!getSelectedBookingRequest()" class="mt-4 crm-empty-state text-center py-8">
+                    <div class="crm-empty-state-title">Заявка не выбрана</div>
+                    <div class="crm-empty-state-text">Откройте заявку из очереди слева.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

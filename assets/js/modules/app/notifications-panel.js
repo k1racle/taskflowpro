@@ -1,11 +1,12 @@
 window.TaskFlowNotificationsPanel = (function () {
-    const OPENABLE_NOTIFICATION_TYPES = ['chat', 'task', 'comment', 'project', 'department', 'mail', 'files', 'knowledge', 'crm', 'helpdesk', 'conference'];
+    const OPENABLE_NOTIFICATION_TYPES = ['chat', 'task', 'comment', 'project', 'department', 'mail', 'files', 'knowledge', 'crm', 'helpdesk', 'booking', 'conference'];
     const NOTIFICATION_TITLE_MAP = {
         chat: 'Новое сообщение',
         task: 'Обновление по задаче',
         comment: 'Новый комментарий',
         crm: 'Изменение в CRM',
         helpdesk: 'Новое обращение',
+        booking: 'Новая запись',
         project: 'Обновление проекта',
         mail: 'Почтовое уведомление',
         conference: 'Событие конференции',
@@ -21,6 +22,7 @@ window.TaskFlowNotificationsPanel = (function () {
         comment: 'Комментарии',
         crm: 'CRM',
         helpdesk: 'HelpDesk',
+        booking: 'Запись',
         project: 'Проекты',
         mail: 'Почта',
         conference: 'Конференции',
@@ -71,6 +73,7 @@ window.TaskFlowNotificationsPanel = (function () {
                 comment: 'Комментарий',
                 crm: 'CRM',
                 helpdesk: 'HelpDesk',
+                booking: 'Запись',
                 project: 'Проект',
                 mail: 'Почта',
                 conference: 'Конференция',
@@ -91,6 +94,7 @@ window.TaskFlowNotificationsPanel = (function () {
                 comment: '🗨',
                 crm: '◈',
                 helpdesk: '⚑',
+                booking: '📅',
                 project: '▣',
                 mail: '✉',
                 conference: '◉',
@@ -172,6 +176,7 @@ window.TaskFlowNotificationsPanel = (function () {
                 knowledge: 'Открыть базу знаний',
                 crm: 'Открыть CRM',
                 helpdesk: 'Открыть HelpDesk',
+                booking: 'Открыть запись',
                 conference: 'Открыть конференции'
             };
             return labels[type] || 'Открыть';
@@ -186,7 +191,9 @@ window.TaskFlowNotificationsPanel = (function () {
                 document: 'files',
                 documents: 'files',
                 comments: 'comment',
-                messages: 'chat'
+                messages: 'chat',
+                booking_request: 'booking',
+                booking_requests: 'booking'
             };
             return map[value] || value;
         },
@@ -493,6 +500,14 @@ window.TaskFlowNotificationsPanel = (function () {
                     const ticketId = payload.ticket_id || id || notification.related_id;
                     const ticket = (ctx.helpdeskTickets || []).find(t => String(t.id) === String(ticketId));
                     if (ticket) await ctx.openTicketDetail(ticket);
+                } catch (_) {}
+            } else if (type === 'booking') {
+                ctx.currentView = 'booking';
+                try {
+                    await ctx.ensureBookingLoaded?.();
+                    const requestId = payload.request_id || payload.booking_id || id || notification.related_id;
+                    const request = (ctx.bookingRequests || []).find(r => String(r.id) === String(requestId));
+                    if (request) ctx.selectBookingRequest?.(request);
                 } catch (_) {}
             } else if (type === 'conference') {
                 ctx.currentView = 'conferences';

@@ -25,6 +25,10 @@ window.TaskFlowViewRuntime = (function () {
                     ctx.ensureCrmLoaded();
                     ctx.crmLoadStoreAnalytics();
                 }
+
+                if (newView === 'booking') {
+                    ctx.ensureBookingLoaded?.();
+                }
             });
         }
     };

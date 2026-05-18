@@ -107,6 +107,11 @@ const ModuleLoader = (function() {
             html: 'assets/components/helpdesk-view.html',
             css: null
         },
+        'booking': {
+            js: 'assets/js/modules/booking/index.js',
+            html: 'assets/components/booking-view.html',
+            css: null
+        },
         'users': {
             js: 'assets/js/modules/users/index.js',
             html: 'assets/components/users-view.html',
