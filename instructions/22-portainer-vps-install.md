@@ -44,6 +44,7 @@ Portainer потом только pull-ит этот image. Никаких build
 - данные MySQL/MariaDB хранятся в named volume `taskflow_db_data`;
 - runtime-данные хранятся в named volumes внутри Docker, а не в bind mount на VPS.
 - после изменения `portainer-stack.yml` нужно нажать `Update the stack` / `Redeploy`, иначе старый mapping портов останется активным.
+- если после redeploy у контейнера всё ещё `Published Ports = -`, удаляй stack и создавай его заново из Git без удаления volumes; Portainer иногда не подхватывает новый publish-port in-place.
 
 ## Шаг 3. Настроить доступ по IP или через NGINX
 
