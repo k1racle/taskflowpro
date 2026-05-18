@@ -7,8 +7,7 @@
 1. VPS с установленными Docker и Portainer CE.
 2. GitHub-репозиторий этого проекта.
 3. Включенный GitHub Actions.
-4. Домен и доступ к TLS-сертификату для NGINX.
-5. Один раз проверить видимость образа в GHCR и сделать его public, если он почему-то не стал public автоматически.
+4. Один раз проверить видимость образа в GHCR и сделать его public, если он почему-то не стал public автоматически.
 
 ## Шаг 1. Убедиться, что image собирается из Git
 
@@ -45,11 +44,17 @@ Portainer потом только pull-ит этот image. Никаких build
 - данные MySQL/MariaDB хранятся в named volume `taskflow_db_data`;
 - runtime-данные хранятся в named volumes внутри Docker, а не в bind mount на VPS.
 
-## Шаг 3. Настроить NGINX вручную
+## Шаг 3. Настроить доступ по IP или через NGINX
 
-NGINX должен работать только как reverse proxy к локальному Apache-контейнеру.
+Если домена нет, проще открыть интерфейс напрямую по IP VPS:
 
-Минимальный пример:
+`http://<VPS-IP>:8085`
+
+Для этого в stack порт приложения публикуется наружу на `8085:80`.
+
+Если позже появится домен, NGINX можно поставить поверх как reverse proxy к этому же порту.
+
+Минимальный пример NGINX для домена:
 
 ```nginx
 server {
@@ -80,17 +85,17 @@ server {
 }
 ```
 
-Что обязательно:
+Что обязательно для варианта с NGINX:
 
-- не открывай `8085` наружу, он нужен только для локального proxy_pass;
+- если используешь NGINX, можно закрыть `8085` наружу и проксировать только через 80/443;
 - передавай `X-Forwarded-Proto: https`, иначе secure-cookie и HSTS могут работать неправильно;
 - `client_max_body_size` должен быть не меньше размера реальных загрузок, иначе NGINX отрежет запрос раньше PHP.
 
 ## Шаг 4. Запустить первичную установку
 
-После запуска stack открой:
+После запуска stack открой по IP VPS:
 
-`https://taskflow.example.com/install.php`
+`http://<VPS-IP>:8085/install.php`
 
 В форме установки укажи:
 
@@ -107,8 +112,8 @@ server {
 Проверь:
 
 ```bash
-curl -sS https://taskflow.example.com/api/health
-curl -sS https://taskflow.example.com/api/ready
+curl -sS http://<VPS-IP>:8085/api/health
+curl -sS http://<VPS-IP>:8085/api/ready
 ```
 
 Норма:
