@@ -48,3 +48,5 @@ RUN mkdir -p /var/www/html/uploads \
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 80
+
+CMD ["apache2-foreground"]
