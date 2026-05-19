@@ -136,6 +136,83 @@ window.TaskFlowBooking = (function () {
         return map[String(icon || '').toLowerCase()] || '📅';
     }
 
+    function pad2(value) {
+        return String(value).padStart(2, '0');
+    }
+
+    function formatDateInputValue(date) {
+        const d = date instanceof Date ? date : new Date(date);
+        if (Number.isNaN(d.getTime())) return '';
+        return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+    }
+
+    function parseServerDateTime(value) {
+        // server formats: 'Y-m-d H:i:s'. Parse as local time.
+        if (!value) return null;
+        const s = String(value).trim();
+        const m = s.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/);
+        if (!m) {
+            const d2 = new Date(s);
+            return Number.isNaN(d2.getTime()) ? null : d2;
+        }
+        const year = Number(m[1]);
+        const month = Number(m[2]);
+        const day = Number(m[3]);
+        const hh = Number(m[4]);
+        const mm = Number(m[5]);
+        const ss = Number(m[6] || 0);
+        const d = new Date(year, month - 1, day, hh, mm, ss);
+        return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    function timeToMinutes(value) {
+        const s = String(value || '').trim();
+        const m = s.match(/^(\d{1,2}):(\d{2})$/);
+        if (!m) return null;
+        const hh = Number(m[1]);
+        const mm = Number(m[2]);
+        if (Number.isNaN(hh) || Number.isNaN(mm)) return null;
+        return hh * 60 + mm;
+    }
+
+    function minutesToTimeLabel(minutes) {
+        const m = Math.max(0, Number(minutes) || 0);
+        const hh = Math.floor(m / 60);
+        const mm = m % 60;
+        return `${pad2(hh)}:${pad2(mm)}`;
+    }
+
+    function weekdayIso(date) {
+        const d = date instanceof Date ? date : new Date(date);
+        if (Number.isNaN(d.getTime())) return 1;
+        const js = d.getDay();
+        return js === 0 ? 7 : js;
+    }
+
+    function buildScheduleSlots(workingHoursByWeekday, dateStr, stepMinutes = 30) {
+        const date = new Date(`${dateStr}T00:00:00`);
+        if (Number.isNaN(date.getTime())) return [];
+        const weekday = weekdayIso(date);
+        const wh = workingHoursByWeekday?.[String(weekday)] || workingHoursByWeekday?.[weekday] || null;
+        if (!wh || !wh.is_open) return [];
+
+        const opens = timeToMinutes(wh.opens_at);
+        const closes = timeToMinutes(wh.closes_at);
+        if (opens == null || closes == null || closes <= opens) return [];
+
+        const slots = [];
+        for (let m = opens; m + stepMinutes <= closes; m += stepMinutes) {
+            slots.push(minutesToTimeLabel(m));
+        }
+        return slots;
+    }
+
+    function addMinutes(date, minutes) {
+        const d = date instanceof Date ? date : new Date(date);
+        if (Number.isNaN(d.getTime())) return null;
+        return new Date(d.getTime() + (Number(minutes) || 0) * 60000);
+    }
+
     function bookingServiceToForm(service) {
         const source = service && typeof service === 'object' ? service : {};
         return {
@@ -190,12 +267,12 @@ window.TaskFlowBooking = (function () {
                 bookingSelectedRequestId: null,
                 bookingServiceModalOpen: false,
                 bookingServiceForm: createDefaultServiceForm(),
+                bookingScheduleDate: '',
+                bookingScheduleHint: '',
+                bookingScheduleSlots: [],
+                bookingWorkingHours: [],
                 _bookingLoaded: false,
                 _bookingNoticeTimer: null,
-
-                async init() {
-                    await window.TaskFlowBooking.ensureLoaded(this);
-                },
 
                 showToast(message, type = 'info') {
                     this.bookingNotice = {
@@ -237,6 +314,24 @@ window.TaskFlowBooking = (function () {
 
                 async deleteBookingService(service) {
                     return window.TaskFlowBooking.deleteBookingService(this, service);
+                },
+
+                setBookingScheduleToday() {
+                    this.bookingScheduleDate = formatDateInputValue(new Date());
+                },
+
+                getBookingScheduleCell(serviceId, slotLabel) {
+                    return window.TaskFlowBooking.getScheduleCell(this, serviceId, slotLabel);
+                },
+
+                async init() {
+                    await window.TaskFlowBooking.ensureLoaded(this);
+
+                    if (typeof this.$watch === 'function') {
+                        this.$watch('bookingScheduleDate', () => {
+                            window.TaskFlowBooking.rebuildSchedule(this);
+                        });
+                    }
                 },
 
                 submitBooking() {
@@ -368,10 +463,18 @@ window.TaskFlowBooking = (function () {
                     ctx.bookingRequests = Array.isArray(data.requests) ? data.requests : [];
                     ctx.bookingStats = normalizeStats(data.stats);
                     ctx.bookingCanManage = !!data.can_manage;
+                    ctx.bookingWorkingHours = Array.isArray(data.working_hours) ? data.working_hours : [];
                     ctx.bookingLastLoadedAt = new Date().toISOString();
                     ctx._bookingLoaded = true;
                     ensureDefaultService(ctx);
                     selectDefaultRequest(ctx);
+
+                    if (!ctx.bookingScheduleDate) {
+                        const serverNow = parseServerDateTime(data.server_time);
+                        ctx.bookingScheduleDate = formatDateInputValue(serverNow || new Date());
+                    }
+
+                    this.rebuildSchedule(ctx, data);
                 } else {
                     ctx.bookingError = res.error || 'Не удалось загрузить данные записи';
                 }
@@ -395,6 +498,80 @@ window.TaskFlowBooking = (function () {
 
         async refresh(ctx) {
             return this.loadData(ctx, true);
+        },
+
+        rebuildSchedule(ctx, data = null) {
+            const dateStr = String(ctx.bookingScheduleDate || '').trim();
+            if (!dateStr) {
+                ctx.bookingScheduleSlots = [];
+                ctx.bookingScheduleHint = '';
+                return;
+            }
+
+            const workingHours = Array.isArray(ctx.bookingWorkingHours) ? ctx.bookingWorkingHours : (Array.isArray(data?.working_hours) ? data.working_hours : []);
+            const byWeekday = {};
+            for (const row of workingHours) {
+                if (!row) continue;
+                const wd = row.weekday != null ? String(row.weekday) : '';
+                if (wd) byWeekday[wd] = row;
+            }
+
+            const slots = buildScheduleSlots(byWeekday, dateStr, 30);
+            ctx.bookingScheduleSlots = slots;
+            if (!slots.length) {
+                ctx.bookingScheduleHint = 'На выбранный день нет рабочих часов. Настройте расписание в CRM.';
+            } else {
+                ctx.bookingScheduleHint = '';
+            }
+        },
+
+        getScheduleCell(ctx, serviceId, slotLabel) {
+            const dateStr = String(ctx.bookingScheduleDate || '').trim();
+            if (!dateStr) return [];
+            const slot = String(slotLabel || '').trim();
+            if (!slot) return [];
+            const sid = Number(serviceId || 0);
+            if (!sid) return [];
+
+            const slotMinutes = timeToMinutes(slot);
+            if (slotMinutes == null) return [];
+            const slotStart = new Date(`${dateStr}T${slot}:00`);
+            if (Number.isNaN(slotStart.getTime())) return [];
+            const slotEnd = addMinutes(slotStart, 30);
+            if (!slotEnd) return [];
+
+            const list = Array.isArray(ctx.bookingRequests) ? ctx.bookingRequests : [];
+            return list.filter((req) => {
+                if (!req || !(req.status === 'pending' || req.status === 'confirmed')) return false;
+
+                // multi-service: match if any requested service matches this serviceId
+                const services = Array.isArray(req.services) ? req.services : [];
+                const hasService = services.length
+                    ? services.some((s) => Number(s?.service_type_id || 0) === sid)
+                    : (Number(req.service_type_id || 0) === sid);
+                if (!hasService) return false;
+
+                const startRaw = String(req.preferred_datetime || req.start_at || '').trim();
+                if (!startRaw) return false;
+                if (!startRaw.startsWith(dateStr)) return false;
+
+                const startAt = parseServerDateTime(startRaw);
+                if (!startAt) return false;
+
+                let endAt = null;
+                const endRaw = String(req.preferred_end_at || '').trim();
+                if (endRaw && endRaw.startsWith(dateStr)) {
+                    endAt = parseServerDateTime(endRaw);
+                }
+                if (!endAt) {
+                    const dur = Number(req.total_duration_minutes || 0) || 0;
+                    endAt = addMinutes(startAt, dur > 0 ? dur : 30);
+                }
+                if (!endAt) return false;
+
+                // overlap check: slot intersects [startAt, endAt)
+                return startAt < slotEnd && endAt > slotStart;
+            });
         },
 
         resetForm(ctx) {

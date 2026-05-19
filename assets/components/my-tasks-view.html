@@ -41,14 +41,25 @@
                         Гант
                     </button>
                     <button @click="myTasksView = 'calendar'; $nextTick(() => initCalendar('my-tasks-calendar', filteredMyTasks))"
-                            :class="myTasksView === 'calendar' ? 'crm-tabbar-button-active' : ''"
-                            class="crm-tabbar-button flex items-center justify-center gap-2">
+                             :class="myTasksView === 'calendar' ? 'crm-tabbar-button-active' : ''"
+                             class="crm-tabbar-button flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         Календарь
                     </button>
                 </div>
+
+                <div class="hidden md:flex items-center gap-2">
+                    <select x-model="myTaskFilters.project_id" class="crm-control-select text-sm" title="Проект">
+                        <option value="">Все проекты</option>
+                        <template x-for="p in projects" :key="'my-tasks-project-quick-' + p.id">
+                            <option :value="p.id" x-text="p.name"></option>
+                        </template>
+                    </select>
+                    <button x-show="myTaskFilters.project_id" @click="myTaskFilters.project_id = ''" type="button" class="crm-btn-secondary text-sm">Сброс</button>
+                </div>
+
                 <button @click="filtersOpen = !filtersOpen"
                         :class="(myTaskFilters.project_id || myTaskFilters.status || myTaskFilters.department_id) ? 'crm-filter-toggle-active' : ''"
                         class="crm-btn-secondary">

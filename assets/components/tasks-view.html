@@ -135,6 +135,15 @@
                 </div>
             </div>
             <div class="crm-toolbar-actions crm-tasks-toolbar-actions">
+                <div class="hidden md:flex items-center gap-2">
+                    <select x-model="taskFilters.project_id" class="crm-control-select text-sm" title="Проект">
+                        <option value="">Все проекты</option>
+                        <template x-for="p in projects" :key="'tasks-project-quick-' + p.id">
+                            <option :value="p.id" x-text="p.name"></option>
+                        </template>
+                    </select>
+                    <button x-show="taskFilters.project_id" @click="taskFilters.project_id = ''" type="button" class="crm-btn-secondary text-sm">Сброс</button>
+                </div>
                 <button @click="openTaskModal()"
                         class="crm-btn-primary text-sm font-medium flex items-center gap-2 crm-mobile-compact-primary-action">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
