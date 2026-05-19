@@ -1376,6 +1376,37 @@ window.app = function() {
             return window.TaskFlowBooking?.getServiceIcon?.(icon) || '📅';
         },
 
+        openBookingServiceModal() {
+            this.bookingServiceForm = window.TaskFlowBooking?.normalizeServiceFormForUi?.(null) || this.bookingServiceForm;
+            this.bookingServiceModalOpen = true;
+        },
+
+        editBookingService(service) {
+            this.bookingServiceForm = window.TaskFlowBooking?.normalizeServiceFormForUi?.(service) || this.bookingServiceForm;
+            this.bookingServiceModalOpen = true;
+        },
+
+        async saveBookingService() {
+            return window.TaskFlowBooking?.saveBookingService?.(this);
+        },
+
+        async deleteBookingService(service) {
+            return window.TaskFlowBooking?.deleteBookingService?.(this, service);
+        },
+
+        setBookingScheduleToday() {
+            if (typeof window.TaskFlowBooking?.setScheduleToday === 'function') {
+                return window.TaskFlowBooking.setScheduleToday(this);
+            }
+            const d = new Date();
+            const pad2 = (v) => String(v).padStart(2, '0');
+            this.bookingScheduleDate = `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+        },
+
+        getBookingScheduleCell(serviceId, slotLabel) {
+            return window.TaskFlowBooking?.getScheduleCell?.(this, serviceId, slotLabel) || [];
+        },
+
         getStatByStatus(statusName) {
             return window.TaskFlowHelpdesk.getStatByStatus(this, statusName);
         },
@@ -1852,6 +1883,25 @@ window.app = function() {
         bookingLastLoadedAt: '',
         bookingForm: { service_type_id: '', client_name: '', client_email: '', client_phone: '', client_company: '', preferred_datetime: '', notes: '' },
         bookingSelectedRequestId: null,
+        bookingServiceModalOpen: false,
+        bookingServiceForm: window.TaskFlowBooking?.getDefaultServiceForm?.() || {
+            id: null,
+            type_key: '',
+            type_name: '',
+            description: '',
+            icon: 'calendar',
+            duration_minutes: 60,
+            price_rub: 0,
+            discount_type: 'none',
+            discount_value: 0,
+            promo_label: '',
+            sort_order: 0,
+            is_active: true
+        },
+        bookingScheduleDate: '',
+        bookingScheduleHint: '',
+        bookingScheduleSlots: [],
+        bookingWorkingHours: [],
         birthdays: [],  // Дни рождения сотрудников
 
         async loadMyShift() {

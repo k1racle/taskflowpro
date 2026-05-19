@@ -23,6 +23,23 @@ window.TaskFlowBooking = (function () {
         is_active: true
     };
 
+    // Legacy CRM booking-view.html uses bookingServiceForm.type_* and price_rub fields.
+    // Keep a separate default so old template doesn't crash.
+    const DEFAULT_SERVICE_FORM_LEGACY = {
+        id: null,
+        type_key: '',
+        type_name: '',
+        description: '',
+        icon: 'calendar',
+        duration_minutes: 60,
+        price_rub: 0,
+        discount_type: 'none',
+        discount_value: 0,
+        promo_label: '',
+        sort_order: 0,
+        is_active: true
+    };
+
     const DEFAULT_STATS = {
         total: 0,
         pending: 0,
@@ -41,6 +58,29 @@ window.TaskFlowBooking = (function () {
 
     function createDefaultServiceForm() {
         return { ...DEFAULT_SERVICE_FORM };
+    }
+
+    function createDefaultServiceFormLegacy() {
+        return { ...DEFAULT_SERVICE_FORM_LEGACY };
+    }
+
+    function normalizeServiceFormForUi(service) {
+        const s = service && typeof service === 'object' ? service : {};
+        return {
+            ...createDefaultServiceFormLegacy(),
+            id: s.id != null ? Number(s.id) : null,
+            type_key: String(s.type_key || s.key || ''),
+            type_name: String(s.type_name || s.name || ''),
+            description: String(s.description || ''),
+            icon: String(s.icon || 'calendar'),
+            duration_minutes: Number(s.duration_minutes || 0) || 60,
+            price_rub: Number(s.price_rub || s.price || 0) || 0,
+            discount_type: String(s.discount_type || 'none') || 'none',
+            discount_value: Number(s.discount_value || 0) || 0,
+            promo_label: String(s.promo_label || ''),
+            sort_order: Number(s.sort_order || 0) || 0,
+            is_active: s.is_active == null ? true : !!s.is_active
+        };
     }
 
     function normalizeStats(stats) {
@@ -234,6 +274,14 @@ window.TaskFlowBooking = (function () {
     return {
         getDefaultForm() {
             return createDefaultForm();
+        },
+
+        getDefaultServiceForm() {
+            return normalizeServiceFormForUi(null);
+        },
+
+        normalizeServiceFormForUi(service) {
+            return normalizeServiceFormForUi(service);
         },
 
         getServiceIcon(icon) {
@@ -694,24 +742,20 @@ window.TaskFlowBooking = (function () {
             const payload = {
                 action: 'service_upsert',
                 id: form.id != null ? Number(form.id) : null,
-                key: String(form.key || '').trim(),
-                name: String(form.name || '').trim(),
+                type_key: String(form.type_key || '').trim(),
+                type_name: String(form.type_name || '').trim(),
                 description: String(form.description || '').trim(),
                 icon: String(form.icon || 'calendar').trim(),
                 duration_minutes: Number(form.duration_minutes || 0),
-                price: Number(form.price || 0),
-                currency: String(form.currency || 'RUB').trim() || 'RUB',
+                price_rub: Number(form.price_rub || 0),
                 discount_type: String(form.discount_type || 'none').trim() || 'none',
                 discount_value: Number(form.discount_value || 0),
+                promo_label: String(form.promo_label || '').trim(),
+                sort_order: Number(form.sort_order || 0),
                 is_active: !!form.is_active
             };
 
-            if (!payload.key) {
-                notify(ctx, 'Укажите ключ услуги', 'error');
-                return false;
-            }
-
-            if (!payload.name) {
+            if (!payload.type_name) {
                 notify(ctx, 'Укажите название услуги', 'error');
                 return false;
             }
@@ -727,7 +771,7 @@ window.TaskFlowBooking = (function () {
                 if (res.success) {
                     notify(ctx, res.message || 'Услуга сохранена', 'success');
                     ctx.bookingServiceModalOpen = false;
-                    ctx.bookingServiceForm = createDefaultServiceForm();
+                    ctx.bookingServiceForm = normalizeServiceFormForUi(null);
                     await this.loadData(ctx, true);
                     return true;
                 }
@@ -757,7 +801,7 @@ window.TaskFlowBooking = (function () {
 
             if (ctx.bookingSubmitting) return false;
 
-            const name = String(service?.name || '').trim();
+            const name = String(service?.type_name || service?.name || '').trim();
             if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
                 const ok = window.confirm(`Удалить услугу${name ? ` «${name}»` : ''}?`);
                 if (!ok) return false;
