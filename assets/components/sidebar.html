@@ -121,15 +121,6 @@
                     <span class="flex-1 text-left font-medium">Заявки</span>
                 </button>
 
-                <button @click="currentView = 'booking'; sidebarOpen = false; if (ensureBookingLoaded) ensureBookingLoaded()"
-                        :class="currentView === 'booking' ? 'crm-nav-item-active' : ''"
-                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
-                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 2v4m8-4v4M3 10h18M5 6h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z"/>
-                    </svg>
-                    <span class="flex-1 text-left font-medium">Запись</span>
-                </button>
-
                 <button @click="currentView = 'my-shift'; sidebarOpen = false; if (ensureLeaderLoaded) ensureLeaderLoaded()"
                         :class="currentView === 'my-shift' ? 'crm-nav-item-active' : ''"
                         class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">

@@ -6,7 +6,7 @@
     }
 
     var dataset = script.dataset || {};
-    var mode = dataset.mode === 'form' ? 'form' : 'chat';
+    var mode = dataset.mode === 'form' ? 'form' : (dataset.mode === 'booking' ? 'booking' : 'chat');
     var baseUrl = (dataset.baseUrl || script.src.replace(/\/site-widgets\.js(?:\?.*)?$/, '')).replace(/\/$/, '');
     var apiBase = (dataset.apiBase || baseUrl.replace(/\/widgets$/, '') + '/api').replace(/\/$/, '');
     var profile = dataset.profile || '';
@@ -25,6 +25,9 @@
         brandButtonText: dataset.brandButtonText || '💬',
         brandFormTitle: dataset.brandFormTitle || 'Оставить обращение',
         brandFormDescription: dataset.brandFormDescription || 'Коротко опишите вопрос, и мы зарегистрируем обращение.',
+        bookingTitle: dataset.bookingTitle || 'Запись',
+        bookingDescription: dataset.bookingDescription || 'Выберите услуги и удобное время. Заявка уйдет на подтверждение.',
+        bookingSuccessText: dataset.bookingSuccessText || 'Готово. Заявка создана и ожидает подтверждения.',
         contactLabel: dataset.contactLabel || 'Написать в TaskFlow',
         contactDescription: dataset.contactDescription || 'Ответим в чате и при необходимости оформим обращение.',
         chatWidth: width || 420,
@@ -261,6 +264,202 @@
         } catch (e) {
             return '';
         }
+    }
+
+    function rub(value) {
+        var amount = Number(value || 0);
+        if (!isFinite(amount)) amount = 0;
+        try {
+            return amount.toLocaleString('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 });
+        } catch (e) {
+            return Math.round(amount) + ' ₽';
+        }
+    }
+
+    function renderBookingMode() {
+        injectStyles();
+
+        var root = createNode('div', 'wh-widget-root');
+        var panel = createNode('div', 'wh-widget-panel');
+        var launcher = createNode('button', 'wh-widget-launcher', config.brandButtonText);
+        launcher.type = 'button';
+        launcher.setAttribute('aria-label', 'Открыть запись');
+        root.setAttribute('data-wh-widget-build', widgetBuild);
+        panel.setAttribute('data-wh-widget-build', widgetBuild);
+
+        var brandHeaderIcon = renderIconBadge(config.brandButtonText, 'wh-widget-icon-badge-sm', 'wh-widget-avatar');
+        panel.innerHTML = '' +
+            '<div class="wh-widget-header">' +
+                '<div class="wh-widget-header-top">' +
+                    '<div class="wh-widget-brand">' +
+                        brandHeaderIcon +
+                        '<div><h1 class="wh-widget-title">' + config.bookingTitle + '</h1><p class="wh-widget-subtitle">' + config.bookingDescription + '</p></div>' +
+                    '</div>' +
+                    '<button type="button" class="wh-widget-close">×</button>' +
+                '</div>' +
+            '</div>' +
+            '<div class="wh-widget-body">' +
+                '<form class="wh-widget-request-form" data-role="booking-form">' +
+                    '<div class="wh-widget-status" data-role="booking-status"></div>' +
+                    '<div class="wh-widget-field">' +
+                        '<label class="wh-widget-label">Услуги</label>' +
+                        '<div class="wh-widget-panel-block" style="border-radius:16px;border:1px solid #e2e8f0;background:#fff;padding:10px" data-role="service-list">Загружаем…</div>' +
+                    '</div>' +
+                    '<div class="wh-widget-field wh-widget-inline">' +
+                        '<div style="flex:1">' +
+                            '<label class="wh-widget-label">Дата и время</label>' +
+                            '<input class="wh-widget-input" name="preferred_datetime" type="datetime-local" required>' +
+                        '</div>' +
+                        '<div style="min-width:120px;text-align:right">' +
+                            '<div class="wh-widget-label">Итого</div>' +
+                            '<div style="font-weight:800;color:#0f172a" data-role="booking-total">0 ₽</div>' +
+                            '<div style="font-size:11px;color:#64748b" data-role="booking-duration"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="wh-widget-field"><label class="wh-widget-label">Имя</label><input class="wh-widget-input" name="client_name" maxlength="255" required></div>' +
+                    '<div class="wh-widget-field"><label class="wh-widget-label">Телефон</label><input class="wh-widget-input" name="client_phone" maxlength="80" required></div>' +
+                    '<div class="wh-widget-field"><label class="wh-widget-label">Почта (необязательно)</label><input class="wh-widget-input" name="client_email" type="email" maxlength="255"></div>' +
+                    '<div class="wh-widget-field"><label class="wh-widget-label">Комментарий (необязательно)</label><textarea class="wh-widget-textarea" name="notes" maxlength="5000"></textarea></div>' +
+                    '<button class="wh-widget-primary" type="submit">Отправить заявку</button>' +
+                '</form>' +
+                '<div class="wh-widget-brandline"><span class="wh-widget-brandline-mark">TF</span>Работает на базе <strong>TaskFlow</strong></div>' +
+            '</div>';
+
+        root.appendChild(panel);
+        root.appendChild(launcher);
+
+        var closeBtn = panel.querySelector('.wh-widget-close');
+        function closePanel() {
+            panel.classList.remove('open');
+        }
+        function openPanel() {
+            panel.classList.add('open');
+        }
+        launcher.addEventListener('click', function () {
+            if (panel.classList.contains('open')) {
+                closePanel();
+            } else {
+                openPanel();
+            }
+        });
+        closeBtn.addEventListener('click', closePanel);
+
+        var form = panel.querySelector('[data-role="booking-form"]');
+        var status = panel.querySelector('[data-role="booking-status"]');
+        var serviceList = panel.querySelector('[data-role="service-list"]');
+        var totalNode = panel.querySelector('[data-role="booking-total"]');
+        var durationNode = panel.querySelector('[data-role="booking-duration"]');
+        var servicesById = {};
+
+        function setStatus(type, message) {
+            if (!message) {
+                status.className = 'wh-widget-status';
+                status.textContent = '';
+                return;
+            }
+            status.className = 'wh-widget-status ' + type;
+            status.textContent = message;
+        }
+
+        function recalc() {
+            var ids = [];
+            var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    ids.push(parseInt(checkboxes[i].value, 10));
+                }
+            }
+            var total = 0;
+            var minutes = 0;
+            for (var j = 0; j < ids.length; j++) {
+                var svc = servicesById[ids[j]];
+                if (!svc) continue;
+                total += Number(svc.effective_price_rub || svc.price_rub || 0);
+                minutes += Number(svc.duration_minutes || 0);
+            }
+            totalNode.textContent = rub(total);
+            durationNode.textContent = minutes > 0 ? (minutes + ' мин') : '';
+        }
+
+        function renderServiceList(list) {
+            if (!list || !list.length) {
+                serviceList.textContent = 'Услуги не настроены';
+                return;
+            }
+            var html = '';
+            for (var i = 0; i < list.length; i++) {
+                var svc = list[i];
+                servicesById[svc.id] = svc;
+                var line = '<label style="display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-radius:12px;cursor:pointer">' +
+                    '<input type="checkbox" name="service_type_id" value="' + svc.id + '" style="margin-top:3px">' +
+                    '<span style="flex:1;min-width:0">' +
+                        '<span style="display:flex;align-items:center;justify-content:space-between;gap:10px">' +
+                            '<strong style="font-size:13px;color:#0f172a">' + (svc.service_name || svc.name || 'Услуга') + '</strong>' +
+                            '<span style="font-weight:800;color:#0f172a;white-space:nowrap">' + rub(svc.effective_price_rub || svc.price_rub || 0) + '</span>' +
+                        '</span>' +
+                        '<span style="display:block;font-size:11px;color:#64748b;margin-top:2px">' + (svc.duration_minutes ? (svc.duration_minutes + ' мин') : '') + (svc.promo_label ? (' • ' + svc.promo_label) : '') + '</span>' +
+                    '</span>' +
+                '</label>';
+                html += line;
+            }
+            serviceList.innerHTML = html;
+            serviceList.addEventListener('change', recalc);
+            recalc();
+        }
+
+        request(apiBase + '/booking.php', { method: 'GET' }).then(function (result) {
+            renderServiceList((result.data && (result.data.service_types || result.data.services)) || []);
+            publishDebugInfo('booking-catalog-loaded', { count: (result.data && result.data.service_types ? result.data.service_types.length : 0) });
+        }).catch(function (error) {
+            serviceList.textContent = 'Не удалось загрузить услуги';
+            setStatus('error', error.message || 'Ошибка загрузки');
+        });
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            setStatus(null, null);
+
+            var submit = form.querySelector('button[type="submit"]');
+            submit.disabled = true;
+            submit.textContent = 'Отправляем…';
+
+            var selected = [];
+            var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]');
+            for (var i = 0; i < checkboxes.length; i++) {
+                if (checkboxes[i].checked) {
+                    selected.push(parseInt(checkboxes[i].value, 10));
+                }
+            }
+
+            request(apiBase + '/booking.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    service_type_ids: selected,
+                    client_name: (form.client_name.value || '').trim(),
+                    client_phone: (form.client_phone.value || '').trim(),
+                    client_email: (form.client_email.value || '').trim(),
+                    preferred_datetime: (form.preferred_datetime.value || '').trim(),
+                    notes: (form.notes.value || '').trim(),
+                    page_url: pageUrl,
+                    page_title: pageTitle,
+                    profile: profile
+                })
+            }).then(function () {
+                setStatus('success', config.bookingSuccessText);
+                form.reset();
+                var cb = serviceList.querySelectorAll('input[type="checkbox"]');
+                for (var i = 0; i < cb.length; i++) cb[i].checked = false;
+                recalc();
+            }).catch(function (error) {
+                setStatus('error', error.message || 'Не удалось создать заявку');
+            }).finally(function () {
+                submit.disabled = false;
+                submit.textContent = 'Отправить заявку';
+            });
+        });
+
+        mountRoot(root, 'workhub-site-widget-booking-root');
     }
 
     function renderFormMode() {
@@ -692,9 +891,11 @@
             });
             if (mode === 'form') {
                 renderFormMode();
-                return;
+            } else if (mode === 'booking') {
+                renderBookingMode();
+            } else {
+                renderChatMode();
             }
-            renderChatMode();
         });
     });
 })();

@@ -269,6 +269,30 @@
                 </div>
             </div>
 
+            <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
+                <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
+                    <div class="crm-section-head__content">
+                        <h2 class="crm-section-head__title" style="color: var(--lg-text-primary)">Виджет «Запись»</h2>
+                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Плавающая кнопка с записью на услуги (без мастеров). Заявка создается со статусом ожидания и требует подтверждения в CRM.</p>
+                    </div>
+                </div>
+
+                <pre class="crm-code-block" x-text="getSiteWidgetEmbedCode('booking')"></pre>
+
+                <div class="flex flex-wrap gap-3">
+                    <button @click="copySiteWidgetCode('booking')" class="crm-btn-secondary inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                        </svg>
+                        <span x-text="siteWidgetsCopyState.booking ? 'Скопировано' : 'Скопировать код виджета записи'"></span>
+                    </button>
+                </div>
+
+                <div class="rounded-2xl p-4 crm-panel-muted text-sm" style="color: var(--lg-text-secondary)">
+                    Слот удерживается на 30 минут, пока заявка ожидает подтверждения.
+                </div>
+            </div>
+
             <div class="liquid-glass-pro p-5 rounded-3xl crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                     <div class="crm-section-head__content">

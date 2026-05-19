@@ -330,6 +330,18 @@ window.TaskFlowSiteWidgets = (function () {
                 return `<iframe src="${frameBase}/widgets/widget-standard.html?${params.toString()}" width="${Number(ctx.siteWidgetsConfig.chatWidth) || 420}" height="${Number(ctx.siteWidgetsConfig.chatHeight) || 760}" frameborder="0" style="border:0;width:${Number(ctx.siteWidgetsConfig.chatWidth) || 420}px;max-width:100%;height:${Number(ctx.siteWidgetsConfig.chatHeight) || 760}px;overflow:hidden;" title="Чат-виджет"></iframe>`;
             }
 
+            if (type === 'booking') {
+                const dataset = [
+                    `data-mode="booking"`,
+                    `data-profile="${this.getSelectedProfileSlug(ctx)}"`,
+                    `data-api-base="${apiBase}"`,
+                    `data-position="${ctx.siteWidgetsConfig.position === 'left' ? 'left' : 'right'}"`,
+                    `data-brand-color="${ctx.siteWidgetsConfig.brandColor || '#2563eb'}"`,
+                    `data-brand-button-text="${ctx.siteWidgetsConfig.brandButtonText || '💬'}"`,
+                ];
+                return `<script src="${frameBase}/widgets/site-widgets.js" ${dataset.join(' ')}><\/script>`;
+            }
+
             return '';
         },
 
