@@ -34,12 +34,6 @@
             </div>
 
             <div class="crm-toolbar-actions">
-                <a href="booking.html" target="_blank" x-show="bookingCanManage" class="crm-btn-secondary text-sm flex items-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                    </svg>
-                    Публичная страница
-                </a>
                 <button type="button" @click="refreshBookingData()" :disabled="bookingLoading || bookingSubmitting" class="crm-btn-secondary text-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4" :class="bookingLoading || bookingSubmitting ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
@@ -54,17 +48,21 @@
                 <div class="crm-summary-label">Всего</div>
                 <div class="crm-summary-value" x-text="bookingStats?.total || 0"></div>
             </div>
-            <div class="crm-summary-tile crm-tone-info">
-                <div class="crm-summary-label" style="color: currentColor">Новые</div>
-                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.new || 0"></div>
+            <div class="crm-summary-tile crm-tone-warning">
+                <div class="crm-summary-label" style="color: currentColor">Ожидают</div>
+                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.pending || bookingStats?.new || 0"></div>
             </div>
             <div class="crm-summary-tile crm-tone-success">
-                <div class="crm-summary-label" style="color: currentColor">Одобрены</div>
-                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.approved || 0"></div>
+                <div class="crm-summary-label" style="color: currentColor">Подтверждены</div>
+                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.confirmed || bookingStats?.approved || 0"></div>
             </div>
             <div class="crm-summary-tile crm-tone-danger">
                 <div class="crm-summary-label" style="color: currentColor">Отклонены</div>
                 <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.rejected || 0"></div>
+            </div>
+            <div class="crm-summary-tile crm-tone-muted">
+                <div class="crm-summary-label" style="color: currentColor">Истекли</div>
+                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.expired || 0"></div>
             </div>
         </div>
 
@@ -79,7 +77,7 @@
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <h2 class="crm-section-head__title">Выбор услуги</h2>
-                        <div class="crm-section-head__text">Выберите тип записи, который нужен клиенту. Дальше заявка уйдёт в общую очередь.</div>
+                        <div class="crm-section-head__text">Выберите одну или несколько услуг. Дальше заявка уйдёт в очередь на подтверждение.</div>
                     </div>
                     <div class="crm-section-head__meta">
                         <span class="crm-inline-badge">Доступно: <span class="ml-1" x-text="bookingServiceTypes.length"></span></span>
@@ -90,8 +88,8 @@
                     <template x-for="service in bookingServiceTypes" :key="service.id">
                         <button type="button"
                                 class="w-full text-left rounded-2xl p-4 border transition-all"
-                                @click="bookingForm.service_type_id = String(service.id)"
-                                :class="String(bookingForm.service_type_id || '') === String(service.id) ? 'border-blue-500/50 bg-blue-500/10' : 'border-[color:var(--lg-border)] bg-[color:color-mix(in_oklab,var(--lg-glass-bg)_70%,transparent)] hover:border-blue-400/40'">
+                                @click="toggleServiceType(service.id)"
+                                :class="(Array.isArray(bookingForm.service_type_ids) ? bookingForm.service_type_ids.map(String).includes(String(service.id)) : false) ? 'border-blue-500/50 bg-blue-500/10' : 'border-[color:var(--lg-border)] bg-[color:color-mix(in_oklab,var(--lg-glass-bg)_70%,transparent)] hover:border-blue-400/40'">
                             <div class="flex items-start gap-3">
                                 <div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0" style="background: color-mix(in oklab, var(--lg-primary) 18%, var(--lg-glass-bg));">
                                     <span x-text="getBookingServiceIcon(service.icon)"></span>
@@ -102,7 +100,7 @@
                                             <div class="font-semibold crm-text-primary" x-text="service.type_name"></div>
                                             <div class="text-xs mt-1 crm-text-tertiary" x-text="service.description || 'Без описания'"></div>
                                         </div>
-                                        <span x-show="String(bookingForm.service_type_id || '') === String(service.id)" class="crm-status-pill crm-status-pill-info text-[11px]">Выбрано</span>
+                                        <span x-show="Array.isArray(bookingForm.service_type_ids) ? bookingForm.service_type_ids.map(String).includes(String(service.id)) : false" class="crm-status-pill crm-status-pill-info text-[11px]">Выбрано</span>
                                     </div>
                                 </div>
                             </div>
@@ -120,7 +118,7 @@
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <h2 class="crm-section-head__title">Новая заявка</h2>
-                        <div class="crm-section-head__text">Оставьте контакты клиента. Для связи нужен телефон или email.</div>
+                        <div class="crm-section-head__text">Оставьте контакты клиента. Для связи обязателен телефон. Email опционально.</div>
                     </div>
                 </div>
 
@@ -159,7 +157,7 @@
 
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                         <div class="text-xs" style="color: var(--lg-text-tertiary)">
-                            Для отправки достаточно указать имя, услугу и один способ связи.
+                            Для отправки укажите имя, телефон, услуги и желаемое время.
                         </div>
                         <button type="submit" :disabled="bookingSubmitting || bookingLoading || !bookingServiceTypes.length" class="crm-btn-primary crm-btn-lg disabled:opacity-50 disabled:cursor-not-allowed">
                             <span x-show="!bookingSubmitting" class="inline-flex items-center gap-2">
@@ -182,49 +180,6 @@
         </div>
 
         <div class="space-y-4">
-            <div class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
-                <div class="crm-section-head">
-                    <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title">Контакты и правила</h2>
-                        <div class="crm-section-head__text">Простая форма без расписания, предоплат и сложной автоматизации.</div>
-                    </div>
-                </div>
-
-                <div class="mt-4 space-y-3">
-                    <div class="crm-panel-block rounded-2xl p-4">
-                        <div class="text-sm font-semibold crm-text-primary">Как это работает</div>
-                        <div class="mt-2 space-y-2 text-sm" style="color: var(--lg-text-secondary)">
-                            <div>1. Клиент выбирает услугу.</div>
-                            <div>2. Оставляет телефон или email.</div>
-                            <div>3. Администратор подтверждает или отклоняет заявку.</div>
-                        </div>
-                    </div>
-
-                    <div class="crm-panel-block rounded-2xl p-4">
-                        <div class="text-sm font-semibold crm-text-primary">Связь</div>
-                        <div class="mt-3 space-y-2 text-sm" style="color: var(--lg-text-secondary)">
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">✉</span>
-                                <span>support@taskflow.pro</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">☎</span>
-                                <span>+7 (999) 123-45-67</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-lg">🕒</span>
-                                <span>Пн-Пт: 9:00 - 18:00 (МСК)</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="crm-panel-block rounded-2xl p-4">
-                        <div class="text-sm font-semibold crm-text-primary">Статус обработки</div>
-                        <div class="mt-2 text-sm" style="color: var(--lg-text-secondary)">Заявки попадают в одну очередь. Каждое решение фиксируется в audit-логе.</div>
-                    </div>
-                </div>
-            </div>
-
             <div x-show="bookingCanManage" class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
@@ -232,7 +187,7 @@
                         <div class="crm-section-head__text">Администратор видит список заявок и может быстро принять решение.</div>
                     </div>
                     <div class="crm-section-head__meta">
-                        <span class="crm-inline-badge">Новых: <span class="ml-1" x-text="bookingStats?.new || 0"></span></span>
+                        <span class="crm-inline-badge">Ожидают: <span class="ml-1" x-text="bookingStats?.pending || bookingStats?.new || 0"></span></span>
                     </div>
                 </div>
 
@@ -249,7 +204,7 @@
                                         <span class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(request.created_at)"></span>
                                     </div>
                                     <div class="mt-1 text-sm crm-text-secondary" x-text="request.client_name"></div>
-                                    <div class="mt-1 text-xs crm-text-tertiary" x-text="request.service_type_name"></div>
+                                    <div class="mt-1 text-xs crm-text-tertiary" x-text="request.service_summary || request.service_type_name"></div>
                                 </div>
                                 <span class="crm-status-pill text-xs" :class="'crm-status-pill-' + getBookingStatusTone(request.status)">
                                     <span x-text="getBookingStatusLabel(request.status)"></span>
@@ -280,14 +235,14 @@
                 <template x-if="getSelectedBookingRequest()">
                     <div class="mt-4 space-y-4">
                         <div class="rounded-2xl p-4 crm-panel-block">
-                            <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-2 flex-wrap mb-1">
                                         <span class="text-lg" x-text="getBookingServiceIcon(getSelectedBookingRequest().service_type_icon)"></span>
                                         <span class="font-semibold crm-text-primary" x-text="getSelectedBookingRequest().request_number"></span>
                                     </div>
                                     <div class="text-sm crm-text-secondary" x-text="getSelectedBookingRequest().client_name"></div>
-                                    <div class="text-xs mt-1 crm-text-tertiary" x-text="getSelectedBookingRequest().service_type_name"></div>
+                                    <div class="text-xs mt-1 crm-text-tertiary" x-text="getSelectedBookingRequest().service_summary || getSelectedBookingRequest().service_type_name"></div>
                                 </div>
                                 <span class="crm-status-pill text-xs" :class="'crm-status-pill-' + getBookingStatusTone(getSelectedBookingRequest().status)">
                                     <span x-text="getBookingStatusLabel(getSelectedBookingRequest().status)"></span>
@@ -329,8 +284,8 @@
                                 </div>
                             </div>
 
-                            <div class="mt-4 flex flex-col sm:flex-row gap-2" x-show="getSelectedBookingRequest().status === 'new'">
-                                <button type="button" @click="approveBookingRequest(getSelectedBookingRequest())" :disabled="bookingSubmitting" class="crm-btn-primary text-sm disabled:opacity-60 disabled:cursor-not-allowed">Одобрить</button>
+                            <div class="mt-4 flex flex-col sm:flex-row gap-2" x-show="getSelectedBookingRequest().status === 'pending'">
+                                <button type="button" @click="approveBookingRequest(getSelectedBookingRequest())" :disabled="bookingSubmitting" class="crm-btn-primary text-sm disabled:opacity-60 disabled:cursor-not-allowed">Подтвердить</button>
                                 <button type="button" @click="rejectBookingRequest(getSelectedBookingRequest())" :disabled="bookingSubmitting" class="crm-btn-secondary text-sm disabled:opacity-60 disabled:cursor-not-allowed">Отклонить</button>
                             </div>
                         </div>

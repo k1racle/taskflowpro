@@ -1,6 +1,6 @@
 window.TaskFlowBooking = (function () {
     const DEFAULT_FORM = {
-        service_type_id: '',
+        service_type_ids: [],
         client_name: '',
         client_email: '',
         client_phone: '',
@@ -11,9 +11,14 @@ window.TaskFlowBooking = (function () {
 
     const DEFAULT_STATS = {
         total: 0,
+        pending: 0,
+        confirmed: 0,
+        rejected: 0,
+        expired: 0,
+
+        // legacy aliases used in some UI blocks
         new: 0,
-        approved: 0,
-        rejected: 0
+        approved: 0
     };
 
     function createDefaultForm() {
@@ -22,11 +27,19 @@ window.TaskFlowBooking = (function () {
 
     function normalizeStats(stats) {
         const source = stats && typeof stats === 'object' ? stats : {};
+        const pending = Number(source.pending || source.pending_count || source.new || 0);
+        const confirmed = Number(source.confirmed || source.confirmed_count || source.approved || 0);
+        const rejected = Number(source.rejected || source.rejected_count || 0);
+        const expired = Number(source.expired || source.expired_count || 0);
         return {
             total: Number(source.total || 0),
-            new: Number(source.new || 0),
-            approved: Number(source.approved || 0),
-            rejected: Number(source.rejected || 0)
+            pending,
+            confirmed,
+            rejected,
+            expired,
+
+            new: pending,
+            approved: confirmed
         };
     }
 
@@ -48,8 +61,9 @@ window.TaskFlowBooking = (function () {
 
     function ensureDefaultService(ctx) {
         if (!ctx?.bookingForm) return;
-        if (!ctx.bookingForm.service_type_id && Array.isArray(ctx.bookingServiceTypes) && ctx.bookingServiceTypes.length > 0) {
-            ctx.bookingForm.service_type_id = String(ctx.bookingServiceTypes[0].id);
+        const current = Array.isArray(ctx.bookingForm.service_type_ids) ? ctx.bookingForm.service_type_ids : [];
+        if (current.length === 0 && Array.isArray(ctx.bookingServiceTypes) && ctx.bookingServiceTypes.length > 0) {
+            ctx.bookingForm.service_type_ids = [String(ctx.bookingServiceTypes[0].id)];
         }
     }
 
@@ -58,7 +72,7 @@ window.TaskFlowBooking = (function () {
         const requests = Array.isArray(ctx.bookingRequests) ? ctx.bookingRequests : [];
         if (!requests.length) return;
 
-        const preferred = requests.find((item) => String(item.status || '') === 'new') || requests[0];
+        const preferred = requests.find((item) => String(item.status || '') === 'pending') || requests[0];
         if (preferred?.id != null) {
             ctx.bookingSelectedRequestId = preferred.id;
         }
@@ -70,19 +84,21 @@ window.TaskFlowBooking = (function () {
 
     function getStatusLabel(status) {
         const map = {
-            new: 'Новая',
-            approved: 'Одобрена',
-            rejected: 'Отклонена'
+            pending: 'Ожидает подтверждения',
+            confirmed: 'Подтверждена',
+            rejected: 'Отклонена',
+            expired: 'Истекла'
         };
 
-        return map[String(status || '').toLowerCase()] || 'Новая';
+        return map[String(status || '').toLowerCase()] || 'Ожидает подтверждения';
     }
 
     function getStatusTone(status) {
         const map = {
-            new: 'warning',
-            approved: 'success',
-            rejected: 'danger'
+            pending: 'warning',
+            confirmed: 'success',
+            rejected: 'danger',
+            expired: 'muted'
         };
 
         return map[String(status || '').toLowerCase()] || 'info';
@@ -222,8 +238,27 @@ window.TaskFlowBooking = (function () {
                 },
 
                 get selectedServiceType() {
-                    const id = String(this.bookingForm.service_type_id || '');
+                    const ids = Array.isArray(this.bookingForm?.service_type_ids) ? this.bookingForm.service_type_ids : [];
+                    const id = String(ids[0] || '');
                     return (this.bookingServiceTypes || []).find((item) => String(item.id) === id) || null;
+                },
+
+                toggleServiceType(serviceId) {
+                    const id = String(serviceId || '');
+                    if (!id) return;
+                    if (!Array.isArray(this.bookingForm.service_type_ids)) {
+                        this.bookingForm.service_type_ids = [];
+                    }
+
+                    const current = this.bookingForm.service_type_ids.map(String);
+                    const idx = current.indexOf(id);
+                    if (idx >= 0) {
+                        current.splice(idx, 1);
+                    } else {
+                        current.push(id);
+                    }
+
+                    this.bookingForm.service_type_ids = current;
                 },
 
                 formatDateTime(dateStr) {
@@ -317,18 +352,24 @@ window.TaskFlowBooking = (function () {
             }
 
             const form = ctx.bookingForm || {};
-            const serviceTypeId = Number(form.service_type_id || 0);
+            const serviceTypeIds = Array.isArray(form.service_type_ids) ? form.service_type_ids.map((x) => Number(x || 0)).filter((x) => x > 0) : [];
             const clientName = String(form.client_name || '').trim();
             const clientEmail = String(form.client_email || '').trim();
             const clientPhone = String(form.client_phone || '').trim();
+            const preferredDatetime = String(form.preferred_datetime || '').trim();
 
-            if (!serviceTypeId || !clientName) {
-                notify(ctx, 'Укажите услугу и имя клиента', 'error');
+            if (!serviceTypeIds.length || !clientName) {
+                notify(ctx, 'Укажите услуги и имя клиента', 'error');
                 return false;
             }
 
-            if (!clientEmail && !clientPhone) {
-                notify(ctx, 'Укажите телефон или email для связи', 'error');
+            if (!clientPhone) {
+                notify(ctx, 'Укажите телефон для связи', 'error');
+                return false;
+            }
+
+            if (!preferredDatetime) {
+                notify(ctx, 'Укажите желаемое время', 'error');
                 return false;
             }
 
@@ -336,12 +377,12 @@ window.TaskFlowBooking = (function () {
 
             try {
                 const res = await apiPost('booking.php', {
-                    service_type_id: serviceTypeId,
+                    service_type_ids: serviceTypeIds,
                     client_name: clientName,
                     client_email: clientEmail,
                     client_phone: clientPhone,
                     client_company: String(form.client_company || '').trim(),
-                    preferred_datetime: String(form.preferred_datetime || '').trim(),
+                    preferred_datetime: preferredDatetime,
                     notes: String(form.notes || '').trim()
                 });
 
@@ -383,7 +424,7 @@ window.TaskFlowBooking = (function () {
                 });
 
                 if (res.success) {
-                    notify(ctx, res.message || (decision === 'approve' ? 'Заявка одобрена' : 'Заявка отклонена'), 'success');
+                    notify(ctx, res.message || (decision === 'confirm' ? 'Заявка подтверждена' : 'Заявка отклонена'), 'success');
                     await this.loadData(ctx, true);
                     return true;
                 }
@@ -400,7 +441,8 @@ window.TaskFlowBooking = (function () {
         },
 
         async approveRequest(ctx, request) {
-            return this.respondToRequest(ctx, request, 'approve');
+            // backend supports legacy 'approve' alias, but keep new contract here
+            return this.respondToRequest(ctx, request, 'confirm');
         },
 
         async rejectRequest(ctx, request) {

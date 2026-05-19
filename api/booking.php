@@ -1,14 +1,6 @@
 <?php
 /**
- * api/booking.php - Минимальный модуль онлайн-записи.
- *
- * Public:
- * - GET  /api/booking.php              - Справочник услуг для публичной формы
- * - POST /api/booking.php              - Создать заявку на запись
- *
- * Admin:
- * - GET  /api/booking.php              - Список заявок и статистика
- * - POST /api/booking.php {action}     - approve / reject
+ * api/booking.php - Booking API with multi-service requests and confirmation flow.
  */
 
 require_once __DIR__ . '/security.php';
@@ -74,14 +66,206 @@ function bookingNormalizeDateTime(mixed $value): ?string {
     return date('Y-m-d H:i:s', $timestamp);
 }
 
-function bookingGenerateRequestNumber(PDO $pdo): string {
-    $prefix = 'BK-' . date('Ymd');
-    $stmt = $pdo->prepare("SELECT request_number FROM booking_requests WHERE request_number LIKE ? ORDER BY id DESC LIMIT 1");
+function bookingParseDateTime(mixed $value): ?DateTimeImmutable {
+    $normalized = bookingNormalizeDateTime($value);
+    if ($normalized === null) {
+        return null;
+    }
+
+    try {
+        return new DateTimeImmutable($normalized);
+    } catch (Throwable $e) {
+        return null;
+    }
+}
+
+function bookingResolvePreferredDatetime(array $data): ?string {
+    $preferredDatetime = bookingNormalizeDateTime($data['preferred_datetime'] ?? null);
+    if ($preferredDatetime !== null) {
+        return $preferredDatetime;
+    }
+
+    $preferredDate = bookingNormalizeString($data['preferred_date'] ?? $data['date'] ?? null, 32);
+    $preferredTime = bookingNormalizeString($data['preferred_time'] ?? $data['time'] ?? null, 16);
+
+    if ($preferredDate && $preferredTime) {
+        return bookingNormalizeDateTime($preferredDate . ' ' . $preferredTime);
+    }
+
+    return null;
+}
+
+function bookingNormalizeServiceIdList(mixed $value): array {
+    $ids = [];
+
+    $append = static function (mixed $candidate) use (&$ids): void {
+        if (is_array($candidate)) {
+            if (array_key_exists('service_type_id', $candidate)) {
+                $candidate = $candidate['service_type_id'];
+            } elseif (array_key_exists('service_id', $candidate)) {
+                $candidate = $candidate['service_id'];
+            } elseif (array_key_exists('id', $candidate)) {
+                $candidate = $candidate['id'];
+            } else {
+                return;
+            }
+        }
+
+        if (!is_scalar($candidate)) {
+            return;
+        }
+
+        $id = (int)$candidate;
+        if ($id > 0) {
+            $ids[$id] = true;
+        }
+    };
+
+    if (is_array($value)) {
+        foreach ($value as $item) {
+            $append($item);
+        }
+    } elseif (is_scalar($value)) {
+        $parts = preg_split('/[\s,]+/', trim((string)$value)) ?: [];
+        foreach ($parts as $part) {
+            if ($part !== '') {
+                $append($part);
+            }
+        }
+    }
+
+    return array_map('intval', array_keys($ids));
+}
+
+function bookingAliasServiceRow(array $row): array {
+    $row['service_key'] = trim((string)($row['service_key'] ?? $row['type_key'] ?? ''));
+    $row['service_name'] = trim((string)($row['service_name'] ?? $row['type_name'] ?? ''));
+
+    if ($row['service_key'] === '') {
+        $row['service_key'] = bookingNormalizeServiceKey($row['service_name'] !== '' ? $row['service_name'] : 'service');
+    }
+
+    if ($row['service_name'] === '') {
+        $row['service_name'] = $row['service_key'];
+    }
+
+    $row['type_key'] = $row['service_key'];
+    $row['type_name'] = $row['service_name'];
+    $row['icon'] = trim((string)($row['icon'] ?? 'calendar')) ?: 'calendar';
+
+    return $row;
+}
+
+function bookingLoadServiceCatalog(PDO $pdo): array {
+    $stmt = $pdo->query("SELECT id, type_key, type_name, icon, description, duration_minutes, price_rub, discount_type, discount_value, promo_label, sort_order, is_active
+        FROM booking_service_types
+        WHERE is_active = 1
+        ORDER BY sort_order ASC, type_name ASC, id ASC");
+
+    $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    $catalog = [];
+
+    foreach ($rows as $row) {
+        $row = bookingAliasServiceRow(bookingDecorateServiceRow($row));
+        $catalog[(int)$row['id']] = $row;
+    }
+
+    return $catalog;
+}
+
+function bookingFetchServiceTypes(PDO $pdo): array {
+    return array_values(bookingLoadServiceCatalog($pdo));
+}
+
+function bookingFetchWorkingHours(PDO $pdo): array {
+    $stmt = $pdo->query("SELECT id, weekday, is_open, opens_at, closes_at, break_starts_at, break_ends_at, note, sort_order
+        FROM booking_working_hours
+        ORDER BY sort_order ASC, weekday ASC");
+
+    $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    $hours = [];
+
+    foreach ($rows as $row) {
+        $hours[] = bookingDecorateWorkingHourRow($row);
+    }
+
+    return $hours;
+}
+
+function bookingWorkingHoursByWeekday(array $workingHours): array {
+    $map = [];
+    foreach ($workingHours as $row) {
+        $weekday = (int)($row['weekday'] ?? 0);
+        if ($weekday > 0) {
+            $map[$weekday] = $row;
+        }
+    }
+
+    return $map;
+}
+
+function bookingTimeToMinutes(?string $value): ?int {
+    $value = trim((string)$value);
+    if ($value === '') {
+        return null;
+    }
+
+    if (!preg_match('/^(\d{2}):(\d{2})(?::\d{2})?$/', $value, $matches)) {
+        return null;
+    }
+
+    return ((int)$matches[1] * 60) + (int)$matches[2];
+}
+
+function bookingValidateWorkingHoursSlot(array $workingHoursByWeekday, DateTimeImmutable $startAt, DateTimeImmutable $endAt): ?string {
+    if ($endAt <= $startAt) {
+        return 'Некорректное время записи';
+    }
+
+    if ($startAt->format('Y-m-d') !== $endAt->format('Y-m-d')) {
+        return 'Запись должна укладываться в один рабочий день';
+    }
+
+    $weekday = (int)$startAt->format('N');
+    $row = $workingHoursByWeekday[$weekday] ?? null;
+    if (!$row || !(bool)($row['is_open'] ?? false)) {
+        return 'На выбранный день запись недоступна';
+    }
+
+    $openMinutes = bookingTimeToMinutes($row['opens_at'] ?? null) ?? 0;
+    $closeMinutes = bookingTimeToMinutes($row['closes_at'] ?? null) ?? (24 * 60);
+    if ($closeMinutes <= $openMinutes) {
+        return 'График работы настроен некорректно';
+    }
+
+    $startMinutes = ((int)$startAt->format('H') * 60) + (int)$startAt->format('i');
+    $endMinutes = ((int)$endAt->format('H') * 60) + (int)$endAt->format('i');
+
+    if ($startMinutes < $openMinutes || $endMinutes > $closeMinutes) {
+        return 'Выбранное время выходит за пределы рабочих часов';
+    }
+
+    $breakStartMinutes = bookingTimeToMinutes($row['break_starts_at'] ?? null);
+    $breakEndMinutes = bookingTimeToMinutes($row['break_ends_at'] ?? null);
+    if ($breakStartMinutes !== null && $breakEndMinutes !== null && $breakEndMinutes > $breakStartMinutes) {
+        if ($startMinutes < $breakEndMinutes && $endMinutes > $breakStartMinutes) {
+            return 'Выбранное время попадает на перерыв';
+        }
+    }
+
+    return null;
+}
+
+function bookingGenerateRequestNumber(PDO $pdo, ?DateTimeImmutable $now = null): string {
+    $now ??= new DateTimeImmutable('now');
+    $prefix = 'BK-' . $now->format('Ymd');
+    $stmt = $pdo->prepare("SELECT request_number FROM booking_requests WHERE request_number LIKE ? ORDER BY id DESC LIMIT 1 FOR UPDATE");
     $stmt->execute([$prefix . '-%']);
     $lastNumber = $stmt->fetchColumn();
 
     if ($lastNumber) {
-        $suffix = (int)substr(strrchr((string)$lastNumber, '-'), 1);
+        $suffixPart = strrchr((string)$lastNumber, '-');
+        $suffix = $suffixPart !== false ? (int)substr($suffixPart, 1) : 0;
         $nextSuffix = str_pad((string)($suffix + 1), 4, '0', STR_PAD_LEFT);
     } else {
         $nextSuffix = '0001';
@@ -90,16 +274,237 @@ function bookingGenerateRequestNumber(PDO $pdo): string {
     return $prefix . '-' . $nextSuffix;
 }
 
-function bookingFetchServiceTypes(PDO $pdo): array {
-    $stmt = $pdo->query("SELECT id, type_key, type_name, icon, description, sort_order
-        FROM booking_service_types
-        WHERE is_active = 1
-        ORDER BY sort_order ASC, type_name ASC");
+function bookingDecorateRequestServiceRow(array $row): array {
+    $row = bookingAliasServiceRow($row);
+    $row['id'] = isset($row['id']) ? (int)$row['id'] : null;
+    $row['booking_request_id'] = isset($row['booking_request_id']) ? (int)$row['booking_request_id'] : null;
+    $row['service_type_id'] = isset($row['service_type_id']) ? (int)$row['service_type_id'] : null;
+    $row['duration_minutes'] = max(0, (int)($row['duration_minutes'] ?? 0));
+    $row['price_rub'] = round((float)($row['price_rub'] ?? 0), 2);
+    $row['discount_type'] = strtolower(trim((string)($row['discount_type'] ?? 'none')));
+    $row['discount_value'] = round((float)($row['discount_value'] ?? 0), 2);
+    $row['effective_price_rub'] = round((float)($row['effective_price_rub'] ?? bookingServiceEffectivePrice($row)), 2);
+    $row['discount_amount_rub'] = max(0, round($row['price_rub'] - $row['effective_price_rub'], 2));
+    $row['sort_order'] = (int)($row['sort_order'] ?? 0);
 
-    return $stmt ? $stmt->fetchAll() : [];
+    return $row;
 }
 
-function bookingFetchBookingRequests(PDO $pdo): array {
+function bookingServiceCatalogToRequestServiceRow(array $service, int $bookingRequestId = 0, int $sortOrder = 1): array {
+    $service = bookingAliasServiceRow(bookingDecorateServiceRow($service));
+
+    return [
+        'booking_request_id' => $bookingRequestId > 0 ? $bookingRequestId : null,
+        'service_type_id' => (int)($service['id'] ?? 0),
+        'service_key' => (string)($service['service_key'] ?? ''),
+        'service_name' => (string)($service['service_name'] ?? ''),
+        'icon' => (string)($service['icon'] ?? 'calendar'),
+        'duration_minutes' => max(0, (int)($service['duration_minutes'] ?? 0)),
+        'price_rub' => round((float)($service['price_rub'] ?? 0), 2),
+        'discount_type' => (string)($service['discount_type'] ?? 'none'),
+        'discount_value' => round((float)($service['discount_value'] ?? 0), 2),
+        'effective_price_rub' => round((float)($service['effective_price_rub'] ?? bookingServiceEffectivePrice($service)), 2),
+        'sort_order' => $sortOrder,
+    ];
+}
+
+function bookingFetchBookingRequestServices(PDO $pdo, array $requestIds): array {
+    $requestIds = array_values(array_unique(array_filter(array_map('intval', $requestIds))));
+    if (!$requestIds) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($requestIds), '?'));
+    $stmt = $pdo->prepare("SELECT * FROM booking_request_services WHERE booking_request_id IN ($placeholders) ORDER BY booking_request_id ASC, sort_order ASC, id ASC");
+    $stmt->execute($requestIds);
+
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $grouped = [];
+
+    foreach ($rows as $row) {
+        $row = bookingDecorateRequestServiceRow($row);
+        $grouped[(int)$row['booking_request_id']][] = $row;
+    }
+
+    return $grouped;
+}
+
+function bookingRequestHoldExpiresAt(array $request): ?DateTimeImmutable {
+    $holdExpiresAt = bookingParseDateTime($request['hold_expires_at'] ?? null);
+    if ($holdExpiresAt instanceof DateTimeImmutable) {
+        return $holdExpiresAt;
+    }
+
+    $status = bookingNormalizeStatus($request['status'] ?? null);
+    if ($status !== 'pending') {
+        return null;
+    }
+
+    $createdAt = bookingParseDateTime($request['created_at'] ?? null);
+    if ($createdAt instanceof DateTimeImmutable) {
+        return $createdAt->modify('+30 minutes');
+    }
+
+    return null;
+}
+
+function bookingRequestResolvedStatus(array $request, ?DateTimeImmutable $now = null): string {
+    $status = bookingNormalizeStatus($request['status'] ?? null);
+    if ($status !== 'pending') {
+        return $status;
+    }
+
+    $now ??= new DateTimeImmutable('now');
+    $holdExpiresAt = bookingRequestHoldExpiresAt($request);
+    if ($holdExpiresAt instanceof DateTimeImmutable && $holdExpiresAt <= $now) {
+        return 'expired';
+    }
+
+    return 'pending';
+}
+
+function bookingExpirePendingRequests(PDO $pdo, ?DateTimeImmutable $now = null): int {
+    $now ??= new DateTimeImmutable('now');
+    $stmt = $pdo->prepare("UPDATE booking_requests
+        SET status = 'expired',
+            hold_expires_at = COALESCE(hold_expires_at, DATE_ADD(created_at, INTERVAL 30 MINUTE))
+        WHERE LOWER(status) IN ('new', 'pending')
+          AND COALESCE(hold_expires_at, DATE_ADD(created_at, INTERVAL 30 MINUTE)) <= ?");
+    $stmt->execute([$now->format('Y-m-d H:i:s')]);
+
+    return (int)$stmt->rowCount();
+}
+
+function bookingComposeBookingRequest(PDO $pdo, array $request, array $services = [], array $serviceCatalog = [], ?DateTimeImmutable $now = null): array {
+    $now ??= new DateTimeImmutable('now');
+
+    $request['id'] = isset($request['id']) ? (int)$request['id'] : null;
+    $request['service_type_id'] = isset($request['service_type_id']) ? (int)$request['service_type_id'] : null;
+    $request['crm_client_id'] = isset($request['crm_client_id']) ? (int)$request['crm_client_id'] : null;
+    $request['created_by'] = isset($request['created_by']) ? (int)$request['created_by'] : null;
+    $request['reviewed_by'] = isset($request['reviewed_by']) ? (int)$request['reviewed_by'] : null;
+    $request['status'] = bookingRequestResolvedStatus($request, $now);
+    $request['preferred_datetime'] = bookingNormalizeString($request['preferred_datetime'] ?? null, 32);
+    $request['preferred_end_at'] = bookingNormalizeString($request['preferred_end_at'] ?? null, 32);
+    $request['hold_expires_at'] = bookingNormalizeString($request['hold_expires_at'] ?? null, 32);
+    $request['confirmed_at'] = bookingNormalizeString($request['confirmed_at'] ?? null, 32);
+    $request['client_name'] = bookingNormalizeString($request['client_name'] ?? null, 255);
+    $request['client_email'] = bookingNormalizeString($request['client_email'] ?? null, 255);
+    $request['client_phone'] = bookingNormalizeString($request['client_phone'] ?? null, 80);
+    $request['client_company'] = bookingNormalizeString($request['client_company'] ?? null, 255);
+    $request['notes'] = bookingNormalizeString($request['notes'] ?? null, 5000);
+    $request['admin_comment'] = bookingNormalizeString($request['admin_comment'] ?? null, 5000);
+    $request['created_by_name'] = bookingNormalizeString($request['created_by_name'] ?? null, 255);
+    $request['reviewed_by_name'] = bookingNormalizeString($request['reviewed_by_name'] ?? null, 255);
+    $request['total_duration_minutes'] = max(0, (int)($request['total_duration_minutes'] ?? 0));
+    $request['total_price_rub'] = round((float)($request['total_price_rub'] ?? 0), 2);
+
+    $normalizedServices = [];
+    foreach ($services as $service) {
+        $normalizedServices[] = bookingDecorateRequestServiceRow($service);
+    }
+
+    if (!$normalizedServices) {
+        $fallbackService = null;
+        $fallbackServiceId = (int)($request['service_type_id'] ?? 0);
+
+        if ($fallbackServiceId > 0) {
+            if (isset($serviceCatalog[$fallbackServiceId])) {
+                $fallbackService = $serviceCatalog[$fallbackServiceId];
+            } else {
+                $stmt = $pdo->prepare("SELECT id, type_key, type_name, icon, description, duration_minutes, price_rub, discount_type, discount_value, promo_label, sort_order, is_active
+                    FROM booking_service_types
+                    WHERE id = ?
+                    LIMIT 1");
+                $stmt->execute([$fallbackServiceId]);
+                $fallbackService = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+                if (is_array($fallbackService)) {
+                    $fallbackService = bookingAliasServiceRow(bookingDecorateServiceRow($fallbackService));
+                }
+            }
+        }
+
+        if (is_array($fallbackService)) {
+            $normalizedServices[] = bookingDecorateRequestServiceRow(bookingServiceCatalogToRequestServiceRow($fallbackService, (int)($request['id'] ?? 0), 1));
+        } elseif ($fallbackServiceId > 0) {
+            $normalizedServices[] = bookingDecorateRequestServiceRow([
+                'booking_request_id' => isset($request['id']) ? (int)$request['id'] : null,
+                'service_type_id' => $fallbackServiceId,
+                'service_key' => trim((string)($request['service_type_key'] ?? '')) ?: bookingNormalizeServiceKey('service'),
+                'service_name' => trim((string)($request['service_type_name'] ?? '')) ?: 'Услуга',
+                'icon' => trim((string)($request['service_type_icon'] ?? 'calendar')) ?: 'calendar',
+                'duration_minutes' => max(0, (int)($request['total_duration_minutes'] ?? 0)),
+                'price_rub' => round((float)($request['total_price_rub'] ?? 0), 2),
+                'discount_type' => 'none',
+                'discount_value' => 0,
+                'effective_price_rub' => round((float)($request['total_price_rub'] ?? 0), 2),
+                'sort_order' => 1,
+            ]);
+        }
+    }
+
+    $request['services'] = $normalizedServices;
+    $request['service_count'] = count($normalizedServices);
+
+    $serviceNames = [];
+    $totalDuration = 0;
+    $totalPrice = 0.0;
+    foreach ($normalizedServices as $service) {
+        $serviceNames[] = (string)($service['service_name'] ?? $service['type_name'] ?? '');
+        $totalDuration += max(0, (int)($service['duration_minutes'] ?? 0));
+        $totalPrice += max(0, (float)($service['effective_price_rub'] ?? 0));
+    }
+
+    $request['service_summary'] = trim(implode(', ', array_filter($serviceNames)));
+    $request['total_duration_minutes'] = $request['total_duration_minutes'] > 0 ? $request['total_duration_minutes'] : $totalDuration;
+    $request['total_price_rub'] = $request['total_price_rub'] > 0 ? $request['total_price_rub'] : round($totalPrice, 2);
+
+    if ($normalizedServices) {
+        $primary = $normalizedServices[0];
+        $request['service_type_id'] = (int)($primary['service_type_id'] ?? $primary['id'] ?? $request['service_type_id'] ?? 0);
+        $request['service_type_key'] = (string)($primary['service_key'] ?? $primary['type_key'] ?? '');
+        $request['service_type_name'] = (string)($primary['service_name'] ?? $primary['type_name'] ?? '');
+        $request['service_type_icon'] = (string)($primary['icon'] ?? 'calendar');
+    } else {
+        $request['service_type_key'] = trim((string)($request['service_type_key'] ?? ''));
+        $request['service_type_name'] = trim((string)($request['service_type_name'] ?? ''));
+        $request['service_type_icon'] = trim((string)($request['service_type_icon'] ?? '')) ?: 'calendar';
+    }
+
+    $request['is_pending'] = $request['status'] === 'pending';
+    $request['is_confirmed'] = $request['status'] === 'confirmed';
+    $request['is_rejected'] = $request['status'] === 'rejected';
+    $request['is_expired'] = $request['status'] === 'expired';
+    $request['hold_minutes_left'] = 0;
+
+    if ($request['status'] === 'pending') {
+        $holdExpiresAt = bookingRequestHoldExpiresAt($request);
+        if ($holdExpiresAt instanceof DateTimeImmutable) {
+            $request['hold_expires_at'] = $holdExpiresAt->format('Y-m-d H:i:s');
+            $request['hold_minutes_left'] = max(0, (int)ceil(($holdExpiresAt->getTimestamp() - $now->getTimestamp()) / 60));
+        }
+    } elseif ($request['status'] === 'confirmed' || $request['status'] === 'rejected') {
+        $request['hold_expires_at'] = null;
+    } elseif ($request['status'] === 'expired') {
+        $holdExpiresAt = bookingRequestHoldExpiresAt($request);
+        if ($holdExpiresAt instanceof DateTimeImmutable) {
+            $request['hold_expires_at'] = $holdExpiresAt->format('Y-m-d H:i:s');
+        }
+    }
+
+    if ($request['status'] === 'confirmed' && empty($request['confirmed_at'])) {
+        $confirmedAt = bookingParseDateTime($request['reviewed_at'] ?? null) ?? bookingParseDateTime($request['updated_at'] ?? null);
+        if ($confirmedAt instanceof DateTimeImmutable) {
+            $request['confirmed_at'] = $confirmedAt->format('Y-m-d H:i:s');
+        }
+    }
+
+    return $request;
+}
+
+function bookingFetchBookingRequests(PDO $pdo, ?DateTimeImmutable $now = null): array {
+    $now ??= new DateTimeImmutable('now');
+    $serviceCatalog = bookingLoadServiceCatalog($pdo);
     $stmt = $pdo->query("SELECT
             br.*,
             bst.type_key AS service_type_key,
@@ -108,33 +513,68 @@ function bookingFetchBookingRequests(PDO $pdo): array {
             created.full_name AS created_by_name,
             reviewer.full_name AS reviewed_by_name
         FROM booking_requests br
-        JOIN booking_service_types bst ON bst.id = br.service_type_id
+        LEFT JOIN booking_service_types bst ON bst.id = br.service_type_id
         LEFT JOIN users created ON created.id = br.created_by
         LEFT JOIN users reviewer ON reviewer.id = br.reviewed_by
-        ORDER BY br.created_at DESC, br.id DESC");
+        ORDER BY CASE LOWER(br.status)
+            WHEN 'pending' THEN 0
+            WHEN 'new' THEN 0
+            WHEN 'confirmed' THEN 1
+            WHEN 'approved' THEN 1
+            WHEN 'rejected' THEN 2
+            WHEN 'expired' THEN 3
+            ELSE 4
+        END, COALESCE(br.preferred_datetime, br.created_at) ASC, br.id DESC");
 
-    return $stmt ? $stmt->fetchAll() : [];
+    $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    if (!$rows) {
+        return [];
+    }
+
+    $servicesMap = bookingFetchBookingRequestServices($pdo, array_column($rows, 'id'));
+    $requests = [];
+    foreach ($rows as $row) {
+        $requestId = (int)($row['id'] ?? 0);
+        $requests[] = bookingComposeBookingRequest($pdo, $row, $servicesMap[$requestId] ?? [], $serviceCatalog, $now);
+    }
+
+    return $requests;
 }
 
 function bookingFetchBookingStats(PDO $pdo): array {
     $stmt = $pdo->query("SELECT
             COUNT(*) AS total,
-            COALESCE(SUM(status = 'new'), 0) AS new_count,
-            COALESCE(SUM(status = 'approved'), 0) AS approved_count,
-            COALESCE(SUM(status = 'rejected'), 0) AS rejected_count
+            COALESCE(SUM(LOWER(status) IN ('new', 'pending')), 0) AS pending_count,
+            COALESCE(SUM(LOWER(status) IN ('approved', 'confirmed')), 0) AS confirmed_count,
+            COALESCE(SUM(LOWER(status) = 'rejected'), 0) AS rejected_count,
+            COALESCE(SUM(LOWER(status) = 'expired'), 0) AS expired_count
         FROM booking_requests");
 
-    $row = $stmt ? $stmt->fetch() : [];
+    $row = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : [];
+
+    $pending = (int)($row['pending_count'] ?? 0);
+    $confirmed = (int)($row['confirmed_count'] ?? 0);
+    $rejected = (int)($row['rejected_count'] ?? 0);
+    $expired = (int)($row['expired_count'] ?? 0);
 
     return [
         'total' => (int)($row['total'] ?? 0),
-        'new' => (int)($row['new_count'] ?? 0),
-        'approved' => (int)($row['approved_count'] ?? 0),
-        'rejected' => (int)($row['rejected_count'] ?? 0),
+        'pending' => $pending,
+        'confirmed' => $confirmed,
+        'rejected' => $rejected,
+        'expired' => $expired,
+        'new' => $pending,
+        'approved' => $confirmed,
     ];
 }
 
-function bookingFetchBookingRequest(PDO $pdo, int $id): ?array {
+function bookingFetchBookingRequest(PDO $pdo, int $id, ?DateTimeImmutable $now = null): ?array {
+    if ($id <= 0) {
+        return null;
+    }
+
+    $now ??= new DateTimeImmutable('now');
+    $serviceCatalog = bookingLoadServiceCatalog($pdo);
     $stmt = $pdo->prepare("SELECT
             br.*,
             bst.type_key AS service_type_key,
@@ -143,15 +583,20 @@ function bookingFetchBookingRequest(PDO $pdo, int $id): ?array {
             created.full_name AS created_by_name,
             reviewer.full_name AS reviewed_by_name
         FROM booking_requests br
-        JOIN booking_service_types bst ON bst.id = br.service_type_id
+        LEFT JOIN booking_service_types bst ON bst.id = br.service_type_id
         LEFT JOIN users created ON created.id = br.created_by
         LEFT JOIN users reviewer ON reviewer.id = br.reviewed_by
         WHERE br.id = ?
         LIMIT 1");
     $stmt->execute([$id]);
 
-    $row = $stmt->fetch();
-    return $row ?: null;
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        return null;
+    }
+
+    $servicesMap = bookingFetchBookingRequestServices($pdo, [$id]);
+    return bookingComposeBookingRequest($pdo, $row, $servicesMap[$id] ?? [], $serviceCatalog, $now);
 }
 
 function bookingAdminRecipientIds(PDO $pdo): array {
@@ -180,98 +625,280 @@ function bookingRespond(array $payload, int $statusCode = 200): void {
     exit;
 }
 
-function bookingHandleCreate(PDO $pdo, ?array $currentUser): void {
+function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $now = null): void {
+    $now ??= new DateTimeImmutable('now');
     $data = bookingReadJsonBody();
 
-    $serviceTypeId = (int)($data['service_type_id'] ?? 0);
-    $clientName = bookingNormalizeString($data['client_name'] ?? null, 255);
-    $clientEmail = bookingNormalizeString($data['client_email'] ?? null, 255);
-    $clientPhone = bookingNormalizeString($data['client_phone'] ?? null, 80);
-    $clientCompany = bookingNormalizeString($data['client_company'] ?? null, 255);
-    $preferredDatetime = bookingNormalizeDateTime($data['preferred_datetime'] ?? null);
-    $notes = bookingNormalizeString($data['notes'] ?? null, 5000);
+    $serviceIds = bookingNormalizeServiceIdList($data['service_type_ids'] ?? $data['service_ids'] ?? $data['services'] ?? $data['service_type_id'] ?? null);
+    $clientName = bookingNormalizeString($data['client_name'] ?? $data['name'] ?? null, 255);
+    $clientEmail = bookingNormalizeString($data['client_email'] ?? $data['email'] ?? null, 255);
+    $clientPhone = bookingNormalizeString($data['client_phone'] ?? $data['phone'] ?? null, 80);
+    $clientCompany = bookingNormalizeString($data['client_company'] ?? $data['company'] ?? null, 255);
+    $preferredDatetime = bookingResolvePreferredDatetime($data);
+    $notes = bookingNormalizeString($data['notes'] ?? $data['comment'] ?? null, 5000);
+    $crmClientId = (int)($data['crm_client_id'] ?? $data['client_id'] ?? 0);
+    $crmClientId = $crmClientId > 0 ? $crmClientId : null;
 
-    if ($serviceTypeId <= 0 || !$clientName) {
-        bookingRespond(['success' => false, 'error' => 'Укажите имя и услугу'], 400);
+    if (!$clientName || !$clientPhone) {
+        bookingRespond(['success' => false, 'error' => 'Укажите имя и телефон для связи'], 400);
     }
 
-    if (!$clientEmail && !$clientPhone) {
-        bookingRespond(['success' => false, 'error' => 'Укажите телефон или email для связи'], 400);
+    if (!$serviceIds) {
+        bookingRespond(['success' => false, 'error' => 'Выберите хотя бы одну услугу'], 400);
     }
 
-    $stmt = $pdo->prepare("SELECT id, type_key, type_name FROM booking_service_types WHERE id = ? AND is_active = 1 LIMIT 1");
-    $stmt->execute([$serviceTypeId]);
-    $serviceType = $stmt->fetch();
-
-    if (!$serviceType) {
-        bookingRespond(['success' => false, 'error' => 'Выбранная услуга недоступна'], 400);
+    if (!$preferredDatetime) {
+        bookingRespond(['success' => false, 'error' => 'Укажите желаемые дату и время'], 400);
     }
 
-    $requestNumber = bookingGenerateRequestNumber($pdo);
+    $serviceCatalog = bookingLoadServiceCatalog($pdo);
+    $selectedServices = [];
+    foreach ($serviceIds as $serviceId) {
+        if (!isset($serviceCatalog[$serviceId])) {
+            bookingRespond(['success' => false, 'error' => 'Одна или несколько услуг недоступны'], 400);
+        }
+        $selectedServices[] = $serviceCatalog[$serviceId];
+    }
+
+    if (!$selectedServices) {
+        bookingRespond(['success' => false, 'error' => 'Выберите хотя бы одну услугу'], 400);
+    }
+
+    $totalDurationMinutes = 0;
+    $totalPriceRub = 0.0;
+    foreach ($selectedServices as $service) {
+        $totalDurationMinutes += max(0, (int)($service['duration_minutes'] ?? 0));
+        $totalPriceRub += max(0, (float)($service['effective_price_rub'] ?? 0));
+    }
+
+    if ($totalDurationMinutes <= 0) {
+        bookingRespond(['success' => false, 'error' => 'У выбранных услуг не задана длительность'], 400);
+    }
+
+    $startAt = bookingParseDateTime($preferredDatetime);
+    if (!$startAt instanceof DateTimeImmutable) {
+        bookingRespond(['success' => false, 'error' => 'Укажите корректные дату и время'], 400);
+    }
+
+    if ($startAt <= $now) {
+        bookingRespond(['success' => false, 'error' => 'Выберите время в будущем'], 400);
+    }
+
+    $endAt = $startAt->modify('+' . $totalDurationMinutes . ' minutes');
+    $workingHours = bookingWorkingHoursByWeekday(bookingFetchWorkingHours($pdo));
+    $workingHoursError = bookingValidateWorkingHoursSlot($workingHours, $startAt, $endAt);
+    if ($workingHoursError !== null) {
+        bookingRespond(['success' => false, 'error' => $workingHoursError], 400);
+    }
+
+    $requestId = 0;
+    $requestNumber = '';
+    $holdExpiresAt = $now->modify('+30 minutes');
+    $primaryService = $selectedServices[0];
     $createdBy = $currentUser['id'] ?? null;
 
-    $stmt = $pdo->prepare("INSERT INTO booking_requests (
+    try {
+        if (!$pdo->beginTransaction()) {
+            bookingRespond(['success' => false, 'error' => 'Не удалось начать создание заявки'], 500);
+        }
+
+        $requestNumber = bookingGenerateRequestNumber($pdo, $now);
+        $startValue = $startAt->format('Y-m-d H:i:s');
+        $endValue = $endAt->format('Y-m-d H:i:s');
+        $nowValue = $now->format('Y-m-d H:i:s');
+
+        $conflictStmt = $pdo->prepare("SELECT br.id, br.request_number
+            FROM booking_requests br
+            WHERE br.preferred_datetime IS NOT NULL
+              AND COALESCE(br.preferred_end_at, DATE_ADD(br.preferred_datetime, INTERVAL GREATEST(br.total_duration_minutes, 0) MINUTE)) > ?
+              AND br.preferred_datetime < ?
+              AND (
+                    LOWER(br.status) IN ('confirmed', 'approved')
+                    OR (
+                        LOWER(br.status) IN ('pending', 'new')
+                        AND COALESCE(br.hold_expires_at, DATE_ADD(br.created_at, INTERVAL 30 MINUTE)) > ?
+                    )
+              )
+            ORDER BY br.preferred_datetime ASC, br.id ASC
+            LIMIT 1
+            FOR UPDATE");
+        $conflictStmt->execute([$startValue, $endValue, $nowValue]);
+        $conflict = $conflictStmt->fetch(PDO::FETCH_ASSOC);
+        if ($conflict) {
+            $pdo->rollBack();
+            bookingRespond(['success' => false, 'error' => 'Выбранное время уже занято'], 409);
+        }
+
+        $insertStmt = $pdo->prepare("INSERT INTO booking_requests (
             request_number,
             service_type_id,
+            crm_client_id,
             client_name,
             client_email,
             client_phone,
             client_company,
             preferred_datetime,
+            preferred_end_at,
+            total_duration_minutes,
+            total_price_rub,
+            hold_expires_at,
+            confirmed_at,
             notes,
+            admin_comment,
             status,
-            created_by
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'new', ?)");
-    $stmt->execute([
-        $requestNumber,
-        $serviceTypeId,
-        $clientName,
-        $clientEmail,
-        $clientPhone,
-        $clientCompany,
-        $preferredDatetime,
-        $notes,
-        $createdBy,
-    ]);
+            created_by,
+            reviewed_by,
+            reviewed_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, NULL, 'pending', ?, NULL, NULL)");
+        $insertStmt->execute([
+            $requestNumber,
+            (int)($primaryService['id'] ?? 0),
+            $crmClientId,
+            $clientName,
+            $clientEmail,
+            $clientPhone,
+            $clientCompany,
+            $startValue,
+            $endValue,
+            $totalDurationMinutes,
+            round($totalPriceRub, 2),
+            $holdExpiresAt->format('Y-m-d H:i:s'),
+            $notes,
+            $createdBy ? (int)$createdBy : null,
+        ]);
 
-    $requestId = (int)$pdo->lastInsertId();
-    $request = bookingFetchBookingRequest($pdo, $requestId);
+        $requestId = (int)$pdo->lastInsertId();
 
-    auditLog($pdo, 'booking.created', [
-        'actor' => $currentUser,
-        'target_type' => 'booking_request',
-        'target_id' => (string)$requestId,
-        'summary' => 'Создана заявка на запись ' . $requestNumber,
-        'details' => [
+        $serviceInsertStmt = $pdo->prepare("INSERT INTO booking_request_services (
+            booking_request_id,
+            service_type_id,
+            service_key,
+            service_name,
+            icon,
+            duration_minutes,
+            price_rub,
+            discount_type,
+            discount_value,
+            effective_price_rub,
+            sort_order
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        foreach ($selectedServices as $index => $service) {
+            $requestService = bookingServiceCatalogToRequestServiceRow($service, $requestId, $index + 1);
+            $serviceInsertStmt->execute([
+                $requestId,
+                (int)($requestService['service_type_id'] ?? 0),
+                (string)($requestService['service_key'] ?? ''),
+                (string)($requestService['service_name'] ?? ''),
+                (string)($requestService['icon'] ?? 'calendar'),
+                (int)($requestService['duration_minutes'] ?? 0),
+                round((float)($requestService['price_rub'] ?? 0), 2),
+                (string)($requestService['discount_type'] ?? 'none'),
+                round((float)($requestService['discount_value'] ?? 0), 2),
+                round((float)($requestService['effective_price_rub'] ?? 0), 2),
+                (int)($requestService['sort_order'] ?? ($index + 1)),
+            ]);
+        }
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+
+        error_log('bookingHandleCreate failed: ' . $e->getMessage());
+        bookingRespond(['success' => false, 'error' => 'Не удалось создать заявку'], 500);
+    }
+
+    $freshRequest = bookingFetchBookingRequest($pdo, $requestId, $now);
+    if (!$freshRequest) {
+        $fallbackServices = [];
+        foreach ($selectedServices as $index => $service) {
+            $fallbackServices[] = bookingDecorateRequestServiceRow(bookingServiceCatalogToRequestServiceRow($service, $requestId, $index + 1));
+        }
+
+        $freshRequest = bookingComposeBookingRequest($pdo, [
+            'id' => $requestId,
             'request_number' => $requestNumber,
-            'service_type_id' => $serviceTypeId,
-            'service_type_name' => $serviceType['type_name'],
+            'service_type_id' => (int)($primaryService['id'] ?? 0),
+            'crm_client_id' => $crmClientId,
             'client_name' => $clientName,
             'client_email' => $clientEmail,
             'client_phone' => $clientPhone,
-            'preferred_datetime' => $preferredDatetime,
-        ],
-    ]);
+            'client_company' => $clientCompany,
+            'preferred_datetime' => $startValue,
+            'preferred_end_at' => $endValue,
+            'total_duration_minutes' => $totalDurationMinutes,
+            'total_price_rub' => round($totalPriceRub, 2),
+            'hold_expires_at' => $holdExpiresAt->format('Y-m-d H:i:s'),
+            'confirmed_at' => null,
+            'notes' => $notes,
+            'admin_comment' => null,
+            'status' => 'pending',
+            'created_by' => $createdBy,
+            'reviewed_by' => null,
+            'reviewed_at' => null,
+            'created_at' => $now->format('Y-m-d H:i:s'),
+            'updated_at' => $now->format('Y-m-d H:i:s'),
+            'service_type_key' => (string)($primaryService['service_key'] ?? ''),
+            'service_type_name' => (string)($primaryService['service_name'] ?? ''),
+            'service_type_icon' => (string)($primaryService['icon'] ?? 'calendar'),
+            'created_by_name' => $currentUser['full_name'] ?? null,
+            'reviewed_by_name' => null,
+        ], $fallbackServices, $serviceCatalog, $now);
+    }
 
-    $recipientIds = bookingAdminRecipientIds($pdo);
-    if ($recipientIds) {
-        createNotifications($pdo, $recipientIds, [
-            'sender_id' => $createdBy ? (int)$createdBy : null,
-            'message' => 'Новая заявка на запись ' . $requestNumber,
-            'type' => 'booking',
-            'related_id' => $requestId,
-            'allow_self' => false,
+    try {
+        auditLog($pdo, 'booking.created', [
+            'actor' => $currentUser,
+            'target_type' => 'booking_request',
+            'target_id' => (string)$requestId,
+            'summary' => 'Создана заявка на запись ' . ($freshRequest['request_number'] ?? $requestNumber),
+            'details' => [
+                'request_number' => $freshRequest['request_number'] ?? $requestNumber,
+                'service_type_id' => (int)($freshRequest['service_type_id'] ?? $primaryService['id'] ?? 0),
+                'service_type_name' => $freshRequest['service_type_name'] ?? ($primaryService['service_name'] ?? null),
+                'service_summary' => $freshRequest['service_summary'] ?? null,
+                'service_count' => $freshRequest['service_count'] ?? count($selectedServices),
+                'total_duration_minutes' => $freshRequest['total_duration_minutes'] ?? $totalDurationMinutes,
+                'total_price_rub' => $freshRequest['total_price_rub'] ?? round($totalPriceRub, 2),
+                'client_name' => $clientName,
+                'client_email' => $clientEmail,
+                'client_phone' => $clientPhone,
+                'preferred_datetime' => $startValue,
+                'preferred_end_at' => $endValue,
+                'hold_expires_at' => $holdExpiresAt->format('Y-m-d H:i:s'),
+            ],
         ]);
+    } catch (Throwable $e) {
+        error_log('bookingHandleCreate audit failed: ' . $e->getMessage());
+    }
+
+    try {
+        $recipientIds = bookingAdminRecipientIds($pdo);
+        if ($recipientIds) {
+            createNotifications($pdo, $recipientIds, [
+                'sender_id' => $createdBy ? (int)$createdBy : null,
+                'message' => 'Новая заявка на запись ' . ($freshRequest['request_number'] ?? $requestNumber),
+                'type' => 'booking',
+                'related_id' => $requestId,
+                'allow_self' => false,
+            ]);
+        }
+    } catch (Throwable $e) {
+        error_log('bookingHandleCreate notification failed: ' . $e->getMessage());
     }
 
     bookingRespond([
         'success' => true,
-        'data' => $request,
-        'message' => 'Заявка на запись создана',
+        'data' => $freshRequest,
+        'message' => 'Заявка на запись создана и ожидает подтверждения',
     ], 201);
 }
 
-function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision): void {
+function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision, ?DateTimeImmutable $now = null): void {
+    $now ??= new DateTimeImmutable('now');
+
     if (!$currentUser || !hasAdminAccess($currentUser)) {
         bookingRespond(['success' => false, 'error' => 'Только администраторы могут обрабатывать заявки'], 403);
     }
@@ -284,56 +911,94 @@ function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision):
         bookingRespond(['success' => false, 'error' => 'Укажите id заявки'], 400);
     }
 
-    $request = bookingFetchBookingRequest($pdo, $requestId);
-    if (!$request) {
-        bookingRespond(['success' => false, 'error' => 'Заявка не найдена'], 404);
+    $decision = strtolower(trim($decision));
+    if ($decision === 'approve') {
+        $decision = 'confirm';
     }
 
-    if (($request['status'] ?? 'new') !== 'new') {
+    if ($decision !== 'confirm' && $decision !== 'reject') {
+        bookingRespond(['success' => false, 'error' => 'Укажите действие confirm или reject'], 400);
+    }
+
+    $nowValue = $now->format('Y-m-d H:i:s');
+    $targetStatus = $decision === 'confirm' ? 'confirmed' : 'rejected';
+    $confirmedAt = $decision === 'confirm' ? $nowValue : null;
+
+    $stmt = $pdo->prepare("UPDATE booking_requests
+        SET status = ?,
+            admin_comment = ?,
+            reviewed_by = ?,
+            reviewed_at = ?,
+            confirmed_at = ?,
+            hold_expires_at = NULL
+        WHERE id = ?
+          AND LOWER(status) IN ('new', 'pending')
+          AND COALESCE(hold_expires_at, DATE_ADD(created_at, INTERVAL 30 MINUTE)) > ?");
+    $stmt->execute([
+        $targetStatus,
+        $adminComment,
+        (int)$currentUser['id'],
+        $nowValue,
+        $confirmedAt,
+        $requestId,
+        $nowValue,
+    ]);
+
+    if ((int)$stmt->rowCount() <= 0) {
+        $existing = bookingFetchBookingRequest($pdo, $requestId, $now);
+        if (!$existing) {
+            bookingRespond(['success' => false, 'error' => 'Заявка не найдена'], 404);
+        }
+
+        if (($existing['status'] ?? '') === 'expired') {
+            bookingRespond(['success' => false, 'error' => 'Срок ожидания заявки истек'], 409);
+        }
+
         bookingRespond(['success' => false, 'error' => 'Заявка уже обработана'], 409);
     }
 
-    $status = $decision === 'approve' ? 'approved' : 'rejected';
-    $stmt = $pdo->prepare("UPDATE booking_requests
-        SET status = ?, admin_comment = ?, reviewed_by = ?, reviewed_at = NOW()
-        WHERE id = ?");
-    $stmt->execute([
-        $status,
-        $adminComment,
-        (int)$currentUser['id'],
-        $requestId,
-    ]);
+    $freshRequest = bookingFetchBookingRequest($pdo, $requestId, $now);
+    if (!$freshRequest) {
+        bookingRespond(['success' => false, 'error' => 'Заявка не найдена'], 404);
+    }
 
-    $freshRequest = bookingFetchBookingRequest($pdo, $requestId);
-
-    auditLog($pdo, $status === 'approved' ? 'booking.approved' : 'booking.rejected', [
-        'actor' => $currentUser,
-        'target_type' => 'booking_request',
-        'target_id' => (string)$requestId,
-        'summary' => 'Заявка ' . ($freshRequest['request_number'] ?? $request['request_number'] ?? $requestId) . ' ' . ($status === 'approved' ? 'одобрена' : 'отклонена'),
-        'details' => [
-            'status' => $status,
-            'request_number' => $freshRequest['request_number'] ?? $request['request_number'] ?? null,
-            'service_type_name' => $freshRequest['service_type_name'] ?? $request['service_type_name'] ?? null,
-            'admin_comment' => $adminComment,
-        ],
-    ]);
-
-    $creatorId = isset($request['created_by']) ? (int)$request['created_by'] : 0;
-    if ($creatorId > 0 && $creatorId !== (int)$currentUser['id']) {
-        createNotification($pdo, [
-            'user_id' => $creatorId,
-            'sender_id' => (int)$currentUser['id'],
-            'message' => 'Ваша заявка на запись ' . $request['request_number'] . ' ' . ($status === 'approved' ? 'одобрена' : 'отклонена'),
-            'type' => 'booking',
-            'related_id' => $requestId,
+    try {
+        auditLog($pdo, $targetStatus === 'confirmed' ? 'booking.confirmed' : 'booking.rejected', [
+            'actor' => $currentUser,
+            'target_type' => 'booking_request',
+            'target_id' => (string)$requestId,
+            'summary' => 'Заявка ' . ($freshRequest['request_number'] ?? $requestId) . ' ' . ($targetStatus === 'confirmed' ? 'подтверждена' : 'отклонена'),
+            'details' => [
+                'status' => $targetStatus,
+                'request_number' => $freshRequest['request_number'] ?? null,
+                'service_type_name' => $freshRequest['service_type_name'] ?? null,
+                'service_summary' => $freshRequest['service_summary'] ?? null,
+                'admin_comment' => $adminComment,
+            ],
         ]);
+    } catch (Throwable $e) {
+        error_log('bookingHandleDecision audit failed: ' . $e->getMessage());
+    }
+
+    $creatorId = isset($freshRequest['created_by']) ? (int)$freshRequest['created_by'] : 0;
+    if ($creatorId > 0 && $creatorId !== (int)$currentUser['id']) {
+        try {
+            createNotification($pdo, [
+                'user_id' => $creatorId,
+                'sender_id' => (int)$currentUser['id'],
+                'message' => 'Ваша заявка на запись ' . ($freshRequest['request_number'] ?? $requestId) . ' ' . ($targetStatus === 'confirmed' ? 'подтверждена' : 'отклонена'),
+                'type' => 'booking',
+                'related_id' => $requestId,
+            ]);
+        } catch (Throwable $e) {
+            error_log('bookingHandleDecision notification failed: ' . $e->getMessage());
+        }
     }
 
     bookingRespond([
         'success' => true,
         'data' => $freshRequest,
-        'message' => $status === 'approved' ? 'Заявка одобрена' : 'Заявка отклонена',
+        'message' => $targetStatus === 'confirmed' ? 'Заявка подтверждена' : 'Заявка отклонена',
     ]);
 }
 
@@ -346,21 +1011,34 @@ function handleBooking(string $method): void {
         error_log('booking.php schema ensure failed: ' . $e->getMessage());
     }
 
-    if ($method === 'POST') {
-        bookingReadJsonBody();
+    $currentUser = function_exists('getCurrentUser') ? getCurrentUser() : null;
+    $now = new DateTimeImmutable('now');
+
+    try {
+        bookingExpirePendingRequests($pdo, $now);
+    } catch (Throwable $e) {
+        error_log('booking.php pending expiration failed: ' . $e->getMessage());
     }
 
-    $currentUser = function_exists('getCurrentUser') ? getCurrentUser() : null;
-
     if ($method === 'GET') {
+        $serviceTypes = bookingFetchServiceTypes($pdo);
+        $workingHours = bookingFetchWorkingHours($pdo);
         $data = [
-            'service_types' => bookingFetchServiceTypes($pdo),
+            'services' => $serviceTypes,
+            'service_types' => $serviceTypes,
+            'working_hours' => $workingHours,
+            'hold_minutes' => 30,
+            'server_time' => $now->format('Y-m-d H:i:s'),
             'can_manage' => (bool)($currentUser && hasAdminAccess($currentUser)),
         ];
 
         if ($currentUser && hasAdminAccess($currentUser)) {
-            $data['requests'] = bookingFetchBookingRequests($pdo);
-            $data['stats'] = bookingFetchBookingStats($pdo);
+            $requests = bookingFetchBookingRequests($pdo, $now);
+            $stats = bookingFetchBookingStats($pdo);
+            $data['requests'] = $requests;
+            $data['booking_requests'] = $requests;
+            $data['stats'] = $stats;
+            $data['booking_stats'] = $stats;
         }
 
         bookingRespond(['success' => true, 'data' => $data]);
@@ -371,13 +1049,17 @@ function handleBooking(string $method): void {
     }
 
     $data = bookingReadJsonBody();
-    $action = strtolower(trim((string)($data['action'] ?? ($_GET['action'] ?? ''))));
+    $action = strtolower(trim((string)($data['action'] ?? ($_GET['action'] ?? $data['decision'] ?? ''))));
 
-    if ($action === 'approve' || $action === 'reject') {
-        bookingHandleDecision($pdo, $currentUser, $action);
+    if ($action === 'approve') {
+        $action = 'confirm';
     }
 
-    bookingHandleCreate($pdo, $currentUser);
+    if ($action === 'confirm' || $action === 'reject') {
+        bookingHandleDecision($pdo, $currentUser, $action, $now);
+    }
+
+    bookingHandleCreate($pdo, $currentUser, $now);
 }
 
 handleBooking($_SERVER['REQUEST_METHOD'] ?? 'GET');
