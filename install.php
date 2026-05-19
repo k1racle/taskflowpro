@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $step === 'install') {
         $step = 'form';
     }
 
-    $host = trim($_POST['host'] ?? 'localhost');
+    $host = trim($_POST['host'] ?? 'db');
     $user = trim($_POST['user'] ?? '');
     $pass = $_POST['pass'] ?? '';
     $dbname = trim($_POST['dbname'] ?? 'taskflow');
@@ -223,8 +223,7 @@ function createTables(PDO $pdo): void {
             INDEX idx_login (login),
             INDEX idx_email (email),
             INDEX idx_department (department_id),
-            INDEX idx_segment (customer_segment),
-            INDEX idx_ltv (ltv_amount)
+            INDEX idx_segment (customer_segment)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     ");
 
@@ -370,7 +369,6 @@ function createTables(PDO $pdo): void {
             INDEX idx_phone (phone),
             INDEX idx_status (status),
             INDEX idx_segment (customer_segment),
-            INDEX idx_ltv (ltv_amount),
             INDEX idx_owner (owner_id),
             INDEX idx_user_id (user_id),
             FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
@@ -2465,8 +2463,8 @@ function createBootstrapLock($host, $user, $pass, $dbname, $licenseDomain = ''):
             <form method="POST" action="?step=install" class="space-y-5">
                 <div>
                     <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Хост MySQL</label>
-                    <input type="text" name="host" value="localhost" required
-                           class="w-full px-4 py-3 rounded-xl ios-glass-input installer-input" placeholder="localhost">
+                    <input type="text" name="host" value="db" required
+                           class="w-full px-4 py-3 rounded-xl ios-glass-input installer-input" placeholder="db">
                 </div>
                 
                 <div>
