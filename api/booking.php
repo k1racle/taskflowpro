@@ -1002,6 +1002,197 @@ function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision, 
     ]);
 }
 
+function bookingHandleServiceUpsert(PDO $pdo, ?array $currentUser): void {
+    if (!$currentUser || !hasAdminAccess($currentUser)) {
+        bookingRespond(['success' => false, 'error' => 'Только администраторы могут управлять услугами'], 403);
+    }
+
+    $data = bookingReadJsonBody();
+    $id = (int)($data['id'] ?? 0);
+
+    $typeKey = bookingNormalizeString($data['type_key'] ?? $data['service_key'] ?? null, 64);
+    $typeName = bookingNormalizeString($data['type_name'] ?? $data['service_name'] ?? $data['name'] ?? null, 190);
+    $icon = bookingNormalizeString($data['icon'] ?? null, 50) ?? 'calendar';
+    $description = bookingNormalizeString($data['description'] ?? null, 1000) ?? '';
+    $durationMinutes = max(0, (int)($data['duration_minutes'] ?? 0));
+    $priceRub = round(max(0, (float)($data['price_rub'] ?? 0)), 2);
+
+    $discountType = strtolower(trim((string)($data['discount_type'] ?? 'none')));
+    if (!in_array($discountType, ['none', 'percent', 'amount'], true)) {
+        $discountType = 'none';
+    }
+    $discountValue = round(max(0, (float)($data['discount_value'] ?? 0)), 2);
+    $promoLabel = bookingNormalizeString($data['promo_label'] ?? null, 120);
+    $sortOrder = (int)($data['sort_order'] ?? 0);
+    $isActive = (int)($data['is_active'] ?? 1) === 1 ? 1 : 0;
+
+    if (!$typeName) {
+        bookingRespond(['success' => false, 'error' => 'Укажите название услуги'], 400);
+    }
+
+    if ($durationMinutes <= 0) {
+        bookingRespond(['success' => false, 'error' => 'Укажите длительность услуги (мин)'], 400);
+    }
+
+    if (!$typeKey) {
+        $typeKey = bookingNormalizeServiceKey($typeName);
+    }
+
+    try {
+        if ($id > 0) {
+            $stmt = $pdo->prepare("UPDATE booking_service_types
+                SET type_key = ?,
+                    type_name = ?,
+                    icon = ?,
+                    description = ?,
+                    duration_minutes = ?,
+                    price_rub = ?,
+                    discount_type = ?,
+                    discount_value = ?,
+                    promo_label = ?,
+                    sort_order = ?,
+                    is_active = ?
+                WHERE id = ?");
+            $stmt->execute([
+                $typeKey,
+                $typeName,
+                $icon,
+                $description,
+                $durationMinutes,
+                $priceRub,
+                $discountType,
+                $discountValue,
+                $promoLabel,
+                $sortOrder,
+                $isActive,
+                $id,
+            ]);
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO booking_service_types
+                (type_key, type_name, icon, description, duration_minutes, price_rub, discount_type, discount_value, promo_label, sort_order, is_active)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([
+                $typeKey,
+                $typeName,
+                $icon,
+                $description,
+                $durationMinutes,
+                $priceRub,
+                $discountType,
+                $discountValue,
+                $promoLabel,
+                $sortOrder,
+                $isActive,
+            ]);
+            $id = (int)$pdo->lastInsertId();
+        }
+    } catch (Throwable $e) {
+        error_log('bookingHandleServiceUpsert failed: ' . $e->getMessage());
+        bookingRespond(['success' => false, 'error' => 'Не удалось сохранить услугу'], 500);
+    }
+
+    $service = null;
+    try {
+        $stmt = $pdo->prepare("SELECT id, type_key, type_name, icon, description, duration_minutes, price_rub, discount_type, discount_value, promo_label, sort_order, is_active
+            FROM booking_service_types WHERE id = ? LIMIT 1");
+        $stmt->execute([$id]);
+        $service = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Throwable $e) {
+        $service = null;
+    }
+
+    bookingRespond(['success' => true, 'data' => $service ? bookingAliasServiceRow(bookingDecorateServiceRow($service)) : null]);
+}
+
+function bookingHandleServiceDelete(PDO $pdo, ?array $currentUser): void {
+    if (!$currentUser || !hasAdminAccess($currentUser)) {
+        bookingRespond(['success' => false, 'error' => 'Только администраторы могут управлять услугами'], 403);
+    }
+
+    $data = bookingReadJsonBody();
+    $id = (int)($data['id'] ?? $data['service_type_id'] ?? 0);
+    if ($id <= 0) {
+        bookingRespond(['success' => false, 'error' => 'Укажите id услуги'], 400);
+    }
+
+    try {
+        $stmt = $pdo->prepare('SELECT COUNT(*) FROM booking_requests WHERE service_type_id = ?');
+        $stmt->execute([$id]);
+        $count = (int)$stmt->fetchColumn();
+        if ($count > 0) {
+            bookingRespond(['success' => false, 'error' => 'Нельзя удалить услугу: она используется в заявках. Деактивируйте её.'], 409);
+        }
+
+        $pdo->prepare('DELETE FROM booking_request_services WHERE service_type_id = ?')->execute([$id]);
+        $pdo->prepare('DELETE FROM booking_service_types WHERE id = ?')->execute([$id]);
+    } catch (Throwable $e) {
+        error_log('bookingHandleServiceDelete failed: ' . $e->getMessage());
+        bookingRespond(['success' => false, 'error' => 'Не удалось удалить услугу'], 500);
+    }
+
+    bookingRespond(['success' => true, 'data' => ['id' => $id]]);
+}
+
+function bookingHandleWorkingHoursUpsert(PDO $pdo, ?array $currentUser): void {
+    if (!$currentUser || !hasAdminAccess($currentUser)) {
+        bookingRespond(['success' => false, 'error' => 'Только администраторы могут управлять расписанием'], 403);
+    }
+
+    $data = bookingReadJsonBody();
+    $weekday = (int)($data['weekday'] ?? 0);
+    if ($weekday < 1 || $weekday > 7) {
+        bookingRespond(['success' => false, 'error' => 'Укажите weekday 1-7'], 400);
+    }
+
+    $isOpen = (int)($data['is_open'] ?? 0) === 1 ? 1 : 0;
+    $opensAt = bookingNormalizeString($data['opens_at'] ?? null, 16);
+    $closesAt = bookingNormalizeString($data['closes_at'] ?? null, 16);
+    $breakStarts = bookingNormalizeString($data['break_starts_at'] ?? null, 16);
+    $breakEnds = bookingNormalizeString($data['break_ends_at'] ?? null, 16);
+    $note = bookingNormalizeString($data['note'] ?? null, 255);
+    $sortOrder = (int)($data['sort_order'] ?? $weekday);
+
+    // normalize to TIME-compatible strings
+    $normTime = static function (?string $v): ?string {
+        $v = trim((string)$v);
+        if ($v === '') return null;
+        if (preg_match('/^\d{2}:\d{2}(:\d{2})?$/', $v) !== 1) return null;
+        return strlen($v) === 5 ? ($v . ':00') : $v;
+    };
+    $opensAt = $normTime($opensAt);
+    $closesAt = $normTime($closesAt);
+    $breakStarts = $normTime($breakStarts);
+    $breakEnds = $normTime($breakEnds);
+
+    if ($isOpen && (!$opensAt || !$closesAt)) {
+        bookingRespond(['success' => false, 'error' => 'Укажите opens_at и closes_at'], 400);
+    }
+
+    try {
+        $stmt = $pdo->prepare('SELECT id FROM booking_working_hours WHERE weekday = ? LIMIT 1');
+        $stmt->execute([$weekday]);
+        $id = (int)($stmt->fetchColumn() ?: 0);
+
+        if ($id > 0) {
+            $stmt = $pdo->prepare('UPDATE booking_working_hours
+                SET is_open = ?, opens_at = ?, closes_at = ?, break_starts_at = ?, break_ends_at = ?, note = ?, sort_order = ?
+                WHERE id = ?');
+            $stmt->execute([$isOpen, $opensAt, $closesAt, $breakStarts, $breakEnds, $note, $sortOrder, $id]);
+        } else {
+            $stmt = $pdo->prepare('INSERT INTO booking_working_hours (weekday, is_open, opens_at, closes_at, break_starts_at, break_ends_at, note, sort_order)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+            $stmt->execute([$weekday, $isOpen, $opensAt, $closesAt, $breakStarts, $breakEnds, $note, $sortOrder]);
+            $id = (int)$pdo->lastInsertId();
+        }
+    } catch (Throwable $e) {
+        error_log('bookingHandleWorkingHoursUpsert failed: ' . $e->getMessage());
+        bookingRespond(['success' => false, 'error' => 'Не удалось сохранить расписание'], 500);
+    }
+
+    $hours = bookingFetchWorkingHours($pdo);
+    bookingRespond(['success' => true, 'data' => $hours]);
+}
+
 function handleBooking(string $method): void {
     $pdo = getPDO();
 
@@ -1053,6 +1244,18 @@ function handleBooking(string $method): void {
 
     if ($action === 'approve') {
         $action = 'confirm';
+    }
+
+    if ($action === 'service_upsert') {
+        bookingHandleServiceUpsert($pdo, $currentUser);
+    }
+
+    if ($action === 'service_delete') {
+        bookingHandleServiceDelete($pdo, $currentUser);
+    }
+
+    if ($action === 'working_hours_upsert') {
+        bookingHandleWorkingHoursUpsert($pdo, $currentUser);
     }
 
     if ($action === 'confirm' || $action === 'reject') {

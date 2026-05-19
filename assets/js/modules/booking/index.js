@@ -9,6 +9,20 @@ window.TaskFlowBooking = (function () {
         notes: ''
     };
 
+    const DEFAULT_SERVICE_FORM = {
+        id: null,
+        key: '',
+        name: '',
+        description: '',
+        icon: 'calendar',
+        duration_minutes: 60,
+        price: 0,
+        currency: 'RUB',
+        discount_type: 'none',
+        discount_value: 0,
+        is_active: true
+    };
+
     const DEFAULT_STATS = {
         total: 0,
         pending: 0,
@@ -23,6 +37,10 @@ window.TaskFlowBooking = (function () {
 
     function createDefaultForm() {
         return { ...DEFAULT_FORM };
+    }
+
+    function createDefaultServiceForm() {
+        return { ...DEFAULT_SERVICE_FORM };
     }
 
     function normalizeStats(stats) {
@@ -118,6 +136,24 @@ window.TaskFlowBooking = (function () {
         return map[String(icon || '').toLowerCase()] || '📅';
     }
 
+    function bookingServiceToForm(service) {
+        const source = service && typeof service === 'object' ? service : {};
+        return {
+            ...createDefaultServiceForm(),
+            id: source.id != null ? Number(source.id) : null,
+            key: String(source.key || ''),
+            name: String(source.name || ''),
+            description: String(source.description || ''),
+            icon: String(source.icon || 'calendar'),
+            duration_minutes: Number(source.duration_minutes || 0) || 60,
+            price: Number(source.price || 0) || 0,
+            currency: String(source.currency || 'RUB') || 'RUB',
+            discount_type: String(source.discount_type || 'none') || 'none',
+            discount_value: Number(source.discount_value || 0) || 0,
+            is_active: source.is_active == null ? true : !!source.is_active
+        };
+    }
+
     return {
         getDefaultForm() {
             return createDefaultForm();
@@ -152,6 +188,8 @@ window.TaskFlowBooking = (function () {
                 bookingLastLoadedAt: '',
                 bookingForm: createDefaultForm(),
                 bookingSelectedRequestId: null,
+                bookingServiceModalOpen: false,
+                bookingServiceForm: createDefaultServiceForm(),
                 _bookingLoaded: false,
                 _bookingNoticeTimer: null,
 
@@ -181,6 +219,24 @@ window.TaskFlowBooking = (function () {
 
                 refreshBookingData() {
                     return window.TaskFlowBooking.refresh(this);
+                },
+
+                openBookingServiceModal() {
+                    this.bookingServiceForm = createDefaultServiceForm();
+                    this.bookingServiceModalOpen = true;
+                },
+
+                editBookingService(service) {
+                    this.bookingServiceForm = bookingServiceToForm(service);
+                    this.bookingServiceModalOpen = true;
+                },
+
+                async saveBookingService() {
+                    return window.TaskFlowBooking.saveBookingService(this);
+                },
+
+                async deleteBookingService(service) {
+                    return window.TaskFlowBooking.deleteBookingService(this, service);
                 },
 
                 submitBooking() {
@@ -447,6 +503,111 @@ window.TaskFlowBooking = (function () {
 
         async rejectRequest(ctx, request) {
             return this.respondToRequest(ctx, request, 'reject');
+        },
+
+        async saveBookingService(ctx) {
+            if (!ctx.bookingCanManage) {
+                notify(ctx, 'Недостаточно прав для управления услугами', 'error');
+                return false;
+            }
+
+            if (ctx.bookingSubmitting) return false;
+
+            const form = ctx.bookingServiceForm || {};
+            const payload = {
+                action: 'service_upsert',
+                id: form.id != null ? Number(form.id) : null,
+                key: String(form.key || '').trim(),
+                name: String(form.name || '').trim(),
+                description: String(form.description || '').trim(),
+                icon: String(form.icon || 'calendar').trim(),
+                duration_minutes: Number(form.duration_minutes || 0),
+                price: Number(form.price || 0),
+                currency: String(form.currency || 'RUB').trim() || 'RUB',
+                discount_type: String(form.discount_type || 'none').trim() || 'none',
+                discount_value: Number(form.discount_value || 0),
+                is_active: !!form.is_active
+            };
+
+            if (!payload.key) {
+                notify(ctx, 'Укажите ключ услуги', 'error');
+                return false;
+            }
+
+            if (!payload.name) {
+                notify(ctx, 'Укажите название услуги', 'error');
+                return false;
+            }
+
+            if (!(payload.duration_minutes > 0)) {
+                notify(ctx, 'Укажите длительность (минуты)', 'error');
+                return false;
+            }
+
+            ctx.bookingSubmitting = true;
+            try {
+                const res = await apiPost('booking.php', payload);
+                if (res.success) {
+                    notify(ctx, res.message || 'Услуга сохранена', 'success');
+                    ctx.bookingServiceModalOpen = false;
+                    ctx.bookingServiceForm = createDefaultServiceForm();
+                    await this.loadData(ctx, true);
+                    return true;
+                }
+
+                notify(ctx, res.error || 'Не удалось сохранить услугу', 'error');
+                return false;
+            } catch (error) {
+                console.error('booking.saveBookingService error', error);
+                notify(ctx, error?.userMessage || error?.message || 'Не удалось сохранить услугу', 'error');
+                return false;
+            } finally {
+                ctx.bookingSubmitting = false;
+            }
+        },
+
+        async deleteBookingService(ctx, service) {
+            if (!ctx.bookingCanManage) {
+                notify(ctx, 'Недостаточно прав для управления услугами', 'error');
+                return false;
+            }
+
+            const id = service?.id != null ? Number(service.id) : null;
+            if (!id) {
+                notify(ctx, 'Не удалось определить услугу', 'error');
+                return false;
+            }
+
+            if (ctx.bookingSubmitting) return false;
+
+            const name = String(service?.name || '').trim();
+            if (typeof window !== 'undefined' && typeof window.confirm === 'function') {
+                const ok = window.confirm(`Удалить услугу${name ? ` «${name}»` : ''}?`);
+                if (!ok) return false;
+            }
+
+            ctx.bookingSubmitting = true;
+            try {
+                const res = await apiPost('booking.php', {
+                    action: 'service_delete',
+                    id
+                });
+
+                if (res.success) {
+                    notify(ctx, res.message || 'Услуга удалена', 'success');
+                    await this.loadData(ctx, true);
+                    return true;
+                }
+
+                notify(ctx, res.error || 'Не удалось удалить услугу', 'error');
+                return false;
+            } catch (error) {
+                console.error('booking.deleteBookingService error', error);
+                notify(ctx, error?.userMessage || error?.message || 'Не удалось удалить услугу', 'error');
+                return false;
+            } finally {
+                ctx.bookingSubmitting = false;
+            }
         }
     };
 })();

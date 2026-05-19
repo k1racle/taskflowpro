@@ -55,6 +55,139 @@
         </div>
     </div>
 
+    <div x-show="bookingCanManage" class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+        <div class="crm-section-head">
+            <div class="crm-section-head__content">
+                <h2 class="crm-section-head__title">Услуги</h2>
+                <div class="crm-section-head__text">Настройка услуг, цен и скидок. Эти услуги используются в виджете записи.</div>
+            </div>
+            <div class="crm-section-head__meta">
+                <button type="button" @click="openBookingServiceModal()" class="crm-btn-primary text-sm">Добавить услугу</button>
+            </div>
+        </div>
+
+        <div class="mt-4 space-y-2">
+            <template x-for="service in bookingServiceTypes" :key="'booking-service-admin-' + service.id">
+                <div class="rounded-2xl p-4 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 72%, transparent);">
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="text-lg" x-text="getBookingServiceIcon(service.icon)"></span>
+                                <div class="font-semibold crm-text-primary" x-text="service.type_name"></div>
+                                <span class="crm-status-pill text-[11px]" :class="service.is_active ? 'crm-status-pill-success' : 'crm-status-pill-muted'" x-text="service.is_active ? 'Активна' : 'Выключена'"></span>
+                            </div>
+                            <div class="mt-1 text-xs crm-text-tertiary" x-text="service.description || 'Без описания'"></div>
+                            <div class="mt-2 flex flex-wrap gap-2 text-xs" style="color: var(--lg-text-secondary)">
+                                <span class="crm-inline-badge">Длительность: <span class="ml-1" x-text="service.duration_minutes"></span> мин</span>
+                                <span class="crm-inline-badge">Цена: <span class="ml-1" x-text="service.price_rub"></span> ₽</span>
+                                <template x-if="service.discount_type && service.discount_type !== 'none'">
+                                    <span class="crm-inline-badge crm-inline-badge-accent">
+                                        Скидка:
+                                        <span class="ml-1" x-text="service.discount_type === 'percent' ? (service.discount_value + '%') : ('-' + service.discount_value + ' ₽')"></span>
+                                    </span>
+                                </template>
+                                <template x-if="service.promo_label">
+                                    <span class="crm-inline-badge" x-text="service.promo_label"></span>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row gap-2 flex-shrink-0">
+                            <button type="button" class="crm-btn-secondary text-sm" @click="editBookingService(service)">Изменить</button>
+                            <button type="button" class="crm-btn-secondary text-sm" :disabled="bookingSubmitting" @click="deleteBookingService(service)">Удалить</button>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+            <div x-show="!bookingServiceTypes || bookingServiceTypes.length === 0" class="crm-empty-state text-center py-8">
+                <div class="crm-empty-state-title">Услуги не настроены</div>
+                <div class="crm-empty-state-text">Нажмите «Добавить услугу», чтобы начать.</div>
+            </div>
+        </div>
+    </div>
+
+    <div x-show="bookingCanManage" x-cloak x-transition.opacity class="fixed inset-0 z-[90] flex items-center justify-center p-4" style="background: rgba(2,6,23,0.6)" x-show="bookingServiceModalOpen" @keydown.escape.window="bookingServiceModalOpen = false">
+        <div class="liquid-glass-pro rounded-3xl p-5 w-full max-w-2xl">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <div class="text-lg font-bold" style="color: var(--lg-text-primary)" x-text="bookingServiceForm.id ? 'Редактирование услуги' : 'Новая услуга'"></div>
+                    <div class="text-sm" style="color: var(--lg-text-secondary)">Длительность обязательна. Валюта: RUB.</div>
+                </div>
+                <button type="button" class="crm-btn-secondary" @click="bookingServiceModalOpen = false">Закрыть</button>
+            </div>
+
+            <form class="mt-4 space-y-4" @submit.prevent="saveBookingService()">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Название</label>
+                        <input type="text" x-model="bookingServiceForm.type_name" required class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Название услуги">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Иконка</label>
+                        <select x-model="bookingServiceForm.icon" class="w-full px-4 py-3 rounded-2xl crm-control-select">
+                            <option value="calendar">Календарь</option>
+                            <option value="star">Звезда</option>
+                            <option value="tool">Инструменты</option>
+                            <option value="map">Карта</option>
+                            <option value="flame">Огонь</option>
+                            <option value="snowflake">Снежинка</option>
+                            <option value="bicycle">Велосипед</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Описание</label>
+                    <textarea rows="3" x-model="bookingServiceForm.description" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Короткое описание"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Длительность (мин)</label>
+                        <input type="number" min="1" step="1" x-model="bookingServiceForm.duration_minutes" required class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Цена (₽)</label>
+                        <input type="number" min="0" step="0.01" x-model="bookingServiceForm.price_rub" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Порядок</label>
+                        <input type="number" step="1" x-model="bookingServiceForm.sort_order" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Скидка</label>
+                        <select x-model="bookingServiceForm.discount_type" class="w-full px-4 py-3 rounded-2xl crm-control-select">
+                            <option value="none">Нет</option>
+                            <option value="percent">% (процент)</option>
+                            <option value="amount">₽ (сумма)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Значение</label>
+                        <input type="number" min="0" step="0.01" x-model="bookingServiceForm.discount_value" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Промо-лейбл</label>
+                        <input type="text" maxlength="120" x-model="bookingServiceForm.promo_label" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Например: -10% до конца недели">
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-3">
+                    <label class="inline-flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                        <input type="checkbox" x-model="bookingServiceForm.is_active" class="rounded">
+                        Активна
+                    </label>
+
+                    <button type="submit" class="crm-btn-primary" :disabled="bookingSubmitting">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.1fr),minmax(320px,0.9fr)] gap-4 items-start">
         <div class="space-y-4">
             <div class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
