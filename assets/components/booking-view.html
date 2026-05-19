@@ -107,7 +107,7 @@
         </div>
     </div>
 
-    <div x-show="bookingCanManage" x-cloak x-transition.opacity class="fixed inset-0 z-[90] flex items-center justify-center p-4" style="background: rgba(2,6,23,0.6)" x-show="bookingServiceModalOpen" @keydown.escape.window="bookingServiceModalOpen = false">
+    <div x-show="bookingCanManage && bookingServiceModalOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[90] flex items-center justify-center p-4" style="background: rgba(2,6,23,0.6)" @keydown.escape.window="bookingServiceModalOpen = false">
         <div class="liquid-glass-pro rounded-3xl p-5 w-full max-w-2xl">
             <div class="flex items-start justify-between gap-3">
                 <div>
