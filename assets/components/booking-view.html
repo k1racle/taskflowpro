@@ -28,41 +28,25 @@
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
-                    <h2 class="text-2xl font-bold" style="color: var(--lg-text-primary)">Онлайн-запись</h2>
-                    <div class="text-sm crm-panel-subtitle">Минимальная форма заявки с ручным подтверждением и audit-логикой.</div>
+                    <h2 class="text-2xl font-bold" style="color: var(--lg-text-primary)">Запись</h2>
                 </div>
             </div>
 
-            <div class="crm-toolbar-actions">
+            <div class="crm-toolbar-actions flex flex-wrap items-center gap-2">
+                <div x-show="bookingCanManage" class="flex flex-wrap items-center gap-2">
+                    <span class="crm-stat-chip" x-text="'Всего: ' + (bookingStats?.total || 0)"></span>
+                    <span class="crm-stat-chip" x-text="'Ожидают: ' + (bookingStats?.pending || bookingStats?.new || 0)"></span>
+                    <span class="crm-stat-chip" x-text="'Подтв.: ' + (bookingStats?.confirmed || bookingStats?.approved || 0)"></span>
+                    <span class="crm-stat-chip" x-text="'Откл.: ' + (bookingStats?.rejected || 0)"></span>
+                    <span class="crm-stat-chip" x-text="'Истекли: ' + (bookingStats?.expired || 0)"></span>
+                </div>
+
                 <button type="button" @click="refreshBookingData()" :disabled="bookingLoading || bookingSubmitting" class="crm-btn-secondary text-sm flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed">
                     <svg class="w-4 h-4" :class="bookingLoading || bookingSubmitting ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
                     Обновить
                 </button>
-            </div>
-        </div>
-
-        <div x-show="bookingCanManage" class="mt-4 grid grid-cols-1 md:grid-cols-4 gap-3">
-            <div class="crm-summary-tile">
-                <div class="crm-summary-label">Всего</div>
-                <div class="crm-summary-value" x-text="bookingStats?.total || 0"></div>
-            </div>
-            <div class="crm-summary-tile crm-tone-warning">
-                <div class="crm-summary-label" style="color: currentColor">Ожидают</div>
-                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.pending || bookingStats?.new || 0"></div>
-            </div>
-            <div class="crm-summary-tile crm-tone-success">
-                <div class="crm-summary-label" style="color: currentColor">Подтверждены</div>
-                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.confirmed || bookingStats?.approved || 0"></div>
-            </div>
-            <div class="crm-summary-tile crm-tone-danger">
-                <div class="crm-summary-label" style="color: currentColor">Отклонены</div>
-                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.rejected || 0"></div>
-            </div>
-            <div class="crm-summary-tile crm-tone-muted">
-                <div class="crm-summary-label" style="color: currentColor">Истекли</div>
-                <div class="crm-summary-value" style="color: currentColor" x-text="bookingStats?.expired || 0"></div>
             </div>
         </div>
 
