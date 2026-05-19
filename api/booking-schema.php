@@ -207,89 +207,68 @@ function bookingSeedDefaultServiceTypes(PDO $pdo): void {
         return;
     }
 
-    $defaults = [
-        ['snowmobile', 'Снегоходы', 'snowflake', 'Прокат и экскурсии на снегоходах', 90, 5000, 'none', 0, '', 1, 1],
-        ['bbq', 'Мангалы и барбекю', 'flame', 'Аренда мангалов и наборы для барбекю', 60, 1000, 'none', 0, '', 2, 1],
-        ['bike', 'Велосипеды', 'bicycle', 'Прокат велосипедов и велопрогулки', 120, 800, 'none', 0, '', 3, 1],
-        ['tour', 'Экскурсии', 'map', 'Организованные экскурсии и туры', 180, 6000, 'none', 0, '', 4, 1],
-        ['equipment', 'Спортивный инвентарь', 'tool', 'Прокат лыж, тюбингов и другого инвентаря', 60, 500, 'none', 0, '', 5, 1],
-        ['other', 'Другие услуги', 'star', 'Дополнительные услуги', 60, 3000, 'none', 0, '', 6, 1],
-    ];
-
-    $selectStmt = $pdo->prepare("SELECT type_name, icon, description, duration_minutes, price_rub, discount_type, discount_value, promo_label, sort_order, is_active
-        FROM booking_service_types
-        WHERE type_key = ?
-        LIMIT 1");
-    $insertStmt = $pdo->prepare("INSERT INTO booking_service_types (
-        type_key,
-        type_name,
-        icon,
-        description,
-        duration_minutes,
-        price_rub,
-        discount_type,
-        discount_value,
-        promo_label,
-        sort_order,
-        is_active
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $updateStmt = $pdo->prepare("UPDATE booking_service_types
-        SET type_name = ?,
-            icon = ?,
-            description = ?,
-            duration_minutes = ?,
-            price_rub = ?,
-            discount_type = ?,
-            discount_value = ?,
-            promo_label = ?,
-            sort_order = ?,
-            is_active = ?
-        WHERE type_key = ?");
-
-    foreach ($defaults as $row) {
-        try {
-            $selectStmt->execute([$row[0]]);
-            $existing = $selectStmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$existing) {
-                $insertStmt->execute($row);
-                continue;
-            }
-
-            $looksLegacy = (
-                trim((string)($existing['type_name'] ?? '')) === (string)$row[1]
-                && trim((string)($existing['icon'] ?? '')) === (string)$row[2]
-                && trim((string)($existing['description'] ?? '')) === (string)$row[3]
-                && (int)($existing['duration_minutes'] ?? 0) <= 0
-            ) || (
-                (int)($existing['duration_minutes'] ?? 0) === 60
-                && (float)($existing['price_rub'] ?? 0) <= 0
-                && strtolower(trim((string)($existing['discount_type'] ?? 'none'))) === 'none'
-                && (float)($existing['discount_value'] ?? 0) <= 0
-                && trim((string)($existing['promo_label'] ?? '')) === ''
-            );
-
-            if ($looksLegacy) {
-                $updateStmt->execute([
-                    $row[1],
-                    $row[2],
-                    $row[3],
-                    $row[4],
-                    $row[5],
-                    $row[6],
-                    $row[7],
-                    $row[8],
-                    $row[9],
-                    $row[10],
-                    $row[0],
-                ]);
-            }
-        } catch (Throwable $e) {
-            error_log('bookingSeedDefaultServiceTypes insert failed: ' . $e->getMessage());
-        }
+    // Важно: не сеем демо-услуги. Услуги должны настраиваться из CRM.
+    // Оставляем таблицу пустой по умолчанию.
+    $count = 0;
+    try {
+        $count = (int)$pdo->query('SELECT COUNT(*) FROM booking_service_types')->fetchColumn();
+    } catch (Throwable $e) {
+        $count = 0;
     }
 
     $seeded = true;
+    if ($count > 0) {
+        return;
+    }
+
+    return;
+}
+
+function bookingPurgeLegacyDemoServiceTypes(PDO $pdo): void {
+    // Старые демо-услуги из ранних версий ("Снегоходы" и т.п.) не должны висеть в проде.
+    // Удаляем только НЕиспользуемые (на которые нет заявок), чтобы не ломать историю.
+    if (!bookingTableExists($pdo, 'booking_service_types')) {
+        return;
+    }
+
+    $demoKeys = ['snowmobile', 'bbq', 'bike', 'tour', 'equipment', 'other'];
+
+    $placeholders = implode(',', array_fill(0, count($demoKeys), '?'));
+
+    $stmt = $pdo->prepare("SELECT st.id, st.type_key
+        FROM booking_service_types st
+        WHERE st.type_key IN ($placeholders)");
+    $stmt->execute($demoKeys);
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) {
+        return;
+    }
+
+    $countStmt = $pdo->prepare('SELECT COUNT(*) FROM booking_requests WHERE service_type_id = ?');
+    $deleteReqSvcStmt = $pdo->prepare('DELETE FROM booking_request_services WHERE service_type_id = ?');
+    $deleteSvcStmt = $pdo->prepare('DELETE FROM booking_service_types WHERE id = ?');
+
+    foreach ($rows as $row) {
+        $serviceId = (int)($row['id'] ?? 0);
+        if ($serviceId <= 0) {
+            continue;
+        }
+
+        try {
+            $countStmt->execute([$serviceId]);
+            $requestCount = (int)$countStmt->fetchColumn();
+            if ($requestCount > 0) {
+                // Если услуга уже использовалась в заявках, не удаляем из-за FK и истории.
+                continue;
+            }
+
+            // Удаляем связанные строки (на всякий случай), затем саму услугу.
+            $deleteReqSvcStmt->execute([$serviceId]);
+            $deleteSvcStmt->execute([$serviceId]);
+        } catch (Throwable $e) {
+            error_log('bookingPurgeLegacyDemoServiceTypes failed: ' . $e->getMessage());
+        }
+    }
 }
 
 function bookingSeedDefaultWorkingHours(PDO $pdo): void {
@@ -743,5 +722,6 @@ function ensureBookingModuleSchema(PDO $pdo): void {
 
     bookingSeedDefaultServiceTypes($pdo);
     bookingSeedDefaultWorkingHours($pdo);
+    bookingPurgeLegacyDemoServiceTypes($pdo);
     bookingNormalizeLegacyBookingRequests($pdo);
 }
