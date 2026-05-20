@@ -182,7 +182,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="can('admin.full')">
+            <div class="crm-panel-block p-5" x-show="can('admin.full') || currentUser?.role === 'root'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Омниканал: Telegram и MAX (HelpDesk)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
                     Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
