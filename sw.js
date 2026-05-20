@@ -1,5 +1,5 @@
 // TaskFlow Pro Service Worker
-const CACHE_NAME = 'taskflow-pro-v19';
+const CACHE_NAME = 'taskflow-pro-v21';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

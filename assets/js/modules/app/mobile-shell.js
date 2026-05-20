@@ -179,8 +179,7 @@ window.TaskFlowMobileShell = (function () {
                 { id: 'tasks', label: 'Главная', icon: 'M3 12l9-8 9 8M5 10v10h14V10M9 20v-6h6v6' },
                 { id: 'my-tasks', label: 'Задачи', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
         { id: 'crm-dashboard', label: 'CRM', icon: 'M3 3h18v6H3V3zm0 8h10v10H3V11zm12 0h6v10h-6V11z', visible: () => !!ctx.canCrm },
-        { id: 'booking', label: 'Запись', icon: 'M8 2v4m8-4v4M3 10h18M5 6h14a2 2 0 012 2v12a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2z' },
-        { id: 'more', label: 'Еще', icon: 'M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z' }
+        { id: 'more', label: 'Меню', icon: 'M4 6h16M4 12h16M4 18h16' }
             ];
 
             return items
