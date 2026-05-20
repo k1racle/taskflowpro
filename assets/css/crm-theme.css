@@ -3771,9 +3771,23 @@ body.crm-theme .crm-client-list-item.crm-client-list-item-active {
     margin-left: auto;
 }
 
+/* Compact grouping: consecutive messages from the same sender */
+.chat-bubble--grouped {
+    margin-top: -6px;
+}
+
 .chat-bubble-text {
     font-size: 15px;
     line-height: 1.6;
+}
+
+.chat-bubble-text--deleted {
+    font-style: italic;
+    color: var(--crm-text-faint);
+}
+
+.chat-bubble-meta-edited {
+    color: var(--crm-text-faint);
 }
 
 .chat-bubble-author {
@@ -3783,6 +3797,11 @@ body.crm-theme .crm-client-list-item.crm-client-list-item-active {
 
 .chat-bubble-meta {
     font-size: 12px;
+}
+
+/* Shown only on mobile via mobile-responsive.css */
+.chat-mobile-back {
+    display: none;
 }
 
 .chat-composer-shell {

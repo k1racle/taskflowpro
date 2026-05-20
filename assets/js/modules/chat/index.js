@@ -92,6 +92,30 @@ window.TaskFlowChat = (function () {
         return document.getElementById('chat-messages');
     }
 
+    function getViewportAnchor(container) {
+        if (!container) return null;
+
+        // Find the first message bubble currently visible and record its position
+        // relative to the container scrollTop, so we can restore it after prepending.
+        const nodes = container.querySelectorAll('[data-msg-swipe]');
+        if (!nodes || !nodes.length) return null;
+
+        const top = container.scrollTop;
+        for (const el of nodes) {
+            const offsetTop = el.offsetTop;
+            if (offsetTop >= top - 8) {
+                const id = el.getAttribute('data-msg-swipe') || '';
+                if (!id) return null;
+                return { id: String(id), delta: offsetTop - top };
+            }
+        }
+
+        const last = nodes[nodes.length - 1];
+        const lastId = last?.getAttribute?.('data-msg-swipe') || '';
+        if (!lastId) return null;
+        return { id: String(lastId), delta: last.offsetTop - top };
+    }
+
     function buildPresenceMap(rows) {
         const map = {};
         for (const row of (rows || [])) {
@@ -101,6 +125,32 @@ window.TaskFlowChat = (function () {
             };
         }
         return map;
+    }
+
+    function formatLastSeenRu(dateStr) {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        if (Number.isNaN(d.getTime())) return '';
+
+        const now = new Date();
+        const diffMs = now - d;
+        const diffMin = Math.floor(diffMs / 60000);
+
+        if (diffMin < 1) return 'был(а) только что';
+        if (diffMin < 60) return `был(а) ${diffMin} мин назад`;
+
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const startOfThat = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+        if (startOfThat === startOfToday) {
+            return 'был(а) сегодня в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        const startOfYesterday = startOfToday - 24 * 60 * 60 * 1000;
+        if (startOfThat === startOfYesterday) {
+            return 'был(а) вчера в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        return 'был(а) ' + d.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit' }) + ' в ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
     }
 
     function stopVoiceStream(stream) {
@@ -192,6 +242,23 @@ window.TaskFlowChat = (function () {
                 await ctx.loadChatRooms();
             }, 5000, { immediate: true, minGapMs: 2000 });
 
+            // Read receipts / status sync (for Telegram-like double checks).
+            ctx.startPoller('chat_room_sync', async () => {
+                if (!ctx.isChatVisible) return;
+                if (!ctx.activeChatRoom) return;
+                if (document.hidden) return;
+
+                // Only sync when it matters: we have recent own messages not yet marked as read.
+                const recent = (ctx.chatMessages || []).slice(-30);
+                const myId = String(ctx.currentUser?.id ?? '');
+                const hasPending = recent.some((m) =>
+                    String(m.sender_id ?? '') === myId && !m.deleted_at && String(m.status || '') !== 'read'
+                );
+                if (!hasPending) return;
+
+                await this.checkNewMessages(ctx);
+            }, 6000, { immediate: false, minGapMs: 2500 });
+
             ctx.startPoller('incoming_calls_visible', async () => {
                 if (!ctx.isChatVisible) return;
                 if (ctx.incomingCallModal || ctx.showCallModal) return;
@@ -224,6 +291,7 @@ window.TaskFlowChat = (function () {
                                 ctx.forceChatScrollBottom();
                                 setTimeout(() => ctx.forceChatScrollBottom(), 80);
                                 await ctx.markChatNotificationsByRoomAsRead(roomId);
+                                this.markRoomMessagesAsRead(ctx, res.data).catch(() => {});
                                 if (document.hidden && res.data.some((message) => String(message.sender_id) !== String(ctx.currentUser?.id))) {
                                     ctx.showBrowserNotification(
                                         res.data[0]?.sender_name || 'Новое сообщение',
@@ -250,6 +318,7 @@ window.TaskFlowChat = (function () {
                 ctx._callsLongPollRunning = false;
                 ctx.stopPoller('chat_rooms');
                 ctx.stopPoller('incoming_calls_visible');
+                ctx.stopPoller('chat_room_sync');
                 ctx.isChatVisible = false;
                 console.log('⏹️ Остановка Long Polling');
             }
@@ -454,6 +523,16 @@ window.TaskFlowChat = (function () {
                 const members = Number(room.member_count || room.members_count || ctx.chatMembers?.length || 0);
                 return members > 0 ? `Группа - ${members} участников` : 'Групповой чат';
             }
+
+            // Private: Telegram-like status line.
+            if (room.type === 'private') {
+                const typing = !!ctx.activeChatRoomPresence?.otherTyping;
+                if (typing) return 'печатает…';
+                const online = !!ctx.activeChatRoomPresence?.otherOnline;
+                if (online) return 'онлайн';
+                return formatLastSeenRu(room.interlocutor_last_activity) || 'не в сети';
+            }
+
             return room.interlocutor_name ? 'Личный чат' : '';
         },
 
@@ -500,6 +579,8 @@ window.TaskFlowChat = (function () {
                     ctx.ensureChatAutoScroll();
                     ctx.forceChatScrollBottom();
                     await ctx.markChatNotificationsByRoomAsRead(roomId);
+                    // Mark incoming messages as read on server (read receipts/cleanup for recipient rows).
+                    this.markRoomMessagesAsRead(ctx, ctx.chatMessages).catch(() => {});
 
                     ctx._chatLongPollRunning = true;
                     ctx.startChatLongPoll();
@@ -526,6 +607,7 @@ window.TaskFlowChat = (function () {
             const container = getScrollContainer();
             const prevScrollHeight = container ? container.scrollHeight : 0;
             const prevScrollTop = container ? container.scrollTop : 0;
+            const anchor = getViewportAnchor(container);
 
             ctx.chatHistoryLoading = true;
             try {
@@ -551,6 +633,16 @@ window.TaskFlowChat = (function () {
                 ctx.$nextTick(() => {
                     const el = getScrollContainer();
                     if (!el) return;
+
+                    if (anchor?.id) {
+                        const target = el.querySelector(`[data-msg-swipe="${anchor.id}"]`) || document.getElementById(`chat-msg-${anchor.id}`);
+                        if (target) {
+                            el.scrollTop = target.offsetTop - Number(anchor.delta || 0);
+                            return;
+                        }
+                    }
+
+                    // Fallback: keep by scrollHeight delta.
                     const nextScrollHeight = el.scrollHeight;
                     el.scrollTop = prevScrollTop + (nextScrollHeight - prevScrollHeight);
                 });
@@ -782,6 +874,7 @@ window.TaskFlowChat = (function () {
         buildTimeline(ctx, messages) {
             const out = [];
             let lastKey = null;
+            let prevMsg = null;
             for (const msg of (messages || [])) {
                 const d = msg?.created_at ? new Date(msg.created_at) : null;
                 const key = d
@@ -791,8 +884,26 @@ window.TaskFlowChat = (function () {
                 if (key !== lastKey) {
                     out.push({ type: 'date', key, label: this.formatChatDateChip(ctx, msg.created_at) });
                     lastKey = key;
+                    prevMsg = null;
                 }
-                out.push({ type: 'msg', key: `m_${msg.id}`, msg });
+
+                const isOwn = this.isMessageOwn(ctx, msg);
+                let showAuthor = !isOwn;
+                let groupedWithPrev = false;
+                if (!isOwn && prevMsg) {
+                    const sameSender = String(prevMsg.sender_id ?? '') === String(msg.sender_id ?? '');
+                    const prevTime = prevMsg.created_at ? new Date(prevMsg.created_at).getTime() : 0;
+                    const curTime = msg.created_at ? new Date(msg.created_at).getTime() : 0;
+                    const closeInTime = prevTime && curTime ? (curTime - prevTime) <= 5 * 60 * 1000 : false;
+
+                    groupedWithPrev = sameSender && closeInTime;
+                    if (groupedWithPrev) {
+                        showAuthor = false;
+                    }
+                }
+
+                out.push({ type: 'msg', key: `m_${msg.id}`, msg, showAuthor, groupedWithPrev });
+                prevMsg = msg;
             }
             return out;
         },
@@ -1040,17 +1151,51 @@ window.TaskFlowChat = (function () {
 
                 const result = await apiPost('chat/messages', payload);
                 if (result.success) {
+                    const sentId = Number(result?.data?.id || 0);
                     ctx.chatMessage = '';
                     ctx.replyToMessage = null;
                     ctx.editingMessage = null;
                     ctx.showEmojiPicker = false;
                     ctx.showAttachmentMenu = false;
+
+                    // Optimistic local append to avoid extra refetches.
+                    try {
+                        const nowIso = new Date().toISOString();
+                        const localMsg = {
+                            id: sentId || (Number(ctx.lastMessageId || 0) + 1),
+                            room_id: getRoomId(ctx.activeChatRoom),
+                            sender_id: ctx.currentUser?.id,
+                            sender_name: ctx.currentUser?.full_name || ctx.currentUser?.login || 'Вы',
+                            message,
+                            message_type: messageType,
+                            created_at: nowIso,
+                            status: 'delivered',
+                            is_read: 0,
+                            is_own: true,
+                            ...extraData
+                        };
+                        ctx.chatMessages = mergeMessages(ctx.chatMessages, [localMsg]);
+                        ctx.lastMessageId = Math.max(Number(ctx.lastMessageId || 0), Number(localMsg.id || 0));
+
+                        // Update rooms list preview without full reload.
+                        const roomId = String(getRoomId(ctx.activeChatRoom) || '');
+                        if (roomId) {
+                            ctx.chatRooms = (ctx.chatRooms || []).map((r) => {
+                                if (String(getRoomId(r) || '') !== roomId) return r;
+                                return {
+                                    ...r,
+                                    last_message: messageType === 'text' ? message : (extraData?.message || r.last_message || ''),
+                                    last_message_time: nowIso,
+                                    unread_count: 0
+                                };
+                            });
+                        }
+                    } catch (_e) {}
+
                     ctx.$nextTick(() => {
                         ctx.resetChatTextareaHeight();
                         ctx.forceChatScrollBottom();
                     });
-                    await ctx.selectChatRoom(ctx.activeChatRoom);
-                    await ctx.loadChatRooms();
                 } else {
                     ctx.showToast(result.error || 'Ошибка отправки', 'error');
                 }
@@ -1093,6 +1238,43 @@ window.TaskFlowChat = (function () {
             ctx.typingTimeout = setTimeout(() => {
                 ctx.typingTimeout = null;
             }, 3000);
+        },
+
+        handleComposerKeydown(ctx, event) {
+            const e = event;
+            if (!e || e.key !== 'Enter') return;
+
+            // Default behavior we want:
+            // - Enter: send
+            // - Shift+Enter: newline
+            // - Ctrl/Cmd+Enter: send (common pattern)
+            const wantsNewline = e.shiftKey && !e.ctrlKey && !e.metaKey;
+            const wantsSend = !e.shiftKey || e.ctrlKey || e.metaKey;
+
+            if (wantsNewline) {
+                e.preventDefault();
+                // Shift+Enter: keep newline and resize.
+                try {
+                    ctx.chatMessage = String(ctx.chatMessage || '') + '\n';
+                    ctx.$nextTick(() => {
+                        const textarea = document.querySelector('textarea[x-model="chatMessage"]');
+                        if (textarea) {
+                            ctx.autoResize(textarea);
+                            try {
+                                const len = textarea.value.length;
+                                textarea.selectionStart = textarea.selectionEnd = len;
+                            } catch (_) {}
+                        }
+                    });
+                } catch (_err) {}
+                return;
+            }
+
+            if (!wantsSend) return;
+
+            e.preventDefault();
+
+            ctx.sendChatMessage();
         },
 
         showIncomingCall(ctx, callerName, callType = 'audio', roomId = null) {
@@ -1724,7 +1906,18 @@ window.TaskFlowChat = (function () {
                 });
                 if (result.success) {
                     ctx.editingMessage = null;
-                    await ctx.selectChatRoom(ctx.activeChatRoom);
+
+                    // Update locally to avoid full refetch.
+                    const msgId = String(messageId);
+                    ctx.chatMessages = (ctx.chatMessages || []).map((m) => {
+                        if (String(m.id) !== msgId) return m;
+                        return {
+                            ...m,
+                            message: String(newText || ''),
+                            edited_at: new Date().toISOString()
+                        };
+                    });
+
                     ctx.showToast('Сообщение отредактировано', 'success');
                 }
             } catch (error) {
@@ -1736,7 +1929,17 @@ window.TaskFlowChat = (function () {
             try {
                 const result = await apiDelete(`chat/messages/${messageId}`);
                 if (result.success) {
-                    await ctx.selectChatRoom(ctx.activeChatRoom);
+                    // Soft-delete locally to avoid full refetch.
+                    const msgId = String(messageId);
+                    const before = Array.isArray(ctx.chatMessages) ? ctx.chatMessages : [];
+                    ctx.chatMessages = before.map((m) => {
+                        if (String(m.id) !== msgId) return m;
+                        return {
+                            ...m,
+                            deleted_at: new Date().toISOString(),
+                            message: ''
+                        };
+                    });
                     ctx.showToast('Сообщение удалено', 'success');
                 }
             } catch (error) {
@@ -1753,8 +1956,12 @@ window.TaskFlowChat = (function () {
                 if (result.success) {
                     ctx.forwardingMessage = null;
                     ctx.showForwardModal = false;
-                    await ctx.selectChatRoom(ctx.activeChatRoom);
-                    await ctx.loadChatRooms();
+
+                    // Best-effort: refresh rooms list in background to reflect the forwarded message in target room.
+                    try {
+                        this.loadRooms(ctx).catch(() => {});
+                    } catch (_e) {}
+
                     ctx.showToast('Сообщение переслано', 'success');
                 }
             } catch (error) {
@@ -1773,9 +1980,51 @@ window.TaskFlowChat = (function () {
             }
         },
 
+        async markRoomMessagesAsRead(ctx, messages) {
+            if (!ctx?.activeChatRoom) return;
+
+            const list = Array.isArray(messages) ? messages : (ctx.chatMessages || []);
+            const myId = String(ctx.currentUser?.id ?? '');
+            if (!myId) return;
+
+            const unread = list
+                .filter((m) => !m?.deleted_at)
+                .filter((m) => String(m.recipient_id ?? '') === myId)
+                .filter((m) => !(m.is_read === 1 || m.is_read === true || String(m.status || '') === 'read'))
+                .slice(0, 25);
+
+            if (!unread.length) return;
+
+            await Promise.allSettled(
+                unread.map(async (m) => {
+                    await this.markAsRead(ctx, m.id);
+                })
+            );
+
+            // Update local state so UI doesn't lag behind.
+            const ids = new Set(unread.map((m) => String(m.id)));
+            ctx.chatMessages = (ctx.chatMessages || []).map((m) => {
+                if (!ids.has(String(m.id))) return m;
+                return { ...m, is_read: 1, status: 'read' };
+            });
+        },
+
         openMessageMenu(ctx, event, msg) {
             if (!event || !msg) return;
-            event.preventDefault();
+
+            // Don't steal clicks from interactive content inside the bubble.
+            try {
+                const t = event.target;
+                if (t && typeof t.closest === 'function') {
+                    if (t.closest('button, a, input, textarea, select, label')) {
+                        return;
+                    }
+                }
+            } catch (_e) {}
+
+            try {
+                event.preventDefault();
+            } catch (_e) {}
             ctx.chatMsgMenuOpen = true;
             ctx.chatMsgMenuMsg = msg;
 
@@ -1813,6 +2062,26 @@ window.TaskFlowChat = (function () {
             ctx._swipeStartX = point.clientX;
             ctx._swipeStartY = point.clientY;
             ctx._swipeActive = true;
+
+            // Long-press (mobile): open message menu like in Telegram.
+            if (event.touches && event.touches.length === 1) {
+                try {
+                    ctx._msgLongPressFired = false;
+                    if (ctx._msgLongPressTimer) clearTimeout(ctx._msgLongPressTimer);
+                    const fakeEvent = {
+                        clientX: point.clientX,
+                        clientY: point.clientY,
+                        target: event.target,
+                        preventDefault() {}
+                    };
+                    ctx._msgLongPressTimer = setTimeout(() => {
+                        ctx._msgLongPressFired = true;
+                        try {
+                            this.openMessageMenu(ctx, fakeEvent, msg);
+                        } catch (_e) {}
+                    }, 450);
+                } catch (_e) {}
+            }
         },
 
         onMessagePointerMove(ctx, event) {
@@ -1820,6 +2089,11 @@ window.TaskFlowChat = (function () {
             const point = event.touches?.[0] || event;
             const dx = point.clientX - ctx._swipeStartX;
             const dy = point.clientY - ctx._swipeStartY;
+
+            if (ctx._msgLongPressTimer && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+                clearTimeout(ctx._msgLongPressTimer);
+                ctx._msgLongPressTimer = null;
+            }
 
             if (Math.abs(dy) > 18) return;
             if (dx < 0) return;
@@ -1832,12 +2106,26 @@ window.TaskFlowChat = (function () {
 
         onMessagePointerUp(ctx) {
             if (!ctx._swipeActive) return;
+
+            if (ctx._msgLongPressTimer) {
+                clearTimeout(ctx._msgLongPressTimer);
+                ctx._msgLongPressTimer = null;
+            }
+
             const el = document.querySelector(`[data-msg-swipe="${ctx._swipeMsgId}"]`);
             let offset = 0;
             if (el) {
                 const m = /translateX\(([-\d.]+)px\)/.exec(el.style.transform || '');
                 offset = m ? parseFloat(m[1]) : 0;
                 el.style.transform = '';
+            }
+
+            // If a long-press already opened the menu, do not also trigger swipe-reply.
+            if (ctx._msgLongPressFired) {
+                ctx._swipeMsgId = null;
+                ctx._swipeActive = false;
+                ctx._msgLongPressFired = false;
+                return;
             }
 
             const msg = (ctx.chatMessages || []).find((message) => String(message.id) === String(ctx._swipeMsgId));

@@ -382,14 +382,17 @@
                          @mousedown="onMsgPointerDown($event, item.msg)"
                          @mousemove="onMsgPointerMove($event)"
                          @mouseup="onMsgPointerUp()">
-                        <div class="max-w-[85%] sm:max-w-[78%]">
-                            <div class="chat-bubble chat-bubble-swipe px-4 py-3 relative"
-                                 :data-msg-swipe="item.msg.id"
-                                 :class="isChatMessageOwn(item.msg) ? 'chat-bubble--out' : 'chat-bubble--in'">
+                         <div class="max-w-[85%] sm:max-w-[78%]">
+                             <div class="chat-bubble chat-bubble-swipe px-4 py-3 relative"
+                                  :id="'chat-msg-' + item.msg.id"
+                                  :data-msg-swipe="item.msg.id"
+                                  :class="(isChatMessageOwn(item.msg) ? 'chat-bubble--out' : 'chat-bubble--in') + (item.groupedWithPrev ? ' chat-bubble--grouped' : '')">
 
-                                <div class="absolute inset-0" @contextmenu="openChatMessageMenu($event, item.msg)"></div>
+                                <div class="absolute inset-0"
+                                     @contextmenu="openChatMessageMenu($event, item.msg)"
+                                     @click="openChatMessageMenu($event, item.msg)"></div>
 
-                                <div class="text-xs mb-2 chat-bubble-author" style="color: var(--lg-text-tertiary)" x-show="!isChatMessageOwn(item.msg)" x-text="item.msg.sender_name"></div>
+                                <div class="text-xs mb-2 chat-bubble-author" style="color: var(--lg-text-tertiary)" x-show="item.showAuthor" x-text="item.msg.sender_name"></div>
 
                                 <div x-show="item.msg.message_type === 'task' && item.msg.task_id">
                                     <button class="w-full text-left liquid-glass-pro rounded-2xl p-4 chat-attachment-card" @click="openTaskFromMessage(item.msg.task_id)">
@@ -442,11 +445,19 @@
                                      </div>
                                  </div>
 
-                                <div x-show="!['task','project','file','image','sticker','voice'].includes(item.msg.message_type)" class="chat-bubble-text whitespace-pre-wrap break-words" style="color: var(--lg-text-primary)" x-text="item.msg.message"></div>
+                                <div x-show="item.msg.deleted_at"
+                                     class="chat-bubble-text chat-bubble-text--deleted whitespace-pre-wrap break-words"
+                                     x-text="'Сообщение удалено'"></div>
+
+                                <div x-show="!item.msg.deleted_at && !['task','project','file','image','sticker','voice'].includes(item.msg.message_type)"
+                                     class="chat-bubble-text whitespace-pre-wrap break-words"
+                                     style="color: var(--lg-text-primary)"
+                                     x-text="item.msg.message"></div>
 
                                 <div class="mt-2 flex items-center justify-end gap-2 chat-bubble-meta text-xs">
+                                    <span x-show="!!item.msg.edited_at && !item.msg.deleted_at" class="chat-bubble-meta-edited">(ред.)</span>
                                     <span x-text="formatTime(item.msg.created_at)"></span>
-                                    <span x-show="isChatMessageOwn(item.msg)" x-html="getMessageStatusIcon(item.msg)"></span>
+                                    <span x-show="isChatMessageOwn(item.msg) && !item.msg.deleted_at" x-html="getMessageStatusIcon(item.msg)"></span>
                                 </div>
                             </div>
                         </div>
@@ -501,17 +512,17 @@
                         </button>
 
                         <label for="chat-message-input" class="sr-only">Сообщение</label>
-                        <textarea id="chat-message-input"
-                                   name="chat_message"
-                                   x-model="chatMessage"
-                                   rows="1"
-                                   @input="autoResize($event.target); notifyTyping()"
-                                    @keydown.enter.prevent="if (!$event.shiftKey) sendChatMessage(); else chatMessage += '\n'"
-                                   @keydown.esc.stop.prevent="showAttachmentMenu=false; showEmojiPicker=false"
-                                    :placeholder="chatSending ? 'Отправка...' : 'Сообщение…'"
-                                    :disabled="chatSending"
-                                    class="chat-composer-textarea crm-input-no-suggest"
-                                  autocomplete="off"
+                         <textarea id="chat-message-input"
+                                    name="chat_message"
+                                    x-model="chatMessage"
+                                    rows="1"
+                                    @input="autoResize($event.target); notifyTyping()"
+                                     @keydown.enter="handleComposerKeydown($event)"
+                                    @keydown.esc.stop.prevent="showAttachmentMenu=false; showEmojiPicker=false"
+                                     :placeholder="chatSending ? 'Отправка...' : 'Сообщение…'"
+                                     :disabled="chatSending"
+                                     class="chat-composer-textarea crm-input-no-suggest"
+                                   autocomplete="off"
                                   autocapitalize="sentences"
                                   autocorrect="off"
                                   spellcheck="false"></textarea>

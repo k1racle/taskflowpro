@@ -367,6 +367,11 @@ function handleChat(string $method, ?string $action, mixed $id, ?string $subacti
                         CASE WHEN cr.user1_id = ? THEN cr.user2_id ELSE cr.user1_id END
                     )
                 ELSE cr.avatar END as interlocutor_avatar,
+                CASE WHEN cr.type = 'private' THEN
+                    (SELECT last_activity FROM users WHERE id = 
+                        CASE WHEN cr.user1_id = ? THEN cr.user2_id ELSE cr.user1_id END
+                    )
+                ELSE NULL END as interlocutor_last_activity,
                 -- Последнее сообщение
                 (SELECT message FROM chat_messages WHERE room_id = cr.id AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 1) as last_message,
                 (SELECT created_at FROM chat_messages WHERE room_id = cr.id AND deleted_at IS NULL ORDER BY created_at DESC LIMIT 1) as last_message_time,
@@ -401,7 +406,7 @@ function handleChat(string $method, ?string $action, mixed $id, ?string $subacti
             ORDER BY last_message_time DESC
         ");
         $stmt->execute([
-            $userId, $userId, $userId,
+            $userId, $userId, $userId, $userId,
             $userId, $userId,
             $userId, $userId, $userId, $userId
         ]);
