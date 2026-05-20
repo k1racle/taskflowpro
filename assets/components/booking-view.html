@@ -55,6 +55,13 @@
         </div>
     </div>
 
+    <div x-show="!bookingLoading && !bookingError && !bookingCanManage" x-cloak class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+        <div class="crm-empty-state text-center py-4">
+            <div class="crm-empty-state-title">Управление услугами и шахматка недоступны</div>
+            <div class="crm-empty-state-text">Нужны права администратора (роль root или permission <span class="font-semibold">admin.full</span>).</div>
+        </div>
+    </div>
+
     <div x-show="bookingCanManage" class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
         <div class="crm-section-head">
             <div class="crm-section-head__content">
