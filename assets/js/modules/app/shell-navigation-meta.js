@@ -6,7 +6,7 @@ window.TaskFlowShellNavigationMeta = (function () {
         { id: 'crm-clients', label: 'Клиенты', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-8 8a8 8 0 0116 0H4z', badge: '', visible() { return !!this.canCrm; } },
         { id: 'crm-funnels', label: 'Воронка', icon: 'M3 4h18l-7 8v6l-4 2v-8L3 4z', badge: '', visible() { return !!this.canCrm; } },
         { id: 'crm-sales', label: 'Продажи', icon: 'M5 3v18m0 0h16m-4-5l-4-4-3 3-4-6', badge: '', visible() { return !!this.canCrm; } },
-        // crm-store removed in this build (not needed)
+        { id: 'crm-store', label: 'Интернет-магазин', icon: 'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9h14l-2-9M10 21a1 1 0 11-2 0 1 1 0 012 0zm8 0a1 1 0 11-2 0 1 1 0 012 0z', badge: '', visible() { return !!this.canCrm; } },
         { id: 'leader-dashboard', label: 'Руководитель', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm6 8a6 6 0 00-12 0h12z', badge: '', visible() { return this.can('leader.view'); } },
         { id: 'projects', label: 'Проекты', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z', badge: '' },
         { id: 'departments', label: 'Отделы', icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', badge: '' },

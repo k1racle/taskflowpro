@@ -22,6 +22,13 @@
       </div>
     </div>
 
+    <div class="mt-4 rounded-2xl p-4" style="border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)" x-show="typeof window.Chart === 'undefined'">
+      <div class="text-sm font-semibold" style="color:#fde68a">График отключён</div>
+      <div class="text-xs mt-1" style="color: var(--lg-text-secondary)">
+        Не подключена библиотека Chart.js, поэтому месячная диаграмма не будет отображаться. Таблица заказов и аналитика при этом работают.
+      </div>
+    </div>
+
     <div class="mt-4 rounded-2xl p-4 crm-ui-subcard">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="min-w-0">
