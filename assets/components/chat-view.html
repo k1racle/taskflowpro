@@ -14,23 +14,11 @@
     <div class="liquid-glass-pro w-full lg:w-80 xl:w-[22rem] flex flex-col min-h-0 rounded-3xl chat-sidebar-shell">
         <!-- Хэдер -->
         <div class="p-4 lg:p-5 crm-toolbar crm-toolbar--dense chat-sidebar-top">
-            <div class="crm-section-head flex items-start justify-between gap-3 mb-4">
-                <div class="crm-section-head__content min-w-0 flex-1">
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Чаты</div>
-                            <div class="crm-toolbar-summary chat-toolbar-summary">
-                                <div class="crm-summary-tile">
-                                    <div class="crm-summary-label">Диалоги</div>
-                                    <div class="crm-summary-value" x-text="(chatRooms || []).length"></div>
-                                </div>
-                                <div class="crm-summary-tile">
-                                    <div class="crm-summary-label">Непрочитано</div>
-                                    <div class="crm-summary-value" x-text="(chatRooms || []).reduce((sum, room) => sum + Number(room.unread_count || 0), 0)"></div>
-                                </div>
-                            </div>
-                    </div>
+            <div class="flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Чаты</div>
                 </div>
-                <div class="crm-section-head__meta flex items-center gap-2 flex-shrink-0">
+                <div class="flex items-center gap-2 flex-shrink-0">
                     <button @click="openCreateChatModal()" class="rounded-xl crm-btn-ghost crm-icon-button" aria-label="Новый чат">
                         <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -44,16 +32,27 @@
                 </div>
             </div>
 
-            <div class="crm-filter-field crm-filter-field--compact crm-filter-field-search chat-sidebar-search">
-                <label for="chat-sidebar-search" class="crm-filter-label">Поиск</label>
-                <div class="mt-2 flex items-center gap-3">
+            <div class="mt-3 grid grid-cols-2 gap-2">
+                <div class="rounded-2xl px-3 py-2 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent);">
+                    <div class="text-[11px]" style="color: var(--lg-text-tertiary)">Диалоги</div>
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="(chatRooms || []).length"></div>
+                </div>
+                <div class="rounded-2xl px-3 py-2 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent);">
+                    <div class="text-[11px]" style="color: var(--lg-text-tertiary)">Непрочитано</div>
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="(chatRooms || []).reduce((sum, room) => sum + Number(room.unread_count || 0), 0)"></div>
+                </div>
+            </div>
+
+            <div class="mt-3">
+                <label for="chat-sidebar-search" class="sr-only">Поиск</label>
+                <div class="flex items-center gap-3 rounded-2xl px-3 py-2 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent);">
                     <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
                     </svg>
                     <input id="chat-sidebar-search" name="chat_search" type="text" x-model="chatSearch"
                            @input="searchChats()"
                            placeholder="Имя, группа, сообщение"
-                           class="crm-control-input text-sm crm-input-no-suggest"
+                           class="crm-control-input text-sm crm-input-no-suggest bg-transparent border-0 outline-none focus:ring-0 px-0"
                            autocomplete="off"
                            autocapitalize="off"
                            autocorrect="off"
@@ -66,9 +65,21 @@
 
         <!-- Список -->
         <div class="flex-1 min-h-0 overflow-y-auto px-3 pb-3 lg:px-4 lg:pb-4 space-y-2 chat-room-list">
-            <div x-show="chatRoomsLoading" class="crm-empty-state text-center px-4 py-8" data-state="loading">
-                <div class="crm-empty-state-title">Загружаем чаты...</div>
-                <div class="crm-empty-state-text">Подтягиваем список диалогов и непрочитанные сообщения.</div>
+            <div x-show="chatRoomsLoading" class="px-1 py-2" data-state="loading">
+                <div class="space-y-2">
+                    <template x-for="i in [1,2,3,4,5,6]" :key="'chat-room-skeleton-' + i">
+                        <div class="w-full p-3 rounded-2xl border animate-pulse" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent);">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-2xl" style="background: color-mix(in oklab, var(--lg-glass-bg) 60%, black);"></div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="h-3 w-1/2 rounded" style="background: color-mix(in oklab, var(--lg-glass-bg) 55%, black);"></div>
+                                    <div class="mt-2 h-3 w-2/3 rounded" style="background: color-mix(in oklab, var(--lg-glass-bg) 55%, black);"></div>
+                                </div>
+                                <div class="w-12 h-3 rounded" style="background: color-mix(in oklab, var(--lg-glass-bg) 55%, black);"></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <div x-show="!chatRoomsLoading && chatRoomsError" class="crm-empty-state text-center px-4 py-8" data-state="error">
@@ -82,23 +93,23 @@
             <template x-for="room in getFilteredChatRooms()" :key="room.room_id || room.id">
                 <div class="chat-room-card-shell">
                     <button @click="selectChatRoom(room)"
-                             @contextmenu.prevent="openChatRoomMenu($event, room)"
-                             :class="activeChatRoom?.room_id === (room.room_id || room.id) ? 'chat-room-card-active' : ''"
-                             class="w-full p-3 rounded-2xl transition-all chat-room-card"
-                             type="button">
+                              @contextmenu.prevent="openChatRoomMenu($event, room)"
+                              :class="activeChatRoom?.room_id === (room.room_id || room.id) ? 'chat-room-card-active' : ''"
+                              class="w-full p-3 rounded-2xl transition-all chat-room-card"
+                              type="button">
                         <div class="flex items-center gap-3 chat-room-card__content">
                             <div class="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-semibold flex-shrink-0 chat-room-avatar"
                                  style="background: var(--crm-accent);"
                                    x-text="getInitials(room.interlocutor_name || room.room_name)">
                             </div>
-                             <div class="flex-1 text-left min-w-0 emoji-text">
-                                 <div class="flex items-center gap-2">
-                                     <h3 class="font-semibold text-sm truncate emoji-text" style="color: var(--lg-text-primary)" x-text="room.interlocutor_name || room.room_name"></h3>
-                                     <span x-show="Number(room.unread_count || 0) > 0" x-cloak class="crm-inline-badge crm-inline-badge-accent chat-room-chip">Новые</span>
-                                 </div>
-                                 <p class="mt-1 text-[11px] truncate" style="color: var(--lg-text-tertiary)" x-text="getChatRoomContextLabel(room)"></p>
-                                 <p class="mt-1 text-xs truncate emoji-text" style="color: var(--lg-text-secondary)" x-text="room.last_message || 'Нет сообщений'"></p>
-                             </div>
+                              <div class="flex-1 text-left min-w-0 emoji-text">
+                                  <div class="flex items-center gap-2">
+                                      <h3 class="font-semibold text-sm truncate emoji-text" style="color: var(--lg-text-primary)" x-text="room.interlocutor_name || room.room_name"></h3>
+                                      <span x-show="Number(room.unread_count || 0) > 0" x-cloak class="crm-inline-badge crm-inline-badge-accent chat-room-chip">Новые</span>
+                                  </div>
+                                  <p class="mt-1 text-[11px] truncate" style="color: var(--lg-text-tertiary)" x-text="getChatRoomContextLabel(room)"></p>
+                                  <p class="mt-1 text-xs truncate emoji-text" style="color: var(--lg-text-secondary)" x-text="room.last_message || 'Нет сообщений'"></p>
+                              </div>
                              <div class="flex flex-col items-end gap-1 chat-room-card__meta-desktop">
                                 <span class="text-[11px]" style="color: var(--lg-text-tertiary)" x-text="formatChatRoomTimestamp(room.last_message_time)"></span>
                                 <span x-show="room.unread_count > 0"
@@ -324,9 +335,21 @@
                         <span x-show="chatHistoryLoading">Загружаем...</span>
                     </button>
                 </div>
-                <div x-show="chatRoomMessagesLoading" class="crm-empty-state text-center px-4 py-8" data-state="loading">
-                    <div class="crm-empty-state-title">Загружаем сообщения...</div>
-                    <div class="crm-empty-state-text">Подтягиваем историю переписки и вложения выбранного чата.</div>
+                <div x-show="chatRoomMessagesLoading" class="space-y-3" data-state="loading">
+                    <template x-for="i in [1,2,3,4,5,6,7,8]" :key="'chat-msg-skeleton-' + i">
+                        <div class="flex" :class="i % 3 === 0 ? 'justify-end' : 'justify-start'">
+                            <div class="max-w-[78%] w-[420px]">
+                                <div class="rounded-2xl px-4 py-3 border animate-pulse"
+                                     :style="(i % 3 === 0)
+                                        ? 'border-color: color-mix(in oklab, var(--lg-primary) 35%, var(--lg-border)); background: color-mix(in oklab, var(--lg-primary) 10%, var(--lg-glass-bg))'
+                                        : 'border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent)'
+                                     ">
+                                    <div class="h-3 w-2/3 rounded" style="background: color-mix(in oklab, var(--lg-glass-bg) 55%, black);"></div>
+                                    <div class="mt-2 h-3 w-1/2 rounded" style="background: color-mix(in oklab, var(--lg-glass-bg) 55%, black);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
                 </div>
 
                 <div x-show="!chatRoomMessagesLoading && chatRoomMessagesError" class="crm-empty-state text-center px-4 py-8" data-state="error">
