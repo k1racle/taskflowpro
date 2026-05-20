@@ -3198,6 +3198,18 @@ window.app = function() {
             return window.TaskFlowAdmin?.testMangoOffice(this);
         },
 
+        async saveOmnichannel() {
+            return window.TaskFlowAdmin?.saveOmnichannel(this);
+        },
+
+        async pingOmniTelegram() {
+            return window.TaskFlowAdmin?.pingOmniTelegram(this);
+        },
+
+        async pingOmniMax() {
+            return window.TaskFlowAdmin?.pingOmniMax(this);
+        },
+
         // ============================================
         // МЕТОДЫ ДЛЯ ПОЧТЫ
         // ============================================

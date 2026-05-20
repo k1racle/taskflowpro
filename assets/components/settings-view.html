@@ -182,6 +182,89 @@
                 </div>
             </div>
 
+            <div class="crm-panel-block p-5" x-show="can('admin.full')">
+                <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Омниканал: Telegram и MAX (HelpDesk)</div>
+                <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
+                    Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
+                    Пока домен не выбран, заполните секреты и токены позже.
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Публичный URL CRM (HTTPS)</label>
+                        <input type="text" x-model="omniForm.app_public_base_url" placeholder="https://crm.example.ru"
+                               class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Нужен для генерации URL вебхуков. Можно заполнить позже.</div>
+                    </div>
+
+                    <div class="crm-panel-block p-4">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <div class="font-semibold" style="color: var(--lg-text-primary)">Telegram</div>
+                            <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                                <span>Включить</span>
+                                <input type="checkbox" x-model="omniForm.tg_enabled" class="rounded" />
+                            </label>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Bot token</label>
+                                <input type="text" x-model="omniForm.tg_bot_token" placeholder="вставьте токен"
+                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                    <span x-show="omniIntegration?.tgTokenConfigured">Токен уже сохранён. Оставьте пустым, чтобы не менять.</span>
+                                    <span x-show="!omniIntegration?.tgTokenConfigured">Токен не задан.</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Webhook secret</label>
+                                <input type="text" x-model="omniForm.tg_webhook_secret" placeholder="секретная строка"
+                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                    <span x-show="omniIntegration?.tgSecretConfigured">Секрет уже сохранён. Оставьте пустым, чтобы не менять.</span>
+                                    <span x-show="!omniIntegration?.tgSecretConfigured">Секрет не задан.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="crm-panel-block p-4">
+                        <div class="flex items-center justify-between gap-3 mb-3">
+                            <div class="font-semibold" style="color: var(--lg-text-primary)">MAX</div>
+                            <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                                <span>Включить</span>
+                                <input type="checkbox" x-model="omniForm.max_enabled" class="rounded" />
+                            </label>
+                        </div>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Bot token</label>
+                                <input type="text" x-model="omniForm.max_bot_token" placeholder="вставьте токен"
+                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                    <span x-show="omniIntegration?.maxTokenConfigured">Токен уже сохранён. Оставьте пустым, чтобы не менять.</span>
+                                    <span x-show="!omniIntegration?.maxTokenConfigured">Токен не задан.</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Webhook secret</label>
+                                <input type="text" x-model="omniForm.max_webhook_secret" placeholder="секретная строка"
+                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                    <span x-show="omniIntegration?.maxSecretConfigured">Секрет уже сохранён. Оставьте пустым, чтобы не менять.</span>
+                                    <span x-show="!omniIntegration?.maxSecretConfigured">Секрет не задан.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 mt-4 flex-wrap">
+                    <button type="button" class="crm-btn-secondary text-sm" @click="pingOmniTelegram()">Проверить Telegram</button>
+                    <button type="button" class="crm-btn-secondary text-sm" @click="pingOmniMax()">Проверить MAX</button>
+                    <button type="button" class="crm-btn-primary text-sm" @click="saveOmnichannel()">Сохранить омниканал</button>
+                </div>
+            </div>
+
             <div class="crm-panel-block p-5">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Погода (OpenWeatherMap)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте погодный виджет под общий интерфейс.</div>

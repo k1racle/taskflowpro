@@ -54,6 +54,40 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         }
     };
 
+    $omnichannelDefaults = [
+        'omni_app_public_base_url' => '',
+        'omni_tg_enabled' => '0',
+        'omni_tg_bot_token' => '',
+        'omni_tg_webhook_secret' => '',
+        'omni_max_enabled' => '0',
+        'omni_max_bot_token' => '',
+        'omni_max_webhook_secret' => ''
+    ];
+
+    $loadOmnichannelSettingsSnapshot = function() use ($loadSettingValue, $loadEncryptedSettingValue, $omnichannelDefaults): array {
+        $raw = $omnichannelDefaults;
+        foreach (array_keys($omnichannelDefaults) as $key) {
+            $raw[$key] = $loadSettingValue($key) ?? $omnichannelDefaults[$key];
+        }
+
+        $tgToken = $loadEncryptedSettingValue('omni_tg_bot_token');
+        $maxToken = $loadEncryptedSettingValue('omni_max_bot_token');
+
+        return [
+            'omni_app_public_base_url' => (string)($raw['omni_app_public_base_url'] ?? ''),
+            'omni_tg_enabled' => (string)($raw['omni_tg_enabled'] ?? '0'),
+            'omni_tg_bot_token' => '',
+            'omni_tg_bot_token_configured' => $tgToken !== '' ? '1' : '0',
+            'omni_tg_webhook_secret' => '',
+            'omni_tg_webhook_secret_configured' => trim((string)($raw['omni_tg_webhook_secret'] ?? '')) !== '' ? '1' : '0',
+            'omni_max_enabled' => (string)($raw['omni_max_enabled'] ?? '0'),
+            'omni_max_bot_token' => '',
+            'omni_max_bot_token_configured' => $maxToken !== '' ? '1' : '0',
+            'omni_max_webhook_secret' => '',
+            'omni_max_webhook_secret_configured' => trim((string)($raw['omni_max_webhook_secret'] ?? '')) !== '' ? '1' : '0',
+        ];
+    };
+
     $getReferralSharedSecretSource = function() use ($loadReferralSharedSecretFromSettings): string {
         if ($loadReferralSharedSecretFromSettings() !== '') {
             return 'settings';
@@ -514,7 +548,9 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $settingsData = [];
         foreach ($settings as $setting) {
             $key = (string)$setting['key'];
-            if ($key === 'referral_shared_secret' || $key === 'woocommerce_api_consumer_secret') {
+            if ($key === 'referral_shared_secret' || $key === 'woocommerce_api_consumer_secret'
+                || $key === 'omni_tg_bot_token' || $key === 'omni_max_bot_token'
+                || $key === 'omni_tg_webhook_secret' || $key === 'omni_max_webhook_secret') {
                 $settingsData[$key] = '';
                 continue;
             }
@@ -531,6 +567,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $settingsData['referral_shared_secret_configured'] = $referralSharedSecretSource === 'none' ? '0' : '1';
         $settingsData['referral_shared_secret_source'] = $referralSharedSecretSource;
         $settingsData = array_merge($settingsData, $buildMangoOfficeSettingsSnapshot());
+        $settingsData = array_merge($settingsData, $loadOmnichannelSettingsSnapshot());
 
         echo json_encode([
             'success' => true,
@@ -1200,14 +1237,26 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             }
 
             $normalizedValue = $normalizeSettingValue($value);
-            if ($key === 'referral_shared_secret' || $key === 'woocommerce_api_consumer_secret' || $key === 'mango_office_security_token') {
+            $isSecretKey = ($key === 'referral_shared_secret'
+                || $key === 'woocommerce_api_consumer_secret'
+                || $key === 'mango_office_security_token'
+                || $key === 'omni_tg_bot_token'
+                || $key === 'omni_max_bot_token'
+                || $key === 'omni_tg_webhook_secret'
+                || $key === 'omni_max_webhook_secret');
+
+            if ($isSecretKey) {
                 $normalizedValue = trim($normalizedValue);
-                if ($normalizedValue !== '') {
-                    try {
-                        $normalizedValue = (string)(appEncrypt($normalizedValue) ?? '');
-                    } catch (Throwable $e) {
-                        error_log('settings.php: failed to encrypt secret setting, storing plaintext fallback: ' . $e->getMessage());
-                    }
+
+                // Empty secret fields mean "keep existing" (UI sends blanks by default).
+                if ($normalizedValue === '') {
+                    continue;
+                }
+
+                try {
+                    $normalizedValue = (string)(appEncrypt($normalizedValue) ?? '');
+                } catch (Throwable $e) {
+                    error_log('settings.php: failed to encrypt secret setting, storing plaintext fallback: ' . $e->getMessage());
                 }
             }
 

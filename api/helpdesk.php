@@ -45,6 +45,8 @@ require_once __DIR__ . '/auth.php';
 function handleHelpdesk(string $method, ?string $action, mixed $id, ?string $subaction = null): void {
     $pdo = getPDO();
 
+    require_once __DIR__ . '/omnichannel.php';
+
     try {
         ensureUsersLastActivityColumn($pdo);
     } catch (Exception $e) {
@@ -1727,6 +1729,49 @@ if ($method === 'GET' && $action === 'stats' && $id === null) {
         $commentId = $pdo->lastInsertId();
 
         $logHistory($id, 'comment', $currentUser['id'], null, null, $commentId, ['is_internal' => $data['is_internal'] ?? 0]);
+
+        // Omnichannel outbound: if ticket is bound to Telegram/MAX thread, send operator reply back.
+        try {
+            $isInternal = (int)($data['is_internal'] ?? 0) === 1;
+            if (!$isInternal) {
+                $thread = omniFindHelpdeskThread($pdo, (int)$id);
+                if ($thread && !empty($thread['channel']) && !empty($thread['external_chat_id'])) {
+                    $channel = (string)$thread['channel'];
+                    $text = trim((string)$data['message']);
+
+                    if ($text !== '') {
+                        if ($channel === 'telegram') {
+                            $enabled = trim((string)(omniLoadSetting($pdo, 'omni_tg_enabled') ?? '0')) === '1';
+                            if ($enabled) {
+                                $token = omniLoadSecretSetting($pdo, 'omni_tg_bot_token');
+                                $sendRes = omniSendTelegramMessage($pdo, $token, (string)$thread['external_chat_id'], $text);
+                                $logHistory($id, 'omni.outgoing', $currentUser['id'], null, null, $commentId, [
+                                    'channel' => 'telegram',
+                                    'status' => $sendRes['status'] ?? 0,
+                                    'ok' => (bool)($sendRes['ok'] ?? false)
+                                ]);
+                            }
+                        }
+
+                        if ($channel === 'max') {
+                            $enabled = trim((string)(omniLoadSetting($pdo, 'omni_max_enabled') ?? '0')) === '1';
+                            if ($enabled) {
+                                $token = omniLoadSecretSetting($pdo, 'omni_max_bot_token');
+                                $sendRes = omniSendMaxMessage($pdo, $token, (string)$thread['external_chat_id'], $text);
+                                $logHistory($id, 'omni.outgoing', $currentUser['id'], null, null, $commentId, [
+                                    'channel' => 'max',
+                                    'status' => $sendRes['status'] ?? 0,
+                                    'ok' => (bool)($sendRes['ok'] ?? false)
+                                ]);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Throwable $e) {
+            // never break helpdesk comment flow
+            error_log('helpdesk omni outbound error: ' . $e->getMessage());
+        }
 
         echo json_encode(['success' => true, 'data' => ['id' => $commentId]]);
         exit;

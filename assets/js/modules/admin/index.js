@@ -189,6 +189,16 @@ window.TaskFlowAdmin = (function () {
             mango_office_security_token: ''
         };
 
+        ctx.omniForm = {
+            app_public_base_url: String(ctx.settings?.omni_app_public_base_url || ''),
+            tg_enabled: String(ctx.settings?.omni_tg_enabled || '') === '1',
+            tg_bot_token: '',
+            tg_webhook_secret: '',
+            max_enabled: String(ctx.settings?.omni_max_enabled || '') === '1',
+            max_bot_token: '',
+            max_webhook_secret: ''
+        };
+
         ctx.referralIntegration = {
             orderWebhookUrl: buildReferralEndpointUrl('referrals/webhook/woocommerce'),
             visitEndpointUrl: buildReferralEndpointUrl('referrals/visit'),
@@ -197,6 +207,13 @@ window.TaskFlowAdmin = (function () {
         };
 
         ctx.mangoOfficeIntegration = mangoOfficeIntegration;
+
+        ctx.omniIntegration = {
+            tgTokenConfigured: String(ctx.settings?.omni_tg_bot_token_configured || '') === '1',
+            tgSecretConfigured: String(ctx.settings?.omni_tg_webhook_secret_configured || '') === '1',
+            maxTokenConfigured: String(ctx.settings?.omni_max_bot_token_configured || '') === '1',
+            maxSecretConfigured: String(ctx.settings?.omni_max_webhook_secret_configured || '') === '1'
+        };
     }
 
     function buildReferralEndpointUrl(endpoint) {
@@ -688,6 +705,44 @@ window.TaskFlowAdmin = (function () {
             }
         },
 
+        async saveOmnichannel(ctx) {
+            try {
+                if (!ctx?.can?.('admin.full') && ctx.currentUser?.role !== 'root') {
+                    ctx.showToast('Недостаточно прав', 'error');
+                    return;
+                }
+
+                const payload = {
+                    omni_app_public_base_url: String(ctx.omniForm?.app_public_base_url || '').trim(),
+                    omni_tg_enabled: ctx.omniForm?.tg_enabled ? '1' : '0',
+                    omni_max_enabled: ctx.omniForm?.max_enabled ? '1' : '0'
+                };
+
+                const tgToken = String(ctx.omniForm?.tg_bot_token || '').trim();
+                const tgSecret = String(ctx.omniForm?.tg_webhook_secret || '').trim();
+                const maxToken = String(ctx.omniForm?.max_bot_token || '').trim();
+                const maxSecret = String(ctx.omniForm?.max_webhook_secret || '').trim();
+                if (tgToken) payload.omni_tg_bot_token = tgToken;
+                if (tgSecret) payload.omni_tg_webhook_secret = tgSecret;
+                if (maxToken) payload.omni_max_bot_token = maxToken;
+                if (maxSecret) payload.omni_max_webhook_secret = maxSecret;
+
+                await apiUpdateSettings(payload);
+
+                // Clear secret inputs after save.
+                ctx.omniForm.tg_bot_token = '';
+                ctx.omniForm.tg_webhook_secret = '';
+                ctx.omniForm.max_bot_token = '';
+                ctx.omniForm.max_webhook_secret = '';
+
+                await this.loadSettings(ctx);
+                ctx.showToast('Омниканал сохранён', 'success');
+            } catch (error) {
+                console.error('Ошибка сохранения омниканала:', error);
+                ctx.showToast(error?.userMessage || error?.message || 'Ошибка сохранения омниканала', 'error');
+            }
+        },
+
         async loadSettings(ctx) {
             try {
                 const data = await apiGetSettings();
@@ -762,6 +817,44 @@ window.TaskFlowAdmin = (function () {
                 }
             } catch (_error) {
                 ctx.showToast('Ошибка подключения к Telegram', 'error');
+            }
+        },
+
+        async pingOmniTelegram(ctx) {
+            try {
+                if (!ctx?.can?.('admin.full') && ctx.currentUser?.role !== 'root') {
+                    ctx.showToast('Недостаточно прав', 'error');
+                    return;
+                }
+
+                const res = await apiGet('integrations/telegram/ping');
+                if (res.success) {
+                    const username = res?.data?.response?.result?.username;
+                    ctx.showToast(username ? `Telegram подключен: @${username}` : 'Telegram подключен', 'success');
+                } else {
+                    ctx.showToast(res.error || 'Не удалось подключиться к Telegram', 'error');
+                }
+            } catch (error) {
+                ctx.showToast(error?.userMessage || error?.message || 'Не удалось подключиться к Telegram', 'error');
+            }
+        },
+
+        async pingOmniMax(ctx) {
+            try {
+                if (!ctx?.can?.('admin.full') && ctx.currentUser?.role !== 'root') {
+                    ctx.showToast('Недостаточно прав', 'error');
+                    return;
+                }
+
+                const res = await apiGet('integrations/max/ping');
+                if (res.success) {
+                    const botName = res?.data?.response?.name || res?.data?.response?.username;
+                    ctx.showToast(botName ? `MAX подключен: ${botName}` : 'MAX подключен', 'success');
+                } else {
+                    ctx.showToast(res.error || 'Не удалось подключиться к MAX', 'error');
+                }
+            } catch (error) {
+                ctx.showToast(error?.userMessage || error?.message || 'Не удалось подключиться к MAX', 'error');
             }
         },
 

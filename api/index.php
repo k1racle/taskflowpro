@@ -283,6 +283,15 @@ try {
             handleSettings($method, $action, $id);
             break;
 
+        case 'integrations':
+            // Webhooks are authenticated via shared secret in query.
+            // Also include auth.php so integrations may optionally require auth (e.g. ping endpoints).
+            require __DIR__ . '/auth.php';
+            require __DIR__ . '/config.php';
+            require __DIR__ . '/integrations.php';
+            handleIntegrations($method, $action, $id, $subaction);
+            break;
+
         case 'audit':
             require __DIR__ . '/auth.php';
             require __DIR__ . '/audit.php';
