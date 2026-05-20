@@ -444,6 +444,9 @@ window.app = function() {
         chatRoomsError: '',
         chatRoomMessagesLoading: false,
         chatRoomMessagesError: '',
+        chatHistoryLoading: false,
+        chatHasMoreHistory: true,
+        chatMessagesOffset: 0,
         chatSending: false,
         showAttachmentMenu: false,
         showEmojiPicker: false,
@@ -1347,6 +1350,32 @@ window.app = function() {
             return window.TaskFlowBooking?.submitBookingRequest?.(this);
         },
 
+        toggleServiceType(serviceId) {
+            // booking-view.html expects this for multi-service selection
+            if (!this.bookingForm) {
+                this.bookingForm = window.TaskFlowBooking?.getDefaultForm?.() || { service_type_ids: [] };
+            }
+            if (!Array.isArray(this.bookingForm.service_type_ids)) {
+                this.bookingForm.service_type_ids = [];
+            }
+
+            const id = String(serviceId || '');
+            if (!id) return;
+            const current = this.bookingForm.service_type_ids.map(String);
+            const idx = current.indexOf(id);
+            if (idx >= 0) current.splice(idx, 1);
+            else current.push(id);
+            this.bookingForm.service_type_ids = current;
+        },
+
+        formatDateTime(dateStr) {
+            return window.TaskFlowSharedFormatters?.formatDateTime?.(dateStr) || '';
+        },
+
+        formatRelativeDate(dateStr) {
+            return window.TaskFlowSharedFormatters?.formatRelativeDate?.(dateStr) || '';
+        },
+
         async approveBookingRequest(request) {
             return window.TaskFlowBooking?.approveRequest?.(this, request);
         },
@@ -1509,6 +1538,10 @@ window.app = function() {
 
         async selectChatRoom(room) {
             return window.TaskFlowChat.selectRoom(this, room);
+        },
+
+        async loadOlderChatMessages() {
+            return window.TaskFlowChat.loadOlderMessages?.(this);
         },
 
         scrollChatToBottom(force = false) {
@@ -1881,7 +1914,7 @@ window.app = function() {
         bookingStats: { total: 0, new: 0, approved: 0, rejected: 0 },
         bookingCanManage: false,
         bookingLastLoadedAt: '',
-        bookingForm: { service_type_id: '', client_name: '', client_email: '', client_phone: '', client_company: '', preferred_datetime: '', notes: '' },
+        bookingForm: window.TaskFlowBooking?.getDefaultForm?.() || { service_type_ids: [], client_name: '', client_email: '', client_phone: '', client_company: '', preferred_datetime: '', notes: '' },
         bookingSelectedRequestId: null,
         bookingServiceModalOpen: false,
         bookingServiceForm: window.TaskFlowBooking?.getDefaultServiceForm?.() || {

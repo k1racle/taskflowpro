@@ -1214,16 +1214,26 @@ function handleBooking(string $method): void {
     if ($method === 'GET') {
         $serviceTypes = bookingFetchServiceTypes($pdo);
         $workingHours = bookingFetchWorkingHours($pdo);
+        $canManage = (bool)($currentUser && hasAdminAccess($currentUser));
         $data = [
             'services' => $serviceTypes,
             'service_types' => $serviceTypes,
             'working_hours' => $workingHours,
             'hold_minutes' => 30,
             'server_time' => $now->format('Y-m-d H:i:s'),
-            'can_manage' => (bool)($currentUser && hasAdminAccess($currentUser)),
+            'can_manage' => $canManage,
         ];
 
-        if ($currentUser && hasAdminAccess($currentUser)) {
+        if ($currentUser) {
+            // lightweight debug to help diagnose permission issues in UI
+            $data['current_user'] = [
+                'id' => (int)($currentUser['id'] ?? 0),
+                'login' => (string)($currentUser['login'] ?? ''),
+                'role' => (string)($currentUser['role'] ?? ''),
+            ];
+        }
+
+        if ($canManage) {
             $requests = bookingFetchBookingRequests($pdo, $now);
             $stats = bookingFetchBookingStats($pdo);
             $data['requests'] = $requests;

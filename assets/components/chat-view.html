@@ -3,9 +3,12 @@
      ============================================ -->
 
 <div class="h-full min-h-0 flex gap-4 lg:gap-6 chat-workspace-shell"
-     :data-mobile-chat-state="activeChatRoom ? 'room' : 'list'"
-     data-chat-runtime-template="chat-view-2026-04-25-v1"
-     data-chat-runtime-version="chat-live-2026-04-25-v1">
+      :data-mobile-chat-state="activeChatRoom ? 'room' : 'list'"
+      data-chat-runtime-template="chat-view-2026-04-25-v1"
+      data-chat-runtime-version="chat-live-2026-04-25-v1"
+      @keydown.escape.window="showAttachmentMenu=false; showEmojiPicker=false; chatRoomMenuOpen=false; chatOptionsOpen=false; showSearchResults=false"
+      @keydown.ctrl.k.window.prevent="try{document.getElementById('chat-sidebar-search')?.focus?.()}catch(e){}"
+      @keydown.meta.k.window.prevent="try{document.getElementById('chat-sidebar-search')?.focus?.()}catch(e){}">
     
     <!-- Список чатов -->
     <div class="liquid-glass-pro w-full lg:w-80 xl:w-[22rem] flex flex-col min-h-0 rounded-3xl chat-sidebar-shell">
@@ -314,7 +317,13 @@
             </div>
 
             <!-- Сообщения -->
-            <div id="chat-messages" class="flex-1 min-h-0 overflow-y-auto p-4 lg:p-6 space-y-3 chat-messages-zone" @scroll.debounce.80ms="(function(){try{const el=$event.target; const threshold=Number(el.dataset.autoscrollStickThreshold||260); const distance=el.scrollHeight-el.scrollTop-el.clientHeight; el.dataset.autoscrollStuckToBottom=(distance<threshold)?'1':'0';}catch(e){}})()">
+            <div id="chat-messages" class="flex-1 min-h-0 overflow-y-auto p-4 lg:p-6 space-y-3 chat-messages-zone" @scroll.debounce.80ms="(function(){try{const el=$event.target; const threshold=Number(el.dataset.autoscrollStickThreshold||260); const distance=el.scrollHeight-el.scrollTop-el.clientHeight; el.dataset.autoscrollStuckToBottom=(distance<threshold)?'1':'0'; if(el.scrollTop<60 && !chatHistoryLoading && chatHasMoreHistory){ loadOlderChatMessages(); }}catch(e){}})()">
+                <div x-show="activeChatRoom && !chatRoomMessagesLoading && chatHasMoreHistory" class="flex justify-center py-2">
+                    <button type="button" class="crm-btn-ghost text-xs" :disabled="chatHistoryLoading" @click="loadOlderChatMessages()">
+                        <span x-show="!chatHistoryLoading">Загрузить ранее</span>
+                        <span x-show="chatHistoryLoading">Загружаем...</span>
+                    </button>
+                </div>
                 <div x-show="chatRoomMessagesLoading" class="crm-empty-state text-center px-4 py-8" data-state="loading">
                     <div class="crm-empty-state-title">Загружаем сообщения...</div>
                     <div class="crm-empty-state-text">Подтягиваем историю переписки и вложения выбранного чата.</div>
@@ -470,14 +479,15 @@
 
                         <label for="chat-message-input" class="sr-only">Сообщение</label>
                         <textarea id="chat-message-input"
-                                  name="chat_message"
-                                  x-model="chatMessage"
-                                  rows="1"
-                                  @input="autoResize($event.target); notifyTyping()"
-                                  @keydown.enter.prevent="if (!$event.shiftKey) sendChatMessage(); else chatMessage += '\n'"
-                                  :placeholder="chatSending ? 'Отправка...' : 'Сообщение…'"
-                                  :disabled="chatSending"
-                                  class="chat-composer-textarea crm-input-no-suggest"
+                                   name="chat_message"
+                                   x-model="chatMessage"
+                                   rows="1"
+                                   @input="autoResize($event.target); notifyTyping()"
+                                    @keydown.enter.prevent="if (!$event.shiftKey) sendChatMessage(); else chatMessage += '\n'"
+                                   @keydown.esc.stop.prevent="showAttachmentMenu=false; showEmojiPicker=false"
+                                    :placeholder="chatSending ? 'Отправка...' : 'Сообщение…'"
+                                    :disabled="chatSending"
+                                    class="chat-composer-textarea crm-input-no-suggest"
                                   autocomplete="off"
                                   autocapitalize="sentences"
                                   autocorrect="off"

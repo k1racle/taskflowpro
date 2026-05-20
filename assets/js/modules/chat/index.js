@@ -1,6 +1,28 @@
 window.TaskFlowChat = (function () {
+    const CHAT_ACTIVE_ROOM_STORAGE_KEY = 'chatActiveRoomId';
+    const CHAT_PAGE_SIZE = 50;
+
     function getRoomId(room) {
         return room?.room_id || room?.id || null;
+    }
+
+    function loadStoredActiveRoomId() {
+        try {
+            return String(localStorage.getItem(CHAT_ACTIVE_ROOM_STORAGE_KEY) || '').trim();
+        } catch (_e) {
+            return '';
+        }
+    }
+
+    function storeActiveRoomId(roomId) {
+        try {
+            const id = String(roomId || '').trim();
+            if (!id) {
+                localStorage.removeItem(CHAT_ACTIVE_ROOM_STORAGE_KEY);
+            } else {
+                localStorage.setItem(CHAT_ACTIVE_ROOM_STORAGE_KEY, id);
+            }
+        } catch (_e) {}
     }
 
     function syncActiveChatRoom(ctx) {
@@ -66,6 +88,10 @@ window.TaskFlowChat = (function () {
         return Array.from(map.values()).sort((a, b) => (a.id || 0) - (b.id || 0));
     }
 
+    function getScrollContainer() {
+        return document.getElementById('chat-messages');
+    }
+
     function buildPresenceMap(rows) {
         const map = {};
         for (const row of (rows || [])) {
@@ -113,6 +139,19 @@ window.TaskFlowChat = (function () {
                     }
 
                     syncActiveChatRoom(ctx);
+
+                    // Auto-select a room so chat doesn't open as an empty shell.
+                    if (!ctx.activeChatRoom && ctx.chatRooms.length > 0) {
+                        const storedId = loadStoredActiveRoomId();
+                        const preferred = storedId
+                            ? ctx.chatRooms.find((r) => String(getRoomId(r)) === storedId)
+                            : null;
+                        const nextRoom = preferred || ctx.chatRooms[0];
+                        if (nextRoom) {
+                            // fire and forget to avoid blocking rooms list render
+                            this.selectRoom(ctx, nextRoom).catch(() => {});
+                        }
+                    }
                 }
             } catch (error) {
                 if (Number(error?.status) === 403) {
@@ -420,8 +459,12 @@ window.TaskFlowChat = (function () {
 
         async selectRoom(ctx, room) {
             ctx.activeChatRoom = room;
+            storeActiveRoomId(getRoomId(room));
             ctx.chatRoomMessagesLoading = true;
             ctx.chatRoomMessagesError = '';
+            ctx.chatHistoryLoading = false;
+            ctx.chatHasMoreHistory = true;
+            ctx.chatMessagesOffset = 0;
             ctx.replyToMessage = null;
             ctx.editingMessage = null;
             ctx.forwardingMessage = null;
@@ -433,9 +476,11 @@ window.TaskFlowChat = (function () {
 
             try {
                 const roomId = getRoomId(room);
-                const data = await apiGet(`chat/rooms/${roomId}/messages`);
+                const data = await apiGet(`chat/rooms/${roomId}/messages?limit=${CHAT_PAGE_SIZE}&offset=0`);
                 if (data.success) {
                     ctx.chatMessages = data.data || [];
+                    ctx.chatMessagesOffset = Array.isArray(ctx.chatMessages) ? ctx.chatMessages.length : 0;
+                    ctx.chatHasMoreHistory = Array.isArray(data.data) ? (data.data.length >= CHAT_PAGE_SIZE) : false;
                     if (data.data && data.data.length > 0) {
                         ctx.lastMessageId = Math.max(...data.data.map((message) => message.id));
                         ctx.lastRoomId = roomId;
@@ -467,6 +512,54 @@ window.TaskFlowChat = (function () {
                 ctx.showToast('Ошибка загрузки сообщений', 'error');
             } finally {
                 ctx.chatRoomMessagesLoading = false;
+            }
+        },
+
+        async loadOlderMessages(ctx) {
+            if (ctx.chatRoomMessagesLoading || ctx.chatHistoryLoading) return false;
+            if (!ctx.activeChatRoom) return false;
+            if (!ctx.chatHasMoreHistory) return false;
+
+            const roomId = getRoomId(ctx.activeChatRoom);
+            if (!roomId) return false;
+
+            const container = getScrollContainer();
+            const prevScrollHeight = container ? container.scrollHeight : 0;
+            const prevScrollTop = container ? container.scrollTop : 0;
+
+            ctx.chatHistoryLoading = true;
+            try {
+                const offset = Number(ctx.chatMessagesOffset || 0);
+                const res = await apiGet(`chat/rooms/${roomId}/messages?limit=${CHAT_PAGE_SIZE}&offset=${encodeURIComponent(offset)}`);
+                if (!res?.success) {
+                    return false;
+                }
+
+                const older = Array.isArray(res.data) ? res.data : [];
+                if (!older.length) {
+                    ctx.chatHasMoreHistory = false;
+                    return true;
+                }
+
+                ctx.chatMessages = mergeMessages(older, ctx.chatMessages);
+                ctx.chatMessagesOffset = Number(ctx.chatMessagesOffset || 0) + older.length;
+                if (older.length < CHAT_PAGE_SIZE) {
+                    ctx.chatHasMoreHistory = false;
+                }
+
+                // keep viewport anchored
+                ctx.$nextTick(() => {
+                    const el = getScrollContainer();
+                    if (!el) return;
+                    const nextScrollHeight = el.scrollHeight;
+                    el.scrollTop = prevScrollTop + (nextScrollHeight - prevScrollHeight);
+                });
+
+                return true;
+            } catch (_e) {
+                return false;
+            } finally {
+                ctx.chatHistoryLoading = false;
             }
         },
 
