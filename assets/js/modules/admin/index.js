@@ -214,6 +214,19 @@ window.TaskFlowAdmin = (function () {
             maxTokenConfigured: String(ctx.settings?.omni_max_bot_token_configured || '') === '1',
             maxSecretConfigured: String(ctx.settings?.omni_max_webhook_secret_configured || '') === '1'
         };
+
+        const defaultIceServersJson = '[{"urls":"stun:stun.l.google.com:19302"}]';
+        ctx.webrtcForm = {
+            ice_servers_json: String(ctx.settings?.webrtc_ice_servers_json || defaultIceServersJson)
+        };
+
+        // Parsed iceServers cache for chat calls.
+        try {
+            const parsed = JSON.parse(ctx.webrtcForm.ice_servers_json);
+            ctx.webrtcIceServers = Array.isArray(parsed) ? parsed : [{ urls: 'stun:stun.l.google.com:19302' }];
+        } catch (_e) {
+            ctx.webrtcIceServers = [{ urls: 'stun:stun.l.google.com:19302' }];
+        }
     }
 
     function buildReferralEndpointUrl(endpoint) {
@@ -740,6 +753,37 @@ window.TaskFlowAdmin = (function () {
             } catch (error) {
                 console.error('Ошибка сохранения омниканала:', error);
                 ctx.showToast(error?.userMessage || error?.message || 'Ошибка сохранения омниканала', 'error');
+            }
+        },
+
+        async saveWebrtcSettings(ctx) {
+            try {
+                if (!ctx?.can?.('admin.full') && ctx.currentUser?.role !== 'root') {
+                    ctx.showToast('Недостаточно прав', 'error');
+                    return;
+                }
+
+                const jsonStr = String(ctx.webrtcForm?.ice_servers_json || '').trim();
+                if (jsonStr === '') {
+                    ctx.showToast('Укажите JSON ICE servers или оставьте дефолт', 'error');
+                    return;
+                }
+
+                // Validate JSON early.
+                const parsed = JSON.parse(jsonStr);
+                if (!Array.isArray(parsed)) {
+                    ctx.showToast('ICE servers должны быть JSON-массивом', 'error');
+                    return;
+                }
+
+                await apiUpdateSettings({
+                    webrtc_ice_servers_json: jsonStr
+                });
+
+                await this.loadSettings(ctx);
+                ctx.showToast('WebRTC настройки сохранены', 'success');
+            } catch (error) {
+                ctx.showToast(error?.userMessage || error?.message || 'Ошибка сохранения WebRTC настроек', 'error');
             }
         },
 

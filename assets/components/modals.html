@@ -598,6 +598,26 @@
                     </svg>
                 </button>
             </div>
+
+            <div class="mt-4 flex items-center justify-center">
+                <button type="button" class="crm-btn-secondary text-sm" @click="retryCall()" :disabled="callStatus === 'connecting'">
+                    Повторить подключение
+                </button>
+            </div>
+
+            <div class="mt-6" x-show="(can && can('admin.full')) || currentUser?.role === 'root'">
+                <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">WebRTC диагностика</div>
+                    <div class="text-xs mt-2 grid grid-cols-1 md:grid-cols-2 gap-2" style="color: var(--lg-text-secondary)">
+                        <div><span style="color: var(--lg-text-tertiary)">ICE:</span> <span x-text="callDebug?.iceConnectionState || '—'"></span></div>
+                        <div><span style="color: var(--lg-text-tertiary)">Conn:</span> <span x-text="callDebug?.connectionState || '—'"></span></div>
+                        <div><span style="color: var(--lg-text-tertiary)">Signaling:</span> <span x-text="callDebug?.signalingState || '—'"></span></div>
+                        <div><span style="color: var(--lg-text-tertiary)">Gathering:</span> <span x-text="callDebug?.iceGatheringState || '—'"></span></div>
+                        <div class="md:col-span-2"><span style="color: var(--lg-text-tertiary)">Last event:</span> <span x-text="callDebug?.lastEvent || '—'"></span></div>
+                    </div>
+                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)" x-show="callDebug?.lastError" x-text="'Error: ' + callDebug.lastError"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

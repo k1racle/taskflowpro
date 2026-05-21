@@ -509,16 +509,45 @@ function handleChat(string $method, ?string $action, mixed $id, ?string $subacti
         // Long-poll: wait until new messages appear after since_id.
         // In long-poll mode we do NOT mark messages as read automatically.
         if ($timeout > 0 && $sinceId > 0) {
+            $timeout = max(1, min(25, (int)$timeout));
             @set_time_limit($timeout + 5);
-            $started = time();
+            $started = microtime(true);
             $sleepUs = 250000; // 250ms
 
-            while ((time() - $started) < $timeout) {
-                $stmt = $pdo->prepare("SELECT id FROM chat_messages WHERE room_id = ? AND deleted_at IS NULL AND id > ? ORDER BY id ASC LIMIT 1");
-                $stmt->execute([$roomId, $sinceId]);
-                $newId = $stmt->fetchColumn();
-                if ($newId) break;
-                usleep($sleepUs);
+            // Prevent multiple concurrent long-poll loops per user+room.
+            // This protects php-fpm workers and reduces DB load.
+            $lockKey = 'tf_chat_lp:' . (string)$userId . ':' . (string)$roomId;
+            $gotLock = false;
+            try {
+                $lockStmt = $pdo->prepare('SELECT GET_LOCK(?, 0)');
+                $lockStmt->execute([$lockKey]);
+                $gotLock = (string)$lockStmt->fetchColumn() === '1';
+            } catch (Throwable $e) {
+                $gotLock = false;
+            }
+            if (!$gotLock) {
+                // If another request is already long-polling, don't block. Return quickly.
+                $timeout = 0;
+            }
+
+            try {
+                while ((microtime(true) - $started) < $timeout) {
+                    if (function_exists('connection_aborted') && connection_aborted()) break;
+                    $stmt = $pdo->prepare("SELECT 1 FROM chat_messages WHERE room_id = ? AND deleted_at IS NULL AND id > ? LIMIT 1");
+                    $stmt->execute([$roomId, $sinceId]);
+                    if ($stmt->fetchColumn()) break;
+                    // Add tiny jitter to reduce thundering herd effect.
+                    usleep($sleepUs + random_int(0, 30000));
+                }
+            } finally {
+                if ($gotLock) {
+                    try {
+                        $unlockStmt = $pdo->prepare('SELECT RELEASE_LOCK(?)');
+                        $unlockStmt->execute([$lockKey]);
+                    } catch (Throwable $e) {
+                        // best-effort
+                    }
+                }
             }
         } else {
             // Фиксируем факт чтения всех входящих сообщений в комнате
@@ -1769,13 +1798,40 @@ function handleChat(string $method, ?string $action, mixed $id, ?string $subacti
             $timeout = isset($_GET['timeout']) ? max(3, min(25, (int)$_GET['timeout'])) : 0;
             if ($timeout > 0) {
                 @set_time_limit($timeout + 5);
-                $started = time();
+                $started = microtime(true);
                 $sleepUs = 250000; // 250ms
-                while ((time() - $started) < $timeout) {
-                    $stmt = $pdo->prepare("SELECT 1 FROM chat_calls WHERE recipient_id = ? AND status = 'calling' AND is_seen = 0 LIMIT 1");
-                    $stmt->execute([$userId]);
-                    if ($stmt->fetchColumn()) break;
-                    usleep($sleepUs);
+
+                // Prevent multiple concurrent long-poll loops per user.
+                $lockKey = 'tf_calls_lp:' . (string)$userId;
+                $gotLock = false;
+                try {
+                    $lockStmt = $pdo->prepare('SELECT GET_LOCK(?, 0)');
+                    $lockStmt->execute([$lockKey]);
+                    $gotLock = (string)$lockStmt->fetchColumn() === '1';
+                } catch (Throwable $e) {
+                    $gotLock = false;
+                }
+                if (!$gotLock) {
+                    $timeout = 0;
+                }
+
+                try {
+                    while ((microtime(true) - $started) < $timeout) {
+                        if (function_exists('connection_aborted') && connection_aborted()) break;
+                        $stmt = $pdo->prepare("SELECT 1 FROM chat_calls WHERE recipient_id = ? AND status = 'calling' AND is_seen = 0 LIMIT 1");
+                        $stmt->execute([$userId]);
+                        if ($stmt->fetchColumn()) break;
+                        usleep($sleepUs + random_int(0, 30000));
+                    }
+                } finally {
+                    if ($gotLock) {
+                        try {
+                            $unlockStmt = $pdo->prepare('SELECT RELEASE_LOCK(?)');
+                            $unlockStmt->execute([$lockKey]);
+                        } catch (Throwable $e) {
+                            // best-effort
+                        }
+                    }
                 }
             }
 

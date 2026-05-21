@@ -64,6 +64,12 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         'omni_max_webhook_secret' => ''
     ];
 
+    $webrtcDefaults = [
+        // JSON string of RTCIceServer[] (see RTCPeerConnection config)
+        // Default: public Google STUN.
+        'webrtc_ice_servers_json' => '[{"urls":"stun:stun.l.google.com:19302"}]'
+    ];
+
     $loadOmnichannelSettingsSnapshot = function() use ($loadSettingValue, $loadEncryptedSettingValue, $omnichannelDefaults): array {
         $raw = $omnichannelDefaults;
         foreach (array_keys($omnichannelDefaults) as $key) {
@@ -85,6 +91,17 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             'omni_max_bot_token_configured' => $maxToken !== '' ? '1' : '0',
             'omni_max_webhook_secret' => '',
             'omni_max_webhook_secret_configured' => trim((string)($raw['omni_max_webhook_secret'] ?? '')) !== '' ? '1' : '0',
+        ];
+    };
+
+    $loadWebrtcSettingsSnapshot = function() use ($loadSettingValue, $webrtcDefaults): array {
+        $raw = $webrtcDefaults;
+        foreach (array_keys($webrtcDefaults) as $key) {
+            $raw[$key] = $loadSettingValue($key) ?? $webrtcDefaults[$key];
+        }
+
+        return [
+            'webrtc_ice_servers_json' => (string)($raw['webrtc_ice_servers_json'] ?? $webrtcDefaults['webrtc_ice_servers_json'])
         ];
     };
 
@@ -568,6 +585,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $settingsData['referral_shared_secret_source'] = $referralSharedSecretSource;
         $settingsData = array_merge($settingsData, $buildMangoOfficeSettingsSnapshot());
         $settingsData = array_merge($settingsData, $loadOmnichannelSettingsSnapshot());
+        $settingsData = array_merge($settingsData, $loadWebrtcSettingsSnapshot());
 
         echo json_encode([
             'success' => true,

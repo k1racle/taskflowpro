@@ -133,6 +133,9 @@ window.app = function() {
             mango_office_remote_id: '',
             mango_office_security_token: ''
         },
+
+        // WebRTC / ICE servers (STUN/TURN)
+        webrtcIceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
         telegramForm: { bot_token: '', chat_id: '', enabled: false },
         profileForm: { full_name: '', phone: '', bio: '', department_id: '', birthday: '', weather_city: 'Москва' },
         knowledgeForm: { title: '', content: '', department_id: '' },
@@ -563,6 +566,7 @@ window.app = function() {
         callRemoteStream: null,         // Удаленный MediaStream
         callPeerConnection: null,       // RTCPeerConnection
         callPendingIce: [],
+        callDebug: { iceConnectionState: '', connectionState: '', signalingState: '', iceGatheringState: '', lastEvent: '', lastError: '' },
         _webrtcPollRunning: false,
         isMuted: false,                 // Микрофон выключен
         isCameraOff: false,             // Камера выключена
@@ -3202,12 +3206,20 @@ window.app = function() {
             return window.TaskFlowAdmin?.saveOmnichannel(this);
         },
 
+        async saveWebrtcSettings() {
+            return window.TaskFlowAdmin?.saveWebrtcSettings(this);
+        },
+
         async pingOmniTelegram() {
             return window.TaskFlowAdmin?.pingOmniTelegram(this);
         },
 
         async pingOmniMax() {
             return window.TaskFlowAdmin?.pingOmniMax(this);
+        },
+
+        async retryCall() {
+            return window.TaskFlowChat?.retryCall?.(this);
         },
 
         // ============================================

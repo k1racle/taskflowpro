@@ -3,10 +3,13 @@
 
 Options -Indexes
 
-# Отключаем mod_security
-<IfModule mod_security2.c>
-    SecRuleEngine Off
-</IfModule>
+## mod_security
+##
+## Не отключайте mod_security в production без крайней необходимости.
+## Если возникают ложные срабатывания, лучше настроить правила/исключения точечно.
+# <IfModule mod_security2.c>
+#     SecRuleEngine Off
+# </IfModule>
 
 # Разрешаем доступ
 <IfModule mod_authz_core.c>
@@ -35,13 +38,13 @@ Options -Indexes
     RewriteRule ^(.*)$ index.php?endpoint=$1 [L,QSA]
 </IfModule>
 
-# CORS
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With"
-    Header set Access-Control-Allow-Credentials "true"
-</IfModule>
+## CORS
+##
+## По умолчанию CORS не включаем.
+## Важно: комбинация Allow-Origin "*" + Allow-Credentials "true" некорректна для браузеров.
+## Если UI и API на одном домене, CORS не нужен.
+## Если UI/API на разных доменах, включайте CORS allowlist на уровне reverse proxy (nginx)
+## или выставляйте конкретный Origin вместо "*".
 
 # MIME
 <IfModule mod_mime.c>

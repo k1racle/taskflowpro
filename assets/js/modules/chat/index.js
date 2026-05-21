@@ -2,6 +2,26 @@ window.TaskFlowChat = (function () {
     const CHAT_ACTIVE_ROOM_STORAGE_KEY = 'chatActiveRoomId';
     const CHAT_PAGE_SIZE = 50;
 
+    function formatGetUserMediaErrorRu(error) {
+        const name = String(error?.name || '').trim();
+        if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+            return 'Доступ к микрофону/камере запрещён в браузере. Разрешите доступ и повторите.';
+        }
+        if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+            return 'Не найден микрофон/камера. Проверьте, что устройство подключено и доступно.';
+        }
+        if (name === 'NotReadableError' || name === 'TrackStartError') {
+            return 'Не удалось включить микрофон/камеру (устройство занято другой программой).';
+        }
+        if (name === 'OverconstrainedError' || name === 'ConstraintNotSatisfiedError') {
+            return 'Параметры камеры/микрофона не поддерживаются. Попробуйте другое устройство.';
+        }
+        if (name === 'SecurityError') {
+            return 'WebRTC заблокирован политикой безопасности. Убедитесь, что сайт открыт по HTTPS.';
+        }
+        return error?.message ? String(error.message) : 'Не удалось получить доступ к микрофону/камере.';
+    }
+
     function getRoomId(room) {
         return room?.room_id || room?.id || null;
     }
@@ -271,6 +291,7 @@ window.TaskFlowChat = (function () {
             ctx._chatLongPollLoopRunning = true;
 
             const loop = async () => {
+                let backoffMs = 0;
                 while (ctx._chatLongPollRunning && ctx.isAuthenticated) {
                     try {
                         if (!ctx.isChatVisible || !ctx.activeChatRoom || document.hidden) {
@@ -300,8 +321,14 @@ window.TaskFlowChat = (function () {
                                 }
                             }
                         }
+
+                        // Successful request: reset backoff.
+                        backoffMs = 0;
                     } catch (_error) {
-                        await new Promise((resolve) => setTimeout(resolve, 1200));
+                        // Exponential backoff with cap to avoid hammering the server on outages.
+                        backoffMs = backoffMs ? Math.min(Math.round(backoffMs * 1.6), 15000) : 900;
+                        const jitter = Math.round(Math.random() * 250);
+                        await new Promise((resolve) => setTimeout(resolve, backoffMs + jitter));
                     }
                 }
             };
@@ -1446,10 +1473,20 @@ window.TaskFlowChat = (function () {
                     ctx.callTimer = 0;
                     ctx.callPendingIce = [];
 
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        audio: true,
-                        video: ctx.callType === 'video'
-                    });
+                    let stream;
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            audio: true,
+                            video: ctx.callType === 'video'
+                        });
+                    } catch (e) {
+                        const msg = formatGetUserMediaErrorRu(e);
+                        try {
+                            ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'getUserMedia.failed', lastError: msg };
+                        } catch (_) {}
+                        ctx.showToast(msg, 'error');
+                        throw e;
+                    }
                     ctx.callLocalStream = stream;
 
                     try {
@@ -1459,9 +1496,38 @@ window.TaskFlowChat = (function () {
                     } catch (_) {}
 
                     const pc = new RTCPeerConnection({
-                        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+                        iceServers: Array.isArray(ctx.webrtcIceServers) && ctx.webrtcIceServers.length
+                            ? ctx.webrtcIceServers
+                            : [{ urls: 'stun:stun.l.google.com:19302' }]
                     });
                     ctx.callPeerConnection = pc;
+
+                    const syncDebug = (label, error = null) => {
+                        try {
+                            ctx.callDebug = {
+                                iceConnectionState: pc.iceConnectionState,
+                                connectionState: pc.connectionState,
+                                signalingState: pc.signalingState,
+                                iceGatheringState: pc.iceGatheringState,
+                                lastEvent: String(label || ''),
+                                lastError: error ? String(error?.message || error) : (ctx.callDebug?.lastError || '')
+                            };
+                        } catch (_) {}
+                    };
+
+                    syncDebug('pc.created');
+                    pc.onconnectionstatechange = () => syncDebug('connectionState');
+                    pc.onsignalingstatechange = () => syncDebug('signalingState');
+                    pc.onicegatheringstatechange = () => syncDebug('iceGatheringState');
+
+                    pc.oniceconnectionstatechange = () => {
+                        syncDebug('iceConnectionState');
+                        try {
+                            if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
+                                ctx.showToast('Проблема соединения (ICE). Нажмите «Повторить подключение».', 'info');
+                            }
+                        } catch (_) {}
+                    };
 
                     try {
                         pc.addTransceiver('audio', { direction: 'sendrecv' });
@@ -1602,16 +1668,55 @@ window.TaskFlowChat = (function () {
                     ctx.currentCallId = callData.data.call_id;
                     ctx.showCallModal = true;
 
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        audio: true,
-                        video: ctx.callType === 'video'
-                    });
+                    let stream;
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({
+                            audio: true,
+                            video: ctx.callType === 'video'
+                        });
+                    } catch (e) {
+                        const msg = formatGetUserMediaErrorRu(e);
+                        try {
+                            ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'getUserMedia.failed', lastError: msg };
+                        } catch (_) {}
+                        ctx.showToast(msg, 'error');
+                        throw e;
+                    }
                     ctx.callLocalStream = stream;
 
                     const pc = new RTCPeerConnection({
-                        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+                        iceServers: Array.isArray(ctx.webrtcIceServers) && ctx.webrtcIceServers.length
+                            ? ctx.webrtcIceServers
+                            : [{ urls: 'stun:stun.l.google.com:19302' }]
                     });
                     ctx.callPeerConnection = pc;
+
+                    const syncDebug = (label, error = null) => {
+                        try {
+                            ctx.callDebug = {
+                                iceConnectionState: pc.iceConnectionState,
+                                connectionState: pc.connectionState,
+                                signalingState: pc.signalingState,
+                                iceGatheringState: pc.iceGatheringState,
+                                lastEvent: String(label || ''),
+                                lastError: error ? String(error?.message || error) : (ctx.callDebug?.lastError || '')
+                            };
+                        } catch (_) {}
+                    };
+
+                    syncDebug('pc.created');
+                    pc.onconnectionstatechange = () => syncDebug('connectionState');
+                    pc.onsignalingstatechange = () => syncDebug('signalingState');
+                    pc.onicegatheringstatechange = () => syncDebug('iceGatheringState');
+
+                    pc.oniceconnectionstatechange = () => {
+                        syncDebug('iceConnectionState');
+                        try {
+                            if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
+                                ctx.showToast('Проблема соединения (ICE). Нажмите «Повторить подключение».', 'info');
+                            }
+                        } catch (_) {}
+                    };
 
                     try {
                         pc.addTransceiver('audio', { direction: 'sendrecv' });
@@ -1664,6 +1769,7 @@ window.TaskFlowChat = (function () {
                         offerToReceiveVideo: ctx.callType === 'video'
                     });
                     await pc.setLocalDescription(offer);
+                    syncDebug('localDescription.set');
                     await apiPost('chat/webrtc', {
                         call_id: ctx.currentCallId,
                         type: 'offer',
@@ -1747,7 +1853,13 @@ window.TaskFlowChat = (function () {
                                 localVideo.play?.().catch(() => {});
                             }
                         });
-                    } catch (_) {}
+                    } catch (e) {
+                        const msg = formatGetUserMediaErrorRu(e);
+                        try {
+                            ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'getUserMedia.failed', lastError: msg };
+                        } catch (_) {}
+                        ctx.showToast(msg, 'error');
+                    }
                 } else {
                     try {
                         const hasAudioSender = (pc.getSenders() || []).some((sender) => sender?.track && sender.track.kind === 'audio');
@@ -1765,6 +1877,9 @@ window.TaskFlowChat = (function () {
                     }
                 } catch (_) {}
 
+                try {
+                    ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'remoteOffer.set' };
+                } catch (_) {}
                 await pc.setRemoteDescription(ev.payload);
                 await this.applyPendingIceCandidates(ctx);
                 const answer = await pc.createAnswer({
@@ -1772,6 +1887,9 @@ window.TaskFlowChat = (function () {
                     offerToReceiveVideo: ctx.callType === 'video'
                 });
                 await pc.setLocalDescription(answer);
+                try {
+                    ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'localAnswer.set' };
+                } catch (_) {}
                 await apiPost('chat/webrtc', {
                     call_id: ctx.currentCallId,
                     type: 'answer',
@@ -1797,6 +1915,9 @@ window.TaskFlowChat = (function () {
             }
 
             if (ev.type === 'answer') {
+                try {
+                    ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'remoteAnswer.set' };
+                } catch (_) {}
                 await pc.setRemoteDescription(ev.payload);
                 await this.applyPendingIceCandidates(ctx);
                 ctx.callStatus = 'connected';
@@ -1810,6 +1931,10 @@ window.TaskFlowChat = (function () {
                 } else {
                     ctx.callPendingIce.push(ev.payload);
                 }
+
+                try {
+                    ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'ice.received' };
+                } catch (_) {}
             }
 
             if (ctx.callRemoteStream) {
@@ -1878,6 +2003,130 @@ window.TaskFlowChat = (function () {
                 ctx.showCallModal = false;
                 ctx.callTimer = 0;
             }, 1000);
+        },
+
+        async retryCall(ctx) {
+            try {
+                if (!ctx.currentCallId || !ctx.showCallModal) {
+                    ctx.showToast('Нет активного звонка для переподключения', 'error');
+                    return;
+                }
+
+                ctx.callStatus = 'connecting';
+                try {
+                    ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'retry.start', lastError: '' };
+                } catch (_) {}
+
+                // Recreate RTCPeerConnection, keep current local stream if available.
+                if (ctx.callPeerConnection) {
+                    try { ctx.callPeerConnection.close(); } catch (_) {}
+                    ctx.callPeerConnection = null;
+                }
+                ctx.callPendingIce = [];
+
+                const stream = ctx.callLocalStream;
+                if (!stream) {
+                    ctx.showToast('Нет локального аудио/видео потока. Разрешите доступ к устройствам.', 'error');
+                    ctx.callStatus = 'calling';
+                    return;
+                }
+
+                const pc = new RTCPeerConnection({
+                    iceServers: Array.isArray(ctx.webrtcIceServers) && ctx.webrtcIceServers.length
+                        ? ctx.webrtcIceServers
+                        : [{ urls: 'stun:stun.l.google.com:19302' }]
+                });
+                ctx.callPeerConnection = pc;
+
+                const syncDebug = (label, error = null) => {
+                    try {
+                        ctx.callDebug = {
+                            iceConnectionState: pc.iceConnectionState,
+                            connectionState: pc.connectionState,
+                            signalingState: pc.signalingState,
+                            iceGatheringState: pc.iceGatheringState,
+                            lastEvent: String(label || ''),
+                            lastError: error ? String(error?.message || error) : (ctx.callDebug?.lastError || '')
+                        };
+                    } catch (_) {}
+                };
+                syncDebug('retry.pc.created');
+                pc.oniceconnectionstatechange = () => {
+                    syncDebug('iceConnectionState');
+                    try {
+                        if (pc.iceConnectionState === 'failed' || pc.iceConnectionState === 'disconnected') {
+                            ctx.showToast('Проблема соединения (ICE). Нажмите «Повторить подключение».', 'info');
+                        }
+                    } catch (_) {}
+                };
+                pc.onconnectionstatechange = () => syncDebug('connectionState');
+                pc.onsignalingstatechange = () => syncDebug('signalingState');
+                pc.onicegatheringstatechange = () => syncDebug('iceGatheringState');
+
+                pc.ontrack = (event) => {
+                    if (!ctx.callRemoteStream) {
+                        ctx.callRemoteStream = new MediaStream();
+                    }
+                    ctx.callRemoteStream.addTrack(event.track);
+                    ctx.$nextTick(() => {
+                        const remoteAudio = document.getElementById('remote-audio');
+                        if (remoteAudio) {
+                            remoteAudio.srcObject = ctx.callRemoteStream;
+                            remoteAudio.play?.().catch(() => {});
+                        }
+                        const remoteVideo = document.getElementById('remote-video');
+                        if (remoteVideo && ctx.callType === 'video') {
+                            remoteVideo.srcObject = ctx.callRemoteStream;
+                            remoteVideo.play?.().catch(() => {});
+                        }
+                    });
+                };
+
+                pc.onicecandidate = async (event) => {
+                    if (!event.candidate || !ctx.currentCallId) return;
+                    try {
+                        await apiPost('chat/webrtc', {
+                            call_id: ctx.currentCallId,
+                            type: 'ice',
+                            payload: event.candidate
+                        });
+                    } catch (_) {}
+                };
+
+                try {
+                    pc.addTransceiver('audio', { direction: 'sendrecv' });
+                    if (ctx.callType === 'video') {
+                        pc.addTransceiver('video', { direction: 'sendrecv' });
+                    }
+                } catch (_) {}
+
+                stream.getTracks().forEach((track) => pc.addTrack(track, stream));
+
+                const offer = await pc.createOffer({
+                    offerToReceiveAudio: true,
+                    offerToReceiveVideo: ctx.callType === 'video'
+                });
+                await pc.setLocalDescription(offer);
+                syncDebug('retry.localDescription.set');
+                await apiPost('chat/webrtc', {
+                    call_id: ctx.currentCallId,
+                    type: 'offer',
+                    payload: offer
+                });
+
+                // Ensure polling is running.
+                this.startWebrtcPolling(ctx);
+
+                ctx.callStatus = 'calling';
+                ctx.showToast('Переподключаемся…', 'info');
+            } catch (error) {
+                const msg = error?.message ? String(error.message) : 'Не удалось переподключиться';
+                try {
+                    ctx.callDebug = { ...(ctx.callDebug || {}), lastEvent: 'retry.failed', lastError: msg };
+                } catch (_) {}
+                ctx.callStatus = 'calling';
+                ctx.showToast(msg, 'error');
+            }
         },
 
         toggleMute(ctx) {
