@@ -852,6 +852,9 @@ function closeSettingsModal() {
  */
 function loadSettings() {
     if (this.currentUser?.id) {
+        const referralSecretConfigured = String(this.settings?.referral_shared_secret_configured || '') === '1';
+        const referralSecretSource = String(this.settings?.referral_shared_secret_source || 'none');
+        
         this.settingsForm = {
             full_name: this.currentUser.full_name || '',
             phone: this.currentUser.phone || '',
@@ -862,9 +865,54 @@ function loadSettings() {
             weather_city: this.currentUser.weather_city || '',
             company_name: this.settings?.company_name || 'TaskFlow Pro',
             app_name: this.settings?.app_name || 'TaskFlow',
-            logo: this.settings?.logo || ''
+            logo: this.settings?.logo || '',
+            referral_woocommerce_base_url: this.settings?.referral_woocommerce_base_url || '',
+            referral_shared_secret: '',
+            woocommerce_api_consumer_key: this.settings?.woocommerce_api_consumer_key || '',
+            woocommerce_api_consumer_secret: '',
+            prostiezvonki_user: '',
+            prostiezvonki_enabled: String(this.settings?.prostiezvonki_enabled || '') === '1',
+            prostiezvonki_api_key: '',
+            prostiezvonki_webhook_secret: ''
         };
+        
+        this.omniForm = {
+            app_public_base_url: String(this.settings?.omni_app_public_base_url || ''),
+            tg_enabled: String(this.settings?.omni_tg_enabled || '') === '1',
+            tg_bot_token: '',
+            tg_webhook_secret: '',
+            max_enabled: String(this.settings?.omni_max_enabled || '') === '1',
+            max_bot_token: '',
+            max_webhook_secret: ''
+        };
+        
+        this.webrtcForm = {
+            ice_servers_json: String(this.settings?.webrtc_ice_servers_json || '[{"urls":"stun:stun.l.google.com:19302"}]')
+        };
+        
+        this.referralIntegration = {
+            orderWebhookUrl: buildReferralEndpointUrl('referrals/webhook/woocommerce'),
+            visitEndpointUrl: buildReferralEndpointUrl('referrals/visit'),
+            sharedSecretConfigured: referralSecretConfigured,
+            sharedSecretSource: referralSecretSource
+        };
+        
+        this.omniIntegration = {
+            tgTokenConfigured: String(this.settings?.omni_tg_bot_token_configured || '') === '1',
+            tgSecretConfigured: String(this.settings?.omni_tg_webhook_secret_configured || '') === '1',
+            maxTokenConfigured: String(this.settings?.omni_max_bot_token_configured || '') === '1',
+            maxSecretConfigured: String(this.settings?.omni_max_webhook_secret_configured || '') === '1'
+        };
+        
         this.loadUserSettings();
+    }
+}
+
+function buildReferralEndpointUrl(endpoint) {
+    try {
+        return new URL(`api/index.php?endpoint=${endpoint}`, window.location.href).href;
+    } catch (_error) {
+        return `api/index.php?endpoint=${endpoint}`;
     }
 }
 

@@ -79,6 +79,7 @@ window.app = function() {
         stages: [],
         settings: {},
         telegram: { enabled: false, bot_token: '', chat_id: '' },
+        settingsAdminTab: 'general',
 
         // Формы
         taskForm: {
@@ -128,7 +129,35 @@ window.app = function() {
             referral_woocommerce_base_url: '',
             referral_shared_secret: '',
             woocommerce_api_consumer_key: '',
-            woocommerce_api_consumer_secret: ''
+            woocommerce_api_consumer_secret: '',
+            prostiezvonki_user: '',
+            prostiezvonki_enabled: false,
+            prostiezvonki_api_key: '',
+            prostiezvonki_webhook_secret: ''
+        },
+        omniForm: {
+            app_public_base_url: '',
+            tg_enabled: false,
+            tg_bot_token: '',
+            tg_webhook_secret: '',
+            max_enabled: false,
+            max_bot_token: '',
+            max_webhook_secret: ''
+        },
+        webrtcForm: {
+            ice_servers_json: '[{"urls":"stun:stun.l.google.com:19302"}]'
+        },
+        referralIntegration: {
+            orderWebhookUrl: '',
+            visitEndpointUrl: '',
+            sharedSecretConfigured: false,
+            sharedSecretSource: 'none'
+        },
+        omniIntegration: {
+            tgTokenConfigured: false,
+            tgSecretConfigured: false,
+            maxTokenConfigured: false,
+            maxSecretConfigured: false
         },
 
         // WebRTC / ICE servers (STUN/TURN)
