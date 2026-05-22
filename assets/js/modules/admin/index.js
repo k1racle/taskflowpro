@@ -167,7 +167,6 @@ window.TaskFlowAdmin = (function () {
 
         const referralSecretConfigured = String(ctx.settings?.referral_shared_secret_configured || '') === '1';
         const referralSecretSource = String(ctx.settings?.referral_shared_secret_source || 'none');
-        const mangoOfficeIntegration = normalizeMangoOfficeIntegration(ctx.settings);
 
         ctx.settingsForm = {
             full_name: ctx.currentUser.full_name || '',
@@ -184,9 +183,12 @@ window.TaskFlowAdmin = (function () {
             referral_shared_secret: '',
             woocommerce_api_consumer_key: ctx.settings?.woocommerce_api_consumer_key || '',
             woocommerce_api_consumer_secret: '',
-            mango_office_enabled: mangoOfficeIntegration.enabled,
-            mango_office_remote_id: mangoOfficeIntegration.remoteId,
-            mango_office_security_token: ''
+
+            prostiezvonki_user: '',
+            
+            prostiezvonki_enabled: String(ctx.settings?.prostiezvonki_enabled || '') === '1',
+            prostiezvonki_api_key: '',
+            prostiezvonki_webhook_secret: ''
         };
 
         ctx.omniForm = {
@@ -205,8 +207,6 @@ window.TaskFlowAdmin = (function () {
             sharedSecretConfigured: referralSecretConfigured,
             sharedSecretSource: referralSecretSource
         };
-
-        ctx.mangoOfficeIntegration = mangoOfficeIntegration;
 
         ctx.omniIntegration = {
             tgTokenConfigured: String(ctx.settings?.omni_tg_bot_token_configured || '') === '1',
@@ -241,42 +241,6 @@ window.TaskFlowAdmin = (function () {
         if (source === 'settings') return 'CRM settings';
         if (source === 'legacy') return 'legacy config/env';
         return 'не настроен';
-    }
-
-    function normalizeMangoOfficeIntegration(settings) {
-        const enabled = String(settings?.mango_office_enabled || '') === '1';
-        const ready = String(settings?.mango_office_ready || '') === '1';
-        const status = String(settings?.mango_office_status || (ready ? 'ok' : (enabled ? 'warning' : 'disabled')));
-        const statusLabel = String(settings?.mango_office_status_label || (ready ? 'Готово' : (enabled ? 'Требует внимания' : 'Отключено')));
-
-        return {
-            enabled,
-            ready,
-            status,
-            statusLabel,
-            remoteId: String(settings?.mango_office_remote_id || ''),
-            securityTokenConfigured: String(settings?.mango_office_security_token_configured || '') === '1',
-            validationMessage: String(settings?.mango_office_validation_message || (enabled ? 'Проверьте конфигурацию Mango Office' : 'Интеграция отключена')),
-            validationErrors: Array.isArray(settings?.mango_office_validation_errors) ? settings.mango_office_validation_errors : [],
-            validationWarnings: Array.isArray(settings?.mango_office_validation_warnings) ? settings.mango_office_validation_warnings : []
-        };
-    }
-
-    function buildMangoOfficePayload(ctx) {
-        const enabled = !!ctx.settingsForm?.mango_office_enabled;
-        const remoteId = String(ctx.settingsForm?.mango_office_remote_id || '').trim();
-        const securityToken = String(ctx.settingsForm?.mango_office_security_token || '').trim();
-
-        const payload = {
-            mango_office_enabled: enabled,
-            mango_office_remote_id: remoteId
-        };
-
-        if (securityToken !== '') {
-            payload.mango_office_security_token = securityToken;
-        }
-
-        return { payload, enabled, remoteId, securityToken };
     }
 
     return {
@@ -795,7 +759,6 @@ window.TaskFlowAdmin = (function () {
                     ctx.telegram = data.data.telegram || { enabled: false, bot_token: '', chat_id: '' };
                     if (data.data.weather_api_key) ctx.weatherApiKey = data.data.weather_api_key;
                     if (data.data.weather_city) ctx.weatherCity = data.data.weather_city;
-                    ctx.mangoOfficeIntegration = normalizeMangoOfficeIntegration(data.data);
                 }
             } catch (error) {
                 console.error('Ошибка загрузки настроек:', error);
@@ -812,6 +775,14 @@ window.TaskFlowAdmin = (function () {
         async openSettingsModal(ctx) {
             ctx.settingsModalOpen = true;
             await ctx.loadSettings();
+
+            // User-scoped settings
+            try {
+                const res = await apiGet('user-settings?key=prostiezvonki_user');
+                if (res?.success) {
+                    ctx.settingsForm.prostiezvonki_user = String(res?.data?.value || '');
+                }
+            } catch (_) {}
 
             try {
                 const res = await apiGet('telegram');
@@ -970,6 +941,12 @@ window.TaskFlowAdmin = (function () {
                     ctx.mailForm.password = '';
                 }
 
+                // ProstieZvonki: save current user's internal number (user-scoped)
+                try {
+                    const ext = String(ctx.settingsForm?.prostiezvonki_user || '').trim();
+                    await apiPut('user-settings', { key: 'prostiezvonki_user', value: ext });
+                } catch (_) {}
+
                 ctx.closeSettingsModal();
             } catch (error) {
                 console.error('Ошибка сохранения:', error);
@@ -1010,15 +987,12 @@ window.TaskFlowAdmin = (function () {
                 const referralSharedSecret = (ctx.settingsForm.referral_shared_secret || '').trim();
                 const wooConsumerKey = (ctx.settingsForm.woocommerce_api_consumer_key || '').trim();
                 const wooConsumerSecret = (ctx.settingsForm.woocommerce_api_consumer_secret || '').trim();
-                const mangoOffice = buildMangoOfficePayload(ctx);
                 const payload = {
                     company_name: companyName,
                     app_name: appName,
                     logo: ctx.settingsForm.logo,
                     referral_woocommerce_base_url: referralWooCommerceBaseUrl,
-                    woocommerce_api_consumer_key: wooConsumerKey,
-                    mango_office_enabled: mangoOffice.enabled,
-                    mango_office_remote_id: mangoOffice.remoteId
+                    woocommerce_api_consumer_key: wooConsumerKey
                 };
 
                 if (referralSharedSecret !== '') {
@@ -1026,9 +1000,6 @@ window.TaskFlowAdmin = (function () {
                 }
                 if (wooConsumerSecret !== '') {
                     payload.woocommerce_api_consumer_secret = wooConsumerSecret;
-                }
-                if (mangoOffice.securityToken !== '') {
-                    payload.mango_office_security_token = mangoOffice.securityToken;
                 }
 
                 const result = await apiUpdateSettings(payload);
@@ -1039,7 +1010,6 @@ window.TaskFlowAdmin = (function () {
                     ctx.settingsForm.woocommerce_api_consumer_key = wooConsumerKey;
                     ctx.settingsForm.referral_shared_secret = '';
                     ctx.settingsForm.woocommerce_api_consumer_secret = '';
-                    ctx.settingsForm.mango_office_security_token = '';
                     ctx.settings = {
                         ...ctx.settings,
                         company_name: companyName,
@@ -1048,16 +1018,7 @@ window.TaskFlowAdmin = (function () {
                         referral_woocommerce_base_url: referralWooCommerceBaseUrl,
                         woocommerce_api_consumer_key: wooConsumerKey,
                         referral_shared_secret_configured: referralSharedSecret !== '' || String(ctx.settings?.referral_shared_secret_configured || '') === '1' ? '1' : '0',
-                        referral_shared_secret_source: referralSharedSecret !== '' ? 'settings' : (ctx.settings?.referral_shared_secret_source || 'none'),
-                        mango_office_enabled: mangoOffice.enabled ? '1' : '0',
-                        mango_office_remote_id: mangoOffice.remoteId,
-                        mango_office_security_token_configured: mangoOffice.securityToken !== '' || String(ctx.settings?.mango_office_security_token_configured || '') === '1' ? '1' : '0',
-                        mango_office_ready: mangoOffice.enabled && mangoOffice.remoteId !== '' && (mangoOffice.securityToken !== '' || String(ctx.settings?.mango_office_security_token_configured || '') === '1') ? '1' : '0',
-                        mango_office_status: mangoOffice.enabled && mangoOffice.remoteId !== '' && (mangoOffice.securityToken !== '' || String(ctx.settings?.mango_office_security_token_configured || '') === '1') ? 'ok' : (mangoOffice.enabled ? 'warning' : 'disabled'),
-                        mango_office_status_label: mangoOffice.enabled && mangoOffice.remoteId !== '' && (mangoOffice.securityToken !== '' || String(ctx.settings?.mango_office_security_token_configured || '') === '1') ? 'Готово' : (mangoOffice.enabled ? 'Требует проверки' : 'Отключено'),
-                        mango_office_validation_message: mangoOffice.enabled && mangoOffice.remoteId !== '' && (mangoOffice.securityToken !== '' || String(ctx.settings?.mango_office_security_token_configured || '') === '1') ? 'Конфигурация Mango Office готова' : (mangoOffice.enabled ? 'Проверьте конфигурацию Mango Office' : 'Интеграция отключена'),
-                        mango_office_validation_errors: [],
-                        mango_office_validation_warnings: []
+                        referral_shared_secret_source: referralSharedSecret !== '' ? 'settings' : (ctx.settings?.referral_shared_secret_source || 'none')
                     };
                     applySettingsForm(ctx);
                     ctx.showToast('Настройки приложения сохранены', 'success');
@@ -1081,33 +1042,7 @@ window.TaskFlowAdmin = (function () {
             ctx.settingsForm.referral_shared_secret = '';
             ctx.settingsForm.woocommerce_api_consumer_key = '';
             ctx.settingsForm.woocommerce_api_consumer_secret = '';
-            ctx.settingsForm.mango_office_enabled = false;
-            ctx.settingsForm.mango_office_remote_id = '';
-            ctx.settingsForm.mango_office_security_token = '';
             ctx.showToast('Настройки сброшены', 'info');
-        },
-
-        async testMangoOffice(ctx) {
-            try {
-                const mangoOffice = buildMangoOfficePayload(ctx);
-                const result = await apiPut('settings/mango-office/test', {
-                    mango_office_enabled: mangoOffice.enabled,
-                    mango_office_remote_id: mangoOffice.remoteId,
-                    ...(mangoOffice.securityToken !== '' ? { mango_office_security_token: mangoOffice.securityToken } : {})
-                });
-
-                if (result.success && result.data) {
-                    ctx.mangoOfficeIntegration = normalizeMangoOfficeIntegration(result.data);
-                    ctx.showToast(result.data.validation_message || (result.data.ready ? 'Mango Office готов' : 'Проверка завершена'), result.data.ready ? 'success' : 'info');
-                } else {
-                    ctx.showToast('Ошибка: ' + (result.error || 'Не удалось проверить Mango Office'), 'error');
-                }
-            } catch (error) {
-                if (error?.data?.data) {
-                    ctx.mangoOfficeIntegration = normalizeMangoOfficeIntegration(error.data.data);
-                }
-                ctx.showToast('Ошибка проверки Mango Office: ' + (error?.message || 'Неизвестная ошибка'), 'error');
-            }
         },
 
         getReferralSecretSourceLabel(_ctx, source) {

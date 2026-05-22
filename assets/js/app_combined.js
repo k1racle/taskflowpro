@@ -128,10 +128,7 @@ window.app = function() {
             referral_woocommerce_base_url: '',
             referral_shared_secret: '',
             woocommerce_api_consumer_key: '',
-            woocommerce_api_consumer_secret: '',
-            mango_office_enabled: false,
-            mango_office_remote_id: '',
-            mango_office_security_token: ''
+            woocommerce_api_consumer_secret: ''
         },
 
         // WebRTC / ICE servers (STUN/TURN)
@@ -659,6 +656,7 @@ window.app = function() {
         crmClientTasks: [],
         crmClientActivity: [],
         crmClientSales: { summary: { total_sales: 0, months_count: 0, last_sale_month: null, first_sale_month: null, average_monthly_sales: 0 }, history: [] },
+        crmClientCalls: [],
         crmClientReferrals: { code: null, link: null, link_ready: false, stats: { orders_count: 0, orders_total: 0, visits_count: 0, last_order_at: null }, orders: [], recent_orders: [] },
 
         crmPipelines: [],
@@ -697,6 +695,7 @@ window.app = function() {
         crmDealModalOpen: false,
         crmDealForm: { id: null, client_id: '', pipeline_id: 1, stage_id: '', title: '', amount: 0, currency: 'RUB', probability: 0, expected_close_date: '', owner_id: '', description: '' },
         crmDealSubstages: [],
+        crmDealCalls: [],
         newDealSubstageName: '',
 
         crmPipelineModalOpen: false,
@@ -1044,6 +1043,23 @@ window.app = function() {
             return window.TaskFlowCrmStore.importOrders(this);
         },
 
+        async crmPingStoreConnection() {
+            try {
+                if (!window.TaskFlowCrmStore?.pingConnection) {
+                    await ModuleLoader.loadModule('crm-store');
+                }
+            } catch (e) {
+                console.warn('Failed to load crm-store module', e);
+            }
+
+            if (!window.TaskFlowCrmStore?.pingConnection) {
+                this.showToast('Модуль "Интернет-магазин" не загрузился. Обновите страницу.', 'error');
+                return false;
+            }
+
+            return window.TaskFlowCrmStore.pingConnection(this);
+        },
+
         async crmRetryStoreOrders() {
             try {
                 if (!window.TaskFlowCrmStore?.importOrders) {
@@ -1132,6 +1148,39 @@ window.app = function() {
 
         async crmSetClientTab(tab) {
             return window.TaskFlowCrmClientCard?.setClientTab?.(this, tab);
+        },
+
+        async crmLoadClientCalls(clientId = null) {
+            const targetClientId = clientId || this.crmClientId;
+            if (!targetClientId) return;
+            try {
+                const res = await apiGet(`integrations/prostiezvonki/calls?crm_client_id=${encodeURIComponent(targetClientId)}&limit=100`);
+                if (res.success) this.crmClientCalls = res.data || [];
+            } catch (e) {
+                console.warn('crmLoadClientCalls error', e);
+            }
+        },
+
+        async crmLoadDealCalls(dealId = null) {
+            const targetDealId = dealId || this.crmDealForm?.id;
+            if (!targetDealId) return;
+            try {
+                const res = await apiGet(`integrations/prostiezvonki/calls?crm_deal_id=${encodeURIComponent(targetDealId)}&limit=100`);
+                if (res.success) this.crmDealCalls = res.data || [];
+            } catch (e) {
+                console.warn('crmLoadDealCalls error', e);
+            }
+        },
+
+        async helpdeskLoadTicketCalls(ticketId = null) {
+            const targetId = ticketId || this.selectedTicket?.id;
+            if (!targetId) return;
+            try {
+                const res = await apiGet(`integrations/prostiezvonki/calls?helpdesk_ticket_id=${encodeURIComponent(targetId)}&limit=100`);
+                if (res.success) this.helpdeskTicketCalls = res.data || [];
+            } catch (e) {
+                console.warn('helpdeskLoadTicketCalls error', e);
+            }
         },
 
         crmAdminToolsCanManage() {
@@ -1836,6 +1885,36 @@ window.app = function() {
             return window.TaskFlowDocuments.openForTask(this, task);
         },
 
+        // ============================================
+        // ProstieZvonki (click-to-call)
+        // ============================================
+
+        async prostieZvonkiMakeCall(phone, meta = null) {
+            const raw = String(phone || '').trim();
+            if (!raw) {
+                this.showToast('Не указан телефон', 'error');
+                return false;
+            }
+            try {
+                const payload = { phone: raw };
+                if (meta && typeof meta === 'object') {
+                    if (meta.crm_client_id) payload.crm_client_id = meta.crm_client_id;
+                    if (meta.crm_deal_id) payload.crm_deal_id = meta.crm_deal_id;
+                    if (meta.helpdesk_ticket_id) payload.helpdesk_ticket_id = meta.helpdesk_ticket_id;
+                }
+                const res = await apiProstieZvonkiMakeCall(payload);
+                if (res?.success) {
+                    this.showToast('Звонок инициирован', 'success');
+                    return true;
+                }
+                this.showToast(res?.error || 'Не удалось инициировать звонок', 'error');
+                return false;
+            } catch (e) {
+                this.showToast(e?.userMessage || e?.message || 'Не удалось инициировать звонок', 'error');
+                return false;
+            }
+        },
+
         taskCanOpenDocuments(task = null) {
             return window.TaskFlowDocuments.taskCanOpenDocuments(this, task);
         },
@@ -1899,6 +1978,7 @@ window.app = function() {
         selectedTicket: null,
         ticketComments: [],
         ticketHistory: [],
+        helpdeskTicketCalls: [],
         newComment: '',
         commentIsInternal: false,
         showCommentForm: false,
@@ -3196,10 +3276,6 @@ window.app = function() {
 
         async testTelegram() {
             return window.TaskFlowAdmin?.testTelegram(this);
-        },
-
-        async testMangoOffice() {
-            return window.TaskFlowAdmin?.testMangoOffice(this);
         },
 
         async saveOmnichannel() {

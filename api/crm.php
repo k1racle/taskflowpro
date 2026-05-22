@@ -1102,6 +1102,68 @@ function crmImportWooCommerceOrders(PDO $pdo, array $currentUser): void {
     }
 }
 
+function crmPingWooCommerce(PDO $pdo, array $currentUser): void {
+    if (!hasAdminAccess($currentUser)) {
+        http_response_code(403);
+        echo json_encode(['success' => false, 'error' => 'Нет доступа'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $credentials = crmGetWooCommerceApiCredentials();
+    $configured = $credentials['base_url'] !== '' && $credentials['consumer_key'] !== '' && $credentials['consumer_secret'] !== '';
+    if (!$configured) {
+        http_response_code(400);
+        echo json_encode(['success' => false, 'error' => 'Не заполнены WooCommerce API URL / Consumer Key / Consumer Secret'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $authMode = 'basic_auth';
+    $basicAuthHeader = crmBuildWooCommerceBasicAuthHeader($credentials['consumer_key'], $credentials['consumer_secret']);
+
+    try {
+        $url = crmBuildWooCommerceOrdersUrl($credentials, 1, 1, 'any', false);
+        $data = crmHttpGetJson($url, [$basicAuthHeader]);
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'ok' => true,
+                'auth_mode' => $authMode,
+                'base_url' => $credentials['base_url'],
+                'orders_sample_count' => is_array($data) ? count($data) : 0,
+            ]
+        ], JSON_UNESCAPED_UNICODE);
+        exit;
+    } catch (Throwable $e) {
+        // Fallback: some hosts reject Authorization header; try query auth.
+        try {
+            $authMode = 'query_auth_fallback';
+            $url = crmBuildWooCommerceOrdersUrl($credentials, 1, 1, 'any', true);
+            $data = crmHttpGetJson($url, []);
+            echo json_encode([
+                'success' => true,
+                'data' => [
+                    'ok' => true,
+                    'auth_mode' => $authMode,
+                    'base_url' => $credentials['base_url'],
+                    'orders_sample_count' => is_array($data) ? count($data) : 0,
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        } catch (Throwable $e2) {
+            http_response_code(502);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Не удалось подключиться к WooCommerce API: ' . $e2->getMessage(),
+                'data' => [
+                    'auth_mode' => $authMode,
+                    'base_url' => $credentials['base_url']
+                ]
+            ], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
+}
+
 function crmGetStoreOrderItems(PDO $pdo, array $orderIds): array {
     if (!$orderIds) {
         return [];
@@ -1939,6 +2001,11 @@ function handleCrm(string $method, ?string $action, mixed $id, ?string $subactio
             exit;
         }
         crmGetSalesAnalytics($pdo);
+        exit;
+    }
+
+    if ($method === 'GET' && $action === 'store' && $id === 'ping') {
+        crmPingWooCommerce($pdo, $currentUser);
         exit;
     }
 
@@ -2816,7 +2883,7 @@ function crmListDeals(PDO $pdo): void {
     $where = $filters ? ('WHERE ' . implode(' AND ', $filters)) : '';
 
     $sql = "
-        SELECT d.*, c.name as client_name, s.name as stage_name, s.color as stage_color, u.full_name as owner_name
+        SELECT d.*, c.name as client_name, c.phone as client_phone, s.name as stage_name, s.color as stage_color, u.full_name as owner_name
         FROM crm_deals d
         JOIN crm_clients c ON c.id=d.client_id
         JOIN crm_pipeline_stages s ON s.id=d.stage_id

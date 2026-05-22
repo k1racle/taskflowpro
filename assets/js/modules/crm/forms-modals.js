@@ -81,6 +81,9 @@ window.TaskFlowCrmFormsModals = (function () {
             if (ctx.crmDealTab === 'substages' && ctx.crmDealForm?.id) {
                 await ctx.loadDealSubstages(ctx.crmDealForm.id);
             }
+            if (ctx.crmDealTab === 'calls' && ctx.crmDealForm?.id) {
+                await ctx.crmLoadDealCalls?.(ctx.crmDealForm.id);
+            }
         },
 
         openPipelineModal(ctx) {

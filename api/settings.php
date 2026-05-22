@@ -121,10 +121,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         return 'none';
     };
 
-    $loadMangoOfficeSecurityTokenFromSettings = function() use ($loadEncryptedSettingValue): string {
-        return $loadEncryptedSettingValue('mango_office_security_token');
-    };
-
     $ensureUtf8mb4Connection = function() use ($pdo): void {
         static $checked = false;
         if ($checked) {
@@ -158,11 +154,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         'site_widgets_brand_button_text' => '💬',
         'site_widgets_brand_form_title' => 'Оставить обращение',
         'site_widgets_brand_form_description' => 'Опишите задачу в форме, и мы сразу зарегистрируем обращение в HelpDesk.'
-    ];
-
-    $mangoOfficeDefaults = [
-        'mango_office_enabled' => '0',
-        'mango_office_remote_id' => ''
     ];
 
     $ensureSettingsTableUtf8mb4 = function() use ($pdo): void {
@@ -277,109 +268,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             $numeric = $fallback;
         }
         return max($min, min($max, $numeric));
-    };
-
-    $getMangoOfficeConfig = function(?array $raw = null) use ($loadSettingValue, $loadMangoOfficeSecurityTokenFromSettings): array {
-        $raw = is_array($raw) ? $raw : [];
-
-        $enabledSource = array_key_exists('mango_office_enabled', $raw)
-            ? $raw['mango_office_enabled']
-            : ($loadSettingValue('mango_office_enabled') ?? '0');
-        $enabled = filter_var($enabledSource, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        if ($enabled === null) {
-            $enabled = trim((string)$enabledSource) === '1';
-        }
-
-        $remoteId = array_key_exists('mango_office_remote_id', $raw)
-            ? trim((string)$raw['mango_office_remote_id'])
-            : trim((string)($loadSettingValue('mango_office_remote_id') ?? ''));
-
-        $securityTokenConfiguredSource = $raw['mango_office_security_token_configured'] ?? null;
-        $securityTokenConfigured = filter_var($securityTokenConfiguredSource, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-        if ($securityTokenConfigured === null) {
-            $securityTokenConfigured = false;
-        }
-
-        if (array_key_exists('mango_office_security_token', $raw)) {
-            $securityToken = trim((string)$raw['mango_office_security_token']);
-            if ($securityToken === '' && $securityTokenConfigured) {
-                $securityToken = $loadMangoOfficeSecurityTokenFromSettings();
-            }
-        } else {
-            $securityToken = $loadMangoOfficeSecurityTokenFromSettings();
-        }
-
-        return [
-            'enabled' => (bool)$enabled,
-            'remote_id' => $remoteId,
-            'security_token' => $securityToken,
-        ];
-    };
-
-    $validateMangoOfficeConfig = function(array $config): array {
-        $enabled = !empty($config['enabled']);
-        $remoteId = trim((string)($config['remote_id'] ?? ''));
-        $securityToken = trim((string)($config['security_token'] ?? ''));
-
-        $errors = [];
-        $warnings = [];
-
-        if ($remoteId !== '' && preg_match('/[\x00-\x1F\x7F]/', $remoteId)) {
-            $errors[] = 'Remote ID содержит недопустимые символы';
-        }
-        if ($securityToken !== '' && preg_match('/[\x00-\x1F\x7F]/', $securityToken)) {
-            $errors[] = 'Security token содержит недопустимые символы';
-        }
-        if ($remoteId !== '' && strlen($remoteId) > 128) {
-            $errors[] = 'Remote ID слишком длинный';
-        }
-        if ($securityToken !== '' && strlen($securityToken) > 256) {
-            $errors[] = 'Security token слишком длинный';
-        }
-
-        if ($enabled) {
-            if ($remoteId === '') {
-                $errors[] = 'Укажите Remote ID Mango Office';
-            }
-            if ($securityToken === '') {
-                $errors[] = 'Укажите security token Mango Office';
-            }
-        }
-        $ready = $enabled && $errors === [];
-        $status = $ready ? 'ok' : ($errors !== [] ? 'error' : 'disabled');
-        $statusLabel = $ready ? 'Готово' : ($errors !== [] ? 'Требует внимания' : 'Отключено');
-        $validationMessage = $ready
-            ? 'Конфигурация Mango Office готова'
-            : ($errors !== [] ? implode('; ', $errors) : 'Интеграция отключена');
-
-        return [
-            'enabled' => $enabled,
-            'remote_id' => $remoteId,
-            'security_token_configured' => $securityToken !== '',
-            'ready' => $ready,
-            'status' => $status,
-            'status_label' => $statusLabel,
-            'validation_message' => $validationMessage,
-            'validation_errors' => $errors,
-            'validation_warnings' => $warnings,
-        ];
-    };
-
-    $buildMangoOfficeSettingsSnapshot = function(?array $raw = null) use ($getMangoOfficeConfig, $validateMangoOfficeConfig): array {
-        $validation = $validateMangoOfficeConfig($getMangoOfficeConfig($raw));
-
-        return [
-            'mango_office_enabled' => $validation['enabled'] ? '1' : '0',
-            'mango_office_remote_id' => $validation['remote_id'],
-            'mango_office_security_token' => '',
-            'mango_office_security_token_configured' => $validation['security_token_configured'] ? '1' : '0',
-            'mango_office_ready' => $validation['ready'] ? '1' : '0',
-            'mango_office_status' => $validation['status'],
-            'mango_office_status_label' => $validation['status_label'],
-            'mango_office_validation_message' => $validation['validation_message'],
-            'mango_office_validation_errors' => $validation['validation_errors'],
-            'mango_office_validation_warnings' => $validation['validation_warnings'],
-        ];
     };
 
     $sanitizeSiteWidgetPayload = function(array $data) use ($siteWidgetDefaults, $sanitizeText, $sanitizeSize): array {
@@ -567,7 +455,8 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             $key = (string)$setting['key'];
             if ($key === 'referral_shared_secret' || $key === 'woocommerce_api_consumer_secret'
                 || $key === 'omni_tg_bot_token' || $key === 'omni_max_bot_token'
-                || $key === 'omni_tg_webhook_secret' || $key === 'omni_max_webhook_secret') {
+                || $key === 'omni_tg_webhook_secret' || $key === 'omni_max_webhook_secret'
+                || $key === 'prostiezvonki_api_key' || $key === 'prostiezvonki_webhook_secret') {
                 $settingsData[$key] = '';
                 continue;
             }
@@ -583,7 +472,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $settingsData['referral_shared_secret'] = '';
         $settingsData['referral_shared_secret_configured'] = $referralSharedSecretSource === 'none' ? '0' : '1';
         $settingsData['referral_shared_secret_source'] = $referralSharedSecretSource;
-        $settingsData = array_merge($settingsData, $buildMangoOfficeSettingsSnapshot());
         $settingsData = array_merge($settingsData, $loadOmnichannelSettingsSnapshot());
         $settingsData = array_merge($settingsData, $loadWebrtcSettingsSnapshot());
 
@@ -637,17 +525,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             }
 
             echo json_encode(['success' => true, 'data' => $weatherSettings]);
-            exit;
-        }
-
-        if ($action === 'mango-office') {
-            if (!$canManageSettings) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'error' => 'Только пользователи с админ-доступом могут просматривать настройки'], JSON_UNESCAPED_UNICODE);
-                exit;
-            }
-
-            echo json_encode(['success' => true, 'data' => $buildMangoOfficeSettingsSnapshot()], JSON_UNESCAPED_UNICODE);
             exit;
         }
 
@@ -1072,37 +949,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             exit;
         }
 
-        if ($action === 'mango-office' && $id === 'test') {
-            if (!$canManageSettings) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'error' => 'Только пользователи с админ-доступом могут проверять настройки'], JSON_UNESCAPED_UNICODE);
-                exit;
-            }
-
-            $data = json_decode(file_get_contents('php://input'), true);
-            if (!is_array($data)) {
-                $data = [];
-            }
-
-            $snapshot = $buildMangoOfficeSettingsSnapshot($data);
-
-            auditLog($pdo, 'settings.mango_office.tested', [
-                'actor' => $currentUser,
-                'target_type' => 'settings',
-                'target_id' => 'mango-office',
-                'summary' => 'Проверена конфигурация Mango Office',
-                'details' => [
-                    'ready' => $snapshot['mango_office_ready'],
-                    'status' => $snapshot['mango_office_status'],
-                    'errors' => $snapshot['mango_office_validation_errors'],
-                    'warnings' => $snapshot['mango_office_validation_warnings'],
-                ],
-            ]);
-
-            echo json_encode(['success' => true, 'data' => $snapshot], JSON_UNESCAPED_UNICODE);
-            exit;
-        }
-
         if (!$canManageSettings) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Только пользователи с админ-доступом могут изменять настройки']);
@@ -1216,22 +1062,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
 
         $updated = [];
 
-        $mangoPayloadPresent = array_key_exists('mango_office_enabled', $data)
-            || array_key_exists('mango_office_remote_id', $data)
-            || array_key_exists('mango_office_security_token', $data);
-        if ($mangoPayloadPresent) {
-            $mangoSnapshot = $buildMangoOfficeSettingsSnapshot($data);
-            if (!empty($mangoSnapshot['mango_office_validation_errors'])) {
-                http_response_code(400);
-                echo json_encode([
-                    'success' => false,
-                    'error' => $mangoSnapshot['mango_office_validation_message'],
-                    'data' => $mangoSnapshot,
-                ], JSON_UNESCAPED_UNICODE);
-                exit;
-            }
-        }
-
         // NOTE: use UPSERT so new keys (like company_name/app_name) are persisted even
         // when they were not pre-created in the settings table.
         $stmt = $pdo->prepare(
@@ -1257,11 +1087,12 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             $normalizedValue = $normalizeSettingValue($value);
             $isSecretKey = ($key === 'referral_shared_secret'
                 || $key === 'woocommerce_api_consumer_secret'
-                || $key === 'mango_office_security_token'
                 || $key === 'omni_tg_bot_token'
                 || $key === 'omni_max_bot_token'
                 || $key === 'omni_tg_webhook_secret'
-                || $key === 'omni_max_webhook_secret');
+                || $key === 'omni_max_webhook_secret'
+                || $key === 'prostiezvonki_api_key'
+                || $key === 'prostiezvonki_webhook_secret');
 
             if ($isSecretKey) {
                 $normalizedValue = trim($normalizedValue);

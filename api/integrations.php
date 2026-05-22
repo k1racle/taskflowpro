@@ -192,6 +192,17 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
         $stmt->execute([(string)$externalMessageId, $channel, $externalChatId]);
     };
 
+    $getThreadLastMessageId = static function (string $channel, string $externalChatId): string {
+        try {
+            $stmt = $pdo->prepare("SELECT last_external_message_id FROM helpdesk_external_threads WHERE channel = ? AND external_chat_id = ? LIMIT 1");
+            $stmt->execute([$channel, $externalChatId]);
+            $val = $stmt->fetchColumn();
+            return $val === false || $val === null ? '' : (string)$val;
+        } catch (Throwable $e) {
+            return '';
+        }
+    };
+
     $requireAdmin = static function (): array {
         // integrations endpoints are public by default (webhooks via secret),
         // so for admin-only utilities we check the current user explicitly.
@@ -205,6 +216,16 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
         if (!$hasAdmin) {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Недостаточно прав'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+        return $currentUser;
+    };
+
+    $requireAuth = static function (): array {
+        $currentUser = function_exists('getCurrentUser') ? getCurrentUser() : null;
+        if (!$currentUser) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'error' => 'Требуется авторизация'], JSON_UNESCAPED_UNICODE);
             exit;
         }
         return $currentUser;
@@ -259,6 +280,324 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
             'raw' => is_string($raw) ? $raw : ''
         ];
     };
+
+    $normalizePhoneDigits = static function (?string $phoneRaw): string {
+        $digits = preg_replace('/\D+/', '', (string)($phoneRaw ?? ''));
+        $digits = $digits ? (string)$digits : '';
+        if ($digits === '') return '';
+
+        // Convert local RU 10-digit numbers to 7XXXXXXXXXX.
+        if (strlen($digits) === 10) {
+            return '7' . $digits;
+        }
+        // Convert 8XXXXXXXXXX to 7XXXXXXXXXX.
+        if (strlen($digits) === 11 && str_starts_with($digits, '8')) {
+            return '7' . substr($digits, 1);
+        }
+        return $digits;
+    };
+
+    $loadUserSetting = static function (int $userId, string $key) use ($pdo): ?string {
+        $stmt = $pdo->prepare('SELECT value FROM user_settings WHERE user_id = ? AND BINARY `key` = ? LIMIT 1');
+        $stmt->execute([$userId, $key]);
+        $value = $stmt->fetchColumn();
+        return $value === false ? null : (string)$value;
+    };
+
+    $ensureProstieZvonkiTables = static function () use ($pdo): void {
+        $pdo->exec("CREATE TABLE IF NOT EXISTS prostiezvonki_call_requests (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            user_ext VARCHAR(32) NOT NULL,
+            phone VARCHAR(32) NOT NULL,
+            crm_client_id INT NULL,
+            crm_deal_id INT NULL,
+            helpdesk_ticket_id INT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_created (created_at),
+            INDEX idx_phone_user (phone, user_ext)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+        $pdo->exec("CREATE TABLE IF NOT EXISTS prostiezvonki_calls (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            callid VARCHAR(64) NOT NULL,
+            phone VARCHAR(32) NOT NULL,
+            user_ext VARCHAR(32) NOT NULL,
+            user_id INT NULL,
+            crm_client_id INT NULL,
+            crm_deal_id INT NULL,
+            helpdesk_ticket_id INT NULL,
+            status VARCHAR(16) NULL,
+            duration INT NULL,
+            record_link TEXT NULL,
+            started_at VARCHAR(32) NULL,
+            ended_at VARCHAR(32) NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_callid (callid),
+            INDEX idx_phone (phone)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    };
+
+    $appendHelpdeskComment = static function (int $ticketId, string $message) use ($pdo): void {
+        $stmt = $pdo->prepare("INSERT INTO helpdesk_comments (ticket_id, user_id, is_internal, message, attachments) VALUES (?, ?, 0, ?, NULL)");
+        $stmt->execute([$ticketId, null, $message]);
+    };
+
+    $findCrmClientIdByPhone = static function (string $normalizedDigits) use ($pdo): ?int {
+        if ($normalizedDigits === '') return null;
+        $last10 = strlen($normalizedDigits) >= 10 ? substr($normalizedDigits, -10) : $normalizedDigits;
+        // Best-effort: match by last 10 digits.
+        $stmt = $pdo->prepare("SELECT id FROM crm_clients WHERE phone LIKE ? ORDER BY updated_at DESC, id DESC LIMIT 1");
+        $stmt->execute(['%' . $last10]);
+        $val = $stmt->fetchColumn();
+        return $val ? (int)$val : null;
+    };
+
+    // ============================================
+    // ProstieZvonki: webhook receiver
+    // POST /api/integrations/prostiezvonki/webhook?secret=...
+    // ============================================
+    if ($action === 'prostiezvonki' && $id === 'webhook') {
+        if ($method !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $expected = $loadSecretSetting('prostiezvonki_webhook_secret');
+        $requireWebhookSecret($expected);
+
+        $payload = $readJson();
+        $cmd = strtoupper((string)($payload['cmd'] ?? ''));
+        $callid = trim((string)($payload['callid'] ?? ''));
+        $phone = $normalizePhoneDigits((string)($payload['phone'] ?? ''));
+        $userExt = trim((string)($payload['user'] ?? $payload['ext'] ?? ''));
+
+        if ($callid === '' || $phone === '' || $userExt === '') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Bad webhook payload'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $ensureProstieZvonkiTables();
+
+        // Bind callid to latest request context if present.
+        $stmt = $pdo->prepare("SELECT * FROM prostiezvonki_calls WHERE callid = ? LIMIT 1");
+        $stmt->execute([$callid]);
+        $existing = $stmt->fetch();
+
+        $context = null;
+        if (!$existing) {
+            $stmt = $pdo->prepare("SELECT * FROM prostiezvonki_call_requests WHERE phone = ? AND user_ext = ? AND created_at >= (NOW() - INTERVAL 15 MINUTE) ORDER BY id DESC LIMIT 1");
+            $stmt->execute([$phone, $userExt]);
+            $context = $stmt->fetch();
+        }
+
+        $crmClientId = $existing['crm_client_id'] ?? ($context['crm_client_id'] ?? null);
+        $crmDealId = $existing['crm_deal_id'] ?? ($context['crm_deal_id'] ?? null);
+        $helpdeskTicketId = $existing['helpdesk_ticket_id'] ?? ($context['helpdesk_ticket_id'] ?? null);
+        if (!$crmClientId) {
+            $resolved = $findCrmClientIdByPhone($phone);
+            if ($resolved) $crmClientId = $resolved;
+        }
+
+        // Persist/update call record.
+        $status = isset($payload['status']) ? (string)$payload['status'] : null;
+        $duration = isset($payload['duration']) ? (int)$payload['duration'] : null;
+        $recordLink = isset($payload['link']) ? (string)$payload['link'] : null;
+        $startedAt = isset($payload['start']) ? (string)$payload['start'] : null;
+        $endedAt = isset($payload['end']) ? (string)$payload['end'] : null;
+
+        if (!$existing) {
+            $ins = $pdo->prepare("INSERT INTO prostiezvonki_calls (callid, phone, user_ext, user_id, crm_client_id, crm_deal_id, helpdesk_ticket_id, status, duration, record_link, started_at, ended_at)
+                                VALUES (?, ?, ?, NULL, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $ins->execute([$callid, $phone, $userExt, $crmClientId, $crmDealId, $helpdeskTicketId, $status, $duration, $recordLink, $startedAt, $endedAt]);
+        } else {
+            $upd = $pdo->prepare("UPDATE prostiezvonki_calls SET crm_client_id = COALESCE(crm_client_id, ?), crm_deal_id = COALESCE(crm_deal_id, ?), helpdesk_ticket_id = COALESCE(helpdesk_ticket_id, ?),
+                                                     status = COALESCE(?, status), duration = COALESCE(?, duration), record_link = COALESCE(?, record_link), started_at = COALESCE(?, started_at), ended_at = COALESCE(?, ended_at)
+                                WHERE callid = ?");
+            $upd->execute([$crmClientId, $crmDealId, $helpdeskTicketId, $status, $duration, $recordLink, $startedAt, $endedAt, $callid]);
+        }
+
+        // For history events: write logs/comments.
+        if ($cmd === 'HISTORY') {
+            $humanStatus = ($status === 'missed') ? 'пропущенный' : (($status === 'success') ? 'успешный' : ($status ?: ''));
+            $text = 'Звонок ProstieZvonki: ' . ($payload['type'] ?? '') . ' ' . ($humanStatus ? ('(' . $humanStatus . ')') : '')
+                . '; тел: +' . $phone
+                . (is_int($duration) ? ('; длительность: ' . $duration . ' сек') : '')
+                . ($recordLink ? ('; запись: ' . $recordLink) : '')
+                . '; callid: ' . $callid;
+
+            // CRM client activity
+            if ($crmClientId) {
+                require_once __DIR__ . '/crm.php';
+                if (function_exists('crmLog')) {
+                    crmLog($pdo, 'client', (int)$crmClientId, 'prostiezvonki_call', null, $text, [
+                        'callid' => $callid,
+                        'phone' => $phone,
+                        'status' => $status,
+                        'duration' => $duration,
+                        'record_link' => $recordLink,
+                    ]);
+                }
+            }
+
+            // CRM deal activity (only when we have explicit context)
+            if ($crmDealId) {
+                require_once __DIR__ . '/crm.php';
+                if (function_exists('crmLog')) {
+                    crmLog($pdo, 'deal', (int)$crmDealId, 'prostiezvonki_call', null, $text, [
+                        'callid' => $callid,
+                        'phone' => $phone,
+                        'status' => $status,
+                        'duration' => $duration,
+                        'record_link' => $recordLink,
+                    ]);
+                }
+            }
+
+            // HelpDesk ticket comment (only when call originated from ticket UI)
+            if ($helpdeskTicketId) {
+                $appendHelpdeskComment((int)$helpdeskTicketId, $text);
+            }
+        }
+
+        echo json_encode(['success' => true, 'result' => 'ok'], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // ============================================
+    // ProstieZvonki: calls journal
+    // GET /api/integrations/prostiezvonki/calls?crm_client_id=..|crm_deal_id=..|helpdesk_ticket_id=..
+    // ============================================
+    if ($action === 'prostiezvonki' && $id === 'calls') {
+        $requireAuth();
+        if ($method !== 'GET') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $ensureProstieZvonkiTables();
+
+        $clientId = isset($_GET['crm_client_id']) && is_numeric($_GET['crm_client_id']) ? (int)$_GET['crm_client_id'] : null;
+        $dealId = isset($_GET['crm_deal_id']) && is_numeric($_GET['crm_deal_id']) ? (int)$_GET['crm_deal_id'] : null;
+        $ticketId = isset($_GET['helpdesk_ticket_id']) && is_numeric($_GET['helpdesk_ticket_id']) ? (int)$_GET['helpdesk_ticket_id'] : null;
+        $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? max(1, min(200, (int)$_GET['limit'])) : 50;
+
+        $filters = [];
+        $params = [];
+        if ($clientId !== null) {
+            $filters[] = 'crm_client_id = ?';
+            $params[] = $clientId;
+        }
+        if ($dealId !== null) {
+            $filters[] = 'crm_deal_id = ?';
+            $params[] = $dealId;
+        }
+        if ($ticketId !== null) {
+            $filters[] = 'helpdesk_ticket_id = ?';
+            $params[] = $ticketId;
+        }
+
+        if ($filters === []) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Не задан фильтр'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $where = 'WHERE ' . implode(' AND ', $filters);
+        $sql = "SELECT * FROM prostiezvonki_calls {$where} ORDER BY id DESC LIMIT {$limit}";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        echo json_encode(['success' => true, 'data' => $stmt->fetchAll()], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    // ============================================
+    // ProstieZvonki: click-to-call
+    // POST /api/integrations/prostiezvonki/makecall { phone }
+    // ============================================
+    if ($action === 'prostiezvonki' && $id === 'makecall') {
+        $currentUser = $requireAuth();
+        if ($method !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'error' => 'Method not allowed'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $enabled = trim((string)($loadSetting('prostiezvonki_enabled') ?? '0'));
+        if ($enabled !== '1') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Интеграция ProstieZvonki отключена'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $apiKey = $loadSecretSetting('prostiezvonki_api_key');
+        if ($apiKey === '') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Не задан API key ProstieZvonki'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $data = $readJson();
+        $phone = $normalizePhoneDigits($data['phone'] ?? '');
+        if ($phone === '') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Не указан телефон'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $userId = (int)($currentUser['id'] ?? 0);
+        $userExt = trim((string)($loadUserSetting($userId, 'prostiezvonki_user') ?? ''));
+        if ($userExt === '') {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Не задан внутренний номер ProstieZvonki для текущего пользователя'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        $ensureProstieZvonkiTables();
+
+        // Store request context to bind it later when webhook arrives with callid.
+        $req = $pdo->prepare("INSERT INTO prostiezvonki_call_requests (user_id, user_ext, phone, crm_client_id, crm_deal_id, helpdesk_ticket_id)
+                              VALUES (?, ?, ?, ?, ?, ?)");
+        $req->execute([
+            $userId,
+            $userExt,
+            $phone,
+            isset($data['crm_client_id']) && is_numeric($data['crm_client_id']) ? (int)$data['crm_client_id'] : null,
+            isset($data['crm_deal_id']) && is_numeric($data['crm_deal_id']) ? (int)$data['crm_deal_id'] : null,
+            isset($data['helpdesk_ticket_id']) && is_numeric($data['helpdesk_ticket_id']) ? (int)$data['helpdesk_ticket_id'] : null,
+        ]);
+
+        try {
+            $res = $httpRequestJson(
+                'https://interaction.prostiezvonki.ru/httpapiinteg/crmapi/v1/makecall',
+                'POST',
+                [
+                    'X-API-KEY' => $apiKey,
+                ],
+                [
+                    'user' => $userExt,
+                    'phone' => $phone,
+                ]
+            );
+
+            if (!empty($res['result']) && $res['result'] === 'ok') {
+                echo json_encode(['success' => true, 'data' => ['result' => 'ok']], JSON_UNESCAPED_UNICODE);
+                exit;
+            }
+
+            $err = (string)($res['error'] ?? 'Не удалось инициировать звонок');
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => $err, 'data' => $res], JSON_UNESCAPED_UNICODE);
+            exit;
+        } catch (Throwable $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'error' => 'Ошибка запроса к ProstieZvonki'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+    }
 
     // Admin-only connectivity checks.
     if ($method === 'GET' && $id === 'ping' && in_array($action, ['telegram', 'max'], true)) {
@@ -341,6 +680,15 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
             exit;
         }
 
+        // Dedup: Telegram may retry the same update.
+        if ($messageId !== null) {
+            $prev = $getThreadLastMessageId('telegram', (string)$chatId);
+            if ($prev !== '' && hash_equals($prev, (string)$messageId)) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
+        }
+
         $subject = 'Telegram чат ' . (string)$chatId;
         if (!empty($msg['from']['username'])) {
             $subject = 'Telegram: @' . $msg['from']['username'];
@@ -383,6 +731,15 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
             // don't fail provider - accept and log nothing
             echo json_encode(['success' => true]);
             exit;
+        }
+
+        // Dedup: provider may retry webhook delivery.
+        if ($messageId !== null) {
+            $prev = $getThreadLastMessageId('max', (string)$chatId);
+            if ($prev !== '' && hash_equals($prev, (string)$messageId)) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
         }
 
         $subject = 'MAX чат ' . (string)$chatId;

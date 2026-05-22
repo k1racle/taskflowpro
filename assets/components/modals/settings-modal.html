@@ -85,6 +85,13 @@
                         <input type="tel" x-model="settingsForm.phone"
                                class="w-full px-4 py-2 crm-control-input">
                     </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ProstieZvonki: внутренний номер</label>
+                        <input type="text" x-model="settingsForm.prostiezvonki_user"
+                               class="w-full px-4 py-2 crm-control-input" placeholder="например: 100">
+                        <div class="mt-1 text-xs crm-text-tertiary">Нужен для звонка по клику (передаётся как <code>user</code> в makecall).</div>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
                         <select x-model="settingsForm.department_id"
@@ -389,7 +396,7 @@
                             class="crm-list-row text-left">
                         <div class="min-w-0">
                             <div class="text-sm font-semibold crm-text-primary">Системные настройки</div>
-                            <div class="text-xs crm-text-tertiary">Полный экран admin-настроек: компания, приложение, логотип, WooCommerce referral integration, Mango Office, погода и диагностика.</div>
+                            <div class="text-xs crm-text-tertiary">Полный экран admin-настроек: компания, приложение, логотип, интеграции, омниканал, WebRTC, погода и диагностика.</div>
                         </div>
                     </button>
 
@@ -432,8 +439,8 @@
                                 @click="currentView='settings'; closeSettingsModal()"
                                 class="crm-list-row text-left">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Mango Office / IP-телефония</div>
-                                <div class="text-xs crm-text-tertiary">Remote ID, security token, базовая проверка готовности и status-конфигурации доступны на основном экране системных настроек.</div>
+                                <div class="text-sm font-semibold crm-text-primary">IP-телефония</div>
+                                <div class="text-xs crm-text-tertiary">Настройки телефонии и интеграций доступны на основном экране системных настроек.</div>
                             </div>
                         </button>
 

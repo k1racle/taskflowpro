@@ -26,7 +26,7 @@
 - Есть базовые foundation-слои для security, audit trail, backup/restore, migrate preflight/plan и release smoke.
 - RBAC уже описан как permission-code модель, но в коде и UI еще остались legacy role-name проверки и расхождения между `root`, `administrator` и `admin.full`.
 - WooCommerce referral integration уже существует как MVP: referral code, referral link, webhook, plugin, защита от дублей и отображение в карточке клиента.
-- Mango Office / IP-телефония в репозитории как подтвержденный модуль не найдены.
+- ProstieZvonki / IP-телефония: вместо Mango, как основной supported интеграционный модуль.
 - Чат существует, но он еще не соответствует целевому real-time и UX уровню, который нужен для продаваемого продукта.
 - Границы no-code кастомизации уже частично описаны, но их нужно довести до честной sales-ready формулировки.
 
@@ -39,14 +39,14 @@
 | Приоритет | Что означает | Что сюда попадает в этом плане |
 | --- | --- | --- |
 | P0 | Без этого нельзя безопасно запускать или продавать продукт | RBAC/security/audit, secret masking, release path, production hygiene, mandatory release gate |
-| P1 | Без этого нет первой продаваемой версии или поддерживаемого канала | WooCommerce, Mango Office / IP-телефония, чат, staging coverage, install/update docs, support runbooks |
+| P1 | Без этого нет первой продаваемой версии или поддерживаемого канала | WooCommerce, ProstieZvonki / IP-телефония, чат, staging coverage, install/update docs, support runbooks |
 | P2 | Улучшения, расширения, полировка | advanced sync, richer chat UX, analytics, demo pack, extra tooling |
 
 ### Приоритеты по ключевым направлениям
 
 - RBAC / audit / security - P0.
 - WooCommerce - P1.
-- Mango Office / IP-телефония - P1.
+- ProstieZvonki / IP-телефония - P1.
 - Чат - P1.
 - Тестирование и release gate - P0.
 - Документация и runbooks - P1.
@@ -100,7 +100,7 @@
 
 Ожидаемый результат: WooCommerce работает как поддерживаемая интеграция, а не только как MVP.
 
-### Спринт 3 - Mango Office / IP-телефония
+### Спринт 3 - ProstieZvonki / IP-телефония
 
 Цель: добавить поддерживаемую телефонию с базовыми сценариями продаж и поддержки.
 
@@ -139,7 +139,7 @@
 Состав задач:
 
 - [P0] Сделать staging/QA gate обязательным условием production release: smoke, integration checks, негативные сценарии и rollback verification.
-- [P1] Подготовить тестовые данные и роли, manual QA matrix для desktop/mobile и проверки auth, RBAC, audit, settings, chat, helpdesk, CRM, WooCommerce и Mango Office.
+- [P1] Подготовить тестовые данные и роли, manual QA matrix для desktop/mobile и проверки auth, RBAC, audit, settings, chat, helpdesk, CRM, WooCommerce и ProstieZvonki.
 - [P1] Обновить install guide, admin guide, update/release runbook, support runbook, release notes и versioning.
 - [P2] Собрать compact demo pack и checklist для внедрения.
 
@@ -196,7 +196,7 @@
 - можно безопасно администрировать по permission model;
 - RBAC не содержит скрытых role-name исключений;
 - WooCommerce работает как supported integration;
-- Mango Office / IP-телефония работают как supported module;
+- ProstieZvonki / IP-телефония работают как supported module;
 - чат работает как real-time канал с delivery/read receipts, typing, presence;
 - site widgets и helpdesk не теряют обращения и используют согласованную backend-модель;
 - staging и QA блокируют плохой релиз;

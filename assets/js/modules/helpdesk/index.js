@@ -146,10 +146,12 @@ window.TaskFlowHelpdesk = (function () {
             ctx.showCommentForm = false;
             ctx.newComment = '';
             ctx.commentIsInternal = false;
+            ctx.helpdeskTicketCalls = [];
 
             await Promise.all([
                 this.loadTicketComments(ctx, ticket.id),
-                this.loadTicketHistory(ctx, ticket.id)
+                this.loadTicketHistory(ctx, ticket.id),
+                ctx.helpdeskLoadTicketCalls?.(ticket.id)
             ]);
         },
 

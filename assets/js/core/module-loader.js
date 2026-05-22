@@ -128,7 +128,8 @@ const ModuleLoader = (function() {
             css: null
         },
         'settings': {
-            js: 'assets/js/modules/settings/index.js',
+            // Settings logic lives in the admin module bundle.
+            js: 'assets/js/modules/admin/index.js',
             html: 'assets/components/settings-view.html',
             css: null
         },
@@ -138,6 +139,27 @@ const ModuleLoader = (function() {
             css: null
         }
     };
+
+    function stripCdataWrapper(source) {
+        if (!source) return '';
+        let out = String(source);
+        out = out.replace(/^\s*<!\[CDATA\[/, '');
+        out = out.replace(/\]\]>\s*$/, '');
+        return out;
+    }
+
+    async function loadLegacyScript(url) {
+        // The project JS modules are not ESM: they register themselves on window.*
+        // They are wrapped into CDATA markers, so we fetch+eval after stripping.
+        const response = await fetch(`${url}?v=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status} while loading ${url}`);
+        }
+        const text = stripCdataWrapper(await response.text());
+        // eslint-disable-next-line no-new-func
+        (new Function(text))();
+        return true;
+    }
 
     // ============================================
     // MODULE LOADING
@@ -174,10 +196,8 @@ const ModuleLoader = (function() {
                 let moduleInstance = null;
                 if (config.js) {
                     try {
-                        // Динамический import
-                        const moduleUrl = new URL(`${config.js}?v=${Date.now()}`, document.baseURI).href;
-                        moduleInstance = await import(moduleUrl);
-                        console.log(`JS loaded: ${config.js}`);
+                        await loadLegacyScript(config.js);
+                        console.log(`JS loaded (legacy): ${config.js}`);
                     } catch (e) {
                         console.warn(`Failed to load JS for ${moduleName}:`, e);
                         // Не критично, продолжаем без JS
@@ -394,7 +414,7 @@ const ModuleLoader = (function() {
         // Загружаем только JS в фоне
         if (config.js) {
             try {
-                await import(`../../${config.js}?v=${Date.now()}`);
+                await fetch(`${config.js}?v=${Date.now()}`, { cache: 'no-store' });
                 console.log(`Prefetched: ${moduleName}`);
             } catch (e) {
                 // Игнорируем ошибки предзагрузки

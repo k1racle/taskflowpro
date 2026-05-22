@@ -389,6 +389,42 @@
                             </template>
                         </div>
                     </div>
+
+                    <!-- Звонки (ProstieZvonki) -->
+                    <div class="liquid-glass-pro rounded-2xl p-5">
+                        <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
+                            <div class="crm-section-head__content">
+                                <div class="crm-section-head__title">Звонки</div>
+                                <div class="crm-section-head__text">История звонков, инициированных из этой заявки.</div>
+                            </div>
+                            <div class="crm-section-head__meta">
+                                <button class="crm-btn-secondary text-sm" @click="helpdeskLoadTicketCalls(selectedTicket?.id)">Обновить</button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <template x-for="c in (helpdeskTicketCalls || [])" :key="c.callid">
+                                <div class="rounded-xl p-4" style="border:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent);">
+                                    <div class="flex items-start justify-between gap-3">
+                                        <div class="min-w-0">
+                                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="'+' + (c.phone || '')"></div>
+                                            <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null && typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
+                                            <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="c.ended_at || c.started_at || ''"></div>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <button type="button" class="crm-btn-secondary text-xs" @click.stop="prostieZvonkiMakeCall(c.phone, { helpdesk_ticket_id: selectedTicket?.id })">Позвонить</button>
+                                            <a x-show="c.record_link" :href="c.record_link" target="_blank" class="crm-soft-action text-xs">Запись</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+
+                            <div x-show="(helpdeskTicketCalls || []).length === 0" class="crm-empty-state text-center py-6">
+                                <div class="crm-empty-state-title">Звонков пока нет</div>
+                                <div class="crm-empty-state-text">Появятся после завершения звонка и получения вебхука ProstieZvonki.</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Боковая панель -->
@@ -446,7 +482,18 @@
                             <div class="text-xs" style="color: var(--lg-text-tertiary)">Клиент</div>
                             <div class="text-sm font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.client_name"></div>
                             <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.client_email"></div>
-                            <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.client_phone"></div>
+                            <div class="mt-1 flex items-center gap-2">
+                                <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.client_phone"></div>
+                                <button type="button"
+                                        x-show="selectedTicket?.client_phone"
+                                        @click.stop="prostieZvonkiMakeCall(selectedTicket.client_phone, { helpdesk_ticket_id: selectedTicket.id })"
+                                        class="crm-btn-ghost crm-icon-button"
+                                        aria-label="Позвонить">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.128a11.042 11.042 0 005.516 5.516l1.128-2.257a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 16.72V20a2 2 0 01-2 2h-1C9.716 22 2 14.284 2 5V4a1 1 0 011-1z" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
 
                         <div x-show="selectedTicket?.client_company">

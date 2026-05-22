@@ -30,6 +30,7 @@
                 <button @click="crmSetClientTab('deals')" :class="crmClientTab === 'deals' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Сделки</button>
                 <button @click="crmSetClientTab('referrals')" :class="crmClientTab === 'referrals' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Реферальные ссылки</button>
                 <button @click="crmSetClientTab('sales')" :class="crmClientTab === 'sales' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">История продаж</button>
+                <button @click="crmSetClientTab('calls')" :class="crmClientTab === 'calls' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Звонки</button>
                 <button @click="crmSetClientTab('history')" :class="crmClientTab === 'history' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">История</button>
             </div>
         </div>
@@ -97,7 +98,18 @@
                                         <div class="font-semibold truncate crm-ui-title" x-text="ct.name"></div>
                                         <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="ct.position || '—'"></div>
                                         <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="ct.email || '—'"></div>
-                                        <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="ct.phone || '—'"></div>
+                                        <div class="mt-1 flex items-center gap-2">
+                                            <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="ct.phone || '—'"></div>
+                                            <button type="button"
+                                                    x-show="ct.phone"
+                                                    @click.stop="prostieZvonkiMakeCall(ct.phone, { crm_client_id: (crmClient?.client?.id || crmClientId) })"
+                                                    class="crm-btn-ghost crm-icon-button"
+                                                    aria-label="Позвонить">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.128a11.042 11.042 0 005.516 5.516l1.128-2.257a1 1 0 011.21-.502l4.493 1.498A1 1 0 0121 16.72V20a2 2 0 01-2 2h-1C9.716 22 2 14.284 2 5V4a1 1 0 011-1z" />
+                                                </svg>
+                                            </button>
+                                        </div>
                                     </div>
                                     <span class="crm-status-pill crm-status-pill-soft text-xs" x-show="ct.is_primary">Основной</span>
                                 </div>
@@ -230,6 +242,29 @@
                     <div x-show="(crmClientActivity || []).length === 0" class="crm-empty-state text-center">
                         <div class="crm-empty-state-title">История пуста</div>
                         <div class="crm-empty-state-text">Здесь будут отображаться действия по клиенту.</div>
+                    </div>
+                </div>
+
+                <div x-show="crmClientTab === 'calls'" x-transition.opacity class="space-y-2">
+                    <template x-for="c in (crmClientCalls || [])" :key="c.callid">
+                        <div class="liquid-glass-pro rounded-2xl p-4 crm-detail-card" style="border:1px solid var(--lg-border)">
+                            <div class="flex items-start justify-between gap-4">
+                                <div class="min-w-0">
+                                    <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="'+' + (c.phone || '')"></div>
+                                    <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null && typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
+                                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="c.ended_at || c.started_at || ''"></div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" class="crm-btn-secondary text-xs" @click="prostieZvonkiMakeCall(c.phone, { crm_client_id: (crmClient?.client?.id || crmClientId) })">Позвонить</button>
+                                    <a x-show="c.record_link" :href="c.record_link" target="_blank" class="crm-soft-action text-xs">Запись</a>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="(crmClientCalls || []).length === 0" class="crm-empty-state text-center">
+                        <div class="crm-empty-state-title">Звонков пока нет</div>
+                        <div class="crm-empty-state-text">История появится после вебхука ProstieZvonki (cmd=history).</div>
                     </div>
                 </div>
             </div>
@@ -490,6 +525,7 @@
             <div class="crm-tabbar">
             <button @click="crmSetDealModalTab('info')" :class="crmDealTab === 'info' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Инфо</button>
             <button @click="crmSetDealModalTab('substages')" :class="crmDealTab === 'substages' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Подэтапы</button>
+            <button @click="crmSetDealModalTab('calls')" :class="crmDealTab === 'calls' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Звонки</button>
             </div>
         </div>
 
@@ -567,6 +603,29 @@
 
                 <div x-show="!(crmDealSubstages || []).length" class="text-sm" style="color: var(--lg-text-secondary)">
                     Справочник подэтапов пуст. Добавьте подэтапы в Администрирование → Этапы.
+                </div>
+            </div>
+
+            <div x-show="crmDealTab === 'calls'" class="space-y-2">
+                <template x-for="c in (crmDealCalls || [])" :key="c.callid">
+                    <div class="rounded-2xl p-4 crm-detail-card" style="border:1px solid var(--lg-border)">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="min-w-0">
+                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="'+' + (c.phone || '')"></div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null && typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="c.ended_at || c.started_at || ''"></div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" class="crm-btn-secondary text-xs" @click="prostieZvonkiMakeCall(c.phone, { crm_deal_id: (crmDealForm?.id || null), crm_client_id: (crmDealForm?.client_id || null) })">Позвонить</button>
+                                <a x-show="c.record_link" :href="c.record_link" target="_blank" class="crm-soft-action text-xs">Запись</a>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+                <div x-show="(crmDealCalls || []).length === 0" class="crm-empty-state text-center">
+                    <div class="crm-empty-state-title">Звонков по сделке нет</div>
+                    <div class="crm-empty-state-text">Здесь появятся звонки, инициированные из этой сделки.</div>
                 </div>
             </div>
         </div>

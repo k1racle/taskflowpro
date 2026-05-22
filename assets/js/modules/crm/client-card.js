@@ -199,6 +199,9 @@ window.TaskFlowCrmClientCard = (function () {
             if (ctx.crmClientTab === 'history') {
                 await this.loadClientActivity(ctx);
             }
+            if (ctx.crmClientTab === 'calls') {
+                await ctx.crmLoadClientCalls?.();
+            }
         },
     };
 })();

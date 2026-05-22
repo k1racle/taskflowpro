@@ -99,6 +99,23 @@ window.TaskFlowCrmStore = (function () {
             }
         },
 
+        async pingConnection(ctx) {
+            if (typeof ctx.showToast === 'function') ctx.showToast('Проверяем подключение к WooCommerce…', 'info');
+            try {
+                const res = await apiCrmStorePing();
+                if (res.success) {
+                    const mode = String(res.data?.auth_mode || '');
+                    ctx.showToast('WooCommerce доступен' + (mode ? ` (auth: ${mode})` : ''), 'success');
+                    return true;
+                }
+                ctx.showToast(res.error || 'Не удалось подключиться к WooCommerce', 'error');
+                return false;
+            } catch (e) {
+                ctx.showToast(e?.message || 'Не удалось подключиться к WooCommerce', 'error');
+                return false;
+            }
+        },
+
         async importOrders(ctx, options = {}) {
             const trigger = normalizeImportTrigger(options?.trigger);
             if (ctx.crmStoreImportState?.loading) return;

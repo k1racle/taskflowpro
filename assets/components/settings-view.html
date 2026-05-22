@@ -2,7 +2,7 @@
      SETTINGS VIEW (Admin)
      ============================================ -->
 
-<div class="space-y-4">
+<div class="space-y-4" x-init="settingsAdminTab = settingsAdminTab || 'general'">
     <div class="liquid-glass-pro rounded-3xl crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-spacer">
@@ -17,7 +17,18 @@
     </div>
 
     <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-panel">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="crm-modal-tabbar-shell" style="margin:-4px -4px 16px -4px; padding:4px; border-radius:16px; border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+            <div class="crm-tabbar flex flex-wrap gap-2">
+                <button type="button" @click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>
+                <button type="button" @click="settingsAdminTab='integrations'" :class="settingsAdminTab === 'integrations' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Интеграции</button>
+                <button type="button" @click="settingsAdminTab='omni'" :class="settingsAdminTab === 'omni' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Омниканал</button>
+                <button type="button" @click="settingsAdminTab='webrtc'" :class="settingsAdminTab === 'webrtc' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">WebRTC</button>
+                <button type="button" @click="settingsAdminTab='weather'" :class="settingsAdminTab === 'weather' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Погода</button>
+                <button type="button" @click="settingsAdminTab='diagnostics'" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
+            </div>
+        </div>
+
+        <div x-show="settingsAdminTab === 'general'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-2 crm-panel-block p-4">
                 <label for="settings-company-name" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Название компании</label>
                 <input id="settings-company-name" name="company_name" type="text" x-model="settingsForm.company_name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="TaskFlow" />
@@ -30,6 +41,9 @@
                 <label for="settings-logo-path" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Логотип (путь)</label>
                 <input id="settings-logo-path" name="logo" type="text" x-model="settingsForm.logo" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="uploads/logo.png" />
             </div>
+        </div>
+
+        <div x-show="settingsAdminTab === 'integrations'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-3 crm-panel-block p-4 space-y-4">
                 <div>
                     <div class="font-semibold" style="color: var(--lg-text-primary)">WooCommerce Referral integration</div>
@@ -95,67 +109,58 @@
                 </div>
             </div>
 
-            <div class="md:col-span-3 crm-panel-block p-4 space-y-4" x-show="can('admin.full')">
+            <div class="md:col-span-3 crm-panel-block p-4 space-y-4">
                 <div>
-                    <div class="font-semibold" style="color: var(--lg-text-primary)">Mango Office / IP-телефония</div>
-                    <div class="text-sm mt-1" style="color: var(--lg-text-secondary)">Минимальная конфигурация для подключения Mango Office: включение интеграции, Remote ID и security token с базовой проверкой валидности.</div>
+                    <div class="font-semibold" style="color: var(--lg-text-primary)">ProstieZvonki.ru</div>
+                    <div class="text-sm mt-1" style="color: var(--lg-text-secondary)">Интеграция телефонии: хранение ключей доступа и секрета вебхуков. Логику обработки звонков добавим следующим шагом.</div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <label class="flex items-center gap-3 rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                        <input type="checkbox" x-model="settingsForm.mango_office_enabled" class="rounded" />
-                        <div class="min-w-0">
-                            <div class="text-sm font-medium" style="color: var(--lg-text-primary)">Включить Mango Office</div>
-                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Сохраняет настройки и включает проверку на готовность.</div>
-                        </div>
-                    </label>
-
-                    <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                        <div class="flex items-center justify-between gap-2">
-                            <div class="text-sm font-medium" style="color: var(--lg-text-primary)">Статус</div>
-                            <span class="text-xs px-2 py-1 rounded-full" :style="(mangoOfficeIntegration && mangoOfficeIntegration.status === 'ok') ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : ((mangoOfficeIntegration && mangoOfficeIntegration.status === 'disabled') ? 'background:rgba(148,163,184,.18); color:#e2e8f0' : 'background:rgba(245,158,11,.18); color:#fde68a')" x-text="(mangoOfficeIntegration && mangoOfficeIntegration.statusLabel) || 'Отключено'"></span>
-                        </div>
-                        <div class="text-xs mt-2" style="color: var(--lg-text-secondary)" x-text="(mangoOfficeIntegration && mangoOfficeIntegration.validationMessage) || 'Интеграция не настроена'"></div>
-                    </div>
-                </div>
+                <label class="flex items-center justify-between gap-3">
+                    <span class="text-sm font-medium" style="color: var(--lg-text-secondary)">Включить интеграцию</span>
+                    <input type="checkbox" x-model="settingsForm.prostiezvonki_enabled" class="rounded" />
+                </label>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="settings-mango-office-remote-id" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Remote ID</label>
-                        <input id="settings-mango-office-remote-id" name="mango_office_remote_id" type="text" x-model="settingsForm.mango_office_remote_id" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="123456" autocomplete="off" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Идентификатор из Mango Office. Используется для синхронизации и приёма событий.</div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">API key / Token</label>
+                        <input type="password" x-model="settingsForm.prostiezvonki_api_key" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Оставьте пустым, если менять не нужно" autocomplete="new-password" />
+                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Пустое поле не перезаписывает текущий ключ.</div>
                     </div>
 
                     <div>
-                        <label for="settings-mango-office-security-token" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Security token</label>
-                        <input id="settings-mango-office-security-token" name="mango_office_security_token" type="password" x-model="settingsForm.mango_office_security_token" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Введите token или оставьте пустым, чтобы не менять текущий" autocomplete="new-password" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Token сохраняется только при вводе нового значения. Пустое поле не меняет существующий секрет.</div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Webhook secret</label>
+                        <input type="password" x-model="settingsForm.prostiezvonki_webhook_secret" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Оставьте пустым, если менять не нужно" autocomplete="new-password" />
+                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Используется для проверки входящих вебхуков.</div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                    <div class="text-sm font-medium mb-2" style="color: var(--lg-text-primary)">Проверка готовности</div>
-                    <div class="text-sm" style="color: var(--lg-text-secondary)" x-text="(mangoOfficeIntegration && mangoOfficeIntegration.validationMessage) || 'Проверка ещё не запускалась'"></div>
-                    <ul class="mt-3 text-xs space-y-1" style="color: var(--lg-text-tertiary)" x-show="(mangoOfficeIntegration && (mangoOfficeIntegration.validationErrors || []).length) || (mangoOfficeIntegration && (mangoOfficeIntegration.validationWarnings || []).length)">
-                        <template x-for="item in ((mangoOfficeIntegration && mangoOfficeIntegration.validationErrors) || [])" :key="'err-' + item">
-                            <li x-text="'• ' + item"></li>
-                        </template>
-                        <template x-for="item in ((mangoOfficeIntegration && mangoOfficeIntegration.validationWarnings) || [])" :key="'warn-' + item">
-                            <li x-text="'• ' + item"></li>
-                        </template>
-                    </ul>
+                <div class="grid grid-cols-1 gap-3">
+                    <div>
+                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Webhook URL (для ProstieZvonki)</label>
+                        <div class="flex flex-col md:flex-row gap-2">
+                            <input type="text" readonly
+                                   :value="(new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href"
+                                   class="w-full px-4 py-3 rounded-xl crm-control-input" style="opacity:.95" />
+                            <button type="button" class="crm-btn-secondary whitespace-nowrap"
+                                    @click="copyReferralText((new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href, 'Webhook URL скопирован')">
+                                Копировать
+                            </button>
+                        </div>
+                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Вставьте этот URL в настройках интеграции «Простые звонки» как адрес CRM для вебхуков.</div>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-end gap-3">
-                    <button type="button" class="crm-btn-secondary text-sm" @click="testMangoOffice()" x-show="can('admin.full')">Проверить Mango Office</button>
+                    <button type="button" class="crm-btn-primary text-sm" @click="saveSettings()">Сохранить интеграции</button>
                 </div>
             </div>
+
         </div>
 
-        <div class="my-6"><div class="crm-divider opacity-70"></div></div>
+        <div class="my-6" x-show="!['general','integrations'].includes(String(settingsAdminTab || 'general'))"><div class="crm-divider opacity-70"></div></div>
 
         <div x-show="can('admin.full')" class="space-y-6">
-            <div class="crm-panel-block p-5">
+            <div class="crm-panel-block p-5" x-show="settingsAdminTab === 'omni'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Telegram уведомления</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте бота для получения уведомлений администраторам.</div>
 
@@ -182,7 +187,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="can('admin.full') || currentUser?.role === 'root'">
+            <div class="crm-panel-block p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'omni'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Омниканал: Telegram и MAX (HelpDesk)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
                     Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
@@ -265,7 +270,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="can('admin.full') || currentUser?.role === 'root'">
+            <div class="crm-panel-block p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'webrtc'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">WebRTC (звонки и конференции)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
                     Настройка ICE servers (STUN/TURN). Для обычных сетей достаточно STUN. TURN нужен, если у части пользователей не соединяются звонки из-за NAT/ограничений.
@@ -285,7 +290,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5">
+            <div class="crm-panel-block p-5" x-show="settingsAdminTab === 'weather'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Погода (OpenWeatherMap)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте погодный виджет под общий интерфейс.</div>
 
@@ -302,7 +307,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="can('admin.full')">
+            <div class="crm-panel-block p-5" x-show="settingsAdminTab === 'diagnostics'">
                 <div class="crm-table-toolbar crm-table-toolbar--compact">
                     <div class="crm-section-head">
                         <div class="crm-section-head__content">

@@ -549,6 +549,10 @@ async function apiCrmStore(params = {}) {
     return apiGet(`crm/store${query ? '?' + query : ''}`);
 }
 
+async function apiCrmStorePing() {
+    return apiGet('crm/store/ping');
+}
+
 async function apiCrmStoreImport(payload = {}) {
     return apiPost('crm/store/import', payload);
 }
@@ -812,6 +816,14 @@ async function apiTestTelegram() {
 
 async function apiUpdateTelegram(telegramData) {
     return apiPut('telegram', telegramData);
+}
+
+/* ============================================
+   ProstieZvonki
+   ============================================ */
+
+async function apiProstieZvonkiMakeCall(payload) {
+    return apiPost('integrations/prostiezvonki/makecall', payload);
 }
 
 /* ============================================
