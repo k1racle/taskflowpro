@@ -7,8 +7,8 @@
       data-chat-runtime-template="chat-view-2026-04-25-v1"
       data-chat-runtime-version="chat-live-2026-05-20-ui-v2"
       @keydown.escape.window="showAttachmentMenu=false; showEmojiPicker=false; chatRoomMenuOpen=false; chatOptionsOpen=false; showSearchResults=false"
-      @keydown.ctrl.k.window.prevent="try{document.getElementById('chat-sidebar-search')?.focus?.()}catch(e){}"
-      @keydown.meta.k.window.prevent="try{document.getElementById('chat-sidebar-search')?.focus?.()}catch(e){}">
+      @keydown.ctrl.k.window.prevent="$nextTick(() => { const el = document.getElementById('chat-sidebar-search'); if(el) el.focus(); })"
+      @keydown.meta.k.window.prevent="$nextTick(() => { const el = document.getElementById('chat-sidebar-search'); if(el) el.focus(); })">
     
     <!-- Список чатов -->
     <div class="liquid-glass-pro w-full lg:w-80 xl:w-[22rem] flex flex-col min-h-0 rounded-3xl chat-sidebar-shell">
