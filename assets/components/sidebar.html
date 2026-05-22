@@ -47,7 +47,7 @@
         </details>
 
         <details class="crm-sidebar-group" open
-                 x-show="(navItems || []).some(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+                 x-show="(navItems || []).some(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
             <summary class="crm-sidebar-group-toggle">
                 <span>CRM</span>
                 <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +55,7 @@
                 </svg>
             </summary>
             <div class="mt-2 space-y-1">
-                <template x-for="item in (navItems || []).filter(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                <template x-for="item in (navItems || []).filter(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
                              class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
