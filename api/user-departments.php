@@ -82,13 +82,10 @@ function handleUserDepartments(string $method, ?string $action, mixed $id): void
         }
 
         // Проверка прав
-        if (!hasPermission($currentUser, 'users.edit')) {
-            // Пользователь может добавить только себя
-            if ($data['user_id'] !== $currentUser['id']) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'error' => 'Недостаточно прав']);
-                exit;
-            }
+        if (!hasPermission($currentUser, 'users.edit') && (int)$data['user_id'] !== (int)$currentUser['id']) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Недостаточно прав']);
+            exit;
         }
 
         $stmt = $pdo->prepare(" 
@@ -132,13 +129,10 @@ function handleUserDepartments(string $method, ?string $action, mixed $id): void
         $deptId = (int)$parts[1];
 
         // Проверка прав
-        if (!hasPermission($currentUser, 'users.edit')) {
-            // Пользователь может удалить только себя
-            if ($userId !== $currentUser['id']) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'error' => 'Недостаточно прав']);
-                exit;
-            }
+        if (!hasPermission($currentUser, 'users.edit') && $userId !== (int)$currentUser['id']) {
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Недостаточно прав']);
+            exit;
         }
 
         $stmt = $pdo->prepare("DELETE FROM user_departments WHERE user_id = ? AND department_id = ?");

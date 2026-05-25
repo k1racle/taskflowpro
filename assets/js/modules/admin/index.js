@@ -162,6 +162,118 @@ window.TaskFlowAdmin = (function () {
         return res;
     }
 
+    function getScopeForPermissions(permissionCodes) {
+        const codes = new Set((permissionCodes || []).map(code => String(code || '').trim()).filter(Boolean));
+        if (codes.has('admin.full')) return 'all';
+        if (codes.has('users.view') || codes.has('users.edit') || codes.has('users.create') || codes.has('users.delete')) return 'department';
+        if (codes.has('crm.export') || codes.has('crm.delete') || codes.has('crm.stages.manage')) return 'department';
+        if (codes.has('tasks.view') || codes.has('tasks.create') || codes.has('tasks.edit') || codes.has('tasks.delete')) return 'department';
+        return 'view';
+    }
+
+    function getDefaultRolePermissionScopes() {
+        return {
+            tasks: 'department',
+            projects: 'department',
+            departments: 'department',
+            files: 'department',
+            knowledge: 'department',
+            chat: 'department',
+            mail: 'department',
+            crm: 'department',
+            leader: 'department',
+            users: 'department'
+        };
+    }
+
+    function getRolePermissionPreset(role) {
+        const name = String(role?.name || '').toLowerCase();
+        if (name === 'root') return 'full';
+        if (name === 'leader') return 'leader';
+        if (name === 'admin' || name === 'administrator') return 'admin';
+        if (name === 'manager') return 'manager';
+        if (name === 'employee') return 'employee';
+        return 'custom';
+    }
+
+    function buildPresetPermissions(preset) {
+        const base = {
+            tasks: { view: false, create: false, edit: false, delete: false },
+            projects: { view: false, create: false, edit: false, delete: false },
+            departments: { view: false, create: false, edit: false, delete: false },
+            files: { view: false, upload: false, edit: false, delete: false },
+            knowledge: { view: false, create: false, edit: false, delete: false },
+            chat: { view: false, send: false, edit: false, delete: false, forward: false, create_group: false },
+            mail: { view: false, send: false, edit: false, delete: false },
+            crm: { view: false, create: false, edit: false, delete: false, export: false, stages_manage: false },
+            leader: { view: false, shifts_manage: false, export: false },
+            users: { view: false, create: false, edit: false, delete: false },
+            admin: { full: false }
+        };
+
+        const scopes = getDefaultRolePermissionScopes();
+
+        switch (preset) {
+            case 'full':
+                for (const section of Object.keys(base)) {
+                    for (const action of Object.keys(base[section] || {})) {
+                        base[section][action] = true;
+                    }
+                    if (section !== 'admin') scopes[section] = 'all';
+                }
+                scopes.admin = 'all';
+                break;
+            case 'admin':
+                base.tasks.view = base.tasks.create = base.tasks.edit = base.tasks.delete = true;
+                base.projects.view = base.projects.create = base.projects.edit = base.projects.delete = true;
+                base.departments.view = base.departments.create = base.departments.edit = base.departments.delete = true;
+                base.files.view = base.files.upload = base.files.edit = base.files.delete = true;
+                base.knowledge.view = base.knowledge.create = base.knowledge.edit = base.knowledge.delete = true;
+                base.chat.view = base.chat.send = base.chat.edit = base.chat.delete = base.chat.forward = base.chat.create_group = true;
+                base.mail.view = base.mail.send = base.mail.edit = base.mail.delete = true;
+                base.crm.view = base.crm.create = base.crm.edit = base.crm.delete = base.crm.export = base.crm.stages_manage = true;
+                base.leader.view = base.leader.shifts_manage = base.leader.export = true;
+                base.users.view = base.users.create = base.users.edit = base.users.delete = true;
+                base.admin.full = true;
+                break;
+            case 'leader':
+                base.tasks.view = base.tasks.create = base.tasks.edit = true;
+                base.projects.view = base.projects.create = base.projects.edit = true;
+                base.departments.view = true;
+                base.files.view = base.files.upload = true;
+                base.knowledge.view = base.knowledge.create = base.knowledge.edit = true;
+                base.chat.view = base.chat.send = true;
+                base.crm.view = base.crm.create = base.crm.edit = base.crm.export = true;
+                base.leader.view = base.leader.shifts_manage = true;
+                base.users.view = true;
+                scopes.tasks = scopes.projects = scopes.departments = scopes.files = scopes.knowledge = scopes.chat = scopes.crm = scopes.leader = scopes.users = 'department';
+                break;
+            case 'manager':
+                base.tasks.view = base.tasks.create = base.tasks.edit = true;
+                base.projects.view = base.projects.create = base.projects.edit = true;
+                base.files.view = base.files.upload = true;
+                base.knowledge.view = base.knowledge.create = true;
+                base.chat.view = base.chat.send = true;
+                base.crm.view = base.crm.create = base.crm.edit = true;
+                base.users.view = true;
+                break;
+            case 'employee':
+                base.tasks.view = base.tasks.create = true;
+                base.projects.view = true;
+                base.files.view = base.files.upload = true;
+                base.knowledge.view = true;
+                base.chat.view = base.chat.send = true;
+                base.crm.view = true;
+                break;
+        }
+
+        return { permissions: base, scopes };
+    }
+
+    function normalizePermissionScopes(scopes) {
+        return { ...getDefaultRolePermissionScopes(), ...(scopes || {}) };
+    }
+
     function applySettingsForm(ctx) {
         if (!ctx.currentUser?.id) return;
 
@@ -478,12 +590,19 @@ window.TaskFlowAdmin = (function () {
             }
 
             if (user) {
+                const departmentIds = Array.isArray(user.department_ids)
+                    ? user.department_ids
+                    : String(user.department_ids || '')
+                        .split(',')
+                        .map(x => String(x || '').trim())
+                        .filter(Boolean);
                 ctx.userForm = {
                     login: user.login,
                     password: '',
                     full_name: user.full_name || '',
                     role: user.role,
-                    department_id: user.department_id || ''
+                    department_id: user.department_id || '',
+                    department_ids: departmentIds
                 };
             } else {
                 const firstRole = ctx.roles.find(r => r.name !== 'root');
@@ -492,7 +611,8 @@ window.TaskFlowAdmin = (function () {
                     password: '',
                     full_name: '',
                     role: firstRole ? firstRole.name : 'employee',
-                    department_id: ''
+                    department_id: '',
+                    department_ids: []
                 };
             }
 
@@ -502,7 +622,7 @@ window.TaskFlowAdmin = (function () {
         closeUserModal(ctx) {
             ctx.userModalOpen = false;
             ctx.editingUser = null;
-            ctx.userForm = { login: '', password: '', full_name: '', role: 'employee', department_id: '' };
+            ctx.userForm = { login: '', password: '', full_name: '', role: 'employee', department_id: '', department_ids: [] };
         },
 
         async saveRole(ctx) {
@@ -633,6 +753,18 @@ window.TaskFlowAdmin = (function () {
             } else {
                 ctx.rolePermissions = normalizeRolePermissions(role);
             }
+            const baseScopes = normalizePermissionScopes(role?.permission_scopes || {});
+            for (const section of Object.keys(ctx.rolePermissions || {})) {
+                if (!baseScopes[section]) {
+                    baseScopes[section] = getScopeForPermissions(
+                        Object.entries(ctx.rolePermissions[section] || {})
+                            .filter(([, enabled]) => !!enabled)
+                            .map(([action]) => `${section}.${action}`)
+                    );
+                }
+            }
+            ctx.rolePermissionScopes = baseScopes;
+            ctx.rolePermissionPreset = getRolePermissionPreset(role);
             ctx.rolePermissionsModalOpen = true;
         },
 
@@ -659,8 +791,22 @@ window.TaskFlowAdmin = (function () {
                         }
                     }
 
+                    const activeSections = Object.entries(ctx.rolePermissions || {})
+                        .map(([section, actions]) => [section, Object.values(actions || {}).some(Boolean)])
+                        .filter(([, enabled]) => enabled)
+                        .map(([section]) => section);
+                    const permissionScopes = {};
+                    for (const section of activeSections) {
+                        permissionScopes[section] = ctx.rolePermissionScopes?.[section] || getScopeForPermissions(
+                            Object.entries(ctx.rolePermissions?.[section] || {})
+                                .filter(([, enabled]) => !!enabled)
+                                .map(([action]) => `${section}.${action}`)
+                        );
+                    }
+
                     await apiPut(`roles/${ctx.editingRole.id}/permissions`, {
-                        permissions: permissionCodes
+                        permissions: permissionCodes,
+                        permission_scopes: permissionScopes
                     });
 
                     ctx.showToast('Права роли обновлены', 'success');
@@ -671,6 +817,13 @@ window.TaskFlowAdmin = (function () {
                 console.error('Ошибка сохранения прав роли:', error);
                 ctx.showToast(error?.message || 'Ошибка сохранения прав роли', 'error');
             }
+        },
+
+        applyRolePermissionPreset(ctx, preset) {
+            const data = buildPresetPermissions(preset);
+            ctx.rolePermissions = data.permissions;
+            ctx.rolePermissionScopes = data.scopes;
+            ctx.rolePermissionPreset = preset;
         },
 
         async saveSettings(ctx) {
@@ -765,6 +918,56 @@ window.TaskFlowAdmin = (function () {
             }
 
             applySettingsForm(ctx);
+        },
+
+        async loadUserDepartments(ctx, userId) {
+            if (!userId) return;
+            ctx.userDepartmentsLoading = true;
+            ctx.userDepartmentsError = '';
+            try {
+                const data = await apiGetUserDepartments(userId);
+                if (data.success) {
+                    ctx.userDepartments = Array.isArray(data.data) ? data.data : [];
+                } else {
+                    ctx.userDepartments = [];
+                    ctx.userDepartmentsError = data.error || 'Не удалось загрузить отделы пользователя';
+                }
+            } catch (error) {
+                ctx.userDepartments = [];
+                ctx.userDepartmentsError = error?.message || 'Не удалось загрузить отделы пользователя';
+            } finally {
+                ctx.userDepartmentsLoading = false;
+            }
+        },
+
+        async addUserDepartment(ctx, userId, departmentId) {
+            if (!userId || !departmentId) return;
+            try {
+                const res = await apiAddUserDepartment(userId, departmentId);
+                if (res?.success) {
+                    await this.loadUserDepartments(ctx, userId);
+                    ctx.showToast('Отдел добавлен пользователю', 'success');
+                    return;
+                }
+                ctx.showToast(res?.error || 'Не удалось добавить отдел', 'error');
+            } catch (error) {
+                ctx.showToast(error?.message || 'Не удалось добавить отдел', 'error');
+            }
+        },
+
+        async removeUserDepartment(ctx, userId, departmentId) {
+            if (!userId || !departmentId) return;
+            try {
+                const res = await apiDeleteUserDepartment(userId, departmentId);
+                if (res?.success) {
+                    await this.loadUserDepartments(ctx, userId);
+                    ctx.showToast('Отдел удалён у пользователя', 'success');
+                    return;
+                }
+                ctx.showToast(res?.error || 'Не удалось удалить отдел', 'error');
+            } catch (error) {
+                ctx.showToast(error?.message || 'Не удалось удалить отдел', 'error');
+            }
         },
 
         closeSettingsModal(ctx) {

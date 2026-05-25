@@ -34,8 +34,12 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
                 'departments' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
                 'files' => ['view' => true, 'upload' => true, 'edit' => true, 'delete' => true],
                 'knowledge' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
-                'chat' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true],
-                'mail' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true]
+                'chat' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true, 'forward' => true, 'create_group' => true],
+                'mail' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true],
+                'crm' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true, 'export' => true, 'stages_manage' => true],
+                'leader' => ['view' => true, 'shifts_manage' => true, 'export' => true],
+                'users' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
+                'admin' => ['full' => true]
             ];
             $stmt = $pdo->prepare("INSERT INTO roles (name, description, icon, permissions, is_system) VALUES (?, ?, ?, ?, 1)");
             $stmt->execute([
@@ -79,10 +83,15 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
         }
 
         $stmt = $pdo->prepare(" 
-            SELECT u.id, u.login, u.full_name, u.role, u.department_id, u.created_at, u.last_login,
-                   d.name as department_name
+            SELECT u.id, u.login, u.email, u.full_name, u.role, u.department_id, u.created_at, u.last_login,
+                   d.name as department_name,
+                   COALESCE(GROUP_CONCAT(DISTINCT ud.department_id ORDER BY ud.department_id SEPARATOR ','), '') as department_ids,
+                   COALESCE(GROUP_CONCAT(DISTINCT dd.name ORDER BY dd.name SEPARATOR ', '), '') as department_names
             FROM users u
             LEFT JOIN departments d ON u.department_id = d.id
+            LEFT JOIN user_departments ud ON ud.user_id = u.id
+            LEFT JOIN departments dd ON dd.id = ud.department_id
+            GROUP BY u.id, u.login, u.email, u.full_name, u.role, u.department_id, u.created_at, u.last_login, d.name
             ORDER BY u.created_at DESC
         ");
         $stmt->execute();
@@ -126,11 +135,16 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
         $userId = (int)$action;
         
         $stmt = $pdo->prepare(" 
-            SELECT u.id, u.login, u.full_name, u.role, u.department_id, u.created_at, u.last_login,
-                   d.name as department_name
+            SELECT u.id, u.login, u.email, u.full_name, u.role, u.department_id, u.created_at, u.last_login,
+                   d.name as department_name,
+                   COALESCE(GROUP_CONCAT(DISTINCT ud.department_id ORDER BY ud.department_id SEPARATOR ','), '') as department_ids,
+                   COALESCE(GROUP_CONCAT(DISTINCT dd.name ORDER BY dd.name SEPARATOR ', '), '') as department_names
             FROM users u
             LEFT JOIN departments d ON u.department_id = d.id
+            LEFT JOIN user_departments ud ON ud.user_id = u.id
+            LEFT JOIN departments dd ON dd.id = ud.department_id
             WHERE u.id = ?
+            GROUP BY u.id, u.login, u.email, u.full_name, u.role, u.department_id, u.created_at, u.last_login, d.name
         ");
         $stmt->execute([$userId]);
         $user = $stmt->fetch();
@@ -213,7 +227,15 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
         
         $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
         
-        $stmt = $pdo->prepare("
+        $departmentIds = array_values(array_unique(array_filter(array_map('intval', is_array($data['department_ids'] ?? null) ? $data['department_ids'] : []))));
+        $primaryDepartmentId = null;
+        if (array_key_exists('department_id', $data) && $data['department_id'] !== '' && $data['department_id'] !== null) {
+            $primaryDepartmentId = (int)$data['department_id'];
+        } elseif (!empty($departmentIds)) {
+            $primaryDepartmentId = (int)$departmentIds[0];
+        }
+
+        $stmt = $pdo->prepare(" 
             INSERT INTO users (login, email, password_hash, full_name, role, department_id)
             VALUES (?, ?, ?, ?, ?, ?)
         ");
@@ -224,7 +246,7 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
             $passwordHash,
             $data['full_name'] ?? '',
             $role,
-            $data['department_id'] ?? null
+            $primaryDepartmentId
         ]);
         
         $newUserId = $pdo->lastInsertId();
@@ -238,10 +260,18 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
                 'login' => $data['login'],
                 'full_name' => $data['full_name'] ?? '',
                 'role' => $role,
-                'department_id' => $data['department_id'] ?? null,
+                'department_id' => $primaryDepartmentId,
+                'department_ids' => $departmentIds,
                 'email_present' => $email !== null && $email !== '',
             ],
         ]);
+
+        if (!empty($departmentIds)) {
+            $stmt = $pdo->prepare("INSERT IGNORE INTO user_departments (user_id, department_id) VALUES (?, ?)");
+            foreach ($departmentIds as $deptId) {
+                $stmt->execute([$newUserId, $deptId]);
+            }
+        }
         
         echo json_encode([
             'success' => true,
@@ -282,7 +312,13 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
             $params[] = $data['full_name'];
         }
 
-        if (isset($data['department_id'])) {
+        $departmentIds = null;
+        if (array_key_exists('department_ids', $data)) {
+            $departmentIds = array_values(array_unique(array_filter(array_map('intval', is_array($data['department_ids']) ? $data['department_ids'] : []))));
+            $primaryDepartmentId = !empty($departmentIds) ? (int)$departmentIds[0] : null;
+            $updates[] = "department_id = ?";
+            $params[] = $primaryDepartmentId;
+        } elseif (isset($data['department_id'])) {
             $updates[] = "department_id = ?";
             $params[] = $data['department_id'];
         }
@@ -340,6 +376,17 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
         $sql = "UPDATE users SET " . implode(', ', $updates) . " WHERE id = ?";
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
+
+        if ($departmentIds !== null) {
+            $stmt = $pdo->prepare("DELETE FROM user_departments WHERE user_id = ?");
+            $stmt->execute([$userId]);
+            if (!empty($departmentIds)) {
+                $stmt = $pdo->prepare("INSERT IGNORE INTO user_departments (user_id, department_id) VALUES (?, ?)");
+                foreach ($departmentIds as $deptId) {
+                    $stmt->execute([$userId, $deptId]);
+                }
+            }
+        }
 
         if (isset($newRole) && (string)($targetUserBefore['role'] ?? '') !== (string)$newRole) {
             auditLog($pdo, 'rbac.user_role.changed', [

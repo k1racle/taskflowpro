@@ -184,14 +184,14 @@
                     </select>
                 </div>
 
-                <div>
-                    <label for="user-department" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
-                    <select id="user-department" name="department_id" x-model="userForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
-                        <option value="">Без отдела</option>
+                <div class="md:col-span-2">
+                    <label for="user-departments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отделы</label>
+                    <select id="user-departments" name="department_ids" x-model="userForm.department_ids" class="w-full px-4 py-3 rounded-xl crm-control-select" multiple size="5">
                         <template x-for="d in (departments || [])" :key="d.id">
-                            <option :value="d.id" x-text="d.name"></option>
+                            <option :value="String(d.id)" x-text="d.name"></option>
                         </template>
                     </select>
+                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Можно выбрать несколько отделов. Основной отдел будет взят первым в списке.</div>
                 </div>
 
                 <div class="md:col-span-2">
@@ -343,6 +343,23 @@
         </div>
 
         <div class="crm-modal-body crm-drawer-body p-6">
+            <div class="mb-4 rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                        <div class="font-semibold" style="color: var(--lg-text-primary)">Быстрый пресет</div>
+                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Выберите базовую модель и потом уточните отдельные права вручную.</div>
+                    </div>
+                    <select class="crm-control-select text-sm min-w-[220px]" x-model="rolePermissionPreset" @change="applyRolePermissionPreset($data, rolePermissionPreset)">
+                        <option value="custom">Своя настройка</option>
+                        <option value="employee">Сотрудник</option>
+                        <option value="manager">Менеджер</option>
+                        <option value="leader">Руководитель</option>
+                        <option value="admin">Администратор</option>
+                        <option value="full">Полный доступ</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <template x-for="section in Object.keys(rolePermissions || {})" :key="section">
@@ -388,6 +405,17 @@
                         </div>
 
                         <div class="space-y-2">
+                            <div class="mb-3 rounded-xl px-3 py-2" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Область доступа</div>
+                                <select class="w-full px-3 py-2 rounded-xl crm-control-select text-sm" x-model="rolePermissionScopes[section]" :disabled="section === 'admin'">
+                                    <option value="none">Нет доступа</option>
+                                    <option value="view">Только просмотр</option>
+                                    <option value="own">Только свои</option>
+                                    <option value="department">Свои отделы</option>
+                                    <option value="all">Все</option>
+                                </select>
+                                <div x-show="section === 'admin'" class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Админка всегда выдаётся как системный доступ.</div>
+                            </div>
                             <template x-for="action in Object.keys(rolePermissions[section] || {})" :key="action">
                                 <label class="flex items-center justify-between gap-3">
                                     <span class="text-sm" style="color: var(--lg-text-secondary)">

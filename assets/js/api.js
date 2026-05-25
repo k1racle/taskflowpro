@@ -961,6 +961,22 @@ async function apiGetRoles() {
     return apiGet('users/roles');
 }
 
+async function apiGetRolePermissions(roleId) {
+    return apiGet(`roles/${roleId}/permissions`);
+}
+
+async function apiGetUserDepartments(userId) {
+    return apiGet(`user-departments?user_id=${encodeURIComponent(userId)}`);
+}
+
+async function apiAddUserDepartment(userId, departmentId) {
+    return apiPost('user-departments', { user_id: userId, department_id: departmentId });
+}
+
+async function apiDeleteUserDepartment(userId, departmentId) {
+    return apiDelete(`user-departments/${encodeURIComponent(userId)}/${encodeURIComponent(departmentId)}`);
+}
+
 async function apiGetManageRoles() {
     return apiGet('roles');
 }

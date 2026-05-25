@@ -29,6 +29,16 @@
                 </button>
             </div>
         </div>
+
+        <div class="mx-4 mt-4 rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                <div>
+                    <div class="font-semibold" style="color: var(--lg-text-primary)">Коротко о модели</div>
+                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Роль = что можно делать. Отделы = где можно делать. Один пользователь может быть в нескольких отделах.</div>
+                </div>
+                <button class="crm-btn-secondary text-sm" @click="refreshRolesList && refreshRolesList()">Обновить</button>
+            </div>
+        </div>
     
         <div x-show="rolesError" x-cloak class="mx-4 mb-4">
             <div class="crm-empty-state" data-state="error">

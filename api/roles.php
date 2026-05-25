@@ -66,15 +66,19 @@ function ensureSystemRootRole(PDO $pdo): void {
     $stmt->execute();
     if ($stmt->fetch()) return;
 
-    $rootPermissions = [
-        'tasks' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
-        'projects' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
-        'departments' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
-        'files' => ['view' => true, 'upload' => true, 'edit' => true, 'delete' => true],
-        'knowledge' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
-        'chat' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true],
-        'mail' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true]
-    ];
+        $rootPermissions = [
+         'tasks' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
+         'projects' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
+         'departments' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
+         'files' => ['view' => true, 'upload' => true, 'edit' => true, 'delete' => true],
+         'knowledge' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
+         'chat' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true, 'forward' => true, 'create_group' => true],
+         'mail' => ['view' => true, 'send' => true, 'edit' => true, 'delete' => true],
+         'crm' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true, 'export' => true, 'stages_manage' => true],
+         'leader' => ['view' => true, 'shifts_manage' => true, 'export' => true],
+         'users' => ['view' => true, 'create' => true, 'edit' => true, 'delete' => true],
+         'admin' => ['full' => true]
+     ];
 
     $stmt = $pdo->prepare("INSERT INTO roles (name, description, icon, permissions, is_system) VALUES (?, ?, ?, ?, 1)");
     $stmt->execute([
@@ -222,6 +226,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
         if (!empty($data['permissions']) && is_array($data['permissions'])) {
             $requestedPermissionCodes = array_values(array_filter(array_map('strval', $data['permissions'])));
         }
+        $permissionScopes = is_array($data['permission_scopes'] ?? null) ? $data['permission_scopes'] : [];
 
         $stmt = $pdo->prepare("
             INSERT INTO roles (name, description, icon, permissions, is_system)
@@ -269,8 +274,14 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 'requested_permission_codes' => $requestedPermissionCodes,
                 'applied_permission_codes' => array_values(array_unique($appliedPermissionCodes)),
                 'skipped_permission_codes' => array_values(array_unique($skippedPermissionCodes)),
+                'permission_scopes' => $permissionScopes,
             ],
         ]);
+
+        if (!empty($permissionScopes)) {
+            $stmt = $pdo->prepare("UPDATE roles SET permissions = ? WHERE id = ?");
+            $stmt->execute([json_encode($requestedPermissionCodes), $newRoleId]);
+        }
 
         echo json_encode([
             'success' => true,
@@ -330,6 +341,11 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 json_encode($data['permissions'] ?? []),
                 $roleId
             ]);
+
+            if (!empty($data['permission_scopes']) && is_array($data['permission_scopes'])) {
+                $stmt = $pdo->prepare("UPDATE roles SET permissions = permissions WHERE id = ?");
+                $stmt->execute([$roleId]);
+            }
 
             auditLog($pdo, 'rbac.role.updated', [
                 'actor' => $currentUser,
@@ -428,6 +444,8 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 exit;
             }
 
+            $permissionScopes = is_array($data['permission_scopes'] ?? null) ? $data['permission_scopes'] : [];
+
             // Удаляем старые права
             $stmt = $pdo->prepare("DELETE FROM role_permissions WHERE role_id = ?");
             $stmt->execute([$roleId]);
@@ -482,6 +500,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                     'role_id' => $roleId,
                     'before_permissions' => $beforePermissions,
                     'after_permissions' => $afterPermissions,
+                    'permission_scopes' => $permissionScopes,
                 ],
             ]);
 

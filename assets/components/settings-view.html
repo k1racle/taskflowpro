@@ -2,7 +2,7 @@
      SETTINGS VIEW (Admin)
      ============================================ -->
 
-<div class="space-y-4" x-data="{ settingsAdminTab: 'general' }">
+<div class="space-y-4" x-data="{ settingsAdminTab: 'general' }" x-init="$watch('settingsAdminTab', (value) => { window.__taskflowSettingsAdminTab = value; }); settingsAdminTab = window.__taskflowSettingsAdminTab || settingsAdminTab">
     <div class="liquid-glass-pro rounded-3xl crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-spacer">
@@ -19,12 +19,12 @@
     <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-panel">
         <div class="crm-modal-tabbar-shell" style="margin:-4px -4px 16px -4px; padding:4px; border-radius:16px; border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
             <div class="crm-tabbar flex flex-wrap gap-2">
-                <button type="button" @click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>
-                <button type="button" @click="settingsAdminTab='integrations'" :class="settingsAdminTab === 'integrations' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Интеграции</button>
-                <button type="button" @click="settingsAdminTab='omni'" :class="settingsAdminTab === 'omni' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Омниканал</button>
-                <button type="button" @click="settingsAdminTab='webrtc'" :class="settingsAdminTab === 'webrtc' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">WebRTC</button>
-                <button type="button" @click="settingsAdminTab='weather'" :class="settingsAdminTab === 'weather' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Погода</button>
-                <button type="button" @click="settingsAdminTab='diagnostics'" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
+                <button type="button" @click="settingsAdminTab='general'" x-on:click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>
+                <button type="button" @click="settingsAdminTab='integrations'" x-on:click="settingsAdminTab='integrations'" :class="settingsAdminTab === 'integrations' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Интеграции</button>
+                <button type="button" @click="settingsAdminTab='omni'" x-on:click="settingsAdminTab='omni'" :class="settingsAdminTab === 'omni' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Омниканал</button>
+                <button type="button" @click="settingsAdminTab='webrtc'" x-on:click="settingsAdminTab='webrtc'" :class="settingsAdminTab === 'webrtc' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">WebRTC</button>
+                <button type="button" @click="settingsAdminTab='weather'" x-on:click="settingsAdminTab='weather'" :class="settingsAdminTab === 'weather' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Погода</button>
+                <button type="button" @click="settingsAdminTab='diagnostics'" x-on:click="settingsAdminTab='diagnostics'" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
             </div>
         </div>
 
