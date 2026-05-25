@@ -92,7 +92,7 @@
 
     <div x-show="projectsView === 'cards'" class="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="project.id">
-            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-3xl p-5 cursor-pointer group crm-record-card crm-card-compact crm-card-equal">
+            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-3xl p-4 lg:p-5 cursor-pointer group crm-record-card crm-card-compact crm-card-equal">
                 <div class="crm-project-card-head">
                     <div class="flex items-start gap-4 min-w-0">
                         <div class="crm-project-avatar">
@@ -110,20 +110,20 @@
                 </div>
 
                 <div class="mt-4 grid grid-cols-2 gap-3">
-                    <div class="crm-stat-card crm-card-compact crm-card-equal">
+                    <div class="crm-stat-card crm-card-compact crm-card-equal py-3 px-4">
                         <div class="crm-summary-label">Прогресс</div>
-                        <div class="mt-2 flex items-end justify-between gap-3">
-                            <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
-                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Статус исполнения</div>
+                        <div class="mt-2 flex items-center justify-between gap-3">
+                            <div class="text-2xl font-bold leading-none" style="color: var(--lg-text-primary)" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
+                            <div class="text-[11px] leading-tight text-right max-w-[90px]" style="color: var(--lg-text-tertiary)">Статус исполнения</div>
                         </div>
                         <div class="mt-3 w-full h-2 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));">
                             <div class="h-full rounded-full transition-all duration-500" style="background: var(--lg-primary)" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
                         </div>
                     </div>
-                    <div class="crm-stat-card crm-card-compact crm-card-equal">
+                    <div class="crm-stat-card crm-card-compact crm-card-equal py-3 px-4">
                         <div class="crm-summary-label">Deadline</div>
-                        <div class="mt-2 text-base font-semibold" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" style="color: var(--lg-text-primary)" x-text="project.deadline ? formatDate(project.deadline) : 'Не задан'"></div>
-                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)" x-text="project.departments && project.departments.length ? project.departments.map(department => department.name).join(', ') : 'Без отдела'"></div>
+                        <div class="mt-2 text-xs lg:text-sm font-semibold leading-tight" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" style="color: var(--lg-text-primary)" x-text="project.deadline ? formatDate(project.deadline) : 'Не задан'"></div>
+                        <div class="mt-1 text-[11px] leading-tight" style="color: var(--lg-text-tertiary)" x-text="project.departments && project.departments.length ? project.departments.map(department => department.name).join(', ') : 'Без отдела'"></div>
                     </div>
                 </div>
 
@@ -144,17 +144,17 @@
                         </div>
                         <div>
                             <div class="crm-summary-label">Команда</div>
-                            <div class="mt-2 flex items-center gap-3 flex-wrap">
+                            <div class="mt-2 flex items-center gap-2 flex-wrap">
                                 <div class="flex -space-x-2">
-                                    <template x-for="member in (project.members || []).slice(0, 5)" :key="member.id">
+                                    <template x-for="member in (project.members || []).slice(0, 7)" :key="member.id">
                                         <div>
                                             <img x-show="member.avatar"
                                                  :src="member.avatar ? ('uploads/avatars/' + member.avatar) : ''"
-                                                 class="w-8 h-8 rounded-full border-2 border-white/60 dark:border-black/20"
+                                                 class="w-7 h-7 rounded-full border-2 border-white/60 dark:border-black/20"
                                                  :alt="member.full_name"
                                                  :title="member.full_name">
                                             <div x-show="!member.avatar"
-                                                 class="w-8 h-8 rounded-full border-2 border-white/60 dark:border-black/20 flex items-center justify-center text-white text-xs font-bold"
+                                                 class="w-7 h-7 rounded-full border-2 border-white/60 dark:border-black/20 flex items-center justify-center text-white text-[11px] font-bold"
                                                  :style="'background: var(--lg-primary)'"
                                                  :title="member.full_name"
                                                  x-text="getInitials(member.full_name || member.login)"></div>
@@ -165,7 +165,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="crm-record-card-action">
+                    <div class="crm-record-card-action self-end mb-1">
                         <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </div>
                 </div>
