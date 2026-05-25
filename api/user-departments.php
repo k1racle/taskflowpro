@@ -44,7 +44,7 @@ function handleUserDepartments(string $method, ?string $action, mixed $id): void
             ");
             $stmt->execute([$userId]);
         } else {
-            // Получаем все связи (только root и administrator)
+            // Получаем все связи (для пользователей с users.view)
             if (hasPermission($currentUser, 'users.view')) {
                 $stmt = $pdo->prepare("
                     SELECT ud.*, d.name as department_name, u.full_name as user_name

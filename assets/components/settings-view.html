@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-panel">
+    <div class="liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-detail-panel">
         <div class="crm-modal-tabbar-shell" style="margin:-4px -4px 16px -4px; padding:4px; border-radius:16px; border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
             <div class="crm-tabbar flex flex-wrap gap-2">
                 <button type="button" @click="settingsAdminTab='general'" x-on:click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>
@@ -160,7 +160,7 @@
         <div class="my-6" x-show="!['general','integrations'].includes(String(settingsAdminTab || 'general'))"><div class="crm-divider opacity-70"></div></div>
 
         <div x-show="can('admin.full')" class="space-y-6">
-            <div class="crm-panel-block p-5" x-show="settingsAdminTab === 'omni'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'omni'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Telegram уведомления</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте бота для получения уведомлений администраторам.</div>
 
@@ -187,7 +187,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'omni'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'omni'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Омниканал: Telegram и MAX (HelpDesk)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
                     Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
@@ -270,7 +270,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'webrtc'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'webrtc'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">WebRTC (звонки и конференции)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
                     Настройка ICE servers (STUN/TURN). Для обычных сетей достаточно STUN. TURN нужен, если у части пользователей не соединяются звонки из-за NAT/ограничений.
@@ -290,7 +290,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="settingsAdminTab === 'weather'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'weather'">
                 <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Погода (OpenWeatherMap)</div>
                 <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте погодный виджет под общий интерфейс.</div>
 
@@ -307,7 +307,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-5" x-show="settingsAdminTab === 'diagnostics'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'diagnostics'">
                 <div class="crm-table-toolbar crm-table-toolbar--compact">
                     <div class="crm-section-head">
                         <div class="crm-section-head__content">

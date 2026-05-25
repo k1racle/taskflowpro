@@ -38,7 +38,7 @@ function handleDepartments(string $method, ?string $action, mixed $id): void {
             exit;
         }
 
-        // root, administrator и руководитель видят все отделы
+        // root и пользователи с admin.full / leader.view видят все отделы
         if (hasPermission($currentUser, 'admin.full') || hasPermission($currentUser, 'leader.view')) {
             $stmt = $pdo->prepare("
                 SELECT d.*,

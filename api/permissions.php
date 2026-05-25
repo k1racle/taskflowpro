@@ -4,7 +4,7 @@
  *
  * Принцип работы:
  * - root имеет ПОЛНЫЕ права на всё
- * - administrator имеет ПОЛНЫЕ права на всё
+ * - administrator получает права только через RBAC (admin.full), не как break-glass
  * - manager может создавать/редактировать в своих отделах
  * - employee может только просматривать
  *
@@ -46,7 +46,7 @@ function isUserInDepartment($userId, $deptId): bool {
 
 /**
  * Проверка прав на создание отдела
- * root и administrator - всегда true
+ * Проверка прав через permission codes
  */
 function canCreateDepartment($user): bool {
     return hasPermission($user, 'departments.create');
@@ -54,7 +54,7 @@ function canCreateDepartment($user): bool {
 
 /**
  * Проверка прав на редактирование отдела
- * root и administrator - всегда true
+ * Проверка через permission code departments.edit
  */
 function canEditDepartment($user, $deptId): bool {
     return hasPermission($user, 'departments.edit');
@@ -62,7 +62,7 @@ function canEditDepartment($user, $deptId): bool {
 
 /**
  * Проверка прав на удаление отдела
- * root и administrator - всегда true
+ * Проверка через permission code departments.delete
  */
 function canDeleteDepartment($user, $deptId): bool {
     return hasPermission($user, 'departments.delete');
@@ -70,7 +70,7 @@ function canDeleteDepartment($user, $deptId): bool {
 
 /**
  * Проверка прав на создание проекта
- * root и administrator - всегда true
+ * Проверка через permission code projects.create
  */
 function canCreateProject($user, $deptId): bool {
     return hasPermission($user, 'projects.create');
@@ -78,7 +78,7 @@ function canCreateProject($user, $deptId): bool {
 
 /**
  * Проверка прав на редактирование проекта
- * root и administrator - всегда true
+ * Проверка через permission code projects.edit
  */
 function canEditProject($user, $project): bool {
     return hasPermission($user, 'projects.edit');
@@ -86,7 +86,7 @@ function canEditProject($user, $project): bool {
 
 /**
  * Проверка прав на удаление проекта
- * root и administrator - всегда true
+ * Проверка через permission code projects.delete
  */
 function canDeleteProject($user, $project): bool {
     return hasPermission($user, 'projects.delete');
@@ -94,7 +94,7 @@ function canDeleteProject($user, $project): bool {
 
 /**
  * Проверка прав на просмотр проекта
- * root и administrator - всегда true
+ * Проверка через permission code projects.view
  */
 function canViewProject($user, $project): bool {
     return hasPermission($user, 'projects.view');
@@ -102,7 +102,7 @@ function canViewProject($user, $project): bool {
 
 /**
  * Проверка прав на создание задачи
- * root и administrator - всегда true
+ * Проверка через permission code tasks.create
  */
 function canCreateTask($user, $deptId = null): bool {
     return hasPermission($user, 'tasks.create');
@@ -110,7 +110,7 @@ function canCreateTask($user, $deptId = null): bool {
 
 /**
  * Проверка прав на редактирование задачи
- * root и administrator - всегда true
+ * Проверка через permission code tasks.edit
  */
 function canEditTask($user, $task): bool {
     return hasPermission($user, 'tasks.edit');
@@ -118,7 +118,7 @@ function canEditTask($user, $task): bool {
 
 /**
  * Проверка прав на удаление задачи
- * root и administrator - всегда true
+ * Проверка через permission code tasks.delete
  */
 function canDeleteTask($user, $task): bool {
     return hasPermission($user, 'tasks.delete');
@@ -126,7 +126,7 @@ function canDeleteTask($user, $task): bool {
 
 /**
  * Проверка прав на просмотр задачи
- * root и administrator - всегда true
+ * Проверка через permission code tasks.view
  */
 function canViewTask($user, $task): bool {
     return hasPermission($user, 'tasks.view');
@@ -134,7 +134,7 @@ function canViewTask($user, $task): bool {
 
 /**
  * Проверка прав на просмотр отдела
- * root и administrator - всегда true
+ * Проверка через permission code departments.view
  */
 function canViewDepartment($user, $deptId): bool {
     return hasPermission($user, 'departments.view');

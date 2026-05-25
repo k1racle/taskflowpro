@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4">
-    <div x-show="bookingLoading" x-cloak class="liquid-glass-pro rounded-3xl p-6">
+    <div x-show="bookingLoading" x-cloak class="liquid-glass-pro rounded-3xl p-5 lg:p-6">
         <div class="crm-empty-state text-center py-8">
             <div class="crm-empty-state-title inline-flex items-center gap-2 justify-center">
                 <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div x-show="bookingError" x-cloak class="liquid-glass-pro rounded-3xl p-5 border border-red-500/30 bg-red-500/5">
+    <div x-show="bookingError" x-cloak class="liquid-glass-pro rounded-3xl p-5 lg:p-6 border border-red-500/30 bg-red-500/5">
         <div class="crm-empty-state text-center py-4">
             <div class="crm-empty-state-title">Не удалось загрузить онлайн-запись</div>
             <div class="crm-empty-state-text" x-text="bookingError"></div>

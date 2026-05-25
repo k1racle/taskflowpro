@@ -145,7 +145,7 @@
 <!-- Модалка приглашения сотрудников -->
 <div x-show="inviteModalOpen" x-transition.opacity x-cloak class="fixed inset-0 z-[110] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="closeInviteModal()">
     <div class="liquid-glass-pro lg-modal-shell rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
-        <div class="p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
+        <div class="p-5 lg:p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
             <div class="min-w-0">
                 <div class="text-lg font-bold truncate" style="color: var(--lg-text-primary)">Пригласить сотрудников</div>
                 <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="currentConference?.title || ''"></div>
@@ -157,7 +157,7 @@
             </button>
         </div>
 
-        <div class="p-6 space-y-4">
+        <div class="p-5 lg:p-6 space-y-4">
             <label for="conference-invite-search" class="sr-only">Поиск участника для приглашения</label>
             <input id="conference-invite-search" name="conference_invite_search" type="text" x-model="inviteSearch" placeholder="Поиск по имени или логину" class="w-full px-4 py-3 rounded-xl crm-control-input crm-input-no-suggest" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
 
@@ -185,7 +185,7 @@
             </div>
         </div>
 
-        <div class="p-6 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
+        <div class="p-5 lg:p-6 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
             <div class="text-sm" style="color: var(--lg-text-tertiary)">Выбрано: <span class="font-semibold" x-text="(inviteSelected || []).length"></span></div>
             <div class="flex items-center gap-2">
                 <button @click="closeInviteModal()" class="crm-btn-secondary">Отмена</button>
@@ -348,7 +348,7 @@
 <!-- Модалка создания конференции -->
 <div x-show="createConferenceModalOpen" x-transition.opacity x-cloak class="fixed inset-0 z-[120] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="closeCreateConferenceModal()">
     <div class="liquid-glass-pro lg-modal-shell rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
-        <div class="p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
+        <div class="p-5 lg:p-6 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between gap-3">
             <div class="text-lg font-bold" style="color: var(--lg-text-primary)">Новая встреча</div>
             <button @click="closeCreateConferenceModal()" class="crm-btn-ghost crm-icon-button">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,7 +357,7 @@
             </button>
         </div>
 
-        <div class="p-6 space-y-4">
+        <div class="p-5 lg:p-6 space-y-4">
             <div class="space-y-2">
                 <label for="conference-title" class="block text-sm font-semibold" style="color: var(--lg-text-secondary)">Название</label>
                 <input id="conference-title" name="title" type="text" x-model="createConferenceForm.title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Еженедельный созвон">
@@ -385,7 +385,7 @@
             </div>
         </div>
 
-        <div class="p-6 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center justify-end gap-2">
+        <div class="p-5 lg:p-6 border-t border-gray-200/50 dark:border-gray-700/50 flex items-center justify-end gap-2">
             <button @click="closeCreateConferenceModal()" class="crm-btn-secondary">Закрыть</button>
             <button @click="submitCreateConference()" :disabled="createConferenceSubmitting" class="crm-btn-primary transition-all disabled:opacity-50">
                 <span x-show="!createConferenceSubmitting">Создать</span>

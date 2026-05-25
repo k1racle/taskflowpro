@@ -1219,7 +1219,6 @@ if ($method === 'GET' && $action === 'stats' && $id === null) {
             $stage = 'notify-admins';
             // Notify full admins (admin.full) + root users.
             $widgetRecipients = getUserIdsByRoles($pdo, ['root']);
-            // Prefer permission-based recipients when RBAC tables are available.
             try {
                 $stmt = $pdo->prepare("SELECT DISTINCT u.id FROM users u JOIN roles r ON r.name = u.role JOIN role_permissions rp ON rp.role_id = r.id JOIN permissions p ON p.id = rp.permission_id WHERE p.code = 'admin.full'");
                 $stmt->execute();

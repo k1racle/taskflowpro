@@ -108,7 +108,7 @@
                 <div class="crm-empty-state-title">Не удалось загрузить заявки</div>
                 <div class="crm-empty-state-text" x-text="helpdeskError"></div>
             </div>
-            <div x-show="helpdeskLoading" class="px-4 py-6">
+            <div x-show="helpdeskLoading" class="px-4 py-5">
                 <div class="crm-empty-state" data-state="loading">
                     <div class="crm-empty-state-title">Загружаем заявки...</div>
                     <div class="crm-empty-state-text">Подтягиваем очередь, статусы, категории и текущую фильтрацию.</div>
@@ -189,7 +189,7 @@
                     </template>
                 </tbody>
             </table>
-            <div x-show="!helpdeskLoading && (!helpdeskTickets || helpdeskTickets.length === 0)" class="crm-empty-state text-center">
+            <div x-show="!helpdeskLoading && (!helpdeskTickets || helpdeskTickets.length === 0)" class="crm-empty-state text-center px-4 py-8">
                 <div class="crm-empty-state-title">Заявок не найдено</div>
                 <div class="crm-empty-state-text">Измените фильтры или создайте новую заявку вручную.</div>
                 <div class="crm-empty-state-actions">
@@ -200,7 +200,7 @@
         </div>
 
         <div class="crm-detail-panel crm-panel-stack crm-panel-stack--compact">
-            <div class="liquid-glass-pro rounded-3xl p-5 crm-detail-card crm-card-compact crm-card-equal">
+            <div class="liquid-glass-pro rounded-3xl p-4 lg:p-5 crm-detail-card crm-card-compact crm-card-equal">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Карточка заявки</div>
@@ -242,7 +242,7 @@
                 </div>
             </div>
 
-            <div class="liquid-glass-pro rounded-3xl p-5 crm-queue-card crm-card-compact crm-card-equal">
+            <div class="liquid-glass-pro rounded-3xl p-4 lg:p-5 crm-queue-card crm-card-compact crm-card-equal">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Фокус очереди</div>
@@ -274,7 +274,7 @@
      @click.self="ticketDetailModalOpen = false">
     <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         <!-- Header -->
-        <div class="p-6 flex items-start justify-between gap-4 relative">
+        <div class="p-5 lg:p-6 flex items-start justify-between gap-4 relative">
             <div class="absolute left-6 right-6 -bottom-2"><div class="crm-divider opacity-70"></div></div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-3 mb-2">
@@ -306,18 +306,18 @@
         </div>
 
         <!-- Content -->
-        <div class="flex-1 overflow-y-auto p-6">
+        <div class="flex-1 overflow-y-auto p-5 lg:p-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Основная информация -->
                 <div class="lg:col-span-2 space-y-6">
                     <!-- Описание -->
-                    <div class="liquid-glass-pro rounded-2xl p-5">
+                    <div class="liquid-glass-pro rounded-2xl p-4 lg:p-5">
                         <div class="text-sm font-semibold mb-3" style="color: var(--lg-text-primary)">Описание проблемы</div>
                         <div class="text-sm whitespace-pre-wrap" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.description"></div>
                     </div>
 
                     <!-- Комментарии -->
-                    <div class="liquid-glass-pro rounded-2xl p-5">
+                    <div class="liquid-glass-pro rounded-2xl p-4 lg:p-5">
                         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                             <div class="crm-section-head__content">
                                 <div class="crm-section-head__title">Комментарии</div>
@@ -373,7 +373,7 @@
                     </div>
 
                     <!-- История -->
-                    <div class="liquid-glass-pro rounded-2xl p-5">
+                    <div class="liquid-glass-pro rounded-2xl p-4 lg:p-5">
                         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                             <div class="crm-section-head__content">
                                 <div class="crm-section-head__title">История изменений</div>
@@ -475,7 +475,7 @@
                     </div>
 
                     <!-- Информация -->
-                    <div class="liquid-glass-pro rounded-2xl p-5 space-y-4">
+                    <div class="liquid-glass-pro rounded-2xl p-4 lg:p-5 space-y-4">
                         <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Информация</div>
                         
                         <div>
@@ -530,7 +530,7 @@
 <div x-show="convertModalOpen" x-cloak x-transition.opacity
      class="fixed inset-0 z-[160] flex items-center justify-center p-4 backdrop-blur-sm"
      @click.self="convertModalOpen = false">
-    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-md p-6">
+    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-md p-5 lg:p-6">
         <div class="text-lg font-semibold mb-2" style="color: var(--lg-text-primary)">Конвертировать заявку</div>
         <div class="text-sm mb-6" style="color: var(--lg-text-secondary)">Создайте связанный объект</div>
         
@@ -576,7 +576,7 @@
 <div x-show="resolveModalOpen" x-cloak x-transition.opacity
      class="fixed inset-0 z-[160] flex items-center justify-center p-4 backdrop-blur-sm"
      @click.self="resolveModalOpen = false">
-    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-lg p-6">
+    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-lg p-5 lg:p-6">
         <div class="text-lg font-semibold mb-2" style="color: var(--lg-text-primary)">Завершение заявки</div>
         <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Опишите решение проблемы</div>
         
@@ -606,7 +606,7 @@
      class="fixed inset-0 z-[150] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop"
      @click.self="createTicketModalOpen = false">
     <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
-        <div class="p-6 flex items-center justify-between gap-3 relative">
+        <div class="p-5 lg:p-6 flex items-center justify-between gap-3 relative">
             <div class="absolute left-6 right-6 -bottom-2"><div class="crm-divider opacity-70"></div></div>
             <div>
                 <div class="text-xl font-semibold" style="color: var(--lg-text-primary)">Новая заявка</div>
@@ -619,7 +619,7 @@
             </button>
         </div>
 
-        <div class="p-6 space-y-4">
+        <div class="p-5 lg:p-6 space-y-4">
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label for="helpdesk-client-name" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Имя клиента *</label>
@@ -663,7 +663,7 @@
             </div>
         </div>
 
-        <div class="p-6 flex items-center justify-end gap-3 relative">
+        <div class="p-5 lg:p-6 flex items-center justify-end gap-3 relative">
             <div class="absolute left-6 right-6 -top-2"><div class="crm-divider opacity-70"></div></div>
             <button @click="createTicketModalOpen = false" class="crm-btn-secondary">Отмена</button>
             <button @click="createTicket()" :disabled="helpdeskSubmitting" class="crm-btn-primary disabled:opacity-60 disabled:cursor-not-allowed" x-text="helpdeskSubmitting ? 'Создание...' : 'Создать'"></button>

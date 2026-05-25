@@ -24,7 +24,7 @@
 
 - В продукте уже есть рабочее ядро: CRM, задачи, документы, файлы, знания, helpdesk, виджеты сайта, уведомления, почта, конференции, аудит и лицензирование.
 - Есть базовые foundation-слои для security, audit trail, backup/restore, migrate preflight/plan и release smoke.
-- RBAC уже описан как permission-code модель, но в коде и UI еще остались legacy role-name проверки и расхождения между `root`, `administrator` и `admin.full`.
+- RBAC уже в основном переведён на permission-code модель: `root` оставлен как break-glass, `administrator` должен работать только через `admin.full`.
 - WooCommerce referral integration уже существует как MVP: referral code, referral link, webhook, plugin, защита от дублей и отображение в карточке клиента.
 - ProstieZvonki / IP-телефония: вместо Mango, как основной supported интеграционный модуль.
 - Чат существует, но он еще не соответствует целевому real-time и UX уровню, который нужен для продаваемого продукта.

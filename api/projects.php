@@ -37,7 +37,7 @@ function handleProjects(string $method, ?string $action, mixed $id): void {
 
         $departmentFilter = $_GET['department_id'] ?? null;
 
-        // root, administrator и руководитель видят все проекты
+        // root и пользователи с admin.full / leader.view видят все проекты
         if (hasPermission($currentUser, 'admin.full') || hasPermission($currentUser, 'leader.view')) {
             $stmt = $pdo->prepare("
                 SELECT p.*,
@@ -181,7 +181,7 @@ function handleProjects(string $method, ?string $action, mixed $id): void {
             $departmentIds = [(int)$data['department_id']];
         }
 
-        // root, administrator и руководитель могут создавать без отделов
+        // root и пользователи с admin.full / leader.view могут создавать без отделов
         if (empty($departmentIds) && !hasPermission($currentUser, 'admin.full') && !hasPermission($currentUser, 'leader.view')) {
             http_response_code(400);
             echo json_encode(['success' => false, 'error' => 'Укажите хотя бы один отдел']);

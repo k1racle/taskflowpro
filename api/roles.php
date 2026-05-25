@@ -278,11 +278,6 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
             ],
         ]);
 
-        if (!empty($permissionScopes)) {
-            $stmt = $pdo->prepare("UPDATE roles SET permissions = ? WHERE id = ?");
-            $stmt->execute([json_encode($requestedPermissionCodes), $newRoleId]);
-        }
-
         echo json_encode([
             'success' => true,
             'data' => [
@@ -311,7 +306,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
         }
 
         // Только root может редактировать системные роли
-        if ($role['is_system'] && $currentUser['role'] !== 'root') {
+        if ($role['is_system'] && ($currentUser['role'] ?? null) !== 'root') {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Только root может редактировать системные роли']);
             exit;
@@ -341,11 +336,6 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 json_encode($data['permissions'] ?? []),
                 $roleId
             ]);
-
-            if (!empty($data['permission_scopes']) && is_array($data['permission_scopes'])) {
-                $stmt = $pdo->prepare("UPDATE roles SET permissions = permissions WHERE id = ?");
-                $stmt->execute([$roleId]);
-            }
 
             auditLog($pdo, 'rbac.role.updated', [
                 'actor' => $currentUser,
@@ -388,7 +378,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
         }
 
         // Только root может удалять системные роли
-        if ($role['is_system'] && $currentUser['role'] !== 'root') {
+        if ($role['is_system'] && ($currentUser['role'] ?? null) !== 'root') {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Только root может удалять системные роли']);
             exit;
@@ -438,7 +428,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
             $role = $stmt->fetch();
 
             // Только root может изменять права системных ролей
-            if ($role && $role['is_system'] && $currentUser['role'] !== 'root') {
+            if ($role && $role['is_system'] && ($currentUser['role'] ?? null) !== 'root') {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'error' => 'Только root может изменять права системных ролей']);
                 exit;
@@ -558,17 +548,6 @@ function hasPermission($user, string $permissionCode): bool {
         return true;
     }
 
-    // Legacy fallback: системная роль из users.role всё равно должна давать ожидаемые права,
-    // даже если RBAC-таблицы ещё не заполнены (или идёт миграция).
-    if (in_array($permissionCode, getSystemRolePermissionCodes($userRole), true)) {
-        return true;
-    }
-
-    // Универсальный флаг для UI/админки.
-    if ($permissionCode === 'admin.full') {
-        // Root/admin уже отработали выше. Для остальных — ищем в RBAC.
-    }
-
     if ($userRole === '') {
         return false;
     }
@@ -619,25 +598,6 @@ function getUserPermissions($userId): array {
         ]];
     }
 
-    if ($role === 'leader') {
-        $stmt = $pdo->query("SELECT code, name, category FROM permissions WHERE code <> 'admin.full' ORDER BY category, name");
-        $leaderPermissions = $stmt ? $stmt->fetchAll() : [];
-        if ($leaderPermissions) {
-            return $leaderPermissions;
-        }
-    }
-
-    $legacyRolePermissionCodes = getSystemRolePermissionCodes((string)$role);
-    if (!empty($legacyRolePermissionCodes)) {
-        $placeholders = implode(',', array_fill(0, count($legacyRolePermissionCodes), '?'));
-        $stmt = $pdo->prepare("SELECT code, name, category FROM permissions WHERE code IN ($placeholders) ORDER BY category, name");
-        $stmt->execute($legacyRolePermissionCodes);
-        $legacyPermissions = $stmt->fetchAll();
-        if ($legacyPermissions) {
-            return $legacyPermissions;
-        }
-    }
-    
     if (!$role) {
         return [];
     }
