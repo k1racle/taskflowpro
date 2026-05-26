@@ -741,6 +741,23 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
                 }
             }
 
+            $releaseReady = $summaryStatus === 'ok' && count($boxMissingItems) === 0;
+            $blockers = [];
+            foreach ($checks as $key => $check) {
+                if (!empty($check['ok'])) {
+                    continue;
+                }
+
+                $severity = $check['severity'] ?? 'warning';
+                $blockers[] = [
+                    'key' => $key,
+                    'label' => $check['message'] ?? $key,
+                    'severity' => $severity,
+                    'group' => $check['group'] ?? null,
+                    'path' => $check['path'] ?? null,
+                ];
+            }
+
             $boxReadinessStatus = count($boxMissingItems) > 0 ? 'warning' : 'ok';
 
             echo json_encode([
@@ -763,6 +780,8 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
                     ],
                     'box_readiness' => [
                         'status' => $boxReadinessStatus,
+                        'release_ready' => $releaseReady,
+                        'blocking_issues' => $blockers,
                         'summary' => [
                             'ok_count' => $boxOkCount,
                             'missing_count' => count($boxMissingItems),

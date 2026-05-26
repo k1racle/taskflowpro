@@ -199,7 +199,7 @@
                 <tbody class="divide-y" style="border-color: var(--lg-border)">
                     <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="'list-' + project.id">
                         <tr @click="openProjectModal(project)" class="cursor-pointer">
-                            <td class="px-4 py-4 min-w-[280px]">
+                            <td class="px-4 py-4 min-w-[240px]">
                                 <div class="min-w-0">
                                     <div class="font-semibold truncate" style="color: var(--lg-text-primary)" x-text="project.name"></div>
                                     <div class="text-xs mt-1 truncate" style="color: var(--lg-text-tertiary)" x-text="project.description || ''"></div>
@@ -230,7 +230,7 @@
                                     <span class="text-sm" style="color: var(--lg-text-secondary)" x-text="(project.members || []).length ? (project.members || []).length : '0'"></span>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 min-w-[180px]">
+                            <td class="px-4 py-4 min-w-[160px]">
                                 <div class="flex items-center gap-3">
                                     <div class="flex-1 h-2 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));">
                                         <div class="h-full rounded-full" style="background: var(--lg-primary)" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>

@@ -961,6 +961,10 @@ async function apiGetRoles() {
     return apiGet('users/roles');
 }
 
+async function apiGetManageRoles() {
+    return apiGet('roles');
+}
+
 async function apiGetRolePermissions(roleId) {
     return apiGet(`roles/${roleId}/permissions`);
 }
@@ -977,10 +981,6 @@ async function apiDeleteUserDepartment(userId, departmentId) {
     return apiDelete(`user-departments/${encodeURIComponent(userId)}/${encodeURIComponent(departmentId)}`);
 }
 
-async function apiGetManageRoles() {
-    return apiGet('roles');
-}
-
 async function apiCreateRole(roleData) {
     return apiPost('roles', roleData);
 }
@@ -995,6 +995,10 @@ async function apiDeleteRole(id) {
 
 async function apiGetPermissions() {
     return apiGet('permissions');
+}
+
+async function apiGetAdminHealth() {
+    return apiGet('admin-health');
 }
 
 async function apiGetUserPermissions(userId) {
@@ -1123,6 +1127,7 @@ if (typeof window !== 'undefined') {
     window.apiUpdateRole = apiUpdateRole;
     window.apiDeleteRole = apiDeleteRole;
     window.apiGetPermissions = apiGetPermissions;
+    window.apiGetAdminHealth = apiGetAdminHealth;
     window.apiGetUserPermissions = apiGetUserPermissions;
 
     // CRM

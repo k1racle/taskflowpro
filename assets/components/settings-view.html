@@ -24,7 +24,7 @@
                 <button type="button" @click="settingsAdminTab='omni'" x-on:click="settingsAdminTab='omni'" :class="settingsAdminTab === 'omni' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Омниканал</button>
                 <button type="button" @click="settingsAdminTab='webrtc'" x-on:click="settingsAdminTab='webrtc'" :class="settingsAdminTab === 'webrtc' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">WebRTC</button>
                 <button type="button" @click="settingsAdminTab='weather'" x-on:click="settingsAdminTab='weather'" :class="settingsAdminTab === 'weather' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Погода</button>
-                <button type="button" @click="settingsAdminTab='diagnostics'" x-on:click="settingsAdminTab='diagnostics'" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
+                <button type="button" @click="settingsAdminTab='diagnostics'" x-on:click="settingsAdminTab='diagnostics'; loadAdminHealth && loadAdminHealth(true)" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
             </div>
         </div>
 
@@ -323,6 +323,101 @@
 
                 <div class="text-xs mt-3" style="color: var(--lg-text-tertiary)">
                     Проверяются только безопасные read-only сигналы коробочной готовности: ядро API, auth/CRM baseline, manifest/sw, ключевые каталоги, служебные writable-paths и базовое окружение PHP.
+                </div>
+
+                <div x-show="adminHealthLoading" class="mt-4 crm-empty-state" data-state="loading">
+                    <div class="crm-empty-state-title">Проверяем готовность коробки</div>
+                    <div class="crm-empty-state-text">Собираем сигнал о RBAC, поддерживаемых интеграциях и статусе релизной готовности.</div>
+                </div>
+
+                <div x-show="adminHealthError" class="mt-4 crm-empty-state" data-state="error">
+                    <div class="crm-empty-state-title">Не удалось получить статус готовности</div>
+                    <div class="crm-empty-state-text" x-text="adminHealthError"></div>
+                </div>
+
+                <div x-show="adminHealth" class="mt-4 crm-panel-stack crm-panel-stack--compact">
+                    <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                        <div class="crm-section-head">
+                            <div class="crm-section-head__content">
+                                <div class="crm-section-head__title">Production readiness</div>
+                                <div class="crm-section-head__meta" x-text="adminHealth?.release_ready ? 'Готово к продаже' : 'Есть блокирующие проблемы'"></div>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full" :style="adminHealth?.release_ready ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : 'background:rgba(239,68,68,.18); color:#fecaca'" x-text="adminHealth?.release_ready ? 'READY' : 'NOT READY'"></span>
+                        </div>
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Release gate</div>
+                                <div class="font-semibold mt-1" :style="adminHealth?.release_ready ? 'color:#bbf7d0' : 'color:#fecaca'" x-text="adminHealth?.release_ready ? 'READY' : 'NOT READY'"></div>
+                            </div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Blocking issues</div>
+                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="(adminHealth?.blocking_issues || []).length"></div>
+                            </div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Check source</div>
+                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mt-4 text-sm">
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">RBAC source</div>
+                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
+                            </div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Break-glass</div>
+                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.break_glass_role || 'unknown'"></div>
+                            </div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Administrator break-glass</div>
+                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.administrator_break_glass ? 'yes' : 'no'"></div>
+                            </div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Chat realtime</div>
+                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.chat_realtime || 'unknown'"></div>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="text-xs uppercase tracking-wide font-semibold" style="color: var(--lg-text-tertiary)">Supported integrations</div>
+                            <div class="mt-2 flex flex-wrap gap-2">
+                                <template x-for="integration in (adminHealth?.supported_integrations || [])" :key="integration">
+                                    <span class="crm-inline-badge" x-text="integration"></span>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="mt-4" x-show="(adminHealth?.notes || []).length">
+                            <div class="text-xs uppercase tracking-wide font-semibold" style="color: var(--lg-text-tertiary)">Notes</div>
+                            <ul class="mt-2 space-y-1 text-sm" style="color: var(--lg-text-secondary)">
+                                <template x-for="note in (adminHealth?.notes || [])" :key="note">
+                                    <li x-text="'• ' + note"></li>
+                                </template>
+                            </ul>
+                        </div>
+
+                        <div class="mt-4" x-show="(adminHealth?.blocking_issues || []).length">
+                            <div class="text-xs uppercase tracking-wide font-semibold" style="color: var(--lg-text-tertiary)">Blocking issues</div>
+                            <ul class="mt-2 space-y-2 text-sm">
+                                <template x-for="issue in (adminHealth?.blocking_issues || [])" :key="issue.key">
+                                    <li class="rounded-2xl p-3" :style="issue.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10); color:#fecaca' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10); color:#fde68a'">
+                                        <div class="font-semibold" x-text="issue.label"></div>
+                                        <div class="text-xs mt-1 opacity-80" x-text="(issue.group ? ('Группа: ' + issue.group + ' · ') : '') + (issue.path ? ('Путь: ' + issue.path) : '')"></div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                        <div class="flex items-center justify-between gap-3 flex-wrap">
+                            <div>
+                                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Release gate control</div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Сбросьте устаревшие данные и запустите проверку перед передачей клиенту.</div>
+                            </div>
+                            <button class="crm-btn-primary text-sm" :disabled="adminHealthLoading || diagnosticsBaseline.loading" @click="runReleaseGate()">
+                                <span x-show="!(adminHealthLoading || diagnosticsBaseline.loading)">Проверить готовность</span>
+                                <span x-show="adminHealthLoading || diagnosticsBaseline.loading">Проверяем...</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div x-show="diagnosticsBaseline.loading" class="mt-4 crm-empty-state" data-state="loading">

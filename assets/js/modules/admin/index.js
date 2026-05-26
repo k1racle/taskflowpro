@@ -97,6 +97,14 @@ window.TaskFlowAdmin = (function () {
         return ctx.currentUser?.role === 'root' || !!ctx.can?.('admin.full');
     }
 
+    function isRootRole(role) {
+        return String(role?.name || role?.role || '').toLowerCase() === 'root';
+    }
+
+    function isRootRole(role) {
+        return String(role?.name || role?.role || '').toLowerCase() === 'root';
+    }
+
     function parseRolePermissions(role) {
         let permissions = role?.permissions || {};
 
@@ -781,6 +789,11 @@ window.TaskFlowAdmin = (function () {
                 }
 
                 if (ctx.editingRole?.id) {
+                    if (isRootRole(ctx.editingRole)) {
+                        ctx.showToast('Права root управляются автоматически', 'error');
+                        return;
+                    }
+
                     const permissionCodes = [];
                     for (const [section, actions] of Object.entries(ctx.rolePermissions || {})) {
                         for (const [action, enabled] of Object.entries(actions || {})) {
@@ -920,6 +933,37 @@ window.TaskFlowAdmin = (function () {
             applySettingsForm(ctx);
         },
 
+        async loadAdminHealth(ctx, force = false) {
+            if (ctx.adminHealthLoading) return;
+            if (!force && ctx.adminHealth && (Date.now() - (ctx.adminHealthLoadedAt || 0)) < 30000) return;
+
+            ctx.adminHealthLoading = true;
+            ctx.adminHealthError = '';
+            try {
+                const res = await apiGetAdminHealth();
+                if (res?.success) {
+                    ctx.adminHealth = res.data || {};
+                    ctx.adminHealthLoadedAt = Date.now();
+                } else {
+                    ctx.adminHealthError = res?.error || 'Не удалось загрузить health-status';
+                }
+            } catch (error) {
+                ctx.adminHealthError = error?.message || 'Не удалось загрузить health-status';
+            } finally {
+                ctx.adminHealthLoading = false;
+            }
+        },
+
+        async runReleaseGate(ctx) {
+            try {
+                await this.loadAdminHealth(ctx, true);
+                await this.loadDiagnosticsBaseline(ctx, true);
+                ctx.showToast('Проверка готовности обновлена', 'success');
+            } catch (error) {
+                ctx.showToast(error?.message || 'Не удалось обновить проверку готовности', 'error');
+            }
+        },
+
         async loadUserDepartments(ctx, userId) {
             if (!userId) return;
             ctx.userDepartmentsLoading = true;
@@ -978,6 +1022,7 @@ window.TaskFlowAdmin = (function () {
         async openSettingsModal(ctx) {
             ctx.settingsModalOpen = true;
             await ctx.loadSettings();
+            await this.loadAdminHealth(ctx);
 
             // User-scoped settings
             try {

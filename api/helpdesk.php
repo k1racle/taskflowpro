@@ -1230,6 +1230,10 @@ if ($method === 'GET' && $action === 'stats' && $id === null) {
                 // best-effort
             }
 
+            if (!empty($widgetRecipients)) {
+                $widgetRecipients = array_values(array_unique(array_map('intval', $widgetRecipients)));
+            }
+
             $widgetRecipients = array_values(array_unique(array_map('intval', $widgetRecipients)));
             if ($widgetRecipients) {
                 createNotifications($pdo, $widgetRecipients, [

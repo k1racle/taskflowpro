@@ -102,6 +102,18 @@ function checkEnvironment(): array {
         'hint' => 'Нужен для логов API.',
     ];
 
+    $checks[] = [
+        'name' => 'docker entrypoint ready',
+        'ok' => is_file(__DIR__ . '/docker-entrypoint.sh') || is_file(__DIR__ . '/docker-entrypoint.sh'),
+        'hint' => 'Нужен для коробочного контейнерного деплоя.',
+    ];
+
+    $checks[] = [
+        'name' => 'admin health endpoint',
+        'ok' => is_file(__DIR__ . '/api/index.php') && is_file(__DIR__ . '/api/health.php'),
+        'hint' => 'Нужен для диагностики готовности и support-check.',
+    ];
+
     return $checks;
 }
 

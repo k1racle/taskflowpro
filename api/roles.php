@@ -226,6 +226,12 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
         if (!empty($data['permissions']) && is_array($data['permissions'])) {
             $requestedPermissionCodes = array_values(array_filter(array_map('strval', $data['permissions'])));
         }
+        $roleName = (string)$data['name'];
+        if ($roleName === 'root') {
+            $requestedPermissionCodes = ['admin.full'];
+        } elseif (in_array($roleName, ['employee', 'leader'], true) && empty($requestedPermissionCodes)) {
+            $requestedPermissionCodes = getSystemRolePermissionCodes($roleName);
+        }
         $permissionScopes = is_array($data['permission_scopes'] ?? null) ? $data['permission_scopes'] : [];
 
         $stmt = $pdo->prepare("
@@ -237,7 +243,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
             $data['name'],
             $data['description'] ?? '',
             $data['icon'] ?? 'shield',
-            json_encode($requestedPermissionCodes)
+            json_encode(array_values(array_unique($requestedPermissionCodes)))
         ]);
 
         $newRoleId = $pdo->lastInsertId();
@@ -245,8 +251,8 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
         // Если указаны права, добавляем их
         $appliedPermissionCodes = [];
         $skippedPermissionCodes = [];
-        if (!empty($data['permissions']) && is_array($data['permissions'])) {
-            foreach ($data['permissions'] as $permissionCode) {
+        if (!empty($requestedPermissionCodes)) {
+            foreach ($requestedPermissionCodes as $permissionCode) {
                 // Сначала находим ID права по коду
                 $stmt = $pdo->prepare("SELECT id FROM permissions WHERE code = ?");
                 $stmt->execute([$permissionCode]);
@@ -435,6 +441,14 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
             }
 
             $permissionScopes = is_array($data['permission_scopes'] ?? null) ? $data['permission_scopes'] : [];
+            $permissionCodes = [];
+            if (!empty($data['permissions']) && is_array($data['permissions'])) {
+                $permissionCodes = array_values(array_unique(array_filter(array_map('strval', $data['permissions']))));
+            }
+
+            if (($role['name'] ?? null) === 'root') {
+                $permissionCodes = ['admin.full'];
+            }
 
             // Удаляем старые права
             $stmt = $pdo->prepare("DELETE FROM role_permissions WHERE role_id = ?");
@@ -442,22 +456,20 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
 
             // Добавляем новые
             $notFound = [];
-            if (!empty($data['permissions']) && is_array($data['permissions'])) {
-                foreach ($data['permissions'] as $permissionCode) {
-                    // Сначала находим ID права по коду
-                    $stmt = $pdo->prepare("SELECT id FROM permissions WHERE code = ?");
-                    $stmt->execute([$permissionCode]);
-                    $perm = $stmt->fetch();
-                    
-                    if ($perm) {
-                        $stmt = $pdo->prepare("
-                            INSERT INTO role_permissions (role_id, permission_id)
-                            VALUES (?, ?)
-                        ");
-                        $stmt->execute([$roleId, $perm['id']]);
-                    } else {
-                        $notFound[] = $permissionCode;
-                    }
+            foreach ($permissionCodes as $permissionCode) {
+                // Сначала находим ID права по коду
+                $stmt = $pdo->prepare("SELECT id FROM permissions WHERE code = ?");
+                $stmt->execute([$permissionCode]);
+                $perm = $stmt->fetch();
+
+                if ($perm) {
+                    $stmt = $pdo->prepare("
+                        INSERT INTO role_permissions (role_id, permission_id)
+                        VALUES (?, ?)
+                    ");
+                    $stmt->execute([$roleId, $perm['id']]);
+                } else {
+                    $notFound[] = $permissionCode;
                 }
             }
 

@@ -407,13 +407,13 @@
                                 <p class="text-xs line-clamp-1" style="color: var(--crm-text-muted)" x-text="task.description || task.project_name || 'Без описания'"></p>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Контекст">
+                            <td class="px-4 py-4" data-label="Контекст">
                             <div class="space-y-1 min-w-[180px]">
                                 <div class="text-xs font-medium" style="color: var(--lg-text-primary)" x-text="task.project_name || 'Без проекта'"></div>
                                 <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="task.department_name || task.department?.name || (task.departments && task.departments[0] ? task.departments[0].name : '') || 'Без отдела'"></div>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="CRM">
+                            <td class="px-4 py-4" data-label="CRM">
                             <div class="space-y-1">
                                 <div x-show="task.deal_id" class="crm-status-pill crm-status-pill-accent text-xs inline-block truncate">
                                     <span x-text="task.deal_title || 'Сделка #' + task.deal_id"></span>
@@ -424,23 +424,23 @@
                                 <span x-show="!task.deal_id && !task.client_id" class="text-xs text-gray-400">—</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Статус">
+                            <td class="px-4 py-4" data-label="Статус">
                             <div class="space-y-1">
                                 <span class="crm-status-pill text-xs inline-flex" :style="'background: color-mix(in oklab, ' + task.status_color + ' 12%, var(--crm-surface)); color: ' + task.status_color + '; border-color: color-mix(in oklab, ' + task.status_color + ' 24%, var(--crm-border))'" x-text="task.status"></span>
                                 <div x-show="task.current_substage_id && taskSubstages && taskSubstages.length" class="text-[11px]" style="color: var(--lg-text-tertiary)" x-text="taskSubstages.find(s => String(s.id) === String(task.current_substage_id))?.name || ''"></div>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Приоритет">
+                        <td class="px-4 py-4" data-label="Приоритет">
                                     <span :class="'priority-' + task.priority" class="text-xs capitalize" x-text="translatePriority(task.priority)"></span>
                         </td>
-                        <td class="px-6 py-4" data-label="Исполнитель">
+                        <td class="px-4 py-4" data-label="Исполнитель">
                             <div class="flex items-center gap-2">
                                   <div class="crm-avatar"
                                         style="background: var(--lg-primary)" x-text="getInitials(task.assignee_name)"></div>
                                 <span class="text-sm" style="color: var(--crm-text)" x-text="task.assignee_name || '—'"></span>
                             </div>
                         </td>
-                        <td class="px-6 py-4" data-label="Срок">
+                        <td class="px-4 py-4" data-label="Срок">
                             <div>
                                 <span class="text-sm" style="color: var(--crm-text)" x-text="formatDate(task.deadline)"></span>
                                 <div class="text-[11px] mt-1" :class="isOverdue(task.deadline) ? 'text-red-600 dark:text-red-400 font-semibold' : ''" :style="!isOverdue(task.deadline) ? 'color: var(--crm-text-muted)' : ''" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>

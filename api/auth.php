@@ -699,7 +699,7 @@ function handleAuth(string $method, ?string $action, mixed $id): void {
             echo json_encode(['success' => false, 'error' => 'Только root может регистрировать root-пользователей']);
             exit;
         }
-        if ($requestedRole !== 'root' && hasPermission(['role' => $requestedRole], 'admin.full') && !hasAdminAccess($currentUser)) {
+        if ($requestedRole !== 'root' && hasPermission(['role' => $requestedRole], 'admin.full') && !hasPermission($currentUser, 'admin.full') && ($currentUser['role'] ?? null) !== 'root') {
             http_response_code(403);
             echo json_encode(['success' => false, 'error' => 'Только пользователи с админ-доступом могут регистрировать привилегированные роли']);
             exit;

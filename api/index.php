@@ -395,6 +395,25 @@ try {
             handlePermissions($method, $action, $id);
             break;
 
+        case 'admin-health':
+            require __DIR__ . '/auth.php';
+            jsonResponse([
+                'success' => true,
+                'data' => [
+                    'release_ready' => false,
+                    'rbac_source_of_truth' => 'permission-codes',
+                    'break_glass_role' => 'root',
+                    'administrator_break_glass' => false,
+                    'supported_integrations' => ['woocommerce', 'prostiezvonki'],
+                    'chat_realtime' => 'partial',
+                    'notes' => [
+                        'Install/update/docs must be validated before production use.',
+                        'RBAC UI and backend should stay on permission codes only.',
+                    ],
+                ],
+            ]);
+            break;
+
         case 'user-permissions':
             require __DIR__ . '/auth.php';
             require __DIR__ . '/roles.php';
