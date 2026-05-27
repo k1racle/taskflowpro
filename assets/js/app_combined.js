@@ -210,6 +210,11 @@ window.app = function() {
         rolesError: '',
         permissionsLoading: false,
         permissionsError: '',
+        adminHealthLoading: false,
+        adminHealthError: '',
+        adminHealth: null,
+        adminHealthLoadedAt: 0,
+        adminHealthReady: false,
         roleModalOpen: false,
         rolePermissionsModalOpen: false,
         editingRole: null,
@@ -240,6 +245,8 @@ window.app = function() {
             leader: 'department',
             users: 'department'
         },
+        rolePermissionPreset: 'custom',
+        rolePermissionPresetOptions: ['custom', 'employee', 'manager', 'leader', 'admin', 'full'],
         roleIcons: ['shield', 'users', 'user-check', 'lock', 'key', 'briefcase', 'folder', 'document', 'clipboard', 'chart-bar', 'cog', 'star'],
         userPermissions: [],
 

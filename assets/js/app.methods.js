@@ -10,8 +10,28 @@ function getTaskFlowApp() {
     return window.TaskFlowApp || null;
 }
 
+function ensureAppStateDefaults(app) {
+    if (!app) return;
+
+    if (typeof app.adminHealthLoading === 'undefined') app.adminHealthLoading = false;
+    if (typeof app.adminHealthError === 'undefined') app.adminHealthError = '';
+    if (typeof app.adminHealth === 'undefined') app.adminHealth = null;
+    if (typeof app.adminHealthLoadedAt === 'undefined') app.adminHealthLoadedAt = 0;
+    if (typeof app.adminHealthReady === 'undefined') app.adminHealthReady = false;
+
+    if (typeof app.rolePermissionPreset === 'undefined') app.rolePermissionPreset = 'custom';
+    if (typeof app.rolePermissionPresetOptions === 'undefined') {
+        app.rolePermissionPresetOptions = ['custom', 'employee', 'manager', 'leader', 'admin', 'full'];
+    }
+}
+
+if (typeof window !== 'undefined') {
+    window.ensureAppStateDefaults = ensureAppStateDefaults;
+}
+
 function getTasksByStage(stageName) {
     const app = getTaskFlowApp();
+    ensureAppStateDefaults(app);
     if (!app?.tasks) return [];
     return app.tasks.filter(t => t.status === stageName);
 }
@@ -21,6 +41,7 @@ function getTasksByStage(stageName) {
  */
 function getMyTasksByStage(stageName) {
     const app = getTaskFlowApp();
+    ensureAppStateDefaults(app);
     if (!app?.currentUser || !app?.tasks) return [];
     return app.tasks.filter(t => 
         t.status === stageName && 
