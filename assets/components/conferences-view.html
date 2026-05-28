@@ -74,7 +74,11 @@
                         <div class="crm-section-head__meta flex flex-wrap items-center gap-2 conference-card-actions-top">
                             <button x-show="conf.status !== 'active'" x-cloak @click="startConference(conf.id)" class="crm-soft-action text-sm">Начать</button>
                             <button x-show="conf.status === 'active'" x-cloak @click="endConference(conf.id)" class="crm-soft-action text-sm">Завершить</button>
-                            <button x-show="conf.status !== 'active'" x-cloak @click="deleteConference(conf.id)" class="crm-btn-danger text-sm conference-action-danger">Удалить</button>
+                            <button x-show="conf.status !== 'active'" x-cloak @click="deleteConference(conf.id)" class="crm-btn-danger crm-icon-button crm-icon-button-sm conference-action-danger" title="Удалить конференцию" aria-label="Удалить конференцию">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3m-4 0h14"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -83,30 +87,42 @@
                     <div class="crm-stat-card crm-card-compact crm-card-equal conference-card-metric">
                         <div class="crm-summary-label">Создана</div>
                         <div class="mt-2 text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="formatDate(conf.created_at)"></div>
-                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Время создания встречи</div>
                     </div>
                     <div class="crm-stat-card crm-card-compact crm-card-equal conference-card-metric">
                         <div class="crm-summary-label">Участники</div>
-                        <div class="mt-2 text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="(conf.participants_count || 0) + ' участников'"></div>
-                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)"><span x-text="conf.pending_requests || 0"></span> ждут подтверждения</div>
+                        <div class="mt-2 flex items-center justify-between gap-2">
+                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="(conf.participants_count || 0) + ' участников'"></div>
+                            <span x-show="(conf.pending_requests || 0) > 0" x-cloak class="crm-inline-badge crm-inline-badge-accent text-[11px]"><span x-text="conf.pending_requests"></span> ждут</span>
+                        </div>
                     </div>
                     <div class="crm-stat-card crm-card-compact crm-card-equal conference-card-metric">
                         <div class="crm-summary-label">Комната</div>
                         <div class="mt-2 text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="conf.room_id"></div>
-                        <div class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Гостевой доступ и PIN внизу карточки</div>
                     </div>
                 </div>
 
                 <div class="mt-4 px-4 py-3 rounded-2xl crm-panel-muted conference-card-toolbar crm-table-toolbar crm-table-toolbar--compact">
-                    <div class="flex items-center justify-between gap-3 flex-wrap">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="crm-inline-badge">Room ID: <span class="ml-1" x-text="conf.room_id"></span></span>
-                            <span class="crm-inline-badge" x-show="(conf.pending_requests || 0) > 0" x-cloak><span x-text="conf.pending_requests"></span> ждут</span>
-                        </div>
+                    <div class="flex items-center justify-end gap-3 flex-wrap">
                         <div class="flex flex-wrap items-center gap-2 conference-card-actions-bottom">
-                            <button @click="openInviteModal(conf)" class="crm-soft-action text-sm whitespace-nowrap">Пригласить</button>
-                            <button @click="copyGuestLink(conf.room_id)" class="crm-soft-action text-sm whitespace-nowrap">Ссылка</button>
-                            <button @click="togglePin(conf)" class="crm-soft-action text-sm whitespace-nowrap" x-text="(revealedPins && revealedPins[conf.id]) ? 'Скрыть PIN' : 'Показать PIN'"></button>
+                            <button @click="openInviteModal(conf)" class="crm-btn-secondary crm-icon-button crm-icon-button-sm" title="Пригласить участников" aria-label="Пригласить участников">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 20v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a4 4 0 100-8 4 4 0 000 8z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 8v6m3-3h-6"/>
+                                </svg>
+                            </button>
+                            <button @click="copyGuestLink(conf.room_id)" class="crm-btn-ghost crm-icon-button crm-icon-button-sm" title="Скопировать гостевую ссылку" aria-label="Скопировать гостевую ссылку">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h-1a3 3 0 00-3 3v7a3 3 0 003 3h7a3 3 0 003-3v-1"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3h6a3 3 0 013 3v6a3 3 0 01-3 3h-6a3 3 0 01-3-3V6a3 3 0 013-3z"/>
+                                </svg>
+                            </button>
+                            <button @click="togglePin(conf)" class="crm-btn-secondary crm-icon-button crm-icon-button-sm" :title="(revealedPins && revealedPins[conf.id]) ? 'Скрыть PIN' : 'Показать PIN'" :aria-label="(revealedPins && revealedPins[conf.id]) ? 'Скрыть PIN' : 'Показать PIN'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.657 0 3-1.343 3-3V6a3 3 0 10-6 0v2c0 1.657 1.343 3 3 3z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11h14v8H5z"/>
+                                </svg>
+                            </button>
                             <button @click="joinConference(conf)"
                                     :disabled="conf.status !== 'active'"
                                     class="crm-btn-primary text-sm whitespace-nowrap conference-join-action disabled:opacity-50 disabled:cursor-not-allowed">
