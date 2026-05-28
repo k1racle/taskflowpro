@@ -23,7 +23,7 @@ const ModuleLoader = (function() {
             css: null
         },
         'my-tasks': {
-            js: 'assets/js/modules/my-tasks/index.js',
+            js: 'assets/js/modules/tasks/index.js',
             html: 'assets/components/my-tasks-view.html',
             css: null
         },
@@ -48,12 +48,12 @@ const ModuleLoader = (function() {
             css: null
         },
         'documents': {
-            js: null,
+            js: 'assets/js/modules/documents/index.js',
             html: 'assets/components/documents-view.html',
             css: null
         },
         'widgets': {
-            js: null,
+            js: 'assets/js/modules/widgets/site-widgets.js',
             html: 'assets/components/widgets-view.html',
             css: null
         },
@@ -78,12 +78,12 @@ const ModuleLoader = (function() {
             css: null
         },
         'crm-dashboard': {
-            js: 'assets/js/modules/crm/dashboard.js',
+            js: 'assets/js/modules/crm/dashboard-sales.js',
             html: 'assets/components/crm-dashboard-view.html',
             css: null
         },
         'crm-clients': {
-            js: 'assets/js/modules/crm/clients.js',
+            js: 'assets/js/modules/crm/client-card.js',
             html: 'assets/components/crm-clients-view.html',
             css: null
         },
@@ -113,12 +113,12 @@ const ModuleLoader = (function() {
             css: null
         },
         'users': {
-            js: 'assets/js/modules/users/index.js',
+            js: 'assets/js/modules/admin/index.js',
             html: 'assets/components/users-view.html',
             css: null
         },
         'roles': {
-            js: 'assets/js/modules/roles/index.js',
+            js: 'assets/js/modules/admin/index.js',
             html: 'assets/components/roles-view.html',
             css: null
         },
@@ -134,7 +134,7 @@ const ModuleLoader = (function() {
             css: null
         },
         'leader-dashboard': {
-            js: 'assets/js/modules/leader/dashboard.js',
+            js: 'assets/js/modules/leader/index.js',
             html: 'assets/components/leader-dashboard-view.html',
             css: null
         }

@@ -177,8 +177,8 @@
                 <div>
                     <label for="user-role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Роль</label>
                     <select id="user-role" name="role" x-model="userForm.role" class="w-full px-4 py-3 rounded-xl crm-control-select" style="position: relative; z-index: 60;">
-                        <option value="" x-show="!(roles || []).filter(x => x.name !== 'root').length">— Выберите роль —</option>
-                        <template x-for="r in (roles || []).filter(x => x.name !== 'root')" :key="r.id">
+                        <option value="" x-show="!(roles || []).filter(x => x.name !== 'root' && ((currentUser?.role === 'root') || (can && can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) && x.permission_codes.includes('admin.full')))).length">— Выберите роль —</option>
+                        <template x-for="r in (roles || []).filter(x => x.name !== 'root' && ((currentUser?.role === 'root') || (can && can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) && x.permission_codes.includes('admin.full'))))" :key="r.id">
                             <option :value="r.name" x-text="r.name"></option>
                         </template>
                     </select>

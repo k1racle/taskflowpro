@@ -21,6 +21,19 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
     $pdo = getPDO();
     $currentUser = getCurrentUser();
     $canManageSettings = $currentUser && hasAdminAccess($currentUser);
+    $isSecretSettingKey = static function(string $key): bool {
+        return in_array($key, [
+            'referral_shared_secret',
+            'woocommerce_api_consumer_secret',
+            'omni_tg_bot_token',
+            'omni_max_bot_token',
+            'omni_tg_webhook_secret',
+            'omni_max_webhook_secret',
+            'prostiezvonki_api_key',
+            'prostiezvonki_webhook_secret',
+        ], true);
+    };
+
     $loadSettingValue = function(string $key) use ($pdo) {
         $stmt = $pdo->prepare('SELECT value FROM settings WHERE BINARY `key` = ? LIMIT 1');
         $stmt->execute([$key]);
@@ -453,10 +466,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $settingsData = [];
         foreach ($settings as $setting) {
             $key = (string)$setting['key'];
-            if ($key === 'referral_shared_secret' || $key === 'woocommerce_api_consumer_secret'
-                || $key === 'omni_tg_bot_token' || $key === 'omni_max_bot_token'
-                || $key === 'omni_tg_webhook_secret' || $key === 'omni_max_webhook_secret'
-                || $key === 'prostiezvonki_api_key' || $key === 'prostiezvonki_webhook_secret') {
+            if ($isSecretSettingKey($key)) {
                 $settingsData[$key] = '';
                 continue;
             }
@@ -820,11 +830,15 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             exit;
         }
 
+        $settingKey = (string)$setting['key'];
+        $hideValue = $isSecretSettingKey($settingKey)
+            || (!$canManageSettings && in_array($settingKey, ['weather_api_key', 'woocommerce_api_consumer_key'], true));
+
         echo json_encode([
             'success' => true,
             'data' => [
-                'key' => $setting['key'],
-                'value' => $setting['value']
+                'key' => $settingKey,
+                'value' => $hideValue ? '' : $setting['value']
             ]
         ]);
         exit;
@@ -978,6 +992,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $data = json_decode(file_get_contents('php://input'), true);
         $ensureSettingsTableUtf8mb4();
         $previousValue = $loadSettingValue($key);
+        $isSecretKey = $isSecretSettingKey((string)$key);
 
         if (!isset($data['value'])) {
             http_response_code(400);
@@ -994,8 +1009,29 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             exit;
         }
 
+        $newValue = (string)$data['value'];
+        if ($isSecretKey) {
+            $newValue = trim($newValue);
+            if ($newValue === '') {
+                echo json_encode([
+                    'success' => true,
+                    'data' => [
+                        'key' => $key,
+                        'value' => ''
+                    ]
+                ]);
+                exit;
+            }
+
+            try {
+                $newValue = (string)(appEncrypt($newValue) ?? '');
+            } catch (Throwable $e) {
+                error_log('settings.php: failed to encrypt secret setting, storing plaintext fallback: ' . $e->getMessage());
+            }
+        }
+
         $stmt = $pdo->prepare("UPDATE settings SET value = ? WHERE BINARY `key` = $quotedKey");
-        $stmt->execute([$data['value']]);
+        $stmt->execute([$newValue]);
 
         auditLog($pdo, 'settings.value.updated', [
             'actor' => $currentUser,
@@ -1004,8 +1040,8 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             'summary' => 'Изменена системная настройка',
             'details' => [
                 'key' => $key,
-                'old_value' => $previousValue,
-                'new_value' => $data['value'],
+                'old_value' => $isSecretKey ? '[redacted]' : $previousValue,
+                'new_value' => $isSecretKey ? '[redacted]' : $newValue,
             ],
         ]);
 
@@ -1013,7 +1049,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             'success' => true,
             'data' => [
                 'key' => $key,
-                'value' => $data['value']
+                'value' => $isSecretKey ? '' : $newValue
             ]
         ]);
         exit;
@@ -1104,14 +1140,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             }
 
             $normalizedValue = $normalizeSettingValue($value);
-            $isSecretKey = ($key === 'referral_shared_secret'
-                || $key === 'woocommerce_api_consumer_secret'
-                || $key === 'omni_tg_bot_token'
-                || $key === 'omni_max_bot_token'
-                || $key === 'omni_tg_webhook_secret'
-                || $key === 'omni_max_webhook_secret'
-                || $key === 'prostiezvonki_api_key'
-                || $key === 'prostiezvonki_webhook_secret');
+            $isSecretKey = $isSecretSettingKey($key);
 
             if ($isSecretKey) {
                 $normalizedValue = trim($normalizedValue);

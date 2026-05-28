@@ -113,6 +113,13 @@ function handleNotifications(string $method, ?string $action, mixed $id): void {
             $stmt = $pdo->query("SELECT id FROM users");
             $userIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
         }
+
+        $userIds = array_values(array_unique(array_filter(array_map('intval', $userIds))));
+        if (!$userIds) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Не найден ни один получатель']);
+            exit;
+        }
         
         $type = $data['type'] ?? 'info';
         $relatedId = $data['related_id'] ?? null;

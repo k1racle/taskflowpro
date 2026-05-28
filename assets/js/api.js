@@ -210,12 +210,6 @@ async function api(endpoint, options = {}, _retry = false) {
         ...options.headers,
     };
 
-    // Если body = FormData — Content-Type выставит браузер.
-    const isFormData = typeof FormData !== 'undefined' && (options.body instanceof FormData);
-    if (!isFormData) {
-        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
-    }
-
     const config = {
         ...options,
         headers,
@@ -223,6 +217,15 @@ async function api(endpoint, options = {}, _retry = false) {
         // Safe even when using Bearer token auth.
         credentials: options.credentials || 'include',
     };
+
+    // Если body = FormData — Content-Type выставит браузер.
+    const isFormData = typeof FormData !== 'undefined' && (options.body instanceof FormData);
+    if (!isFormData && config.body != null && typeof config.body !== 'string') {
+        headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+        if (typeof config.body === 'object') {
+            config.body = JSON.stringify(config.body);
+        }
+    }
 
     // Добавляем токен в заголовок Authorization если есть
     if (token) {

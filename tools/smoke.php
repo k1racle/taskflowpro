@@ -219,8 +219,8 @@ function smokeCheckUiShell(string $baseUrl, int $timeout): array {
 
     return smokeSummarizeHttpCheck('GET /', $response, static function (array $response): array {
         $body = $response['body'];
-        $hasTitle = stripos($body, '<title>TaskFlow Pro</title>') !== false;
-        $hasAppShell = stripos($body, 'x-data="app()"') !== false;
+        $hasTitle = stripos($body, '<title>TaskFlow Pro') !== false;
+        $hasAppShell = stripos($body, 'x-data="app()"') !== false || stripos($body, "x-data='app()'") !== false;
         $hasManifestLink = stripos($body, 'manifest.json') !== false;
         $ok = $response['status'] === 200 && $hasTitle && $hasAppShell && $hasManifestLink;
 
@@ -239,6 +239,75 @@ function smokeCheckUiShell(string $baseUrl, int $timeout): array {
             ],
         ];
     });
+}
+
+function smokeExtractLocalAssets(string $html): array {
+    $assets = [];
+    $patterns = [
+        '/<script\b[^>]*\bsrc=["\']([^"\']+)["\']/i',
+        '/<link\b[^>]*\bhref=["\']([^"\']+)["\']/i',
+    ];
+
+    foreach ($patterns as $pattern) {
+        if (!preg_match_all($pattern, $html, $matches)) {
+            continue;
+        }
+
+        foreach ($matches[1] as $rawUrl) {
+            $url = trim((string)$rawUrl);
+            if ($url === '' || preg_match('#^(?:https?:)?//#i', $url) || str_starts_with($url, 'data:')) {
+                continue;
+            }
+
+            $path = parse_url($url, PHP_URL_PATH);
+            if (!is_string($path) || $path === '') {
+                continue;
+            }
+
+            $path = '/' . ltrim($path, '/');
+            $assets[$path] = true;
+        }
+    }
+
+    return array_keys($assets);
+}
+
+function smokeCheckUiAssets(string $baseUrl, int $timeout): array {
+    $response = smokeFetch($baseUrl . '/', $timeout);
+    if (!$response['ok'] || $response['status'] !== 200) {
+        return [
+            'label' => 'UI local assets',
+            'ok' => false,
+            'severity' => 'fail',
+            'message' => 'Cannot inspect UI assets because base shell is not reachable.',
+            'details' => [
+                'http_status' => $response['status'],
+            ],
+        ];
+    }
+
+    $assets = smokeExtractLocalAssets($response['body']);
+    $missing = [];
+
+    foreach ($assets as $asset) {
+        $assetResponse = smokeFetch($baseUrl . $asset, $timeout);
+        if (!$assetResponse['ok'] || $assetResponse['status'] < 200 || $assetResponse['status'] >= 400) {
+            $missing[] = $asset . ' (' . ($assetResponse['status'] ?: 'no response') . ')';
+        }
+    }
+
+    return [
+        'label' => 'UI local assets',
+        'ok' => !$missing,
+        'severity' => !$missing ? 'ok' : 'fail',
+        'message' => !$missing
+            ? 'All local scripts/styles referenced by base UI shell are reachable.'
+            : 'Some local scripts/styles referenced by base UI shell are missing or unavailable.',
+        'details' => [
+            'assets_checked' => count($assets),
+            'missing' => $missing ? implode(', ', array_slice($missing, 0, 10)) : 'none',
+        ],
+    ];
 }
 
 function smokeCheckManifest(string $baseUrl, int $timeout): array {
@@ -353,6 +422,7 @@ try {
         smokeCheckHealth($baseUrl, $timeout),
         smokeCheckReady($baseUrl, $timeout),
         smokeCheckUiShell($baseUrl, $timeout),
+        smokeCheckUiAssets($baseUrl, $timeout),
         smokeCheckManifest($baseUrl, $timeout),
         smokeCheckLicenseStatus($baseUrl, $timeout),
     ];

@@ -394,6 +394,21 @@ function handleDepartments(string $method, ?string $action, mixed $id): void {
             exit;
         }
 
+        // Проверка наличия задач в отделе (прямо или через связи задач/проектов)
+        $stmt = $pdo->prepare("\n            SELECT COUNT(DISTINCT t.id) as count\n            FROM tasks t\n            LEFT JOIN projects p ON t.project_id = p.id\n            LEFT JOIN task_departments td ON t.id = td.task_id\n            LEFT JOIN project_departments pd ON p.id = pd.project_id\n            WHERE p.department_id = ? OR t.department_id = ? OR td.department_id = ? OR pd.department_id = ?\n        ");
+        $stmt->execute([$deptId, $deptId, $deptId, $deptId]);
+        $result = $stmt->fetch();
+
+        if ($result['count'] > 0) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Нельзя удалить отдел, в котором есть задачи',
+                'tasks_count' => $result['count']
+            ]);
+            exit;
+        }
+
         $stmt = $pdo->prepare("DELETE FROM departments WHERE id = ?");
         $stmt->execute([$deptId]);
 

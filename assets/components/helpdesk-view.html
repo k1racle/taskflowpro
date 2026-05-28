@@ -224,13 +224,18 @@
                                 <span x-text="selectedTicket?.status_name"></span>
                             </span>
                         </div>
-                        <div class="mt-3 grid grid-cols-2 gap-3 text-xs">
-                            <div><div style="color: var(--lg-text-tertiary)">Клиент</div><div class="mt-1 font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.client_name || '—'"></div></div>
-                            <div><div style="color: var(--lg-text-tertiary)">Исполнитель</div><div class="mt-1 font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.assigned_to_name || 'Не назначен'"></div></div>
-                            <div><div style="color: var(--lg-text-tertiary)">Категория</div><div class="mt-1 font-medium" style="color: var(--lg-text-primary)" x-text="selectedTicket?.category_name || '—'"></div></div>
+                        <div class="mt-3 flex flex-wrap items-center gap-2 text-xs crm-helpdesk-ticket-badges">
+                            <span class="crm-inline-badge">Категория: <span class="ml-1 font-semibold" x-text="selectedTicket?.category_name || '—'"></span></span>
+                            <span class="crm-inline-badge">Приоритет: <span class="ml-1 font-semibold" x-text="({low:'Низкий', medium:'Обычный', high:'Высокий', urgent:'Срочно'})[selectedTicket?.priority] || '—'"></span></span>
+                            <span class="crm-inline-badge">Создана: <span class="ml-1 font-semibold" x-text="selectedTicket?.created_at ? formatDate(selectedTicket?.created_at) : '—'"></span></span>
+                        </div>
+                        <div class="mt-3 grid grid-cols-2 gap-3 text-xs crm-helpdesk-ticket-meta">
+                            <div><div style="color: var(--lg-text-tertiary)">Клиент</div><div class="mt-1 font-medium truncate" style="color: var(--lg-text-primary)" x-text="selectedTicket?.client_name || '—'"></div></div>
+                            <div><div style="color: var(--lg-text-tertiary)">Исполнитель</div><div class="mt-1 font-medium truncate" style="color: var(--lg-text-primary)" x-text="selectedTicket?.assigned_to_name || 'Не назначен'"></div></div>
+                            <div><div style="color: var(--lg-text-tertiary)">Категория</div><div class="mt-1 font-medium truncate" style="color: var(--lg-text-primary)" x-text="selectedTicket?.category_name || '—'"></div></div>
                             <div><div style="color: var(--lg-text-tertiary)">Срок</div><div class="mt-1 font-medium" :class="isOverdue(selectedTicket?.deadline) ? 'text-red-500' : ''" style="color: var(--lg-text-primary)" x-text="selectedTicket?.deadline ? formatDate(selectedTicket?.deadline) : 'Не задан'"></div></div>
                         </div>
-                        <div class="mt-3 text-xs line-clamp-4" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.description || 'Описание отсутствует'"></div>
+                        <div class="mt-3 text-xs line-clamp-3" style="color: var(--lg-text-secondary)" x-text="selectedTicket?.description || 'Описание отсутствует'"></div>
                     </div>
 
                     <button @click="openTicketDetail(selectedTicket)" class="crm-btn-primary crm-btn-block text-sm">Открыть полную карточку</button>
@@ -250,17 +255,26 @@
                     </div>
                 </div>
                 <div class="mt-4 space-y-3">
-                    <div class="crm-queue-row">
-                        <div><div class="text-xs" style="color: var(--lg-text-tertiary)">Срочные</div><div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Требуют реакции</div></div>
-                        <div class="crm-inline-badge" x-text="(helpdeskTickets || []).filter(ticket => ticket.priority === 'urgent').length"></div>
+                    <div class="crm-queue-row crm-helpdesk-queue-row">
+                        <div class="min-w-0">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Срочные</div>
+                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Требуют реакции</div>
+                        </div>
+                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket => ticket.priority === 'urgent').length"></div>
                     </div>
-                    <div class="crm-queue-row">
-                        <div><div class="text-xs" style="color: var(--lg-text-tertiary)">В работе</div><div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Активная обработка</div></div>
-                        <div class="crm-inline-badge" x-text="(helpdeskTickets || []).filter(ticket => ticket.status_name === 'В работе').length"></div>
+                    <div class="crm-queue-row crm-helpdesk-queue-row">
+                        <div class="min-w-0">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">В работе</div>
+                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Активная обработка</div>
+                        </div>
+                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket => ticket.status_name === 'В работе').length"></div>
                     </div>
-                    <div class="crm-queue-row">
-                        <div><div class="text-xs" style="color: var(--lg-text-tertiary)">Без назначения</div><div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Нужно взять в работу</div></div>
-                        <div class="crm-inline-badge" x-text="(helpdeskTickets || []).filter(ticket => !ticket.assigned_to_name).length"></div>
+                    <div class="crm-queue-row crm-helpdesk-queue-row">
+                        <div class="min-w-0">
+                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Без назначения</div>
+                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Нужно взять в работу</div>
+                        </div>
+                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket => !ticket.assigned_to_name).length"></div>
                     </div>
                 </div>
             </div>

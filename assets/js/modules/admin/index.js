@@ -1,62 +1,48 @@
 window.TaskFlowAdmin = (function () {
-    function getDefaultRolePermissions(perms) {
+    const EMPTY_ROLE_PERMS = {
+        tasks: { view: false, create: false, edit: false, delete: false },
+        projects: { view: false, create: false, edit: false, delete: false },
+        departments: { view: false, create: false, edit: false, delete: false },
+        files: { view: false, upload: false, edit: false, delete: false },
+        knowledge: { view: false, create: false, edit: false, delete: false },
+        chat: { view: false, send: false, edit: false, delete: false, forward: false, create_group: false },
+        mail: { view: false, send: false, edit: false, delete: false },
+        crm: { view: false, create: false, edit: false, delete: false, export: false, stages_manage: false },
+        leader: { view: false, shifts_manage: false, export: false },
+        users: { view: false, create: false, edit: false, delete: false },
+        admin: { full: false }
+    };
+
+    function cloneRolePerms(base = EMPTY_ROLE_PERMS) {
         return {
-            tasks: {
-                view: perms.tasks?.view || false,
-                create: perms.tasks?.create || false,
-                edit: perms.tasks?.edit || false,
-                delete: perms.tasks?.delete || false
-            },
-            projects: {
-                view: perms.projects?.view || false,
-                create: perms.projects?.create || false,
-                edit: perms.projects?.edit || false,
-                delete: perms.projects?.delete || false
-            },
-            departments: {
-                view: perms.departments?.view || false,
-                create: perms.departments?.create || false,
-                edit: perms.departments?.edit || false,
-                delete: perms.departments?.delete || false
-            },
-            files: {
-                view: perms.files?.view || false,
-                upload: perms.files?.upload || false,
-                edit: perms.files?.edit || false,
-                delete: perms.files?.delete || false
-            },
-            knowledge: {
-                view: perms.knowledge?.view || false,
-                create: perms.knowledge?.create || false,
-                edit: perms.knowledge?.edit || false,
-                delete: perms.knowledge?.delete || false
-            },
-            chat: {
-                view: perms.chat?.view || false,
-                send: perms.chat?.send || false,
-                edit: perms.chat?.edit || false,
-                delete: perms.chat?.delete || false
-            },
-            mail: {
-                view: perms.mail?.view || false,
-                send: perms.mail?.send || false,
-                edit: perms.mail?.edit || false,
-                delete: perms.mail?.delete || false
-            },
-            crm: {
-                view: perms.crm?.view || false,
-                create: perms.crm?.create || false,
-                edit: perms.crm?.edit || false,
-                delete: perms.crm?.delete || false,
-                export: perms.crm?.export || false,
-                stages_manage: perms.crm?.stages_manage || false
-            },
-            leader: {
-                view: perms.leader?.view || false,
-                shifts_manage: perms.leader?.shifts_manage || false,
-                export: perms.leader?.export || false
-            }
+            tasks: { ...base.tasks },
+            projects: { ...base.projects },
+            departments: { ...base.departments },
+            files: { ...base.files },
+            knowledge: { ...base.knowledge },
+            chat: { ...base.chat },
+            mail: { ...base.mail },
+            crm: { ...base.crm },
+            leader: { ...base.leader },
+            users: { ...base.users },
+            admin: { ...base.admin }
         };
+    }
+
+    function getDefaultRolePermissions(perms) {
+        const source = perms && typeof perms === 'object' ? perms : {};
+        const base = cloneRolePerms();
+
+        for (const section of Object.keys(base)) {
+            if (!source[section] || typeof source[section] !== 'object') continue;
+            for (const action of Object.keys(base[section])) {
+                if (typeof source[section][action] !== 'undefined') {
+                    base[section][action] = !!source[section][action];
+                }
+            }
+        }
+
+        return base;
     }
 
     function normalizeRolePermissions(role) {
@@ -69,6 +55,11 @@ window.TaskFlowAdmin = (function () {
                 perms = {};
             }
         }
+
+        if (Array.isArray(perms)) {
+            return makeRolePermissionsFromCodes(perms);
+        }
+
         return getDefaultRolePermissions(perms || {});
     }
 
@@ -101,10 +92,6 @@ window.TaskFlowAdmin = (function () {
         return String(role?.name || role?.role || '').toLowerCase() === 'root';
     }
 
-    function isRootRole(role) {
-        return String(role?.name || role?.role || '').toLowerCase() === 'root';
-    }
-
     function parseRolePermissions(role) {
         let permissions = role?.permissions || {};
 
@@ -112,8 +99,12 @@ window.TaskFlowAdmin = (function () {
             try {
                 permissions = JSON.parse(permissions);
             } catch (_) {
-                permissions = {};
+                permissions = {}; 
             }
+        }
+
+        if (Array.isArray(permissions)) {
+            return makeRolePermissionsFromCodes(permissions);
         }
 
         return permissions || {};
@@ -146,19 +137,7 @@ window.TaskFlowAdmin = (function () {
     function makeRolePermissionsFromCodes(permissionCodes) {
         const codes = Array.isArray(permissionCodes) ? permissionCodes : [];
 
-        const res = {
-            tasks: { view: false, create: false, edit: false, delete: false },
-            projects: { view: false, create: false, edit: false, delete: false },
-            departments: { view: false, create: false, edit: false, delete: false },
-            files: { view: false, upload: false, edit: false, delete: false },
-            knowledge: { view: false, create: false, edit: false, delete: false },
-            chat: { view: false, send: false, edit: false, delete: false, forward: false, create_group: false },
-            mail: { view: false, send: false, edit: false, delete: false },
-            crm: { view: false, create: false, edit: false, delete: false, export: false, stages_manage: false },
-            leader: { view: false, shifts_manage: false, export: false },
-            users: { view: false, create: false, edit: false, delete: false },
-            admin: { full: false }
-        };
+        const res = cloneRolePerms();
 
         for (const codeRaw of codes) {
             const key = mapPermissionCodeToUiKey(codeRaw);
@@ -205,19 +184,7 @@ window.TaskFlowAdmin = (function () {
     }
 
     function buildPresetPermissions(preset) {
-        const base = {
-            tasks: { view: false, create: false, edit: false, delete: false },
-            projects: { view: false, create: false, edit: false, delete: false },
-            departments: { view: false, create: false, edit: false, delete: false },
-            files: { view: false, upload: false, edit: false, delete: false },
-            knowledge: { view: false, create: false, edit: false, delete: false },
-            chat: { view: false, send: false, edit: false, delete: false, forward: false, create_group: false },
-            mail: { view: false, send: false, edit: false, delete: false },
-            crm: { view: false, create: false, edit: false, delete: false, export: false, stages_manage: false },
-            leader: { view: false, shifts_manage: false, export: false },
-            users: { view: false, create: false, edit: false, delete: false },
-            admin: { full: false }
-        };
+        const base = cloneRolePerms();
 
         const scopes = getDefaultRolePermissionScopes();
 
@@ -371,12 +338,6 @@ window.TaskFlowAdmin = (function () {
                 const data = await apiGetUsers();
                 if (data.success) {
                     ctx.users = data.data || [];
-                    console.log('Пользователи загружены:', ctx.users.map(u => ({
-                        id: u.id,
-                        login: u.login,
-                        full_name: u.full_name,
-                        department_id: u.department_id
-                    })));
                 } else {
                     ctx.users = [];
                     ctx.usersError = data.error || 'Не удалось загрузить сотрудников';
@@ -509,7 +470,16 @@ window.TaskFlowAdmin = (function () {
             const password = String(ctx.userForm.password || '');
             const fullName = String(ctx.userForm.full_name || '').trim();
             const role = String(ctx.userForm.role || '').trim();
-            const departmentId = ctx.userForm.department_id === '' ? null : ctx.userForm.department_id;
+            const departmentIds = Array.isArray(ctx.userForm.department_ids)
+                ? ctx.userForm.department_ids.map(id => String(id || '').trim()).filter(Boolean)
+                : [];
+            const departmentId = departmentIds.length > 0
+                ? departmentIds[0]
+                : (ctx.userForm.department_id === '' ? null : ctx.userForm.department_id);
+            const selectedRole = (ctx.roles || []).find(r => String(r?.name || '') === role);
+            const isPrivilegedRole = Array.isArray(selectedRole?.permission_codes)
+                && selectedRole.permission_codes.includes('admin.full');
+            const canAssignPrivilegedRoles = ctx.currentUser?.role === 'root' || !!ctx.can?.('admin.full');
 
             if (!login) {
                 ctx.showToast('Укажите логин или email', 'error');
@@ -531,9 +501,13 @@ window.TaskFlowAdmin = (function () {
                 const payload = {
                     login,
                     full_name: fullName,
-                    role,
-                    department_id: departmentId
+                    department_id: departmentId,
+                    department_ids: departmentIds
                 };
+
+                if (!ctx.editingUser?.id || canAssignPrivilegedRoles || !isPrivilegedRole) {
+                    payload.role = role;
+                }
 
                 if (ctx.editingUser?.id) {
                     await apiUpdateUser(ctx.editingUser.id, payload);
@@ -613,7 +587,12 @@ window.TaskFlowAdmin = (function () {
                     department_ids: departmentIds
                 };
             } else {
-                const firstRole = ctx.roles.find(r => r.name !== 'root');
+                const canAssignPrivilegedRoles = ctx.currentUser?.role === 'root' || !!ctx.can?.('admin.full');
+                const firstRole = (ctx.roles || []).find(r => {
+                    if (!r || r.name === 'root') return false;
+                    const isPrivileged = Array.isArray(r.permission_codes) && r.permission_codes.includes('admin.full');
+                    return canAssignPrivilegedRoles || !isPrivileged;
+                });
                 ctx.userForm = {
                     login: '',
                     password: '',

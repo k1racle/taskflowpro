@@ -166,10 +166,13 @@ window.TaskFlowProjects = (function () {
                 ...ctx.projectForm,
                 name: ctx.projectForm?.name?.trim() || '',
                 description: ctx.projectForm?.description || '',
-                department_id: ctx.projectForm?.department_ids?.[0] || null
+                department_id: ctx.projectForm?.department_ids?.[0] || null,
+                department_ids: Array.isArray(ctx.projectForm?.department_ids)
+                    ? ctx.projectForm.department_ids
+                        .map(id => String(id || '').trim())
+                        .filter(Boolean)
+                    : []
             };
-
-            delete projectData.department_ids;
             return projectData;
         },
 

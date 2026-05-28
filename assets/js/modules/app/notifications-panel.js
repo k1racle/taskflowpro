@@ -456,9 +456,13 @@ window.TaskFlowNotificationsPanel = (function () {
                 ctx.currentView = 'mail';
                 try {
                     await ctx.openMailView();
+                    const emailId = payload.email_id || payload.mail_id || notification.related_id || id || null;
                     const folder = String(payload.folder || payload.mail_folder || 'inbox');
                     if (folder && folder !== ctx.currentMailFolder) {
                         await ctx.loadMailFromFolder(folder);
+                    }
+                    if (emailId) {
+                        await ctx.openEmail(emailId);
                     }
                 } catch (_) {}
             } else if (type === 'files') {

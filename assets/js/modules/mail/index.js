@@ -60,10 +60,6 @@ window.TaskFlowMail = (function () {
         }
     }
 
-    function getMailFolderSyncTarget(currentMailFolder) {
-        return currentMailFolder === 'sent' ? 'SENT_AUTO' : 'INBOX';
-    }
-
     function resetComposeMailForm(ctx) {
         ctx.composeMailForm = getEmptyComposeMailForm();
     }
@@ -188,7 +184,6 @@ window.TaskFlowMail = (function () {
 
         async refresh(ctx) {
             try {
-                await apiPost('mail/sync', { folder: getMailFolderSyncTarget(ctx.currentMailFolder), limit: 50 });
                 await this.loadFromFolder(ctx, ctx.currentMailFolder || 'inbox');
                 await this.loadFolders(ctx);
                 ctx.showToast('Почта обновлена', 'success');

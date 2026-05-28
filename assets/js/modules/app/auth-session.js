@@ -27,22 +27,22 @@ window.TaskFlowAuthSession = (function () {
 
     async function loadAllDataPayload(ctx) {
         await Promise.all([
-            ctx.loadUsers(),
-            ctx.loadDepartments(),
-            ctx.loadProjects(),
-            ctx.loadTasks(),
-            ctx.loadStages(),
-            ctx.loadSettings(),
-            ctx.loadKnowledge(),
-            ctx.loadFiles(),
-            ctx.loadFileTree(),
-            ctx.loadNotifications(),
-            ctx.loadRoles(),
-            ctx.loadPermissions(),
-            ctx.loadCrmData(),
+            ctx.loadUsers?.(),
+            ctx.loadDepartments?.(),
+            ctx.loadProjects?.(),
+            ctx.loadTasks?.(),
+            ctx.loadStages?.(),
+            ctx.loadSettings?.(),
+            ctx.loadKnowledge?.(),
+            ctx.loadFiles?.(),
+            ctx.loadFileTree?.(),
+            ctx.loadNotifications?.(),
+            ctx.loadRoles?.(),
+            ctx.loadPermissions?.(),
+            ctx.loadCrmData?.(),
         ]);
 
-        ctx.startNotificationsPolling();
+        ctx.startNotificationsPolling?.();
     }
 
     return {
@@ -191,26 +191,25 @@ window.TaskFlowAuthSession = (function () {
             }
 
             if (ctx.isAuthenticated) {
-                ctx.loadChatRooms();
-                ctx.loadConferences();
-                ctx.initVisibilityListener();
-                ctx.startChatPolling();
-                ctx.startBackgroundCallPolling();
-                ctx.initNotificationEnhancements();
+                ctx.loadChatRooms?.();
+                ctx.loadConferences?.();
+                ctx.initVisibilityListener?.();
+                ctx.startChatPolling?.();
+                ctx.startBackgroundCallPolling?.();
+                ctx.initNotificationEnhancements?.();
             }
 
-            if (ctx.isAuthenticated && ctx.can('leader.view')) {
-                ctx.loadWorkSchedules();
+            if (ctx.isAuthenticated && ctx.can?.('leader.view')) {
+                ctx.loadWorkSchedules?.();
             }
 
             if (ctx.isAuthenticated) {
-                ctx.loadWidgets();
-                ctx.loadSiteWidgetsSettings();
-                ctx.loadBirthdays();
-                ctx.loadWeather();
-                ctx.loadTaskSubstagesDict();
-                ctx.loadCrmDealSubstagesDict();
-                console.log('✅ Приложение инициализировано, Long Polling запущен');
+                ctx.loadWidgets?.();
+                ctx.loadSiteWidgetsSettings?.();
+                ctx.loadBirthdays?.();
+                ctx.loadWeather?.();
+                ctx.loadTaskSubstagesDict?.();
+                ctx.loadCrmDealSubstagesDict?.();
             }
         }
     };

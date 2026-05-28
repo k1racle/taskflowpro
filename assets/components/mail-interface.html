@@ -269,8 +269,8 @@
                 <template x-for="email in mailList" :key="email.id">
                     <div @click.stop="openEmail(email.id)"
                          @contextmenu.prevent.stop="openMailContextMenu($event, email)"
-                         class="group flex items-center gap-3 p-4 border-b border-gray-100/50 dark:border-gray-800/50 hover:bg-gray-50/80 dark:hover:bg-gray-800/50 cursor-pointer transition-all crm-mail-row"
-                         :class="[(mailPreviewId === email.id ? 'crm-mail-row-preview' : ''), (!email.is_read ? 'bg-blue-50/30 dark:bg-blue-900/10 border-l-4 border-l-primary' : 'border-l-4 border-l-transparent'), selectedEmails.includes(email.id) ? 'crm-mail-row-selected' : ''].join(' ')">
+                         class="group grid grid-cols-[auto_auto_minmax(0,1fr)_auto] gap-3 items-start cursor-pointer transition-all crm-mail-row mx-3 my-2 px-4 py-3"
+                         :class="[(mailPreviewId === email.id ? 'crm-mail-row-preview' : ''), (!email.is_read ? 'crm-mail-row-unread' : ''), selectedEmails.includes(email.id) ? 'crm-mail-row-selected' : ''].join(' ')">
 
                         <input type="checkbox"
                                @click.stop="toggleEmailSelection(email.id)"
@@ -278,27 +278,35 @@
                                :value="email.id"
                                class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer crm-mail-select-checkbox">
 
-                        <div class="w-11 h-11 rounded-full flex-shrink-0 flex items-center justify-center text-white text-sm font-bold shadow-md"
+                        <div class="w-11 h-11 rounded-2xl flex-shrink-0 flex items-center justify-center text-white text-sm font-bold shadow-md crm-mail-avatar"
                              :style="`background: ${getAvatarGradient(email.contact_name || email.sender_name || email.recipient_email)}`">
                             <span x-text="getInitials(email.contact_name || email.sender_name || email.recipient_email)"></span>
                         </div>
 
-                        <div class="flex-1 min-w-0">
-                            <div class="flex items-center justify-between gap-2 mb-1">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <h3 class="font-semibold text-sm truncate"
-                                        :style="!email.is_read ? 'color: var(--lg-text-primary)' : 'color: var(--lg-text-secondary)'"
-                                        x-text="email.contact_name || email.sender_name || email.recipient_email"></h3>
-                                    <svg x-show="email.has_attachments" class="w-4 h-4 flex-shrink-0" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 00-6 6 6 6 0 006 6 6 6 0 006-6 6 6 0 00-6-6 6 6 0 00-6 6z"/>
-                                    </svg>
+                        <div class="flex-1 min-w-0 pt-0.5">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-2 min-w-0 flex-wrap">
+                                        <h3 class="font-semibold text-sm truncate"
+                                            :style="!email.is_read ? 'color: var(--lg-text-primary)' : 'color: var(--lg-text-secondary)'"
+                                            x-text="email.contact_name || email.sender_name || email.recipient_email"></h3>
+                                        <span x-show="!email.is_read" class="crm-inline-badge crm-inline-badge-accent">Новое</span>
+                                        <svg x-show="email.has_attachments" class="w-4 h-4 flex-shrink-0" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 00-6 6 6 6 0 006 6 6 6 0 006-6 6 6 0 00-6-6 6 6 0 00-6 6z"/>
+                                        </svg>
+                                    </div>
+                                    <p class="mt-1 text-sm leading-[1.4] crm-mail-row-subject"
+                                         :style="!email.is_read ? 'color: var(--lg-text-primary); font-weight: 700' : 'color: var(--lg-text-secondary)'"
+                                         x-text="email.subject || 'Без темы'"></p>
+                                    <p class="mt-1 text-xs crm-mail-row-snippet" style="color: var(--lg-text-tertiary)" x-text="stripHtml(email.body) || 'Без предпросмотра'"></p>
+                                    <div class="crm-mail-row-footer">
+                                        <span x-show="Number(email.is_starred)" class="crm-inline-badge">Важное</span>
+                                        <span x-show="email.has_attachments" class="crm-inline-badge">Вложение</span>
+                                        <span x-show="email.folder && email.folder !== 'inbox'" class="crm-inline-badge" x-text="getFolderName(email.folder)"></span>
+                                    </div>
                                 </div>
-                                <span class="text-xs whitespace-nowrap" style="color: var(--lg-text-tertiary)" x-text="formatEmailDate(email.sent_at)"></span>
+                                <span class="text-xs whitespace-nowrap shrink-0 mt-0.5" style="color: var(--lg-text-tertiary)" x-text="formatEmailDate(email.sent_at)"></span>
                             </div>
-                            <p class="text-sm leading-[1.35] truncate mb-0.5"
-                                 :style="!email.is_read ? 'color: var(--lg-text-primary); font-weight: 600' : 'color: var(--lg-text-secondary)'"
-                                 x-text="email.subject"></p>
-                            <p class="text-xs truncate" style="color: var(--lg-text-tertiary)" x-text="stripHtml(email.body)"></p>
                         </div>
 
                         <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity crm-mail-row-actions">
@@ -379,19 +387,23 @@
                                         <span x-show="Number(previewEmail.is_starred)" class="crm-inline-badge">Важное</span>
                                     </div>
                                     <div class="mt-1 text-sm break-all" style="color: var(--lg-text-secondary)" x-text="previewEmail.sender_email || previewEmail.recipient_email"></div>
-                                    <div class="mt-1 text-xs" style="color: var(--lg-text-tertiary)" x-text="formatEmailDate(previewEmail.sent_at)"></div>
+                                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs" style="color: var(--lg-text-tertiary)">
+                                        <span x-text="formatEmailDate(previewEmail.sent_at)"></span>
+                                        <span x-show="previewEmail.has_attachments" class="crm-inline-badge">Есть вложения</span>
+                                        <span x-show="previewEmail.folder" class="crm-inline-badge" x-text="getFolderName(previewEmail.folder)"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="mt-4 crm-stat-card">
+                        <div class="mt-4 crm-panel-muted rounded-3xl p-4">
                             <div class="crm-summary-label">Тема</div>
-                            <div class="mt-3 text-lg font-semibold" style="color: var(--lg-text-primary)" x-text="previewEmail.subject || 'Без темы'"></div>
+                            <div class="mt-2 text-lg font-semibold leading-tight" style="color: var(--lg-text-primary)" x-text="previewEmail.subject || 'Без темы'"></div>
                         </div>
 
                         <div class="mt-4 crm-panel-muted rounded-3xl p-5 crm-mail-reader-body">
                             <div class="crm-summary-label">Предпросмотр</div>
-                            <div class="mt-3 text-sm whitespace-pre-line" style="color: var(--lg-text-primary)" x-text="stripHtml(previewEmail.body) || 'Тело письма отсутствует'"></div>
+                            <div class="mt-3 text-sm whitespace-pre-line leading-[1.55]" style="color: var(--lg-text-primary)" x-text="stripHtml(previewEmail.body) || 'Тело письма отсутствует'"></div>
                         </div>
 
                         <div class="mt-4 crm-toolbar crm-toolbar--dense">

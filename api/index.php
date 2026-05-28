@@ -86,8 +86,9 @@ function getEndpoint(): array {
     $parts = array_filter($parts, function($v) { return $v !== ''; });
     $parts = array_values($parts);
 
-    // Логирование для отладки (можно включить при необходимости)
-    error_log('API endpoint: ' . $path . ' => resource=' . ($parts[0] ?? '') . ', action=' . ($parts[1] ?? '') . ', id=' . ($parts[2] ?? '') . ', subaction=' . ($parts[3] ?? ''));
+    if (getenv('APP_DEBUG_API_ROUTING') === '1') {
+        error_log('API endpoint: ' . $path . ' => resource=' . ($parts[0] ?? '') . ', action=' . ($parts[1] ?? '') . ', id=' . ($parts[2] ?? '') . ', subaction=' . ($parts[3] ?? ''));
+    }
 
     $resource = $parts[0] ?? '';
     $action = $parts[1] ?? null;
@@ -219,24 +220,24 @@ try {
             require __DIR__ . '/auth.php';
             require __DIR__ . '/tasks.php';
 
-            // Операции с подэтапом справочника: /task-substages/:id
-            if ($action === 'task-substages' && is_numeric($id)) {
-                if ($method === 'PUT') {
-                    $data = json_decode(file_get_contents('php://input'), true);
-                    updateTaskSubstageDict((int)$id, $data);
-                } elseif ($method === 'DELETE') {
-                    deleteTaskSubstageDict((int)$id);
-                }
-                exit;
-            }
-
-            // Обработка справочника подэтапов: /task-substages
+            // Операции со справочником подэтапов задач: /tasks/task-substages
             if ($action === 'task-substages') {
                 if ($method === 'GET') {
                     getTaskSubstagesDict();
                 } elseif ($method === 'POST') {
                     $data = json_decode(file_get_contents('php://input'), true);
                     createTaskSubstageDict($data);
+                } elseif (is_numeric($id)) {
+                    $data = json_decode(file_get_contents('php://input'), true);
+                    if ($method === 'PUT') {
+                        updateTaskSubstageDict((int)$id, $data);
+                    } elseif ($method === 'DELETE') {
+                        deleteTaskSubstageDict((int)$id);
+                    } else {
+                        jsonError('Endpoint не найден', 404);
+                    }
+                } else {
+                    jsonError('Endpoint не найден', 404);
                 }
                 exit;
             }

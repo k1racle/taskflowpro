@@ -339,7 +339,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 $data['name'], 
                 $data['description'] ?? '', 
                 $data['icon'] ?? 'shield',
-                json_encode($data['permissions'] ?? []),
+                json_encode(array_key_exists('permissions', $data) ? ($data['permissions'] ?? []) : (json_decode((string)($role['permissions'] ?? '[]'), true) ?: []), JSON_UNESCAPED_UNICODE),
                 $roleId
             ]);
 
@@ -450,11 +450,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 $permissionCodes = ['admin.full'];
             }
 
-            // Удаляем старые права
-            $stmt = $pdo->prepare("DELETE FROM role_permissions WHERE role_id = ?");
-            $stmt->execute([$roleId]);
-
-            // Добавляем новые
+            $resolvedPermissionIds = [];
             $notFound = [];
             foreach ($permissionCodes as $permissionCode) {
                 // Сначала находим ID права по коду
@@ -463,11 +459,7 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                 $perm = $stmt->fetch();
 
                 if ($perm) {
-                    $stmt = $pdo->prepare("
-                        INSERT INTO role_permissions (role_id, permission_id)
-                        VALUES (?, ?)
-                    ");
-                    $stmt->execute([$roleId, $perm['id']]);
+                    $resolvedPermissionIds[] = (int)$perm['id'];
                 } else {
                     $notFound[] = $permissionCode;
                 }
@@ -481,6 +473,19 @@ function handleRoles(string $method, ?string $action, mixed $id): void {
                     'not_found' => $notFound
                 ]);
                 exit;
+            }
+
+            // Удаляем старые права только после успешной валидации входных кодов.
+            $stmt = $pdo->prepare("DELETE FROM role_permissions WHERE role_id = ?");
+            $stmt->execute([$roleId]);
+
+            // Добавляем новые.
+            foreach ($resolvedPermissionIds as $permissionId) {
+                $stmt = $pdo->prepare(" 
+                        INSERT INTO role_permissions (role_id, permission_id)
+                        VALUES (?, ?)
+                    ");
+                $stmt->execute([$roleId, $permissionId]);
             }
 
             $afterStmt = $pdo->prepare(

@@ -15,6 +15,28 @@ require_once __DIR__ . '/roles.php';
 require_once __DIR__ . '/disk.php';
 
 /**
+ * Проверить и нормализовать список отделов проекта.
+ * Возвращает [normalizedIds, missingIds].
+ */
+function validateProjectDepartmentIds(PDO $pdo, array $departmentIds): array {
+    $normalized = array_values(array_unique(array_filter(array_map('intval', $departmentIds), static fn($id) => $id > 0)));
+    if (empty($normalized)) {
+        return [[], []];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($normalized), '?'));
+    $stmt = $pdo->prepare("SELECT id FROM departments WHERE id IN ($placeholders)");
+    $stmt->execute($normalized);
+    $found = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
+
+    sort($normalized);
+    sort($found);
+    $missing = array_values(array_diff($normalized, $found));
+
+    return [$normalized, $missing];
+}
+
+/**
  * Обработка запросов к /api/projects/*
  */
 function handleProjects(string $method, ?string $action, mixed $id): void {
@@ -181,6 +203,17 @@ function handleProjects(string $method, ?string $action, mixed $id): void {
             $departmentIds = [(int)$data['department_id']];
         }
 
+        [$departmentIds, $missingDepartmentIds] = validateProjectDepartmentIds($pdo, $departmentIds);
+        if (!empty($missingDepartmentIds)) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error' => 'Указаны несуществующие отделы',
+                'missing_department_ids' => $missingDepartmentIds
+            ]);
+            exit;
+        }
+
         // root и пользователи с admin.full / leader.view могут создавать без отделов
         if (empty($departmentIds) && !hasPermission($currentUser, 'admin.full') && !hasPermission($currentUser, 'leader.view')) {
             http_response_code(400);
@@ -332,15 +365,26 @@ function handleProjects(string $method, ?string $action, mixed $id): void {
 
         // Обновляем отделы проекта
         if (isset($data['department_ids'])) {
-            // Удаляем старые
+            // Удаляем старые только после проверки входных отделов.
+            $departmentIds = is_array($data['department_ids']) ? $data['department_ids'] : [];
+            [$departmentIds, $missingDepartmentIds] = validateProjectDepartmentIds($pdo, $departmentIds);
+            if (!empty($missingDepartmentIds)) {
+                http_response_code(400);
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Указаны несуществующие отделы',
+                    'missing_department_ids' => $missingDepartmentIds
+                ]);
+                exit;
+            }
+
             $pdo->prepare("DELETE FROM project_departments WHERE project_id = ?")->execute([$projectId]);
+
             // Добавляем новые
-            if (is_array($data['department_ids'])) {
+            if (!empty($departmentIds)) {
                 $stmt = $pdo->prepare("INSERT INTO project_departments (project_id, department_id) VALUES (?, ?)");
-                foreach ($data['department_ids'] as $deptId) {
-                    if (is_numeric($deptId)) {
-                        $stmt->execute([$projectId, (int)$deptId]);
-                    }
+                foreach ($departmentIds as $deptId) {
+                    $stmt->execute([$projectId, (int)$deptId]);
                 }
             }
         }
@@ -454,7 +498,7 @@ function handleProjects(string $method, ?string $action, mixed $id): void {
         
         // Удаляем чат проекта
         try {
-            $chatStmt = $pdo->prepare("SELECT id FROM chat_rooms WHERE type = 'project' AND name = CONCAT('Чат проекта: ', (SELECT name FROM projects WHERE id = ? LIMIT 1))");
+            $chatStmt = $pdo->prepare("SELECT id FROM chat_rooms WHERE type = 'project' AND name = CONCAT('project_', ?) LIMIT 1");
             $chatStmt->execute([$projectId]);
             $chatRoom = $chatStmt->fetch();
             

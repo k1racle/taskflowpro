@@ -73,6 +73,23 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
         $row = $stmt->fetch();
         return $row ?: null;
     };
+
+    $validateDepartmentIds = static function(PDO $pdo, array $departmentIds): array {
+        $normalized = array_values(array_unique(array_filter(array_map('intval', $departmentIds), static fn($id) => $id > 0)));
+        if (empty($normalized)) {
+            return [[], []];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($normalized), '?'));
+        $stmt = $pdo->prepare("SELECT id FROM departments WHERE id IN ($placeholders)");
+        $stmt->execute($normalized);
+        $found = array_map('intval', $stmt->fetchAll(PDO::FETCH_COLUMN) ?: []);
+        sort($normalized);
+        sort($found);
+
+        $missing = array_values(array_diff($normalized, $found));
+        return [$normalized, $missing];
+    };
     
     // GET /api/users - список всех пользователей
     if ($method === 'GET' && $action === null) {
@@ -109,13 +126,12 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
             exit;
         }
 
-        // Root видит все роли, остальные — кроме root
-        if ($currentUser['role'] === 'root') {
+        // Root и админы с admin.full видят все роли; остальные — без root и без привилегированных ролей.
+        if (hasAdminAccess($currentUser)) {
             $stmt = $pdo->prepare("SELECT id, name, description, is_system FROM roles ORDER BY name");
             $stmt->execute();
         } else {
-            // Возвращаем все роли, кроме root (для выбора при создании/редактировании пользователя)
-            $stmt = $pdo->prepare("SELECT id, name, description, is_system FROM roles WHERE name != 'root' ORDER BY name");
+            $stmt = $pdo->prepare("\n                SELECT r.id, r.name, r.description, r.is_system\n                FROM roles r\n                WHERE r.name <> 'root'\n                  AND NOT EXISTS (\n                      SELECT 1\n                      FROM role_permissions rp\n                      JOIN permissions p ON p.id = rp.permission_id\n                      WHERE rp.role_id = r.id AND p.code = 'admin.full'\n                  )\n                ORDER BY r.name\n            ");
             $stmt->execute();
         }
         $roles = $stmt->fetchAll();
@@ -235,6 +251,19 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
             $primaryDepartmentId = (int)$departmentIds[0];
         }
 
+        if ($primaryDepartmentId !== null && $primaryDepartmentId <= 0) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Указан некорректный отдел']);
+            exit;
+        }
+
+        [$departmentIds, $missingDepartmentIds] = $validateDepartmentIds($pdo, array_merge($departmentIds, $primaryDepartmentId ? [$primaryDepartmentId] : []));
+        if (!empty($missingDepartmentIds)) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'error' => 'Указаны несуществующие отделы', 'missing_department_ids' => $missingDepartmentIds]);
+            exit;
+        }
+
         $stmt = $pdo->prepare(" 
             INSERT INTO users (login, email, password_hash, full_name, role, department_id)
             VALUES (?, ?, ?, ?, ?, ?)
@@ -316,11 +345,30 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
         if (array_key_exists('department_ids', $data)) {
             $departmentIds = array_values(array_unique(array_filter(array_map('intval', is_array($data['department_ids']) ? $data['department_ids'] : []))));
             $primaryDepartmentId = !empty($departmentIds) ? (int)$departmentIds[0] : null;
+            [$departmentIds, $missingDepartmentIds] = $validateDepartmentIds($pdo, $departmentIds);
+            if (!empty($missingDepartmentIds)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Указаны несуществующие отделы', 'missing_department_ids' => $missingDepartmentIds]);
+                exit;
+            }
             $updates[] = "department_id = ?";
             $params[] = $primaryDepartmentId;
         } elseif (isset($data['department_id'])) {
+            $requestedDepartmentId = (int)$data['department_id'];
+            if ($requestedDepartmentId <= 0) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Указан некорректный отдел']);
+                exit;
+            }
+
+            [$departmentIds, $missingDepartmentIds] = $validateDepartmentIds($pdo, [$requestedDepartmentId]);
+            if (!empty($missingDepartmentIds)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'error' => 'Указан несуществующий отдел', 'missing_department_ids' => $missingDepartmentIds]);
+                exit;
+            }
             $updates[] = "department_id = ?";
-            $params[] = $data['department_id'];
+            $params[] = $requestedDepartmentId;
         }
 
         if (array_key_exists('email', $data)) {
