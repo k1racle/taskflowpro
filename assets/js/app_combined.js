@@ -654,7 +654,7 @@ window.app = function() {
         clickerScore: 0,                // Счёт в игре кликер
         clickerMultiplier: 1,           // Множитель кликера
         weather: { temp: 0, desc: '', icon: '' },  // Погода
-        weatherApiKey: '427fb0d97beab5341712d7cdca451f68',
+        weatherApiKey: '',
         weatherCity: 'Москва',  // Город для погоды
 
         // Floating chat overlay

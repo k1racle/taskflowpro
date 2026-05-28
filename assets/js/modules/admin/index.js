@@ -902,7 +902,7 @@ window.TaskFlowAdmin = (function () {
                 if (data.success && data.data) {
                     ctx.settings = data.data;
                     ctx.telegram = data.data.telegram || { enabled: false, bot_token: '', chat_id: '' };
-                    if (data.data.weather_api_key) ctx.weatherApiKey = data.data.weather_api_key;
+                    ctx.weatherApiKey = data.data.weather_api_key || '';
                     if (data.data.weather_city) ctx.weatherCity = data.data.weather_city;
                 }
             } catch (error) {

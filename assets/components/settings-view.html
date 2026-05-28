@@ -69,8 +69,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="settings-woocommerce-api-consumer-key" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">WooCommerce Consumer Key</label>
-                        <input id="settings-woocommerce-api-consumer-key" name="woocommerce_api_consumer_key" type="text" x-model="settingsForm.woocommerce_api_consumer_key" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="ck_xxxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Нужен для импорта старых заказов через стандартный WooCommerce REST API.</div>
+                        <input id="settings-woocommerce-api-consumer-key" name="woocommerce_api_consumer_key" type="password" x-model="settingsForm.woocommerce_api_consumer_key" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="ck_xxxxxxxxxxxxxxxxxxxxx" autocomplete="new-password" />
+                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Ключ хранится в настройках и скрыт в поле ввода. Оставьте пустым, чтобы не менять текущий ключ.</div>
                     </div>
 
                     <div>
@@ -297,8 +297,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="weather-api-key" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">API Key</label>
-                        <input id="weather-api-key" name="weather_api_key" type="text" x-model="weatherApiKey" placeholder="ваш ключ" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Получите на openweathermap.org</div>
+                        <input id="weather-api-key" name="weather_api_key" type="password" x-model="weatherApiKey" placeholder="ваш ключ" autocomplete="new-password" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Ключ можно хранить в настройках; поле показывается скрыто.</div>
                     </div>
                     <div>
                         <label for="weather-city" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Город</label>

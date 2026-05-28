@@ -17,7 +17,7 @@
     <link rel="manifest" href="manifest.json">
 
         <!-- Main application theme -->
-    <link rel="stylesheet" href="assets/css/crm-theme.css?v=2">
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=3">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
 
     <!-- Tailwind CSS -->
@@ -89,6 +89,8 @@
     <!-- x-include: simple HTML partial loader (before Alpine init) -->
     <script>
         (function () {
+            const INCLUDE_ASSET_VERSION = '3';
+
             function setLoading(el, isLoading) {
                 if (isLoading) el.setAttribute('data-include-loading', '1');
                 else el.removeAttribute('data-include-loading');
@@ -106,6 +108,9 @@
                 }
 
                 if (!url || url === 'null' || url === 'undefined') return;
+
+                const bust = url.includes('?') ? '&' : '?';
+                url = `${url}${bust}v=${INCLUDE_ASSET_VERSION}`;
 
                 setLoading(el, true);
                 try {

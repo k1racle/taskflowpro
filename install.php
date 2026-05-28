@@ -1931,7 +1931,7 @@ function seedData(PDO $pdo): void {
     $pdo->exec("INSERT IGNORE INTO telegram_settings (id, bot_token, chat_id, enabled) VALUES (1, '', '', 0)");
     
     // Настройки погоды (OpenWeatherMap)
-    $pdo->exec("INSERT IGNORE INTO settings (`key`, value) VALUES ('weather_api_key', '427fb0d97beab5341712d7cdca451f68'), ('weather_city', 'Москва')");
+    $pdo->exec("INSERT IGNORE INTO settings (`key`, value) VALUES ('weather_api_key', ''), ('weather_city', 'Москва')");
 
     // ============================================
     // РОЛИ И ПРАВА ДОСТУПА (упрощённая система: 3 роли)
