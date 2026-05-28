@@ -42,24 +42,57 @@
         gap: 8px;
     }
 
-    .crm-project-compact-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .crm-project-compact-card {
+    .crm-project-compact-stack {
         display: flex;
         flex-direction: column;
+        gap: 10px;
         min-width: 0;
-        padding: 12px;
+    }
+
+    .crm-project-summary-strip {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        min-width: 0;
+        padding: 10px 12px;
         border-radius: 16px;
         border: 1px solid color-mix(in oklab, var(--crm-border) 84%, transparent);
         background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));
     }
 
-    .crm-project-compact-card--progress {
+    .crm-project-summary-strip--progress {
         background: linear-gradient(180deg, color-mix(in oklab, var(--lg-primary) 7%, var(--crm-surface)) 0%, color-mix(in oklab, var(--crm-surface-alt) 86%, var(--crm-surface)) 100%);
+    }
+
+    .crm-project-summary-strip__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .crm-project-summary-strip__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        min-width: 0;
+        font-size: 12px;
+        color: var(--lg-text-secondary);
+    }
+
+    .crm-project-summary-strip__progress {
+        height: 6px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));
+    }
+
+    .crm-project-summary-strip__progress-bar {
+        height: 100%;
+        border-radius: inherit;
+        background: var(--lg-primary);
     }
 
     .crm-project-compact-card__label {
@@ -76,37 +109,6 @@
         font-weight: 700;
         line-height: 1.25;
         color: var(--lg-text-primary);
-    }
-
-    .crm-project-compact-note {
-        margin-top: 4px;
-        font-size: 12px;
-        color: var(--lg-text-tertiary);
-        line-height: 1.4;
-    }
-
-    .crm-project-team-stack {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        flex-wrap: wrap;
-        min-width: 0;
-    }
-
-    .crm-project-team-avatar {
-        width: 28px;
-        height: 28px;
-        border-radius: 999px;
-        border: 2px solid color-mix(in oklab, var(--crm-surface) 70%, white);
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-size: 11px;
-        font-weight: 700;
-        flex-shrink: 0;
-        background: var(--lg-primary);
     }
 
     .crm-project-footer {
@@ -134,15 +136,28 @@
         color: var(--lg-primary);
     }
 
+    .crm-project-mini-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px;
+        margin-top: 8px;
+    }
+
     @media (max-width: 1024px) {
-        .crm-project-compact-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+        .crm-project-mini-meta {
+            gap: 4px;
         }
     }
 
     @media (max-width: 640px) {
-        .crm-project-compact-grid {
-            grid-template-columns: 1fr;
+        .crm-project-mini-meta {
+            margin-top: 6px;
+        }
+
+        .crm-project-summary-strip__row {
+            flex-direction: column;
+            align-items: flex-start;
         }
     }
 </style>
@@ -237,7 +252,7 @@
 
     <div x-show="projectsView === 'cards'" class="grid grid-cols-1 xl:grid-cols-2 gap-3">
         <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="project.id">
-            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-3xl p-4 cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card">
+            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-3xl p-3 cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card">
                 <div class="crm-project-card-head crm-project-card-head--compact">
                     <div class="flex items-start gap-3 min-w-0">
                         <div class="crm-project-avatar crm-project-avatar--soft crm-project-avatar--compact">
@@ -251,7 +266,13 @@
                                         <span class="crm-inline-badge" x-text="(() => { const progress = Math.round(project.calculated_progress ?? project.progress ?? 0); if (progress >= 100) return 'Завершен'; if (project.deadline && new Date(project.deadline) < new Date()) return 'Просрочен'; if (progress >= 65) return 'В графике'; return 'В работе'; })()"></span>
                                         <span :class="'priority-' + project.priority" class="crm-priority-pill text-xs capitalize" x-text="translatePriority(project.priority)"></span>
                                     </div>
-                                    <p class="mt-1.5 text-sm leading-6 line-clamp-2" style="color: var(--lg-text-secondary)" x-text="project.description || 'Описание проекта не заполнено'"></p>
+                                    <p class="mt-1.5 text-xs leading-5 line-clamp-1" style="color: var(--lg-text-secondary)" x-text="project.description || 'Описание проекта не заполнено'"></p>
+                                    <div class="crm-project-mini-meta text-[11px]">
+                                        <span class="crm-inline-badge">Задач: <span class="ml-1 font-semibold" x-text="project.tasks_count || 0"></span></span>
+                                        <span class="crm-inline-badge">Готово: <span class="ml-1 font-semibold" x-text="project.completed_tasks || 0"></span></span>
+                                        <span class="crm-inline-badge">Команда: <span class="ml-1 font-semibold" x-text="(project.members || []).length || 0"></span></span>
+                                        <span class="crm-inline-badge">Отделов: <span class="ml-1 font-semibold" x-text="project.departments && project.departments.length ? project.departments.length : 0"></span></span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -259,48 +280,22 @@
                     </div>
                 </div>
 
-                <div class="mt-4 crm-project-compact-grid">
-                    <div class="crm-project-compact-card crm-project-compact-card--progress">
+                <div class="mt-3 crm-project-summary-strip crm-project-summary-strip--progress">
+                    <div class="crm-project-summary-strip__meta">
                         <div class="crm-project-compact-card__label">Прогресс</div>
-                        <div class="mt-1 flex items-end justify-between gap-2">
-                            <div class="text-2xl font-bold leading-none" style="color: var(--lg-text-primary)" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
-                        </div>
-                        <div class="mt-2 h-2 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));">
-                            <div class="h-full rounded-full transition-all duration-500" style="background: var(--lg-primary)" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'" ></div>
-                        </div>
+                        <div class="text-xl font-bold leading-none" style="color: var(--lg-text-primary)" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
                     </div>
-
-                    <div class="crm-project-compact-card">
-                        <div class="crm-project-compact-card__label">Срок</div>
-                        <div class="crm-project-compact-card__value" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" x-text="project.deadline ? formatDate(project.deadline) : 'Не задан'"></div>
+                    <div class="crm-project-summary-strip__progress">
+                        <div class="crm-project-summary-strip__progress-bar transition-all duration-500" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'" ></div>
                     </div>
-
-                    <div class="crm-project-compact-card">
-                        <div class="crm-project-compact-card__label">Команда</div>
-                        <div class="mt-2 crm-project-team-stack">
-                            <div class="flex -space-x-2">
-                                <template x-for="member in (project.members || []).slice(0, 3)" :key="member.id">
-                                    <div>
-                                        <img x-show="member.avatar"
-                                             :src="member.avatar ? ('uploads/avatars/' + member.avatar) : ''"
-                                             class="crm-project-team-avatar object-cover"
-                                             :alt="member.full_name"
-                                             :title="member.full_name">
-                                        <div x-show="!member.avatar"
-                                             class="crm-project-team-avatar"
-                                             :title="member.full_name"
-                                             x-text="getInitials(member.full_name || member.login)"></div>
-                                    </div>
-                                </template>
-                            </div>
-                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="(project.members || []).length ? (project.members || []).length + ' уч.' : '0 уч.'"></div>
-                        </div>
+                    <div class="crm-project-summary-strip__row">
+                        <div class="truncate" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" x-text="project.deadline ? formatDate(project.deadline) : 'Не задан'"></div>
+                        <span class="crm-inline-badge crm-inline-badge-accent text-[11px]" x-text="(() => { const progress = Math.round(project.calculated_progress ?? project.progress ?? 0); if (progress >= 100) return 'Готов'; if (project.deadline && new Date(project.deadline) < new Date()) return 'Просрочен'; if (progress >= 65) return 'В графике'; return 'В работе'; })()"></span>
                     </div>
                 </div>
 
-                <div class="mt-4 crm-project-footer">
+                <div class="mt-3 crm-project-footer">
                     <div class="crm-project-footer__departments">
-                        <span class="crm-summary-label">Отделы</span>
                         <template x-if="project.departments && project.departments.length">
                             <template x-for="department in project.departments.slice(0, 3)" :key="department.id">
                                 <span class="crm-inline-badge" x-text="department.name"></span>
