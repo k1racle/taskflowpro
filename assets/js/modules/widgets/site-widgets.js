@@ -458,9 +458,7 @@ window.TaskFlowSiteWidgets = (function () {
                 try {
                     const settingsRes = await apiGet('settings/weather');
                     if (settingsRes.success && settingsRes.data) {
-                        if (settingsRes.data.weather_api_key) {
-                            ctx.weatherApiKey = settingsRes.data.weather_api_key;
-                        }
+                        ctx.weatherApiKey = settingsRes.data.weather_api_key || '';
                         if (settingsRes.data.weather_city) {
                             ctx.weatherCity = settingsRes.data.weather_city;
                         }

@@ -526,11 +526,6 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             $weatherSettings = [];
             foreach ($settings as $s) {
                 $key = (string)$s['key'];
-                if ($key === 'weather_api_key' && !$canManageSettings) {
-                    $weatherSettings[$key] = '';
-                    continue;
-                }
-
                 $weatherSettings[$key] = $s['value'];
             }
 
