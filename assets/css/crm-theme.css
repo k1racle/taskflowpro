@@ -4,21 +4,21 @@
    ============================================ */
 
 :root {
-    /* Nothing OS inspired palette — monochrome + red accent */
-    --crm-accent: #FF4433;
-    --crm-accent-strong: #E03A2B;
-    --crm-accent-soft: rgba(255, 68, 51, 0.12);
-    --crm-danger-soft: rgba(255, 68, 51, 0.08);
-    --crm-danger-border: rgba(255, 68, 51, 0.35);
-    --crm-danger-text: #FF4433;
-    --crm-bg: #000000;
-    --crm-surface: #0D0D0D;
-    --crm-surface-alt: #1A1A1A;
-    --crm-border: #2A2A2A;
-    --crm-border-strong: #3A3A3A;
-    --crm-text: #FAFAFA;
-    --crm-text-muted: #999999;
-    --crm-text-faint: #666666;
+    /* Apple-style Premium Palette */
+    --crm-accent: #3B82F6;
+    --crm-accent-strong: #2563EB;
+    --crm-accent-soft: rgba(59, 130, 246, 0.10);
+    --crm-danger-soft: rgba(239, 68, 68, 0.08);
+    --crm-danger-border: rgba(239, 68, 68, 0.30);
+    --crm-danger-text: #EF4444;
+    --crm-bg: #F8FAFC;
+    --crm-surface: #FFFFFF;
+    --crm-surface-alt: #F1F5F9;
+    --crm-border: #E2E8F0;
+    --crm-border-strong: #CBD5E1;
+    --crm-text: #0F172A;
+    --crm-text-muted: #64748B;
+    --crm-text-faint: #94A3B8;
     --crm-title-size: clamp(1.625rem, 2vw, 1.95rem);
     --crm-title-line: 1.15;
     --crm-space-2: 8px;
@@ -29,12 +29,12 @@
     --crm-control-height: 42px;
     --crm-control-height-sm: 36px;
     --crm-tab-height: 40px;
-    --crm-radius-sm: 2px;
-    --crm-radius-md: 4px;
-    --crm-radius-lg: 4px;
-    --crm-shadow-sm: none;
-    --crm-shadow-md: none;
-    --crm-shadow-lg: none;
+    --crm-radius-sm: 8px;
+    --crm-radius-md: 12px;
+    --crm-radius-lg: 16px;
+    --crm-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+    --crm-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05), 0 2px 4px rgba(15, 23, 42, 0.03);
+    --crm-shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.08), 0 4px 8px rgba(15, 23, 42, 0.04);
     --crm-layer-base: 1;
     --crm-layer-sticky: 30;
     --crm-layer-overlay: 60;
@@ -42,63 +42,63 @@
     --lg-primary: var(--crm-accent);
     --lg-primary-dark: var(--crm-accent-strong);
     --lg-primary-gradient: linear-gradient(180deg, var(--crm-accent) 0%, var(--crm-accent-strong) 100%);
-    --lg-accent: #FAFAFA;
-    --lg-success: #4ADE80;
-    --lg-error: #FF4433;
-    --lg-warning: #FACC15;
-    --lg-info: #60A5FA;
+    --lg-accent: #0F172A;
+    --lg-success: #10B981;
+    --lg-error: #EF4444;
+    --lg-warning: #F59E0B;
+    --lg-info: #3B82F6;
 }
 
 body.crm-theme:not(.dark) {
     --primary-color: var(--crm-accent);
     --accent-color: var(--crm-accent);
-    --crm-bg: #F5F5F5;
+    --crm-bg: #F8FAFC;
     --crm-surface: #FFFFFF;
-    --crm-surface-alt: #F0F0F0;
-    --crm-border: #E5E5E5;
-    --crm-border-strong: #D4D4D4;
-    --crm-text: #0A0A0A;
-    --crm-text-muted: #737373;
-    --crm-text-faint: #A3A3A3;
+    --crm-surface-alt: #F1F5F9;
+    --crm-border: #E2E8F0;
+    --crm-border-strong: #CBD5E1;
+    --crm-text: #0F172A;
+    --crm-text-muted: #64748B;
+    --crm-text-faint: #94A3B8;
     --lg-bg-primary: var(--crm-bg);
-    --lg-bg-secondary: #F0F0F0;
-    --lg-glass-bg: #FFFFFF;
-    --lg-glass-bg-hover: #F5F5F5;
-    --lg-glass-border: var(--crm-border);
+    --lg-bg-secondary: #F1F5F9;
+    --lg-glass-bg: rgba(255, 255, 255, 0.85);
+    --lg-glass-bg-hover: rgba(255, 255, 255, 0.95);
+    --lg-glass-border: rgba(226, 232, 240, 0.8);
     --lg-text-primary: var(--crm-text);
     --lg-text-secondary: var(--crm-text-muted);
     --lg-text-tertiary: var(--crm-text-faint);
     --lg-border: var(--crm-border);
-    --lg-shadow: none;
-    --lg-shadow-lg: none;
-    background: #F5F5F5;
+    --lg-shadow: var(--crm-shadow-sm);
+    --lg-shadow-lg: var(--crm-shadow-md);
+    background: #F8FAFC;
     background-attachment: fixed;
 }
 
 body.crm-theme.dark {
-    --crm-bg: #000000;
-    --crm-surface: #0D0D0D;
-    --crm-surface-alt: #1A1A1A;
-    --crm-border: #2A2A2A;
-    --crm-border-strong: #3A3A3A;
-    --crm-text: #FAFAFA;
-    --crm-text-muted: #999999;
-    --crm-text-faint: #666666;
-    --crm-shadow-sm: none;
-    --crm-shadow-md: none;
-    --crm-shadow-lg: none;
+    --crm-bg: #0F172A;
+    --crm-surface: #1E293B;
+    --crm-surface-alt: #334155;
+    --crm-border: #334155;
+    --crm-border-strong: #475569;
+    --crm-text: #F8FAFC;
+    --crm-text-muted: #94A3B8;
+    --crm-text-faint: #64748B;
+    --crm-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.20), 0 1px 2px rgba(0, 0, 0, 0.15);
+    --crm-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15);
+    --crm-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.35), 0 4px 8px rgba(0, 0, 0, 0.20);
     --lg-bg-primary: var(--crm-bg);
-    --lg-bg-secondary: #0D0D0D;
-    --lg-glass-bg: #0D0D0D;
-    --lg-glass-bg-hover: #1A1A1A;
-    --lg-glass-border: var(--crm-border);
+    --lg-bg-secondary: #1E293B;
+    --lg-glass-bg: rgba(30, 41, 59, 0.85);
+    --lg-glass-bg-hover: rgba(51, 65, 85, 0.90);
+    --lg-glass-border: rgba(51, 65, 85, 0.6);
     --lg-text-primary: var(--crm-text);
     --lg-text-secondary: var(--crm-text-muted);
     --lg-text-tertiary: var(--crm-text-faint);
     --lg-border: var(--crm-border);
-    --lg-shadow: none;
-    --lg-shadow-lg: none;
-    background: #000000;
+    --lg-shadow: var(--crm-shadow-sm);
+    --lg-shadow-lg: var(--crm-shadow-md);
+    background: #0F172A;
     background-attachment: fixed;
 }
 
@@ -4307,12 +4307,11 @@ body.crm-theme.dark .conference-status-ended {
 }
 
 /* ============================================
-   NOTHING OS REDESIGN OVERRIDE SECTION
-   Flat, sharp, monochrome + red accent
-   Theme-aware: uses CSS vars for light & dark
+   PREMIUM APPLE-STYLE OVERRIDE SECTION
+   Soft shadows, rounded-xl, glassmorphism
    ============================================ */
 
-/* ── Font stack: JetBrains Mono for headings / metrics ── */
+/* ── Font stack ── */
 body.crm-theme,
 body.crm-theme.dark {
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -4322,38 +4321,33 @@ body.crm-theme .crm-mono,
 body.crm-theme .crm-metric-value,
 body.crm-theme .crm-screen-title,
 body.crm-theme .crm-stat-value,
-body.crm-theme .crm-count-badge {
+body.crm-theme .crm-count-badge,
+body.crm-theme .crm-summary-value {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
-/* ── Remove ALL glassmorphism / backdrop-filter ── */
+/* ── Glassmorphism panels ── */
 body.crm-theme .liquid-glass-pro,
 body.crm-theme [class*="liquid-glass"],
 body.crm-theme [class*="ios-glass"],
 body.crm-theme .crm-panel-block,
-body.crm-theme .crm-card,
-body.crm-theme .crm-modal-overlay,
-body.crm-theme .crm-popover {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-shadow: none !important;
-}
-
-/* ── Flat surfaces ── */
-body.crm-theme .liquid-glass-pro,
-body.crm-theme .crm-panel-block,
 body.crm-theme .crm-card {
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
-    border-radius: 2px !important;
+    border-radius: 12px !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
 }
 
 body.crm-theme .crm-panel-block:hover,
 body.crm-theme .crm-card:hover {
-    background: var(--crm-surface-alt) !important;
+    box-shadow: var(--crm-shadow-md) !important;
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
 }
 
-/* ── Sharp inputs ── */
+/* ── Inputs ── */
 body.crm-theme .crm-control-input,
 body.crm-theme .crm-control-select,
 body.crm-theme .crm-control-textarea,
@@ -4369,9 +4363,9 @@ body.crm-theme select,
 body.crm-theme textarea {
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
-    border-radius: 2px !important;
+    border-radius: 10px !important;
     color: var(--crm-text) !important;
-    box-shadow: none !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03) !important;
 }
 
 body.crm-theme .crm-control-input:focus,
@@ -4381,107 +4375,112 @@ body.crm-theme .ios-glass-input:focus,
 body.crm-theme input:focus,
 body.crm-theme select:focus,
 body.crm-theme textarea:focus {
-    border-color: #FF4433 !important;
+    border-color: var(--crm-accent) !important;
     outline: none !important;
-    box-shadow: 0 0 0 1px rgba(255, 68, 51, 0.25) !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15), inset 0 1px 2px rgba(15, 23, 42, 0.03) !important;
 }
 
-/* ── Buttons: Nothing OS style ── */
+/* ── Buttons ── */
 body.crm-theme .crm-btn-primary {
-    background: #FF4433 !important;
-    color: #FAFAFA !important;
-    border: 1px solid #FF4433 !important;
-    border-radius: 2px !important;
-    box-shadow: none !important;
+    background: var(--crm-accent) !important;
+    color: #FFFFFF !important;
+    border: 1px solid var(--crm-accent) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
     font-weight: 600 !important;
-    letter-spacing: 0.01em !important;
+    transition: all 0.2s ease !important;
 }
 
 body.crm-theme .crm-btn-primary:hover {
-    background: #E03A2B !important;
-    border-color: #E03A2B !important;
+    background: var(--crm-accent-strong) !important;
+    border-color: var(--crm-accent-strong) !important;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35) !important;
+    transform: translateY(-1px);
 }
 
 body.crm-theme .crm-btn-secondary {
-    background: transparent !important;
+    background: var(--crm-surface-alt) !important;
     color: var(--crm-text) !important;
-    border: 1px solid var(--crm-border-strong) !important;
-    border-radius: 2px !important;
-    box-shadow: none !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 10px !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+    transition: all 0.2s ease !important;
 }
 
 body.crm-theme .crm-btn-secondary:hover {
-    background: var(--crm-surface-alt) !important;
-    border-color: var(--crm-text-muted) !important;
+    background: var(--crm-surface) !important;
+    border-color: var(--crm-border-strong) !important;
+    box-shadow: var(--crm-shadow-md) !important;
 }
 
 body.crm-theme .crm-btn-ghost {
     background: transparent !important;
     color: var(--crm-text-muted) !important;
     border: none !important;
-    box-shadow: none !important;
+    transition: all 0.2s ease !important;
 }
 
 body.crm-theme .crm-btn-ghost:hover {
     color: var(--crm-text) !important;
-    background: rgba(128, 128, 128, 0.06) !important;
+    background: rgba(59, 130, 246, 0.06) !important;
 }
 
 body.crm-theme .crm-btn-danger {
     background: transparent !important;
-    color: #FF4433 !important;
-    border: 1px solid rgba(255, 68, 51, 0.35) !important;
-    border-radius: 2px !important;
-    box-shadow: none !important;
+    color: var(--crm-danger-text) !important;
+    border: 1px solid var(--crm-danger-border) !important;
+    border-radius: 10px !important;
+    transition: all 0.2s ease !important;
 }
 
 body.crm-theme .crm-btn-danger:hover {
-    background: rgba(255, 68, 51, 0.08) !important;
+    background: var(--crm-danger-soft) !important;
 }
 
-/* ── Tabs: rectangular with dot indicator ── */
+/* ── Tabs ── */
 body.crm-theme .crm-tabbar-button {
-    border-radius: 2px !important;
+    border-radius: 10px !important;
     background: transparent !important;
     border: 1px solid transparent !important;
     color: var(--crm-text-muted) !important;
-    box-shadow: none !important;
     font-weight: 500 !important;
-    text-transform: uppercase !important;
-    font-size: 0.7rem !important;
-    letter-spacing: 0.08em !important;
+    font-size: 0.8rem !important;
+    transition: all 0.2s ease !important;
 }
 
 body.crm-theme .crm-tabbar-button:hover {
-    background: rgba(128, 128, 128, 0.06) !important;
+    background: rgba(59, 130, 246, 0.06) !important;
     color: var(--crm-text) !important;
 }
 
 body.crm-theme .crm-tabbar-button.active,
-body.crm-theme .crm-tabbar-button[aria-selected="true"] {
+body.crm-theme .crm-tabbar-button[aria-selected="true"],
+body.crm-theme .crm-tabbar-button-active {
     background: var(--crm-surface) !important;
     border-color: var(--crm-border) !important;
     color: var(--crm-text) !important;
-    box-shadow: none !important;
+    box-shadow: var(--crm-shadow-sm) !important;
 }
 
 body.crm-theme .crm-tabbar-button.active::before,
-body.crm-theme .crm-tabbar-button[aria-selected="true"]::before {
+body.crm-theme .crm-tabbar-button[aria-selected="true"]::before,
+body.crm-theme .crm-tabbar-button-active::before {
     content: '';
     display: inline-block;
     width: 6px;
     height: 6px;
-    background: #FF4433;
+    background: var(--crm-accent);
     border-radius: 50%;
     margin-right: 6px;
     vertical-align: middle;
 }
 
-/* ── Tables: clean lines ── */
+/* ── Tables ── */
 body.crm-theme table,
 body.crm-theme .crm-table,
 body.crm-theme [class*="table"] {
-    border-collapse: collapse !important;
+    border-collapse: separate !important;
+    border-spacing: 0;
 }
 
 body.crm-theme .crm-table tbody tr:nth-child(even) {
@@ -4495,6 +4494,7 @@ body.crm-theme .crm-table tbody tr:hover {
 body.crm-theme .crm-table th,
 body.crm-theme .crm-table td {
     border-bottom: 1px solid var(--crm-border) !important;
+    padding: 10px 14px !important;
 }
 
 body.crm-theme .crm-table thead th {
@@ -4502,12 +4502,12 @@ body.crm-theme .crm-table thead th {
     color: var(--crm-text-faint) !important;
     text-transform: uppercase !important;
     font-size: 0.65rem !important;
-    letter-spacing: 0.1em !important;
+    letter-spacing: 0.08em !important;
     font-weight: 600 !important;
     font-family: 'JetBrains Mono', monospace !important;
 }
 
-/* ── Dot indicators (Nothing OS status dots) ── */
+/* ── Status dots ── */
 body.crm-theme .crm-status-dot {
     display: inline-flex;
     align-items: center;
@@ -4527,164 +4527,174 @@ body.crm-theme .crm-status-dot::before {
 }
 
 body.crm-theme .crm-status-dot.active::before,
-body.crm-theme .crm-status-dot.success::before { background: #4ADE80; }
+body.crm-theme .crm-status-dot.success::before { background: var(--lg-success); }
 body.crm-theme .crm-status-dot.error::before,
-body.crm-theme .crm-status-dot.danger::before { background: #FF4433; }
-body.crm-theme .crm-status-dot.warning::before { background: #FACC15; }
-body.crm-theme .crm-status-dot.info::before { background: #60A5FA; }
+body.crm-theme .crm-status-dot.danger::before { background: var(--lg-error); }
+body.crm-theme .crm-status-dot.warning::before { background: var(--lg-warning); }
+body.crm-theme .crm-status-dot.info::before { background: var(--lg-info); }
 
-/* ── Badges: minimal, not pill-shaped ── */
+/* ── Badges ── */
 body.crm-theme .crm-badge,
 body.crm-theme [class*="badge"] {
-    border-radius: 2px !important;
+    border-radius: 8px !important;
     font-family: 'JetBrains Mono', monospace !important;
-    font-size: 0.65rem !important;
-    letter-spacing: 0.05em !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.03em !important;
     font-weight: 600 !important;
-    padding: 2px 6px !important;
-    text-transform: uppercase !important;
+    padding: 3px 8px !important;
 }
 
-/* ── Scrollbar: red accent ── */
+/* ── Scrollbar ── */
 body.crm-theme ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 body.crm-theme ::-webkit-scrollbar-track {
-    background: var(--crm-surface);
+    background: transparent;
 }
 
 body.crm-theme ::-webkit-scrollbar-thumb {
     background: var(--crm-border-strong);
-    border-radius: 3px;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 body.crm-theme ::-webkit-scrollbar-thumb:hover {
-    background: #FF4433;
+    background: var(--crm-accent);
 }
 
-/* ── Remove rounded corners everywhere ── */
+/* ── Rounded corner normalization ── */
 body.crm-theme [class*="rounded-3xl"],
 body.crm-theme [class*="rounded-2xl"],
 body.crm-theme [class*="rounded-xl"] {
-    border-radius: 4px !important;
+    border-radius: 12px !important;
 }
 
 body.crm-theme [class*="rounded-lg"] {
-    border-radius: 2px !important;
+    border-radius: 10px !important;
 }
 
-/* ── Modal / Drawer flat style ── */
+/* ── Modal / Drawer ── */
 body.crm-theme .crm-modal,
 body.crm-theme .crm-drawer,
 body.crm-theme [class*="modal"],
 body.crm-theme [class*="drawer"] {
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
-    border-radius: 4px !important;
-    box-shadow: none !important;
+    border-radius: 16px !important;
+    box-shadow: var(--crm-shadow-lg) !important;
 }
 
 body.crm-theme .crm-modal-overlay,
 body.crm-theme [class*="overlay"] {
-    background: rgba(0, 0, 0, 0.85) !important;
-    backdrop-filter: none !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
 }
 
-/* ── Navigation / Sidebar ── */
+/* ── Sidebar ── */
 body.crm-theme .crm-sidebar,
 body.crm-theme [class*="sidebar"] {
-    background: var(--crm-bg) !important;
+    background: var(--crm-surface) !important;
     border-right: 1px solid var(--crm-border) !important;
+    box-shadow: var(--crm-shadow-md) !important;
 }
 
 body.crm-theme .crm-sidebar-item.active,
-body.crm-theme .crm-sidebar-item[aria-current="page"] {
-    background: rgba(255, 68, 51, 0.08) !important;
-    border-left: 2px solid #FF4433 !important;
+body.crm-theme .crm-sidebar-item[aria-current="page"],
+body.crm-theme .crm-nav-item-active {
+    background: rgba(59, 130, 246, 0.08) !important;
+    border-left: 3px solid var(--crm-accent) !important;
 }
 
 /* ── Topbar ── */
 body.crm-theme .crm-topbar,
 body.crm-theme [class*="topbar"] {
-    background: var(--crm-bg) !important;
+    background: var(--crm-surface) !important;
     border-bottom: 1px solid var(--crm-border) !important;
-    box-shadow: none !important;
+    box-shadow: var(--crm-shadow-sm) !important;
 }
 
-/* ── Dropdowns / Popovers ── */
+/* ── Dropdowns ── */
 body.crm-theme .crm-dropdown,
 body.crm-theme [class*="dropdown"] {
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
-    border-radius: 2px !important;
-    box-shadow: none !important;
+    border-radius: 12px !important;
+    box-shadow: var(--crm-shadow-lg) !important;
 }
 
 body.crm-theme .crm-dropdown-item:hover {
     background: var(--crm-surface-alt) !important;
+    border-radius: 8px;
 }
 
 /* ── Utility overrides ── */
 body.crm-theme .crm-border-subtle {
     border: 1px solid var(--crm-border) !important;
     background: var(--crm-surface) !important;
+    border-radius: 12px !important;
 }
 
 body.crm-theme .crm-border-warn {
-    border: 1px solid rgba(250, 204, 21, 0.25) !important;
-    background: rgba(250, 204, 21, 0.05) !important;
+    border: 1px solid rgba(245, 158, 11, 0.25) !important;
+    background: rgba(245, 158, 11, 0.05) !important;
+    border-radius: 10px !important;
 }
 
 body.crm-theme .crm-border-success {
-    border: 1px solid rgba(74, 222, 128, 0.18) !important;
-    background: rgba(74, 222, 128, 0.05) !important;
+    border: 1px solid rgba(16, 185, 129, 0.20) !important;
+    background: rgba(16, 185, 129, 0.05) !important;
+    border-radius: 10px !important;
 }
 
 body.crm-theme .crm-bg-error-soft {
-    background: rgba(255, 68, 51, 0.08) !important;
+    background: rgba(239, 68, 68, 0.08) !important;
+    border-radius: 10px !important;
 }
 
 body.crm-theme .crm-bg-dark-soft {
     border: 1px solid var(--crm-border) !important;
     background: var(--crm-surface-alt) !important;
+    border-radius: 12px !important;
 }
 
 /* ── Links ── */
 body.crm-theme a,
 body.crm-theme .crm-link {
     color: var(--crm-text);
-    text-decoration: underline;
-    text-decoration-color: #FF4433;
-    text-underline-offset: 2px;
+    text-decoration: none;
+    transition: color 0.2s ease;
 }
 
 body.crm-theme a:hover,
 body.crm-theme .crm-link:hover {
-    color: #FF4433;
+    color: var(--crm-accent);
 }
 
 /* ── Toggle / Switch ── */
 body.crm-theme .crm-toggle:checked,
 body.crm-theme input[type="checkbox"]:checked {
-    background: #FF4433 !important;
-    border-color: #FF4433 !important;
+    background: var(--crm-accent) !important;
+    border-color: var(--crm-accent) !important;
 }
 
-/* ── Progress / Loading ── */
+/* ── Progress ── */
 body.crm-theme .crm-progress-bar,
 body.crm-theme [class*="progress"] {
     background: var(--crm-surface-alt) !important;
-    border-radius: 1px !important;
+    border-radius: 6px !important;
+    overflow: hidden;
 }
 
 body.crm-theme .crm-progress-fill {
-    background: #FF4433 !important;
-    border-radius: 1px !important;
+    background: var(--crm-accent) !important;
+    border-radius: 6px !important;
 }
 
-/* ── Calendar / Date picker overrides ── */
+/* ── Calendar ── */
 body.crm-theme .fc-theme-standard .fc-scrollgrid,
 body.crm-theme .fc-theme-standard td,
 body.crm-theme .fc-theme-standard th {
@@ -4692,7 +4702,7 @@ body.crm-theme .fc-theme-standard th {
 }
 
 body.crm-theme .fc .fc-daygrid-day.fc-day-today {
-    background: rgba(255, 68, 51, 0.08) !important;
+    background: rgba(59, 130, 246, 0.08) !important;
 }
 
 /* ── Empty states ── */
@@ -4700,64 +4710,44 @@ body.crm-theme .crm-empty-state {
     color: var(--crm-text-faint);
     font-family: 'JetBrains Mono', monospace;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    font-size: 0.8rem;
 }
 
-/* ── Fix: filter / summary tiles (Nothing OS pills → flat chips) ── */
+/* ── Fix: filter / summary tiles ── */
 body.crm-theme .crm-summary-tile,
 body.crm-theme .crm-summary-tile--compact,
 body.crm-theme .crm-toolbar-summary .crm-summary-tile {
-    border-radius: 2px !important;
+    border-radius: 12px !important;
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
-    box-shadow: none !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+    transition: all 0.2s ease;
 }
 
-body.crm-theme .crm-summary-value {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    letter-spacing: -0.02em;
+body.crm-theme .crm-summary-tile:hover {
+    box-shadow: var(--crm-shadow-md) !important;
+    transform: translateY(-1px);
 }
 
 body.crm-theme .crm-inline-badge,
 body.crm-theme .crm-inline-badge-accent {
-    border-radius: 2px !important;
+    border-radius: 8px !important;
     background: var(--crm-surface-alt) !important;
     border: 1px solid var(--crm-border) !important;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', monospace !important;
     font-size: 0.7rem !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
+    letter-spacing: 0.03em !important;
     font-weight: 600 !important;
+    box-shadow: var(--crm-shadow-sm) !important;
 }
 
 body.crm-theme .crm-filter-field {
-    border-radius: 2px !important;
+    border-radius: 12px !important;
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
-}
-
-/* ── Fix: tab active class used in JS ── */
-body.crm-theme .crm-tabbar-button-active,
-body.crm-theme .crm-tabbar-button.active,
-body.crm-theme .crm-tabbar-button[aria-selected="true"] {
-    background: var(--crm-surface) !important;
-    border-color: var(--crm-border) !important;
-    color: var(--crm-text) !important;
-    box-shadow: none !important;
-}
-
-body.crm-theme .crm-tabbar-button-active::before,
-body.crm-theme .crm-tabbar-button.active::before,
-body.crm-theme .crm-tabbar-button[aria-selected="true"]::before {
-    content: '';
-    display: inline-block;
-    width: 6px;
-    height: 6px;
-    background: #FF4433;
-    border-radius: 50%;
-    margin-right: 6px;
-    vertical-align: middle;
+    box-shadow: var(--crm-shadow-sm) !important;
 }
 
 /* ── Fix: priority pills ── */
@@ -4766,11 +4756,11 @@ body.crm-theme .priority-low,
 body.crm-theme .priority-medium,
 body.crm-theme .priority-high,
 body.crm-theme .priority-urgent {
-    border-radius: 2px !important;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.65rem !important;
+    border-radius: 8px !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.7rem !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
+    letter-spacing: 0.03em !important;
     font-weight: 600 !important;
 }
 
@@ -4778,11 +4768,11 @@ body.crm-theme .priority-urgent {
 body.crm-theme .crm-project-avatar,
 body.crm-theme .crm-project-avatar--soft,
 body.crm-theme .crm-project-avatar--compact {
-    border-radius: 2px !important;
-    background: #FF4433 !important;
-    box-shadow: none !important;
-    color: #FAFAFA !important;
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    border-radius: 10px !important;
+    background: var(--crm-accent) !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+    color: #FFFFFF !important;
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 body.crm-theme .crm-project-avatar--soft {
@@ -4793,31 +4783,142 @@ body.crm-theme .crm-project-avatar--soft {
 
 /* ── Fix: project metric chips ── */
 body.crm-theme .crm-project-metric {
-    border-radius: 2px !important;
+    border-radius: 12px !important;
     background: var(--crm-surface-alt) !important;
     border: 1px solid var(--crm-border) !important;
+    box-shadow: var(--crm-shadow-sm) !important;
 }
 
-/* ── Fix: remove gradient top bar on project cards ── */
+/* ── Fix: project cards ── */
 body.crm-theme .crm-project-card::before {
     display: none !important;
 }
 
-/* ── Fix: project cards empty space ── */
 body.crm-theme .crm-card-equal {
     height: auto !important;
 }
 
 body.crm-theme .crm-project-card {
-    padding: 12px !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+    transition: all 0.2s ease;
 }
 
-body.crm-theme .crm-project-card-head,
-body.crm-theme .crm-project-card-head--compact {
-    padding-bottom: 8px !important;
+body.crm-theme .crm-project-card:hover {
+    box-shadow: var(--crm-shadow-md) !important;
+    transform: translateY(-2px);
 }
 
-/* ── Fix: section headings font ── */
+/* ── Notifications panel ── */
+body.crm-theme .notifications-panel-shell {
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 16px !important;
+    box-shadow: var(--crm-shadow-lg) !important;
+}
+
+body.crm-theme .notification-card {
+    background: var(--crm-surface-alt) !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+    transition: all 0.2s ease;
+}
+
+body.crm-theme .notification-card:hover {
+    box-shadow: var(--crm-shadow-md) !important;
+    transform: translateX(2px);
+}
+
+body.crm-theme .notification-card-unread {
+    border-left: 3px solid var(--crm-accent) !important;
+}
+
+body.crm-theme .notification-card-icon {
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 10px !important;
+}
+
+body.crm-theme .notification-type-chip,
+body.crm-theme .notification-chip-info,
+body.crm-theme .notification-chip-chat,
+body.crm-theme .notification-chip-task,
+body.crm-theme .notification-chip-system {
+    border-radius: 6px !important;
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    padding: 2px 8px !important;
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+    color: var(--crm-text-muted) !important;
+}
+
+body.crm-theme .notification-status-chip {
+    border-radius: 6px !important;
+    font-size: 0.65rem !important;
+    font-weight: 600 !important;
+    background: rgba(59, 130, 246, 0.10) !important;
+    color: var(--crm-accent) !important;
+    padding: 2px 8px !important;
+}
+
+body.crm-theme .notification-action-primary {
+    background: var(--crm-accent) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease;
+}
+
+body.crm-theme .notification-action-primary:hover {
+    background: var(--crm-accent-strong) !important;
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35) !important;
+}
+
+body.crm-theme .notification-action-secondary,
+body.crm-theme .ios-glass-button {
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 8px !important;
+    color: var(--crm-text-muted) !important;
+    transition: all 0.2s ease;
+}
+
+body.crm-theme .notification-action-secondary:hover,
+body.crm-theme .ios-glass-button:hover {
+    background: var(--crm-surface-alt) !important;
+    color: var(--crm-text) !important;
+}
+
+body.crm-theme .notifications-empty-card {
+    background: var(--crm-surface-alt) !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--crm-shadow-sm) !important;
+}
+
+body.crm-theme .notifications-empty-icon {
+    color: var(--crm-accent);
+    font-size: 2rem;
+}
+
+/* ── Toast ── */
+body.crm-theme .lg-toast {
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+    border-radius: 12px !important;
+    box-shadow: var(--crm-shadow-lg) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    padding: 14px 18px !important;
+}
+
+/* ── Section headings ── */
 body.crm-theme .crm-section-head__title,
 body.crm-theme .crm-toolbar-heading h2,
 body.crm-theme .crm-toolbar-heading h3,
@@ -4825,4 +4926,5 @@ body.crm-theme h1,
 body.crm-theme h2,
 body.crm-theme h3 {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.02em;
 }
