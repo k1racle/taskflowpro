@@ -3,23 +3,6 @@
    Conservative overrides for the shared shell
    ============================================ */
 
-/* ── Custom Nothing OS heading font ── */
-@font-face {
-    font-family: 'Nothing';
-    src: url('../components/fonts/nothing-font.otf.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Nothing';
-    src: url('../components/fonts/nothing-font.otf.woff2') format('woff2');
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-}
-
 :root {
     /* Nothing OS inspired palette — monochrome + red accent */
     --crm-accent: #FF4433;
@@ -4340,7 +4323,7 @@ body.crm-theme .crm-metric-value,
 body.crm-theme .crm-screen-title,
 body.crm-theme .crm-stat-value,
 body.crm-theme .crm-count-badge {
-    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* ── Remove ALL glassmorphism / backdrop-filter ── */
@@ -4521,7 +4504,7 @@ body.crm-theme .crm-table thead th {
     font-size: 0.65rem !important;
     letter-spacing: 0.1em !important;
     font-weight: 600 !important;
-    font-family: 'Nothing', 'JetBrains Mono', monospace !important;
+    font-family: 'JetBrains Mono', monospace !important;
 }
 
 /* ── Dot indicators (Nothing OS status dots) ── */
@@ -4554,7 +4537,7 @@ body.crm-theme .crm-status-dot.info::before { background: #60A5FA; }
 body.crm-theme .crm-badge,
 body.crm-theme [class*="badge"] {
     border-radius: 2px !important;
-    font-family: 'Nothing', 'JetBrains Mono', monospace !important;
+    font-family: 'JetBrains Mono', monospace !important;
     font-size: 0.65rem !important;
     letter-spacing: 0.05em !important;
     font-weight: 600 !important;
@@ -4715,7 +4698,7 @@ body.crm-theme .fc .fc-daygrid-day.fc-day-today {
 /* ── Empty states ── */
 body.crm-theme .crm-empty-state {
     color: var(--crm-text-faint);
-    font-family: 'Nothing', 'JetBrains Mono', monospace;
+    font-family: 'JetBrains Mono', monospace;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.75rem;
@@ -4732,7 +4715,7 @@ body.crm-theme .crm-toolbar-summary .crm-summary-tile {
 }
 
 body.crm-theme .crm-summary-value {
-    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     letter-spacing: -0.02em;
 }
 
@@ -4741,7 +4724,7 @@ body.crm-theme .crm-inline-badge-accent {
     border-radius: 2px !important;
     background: var(--crm-surface-alt) !important;
     border: 1px solid var(--crm-border) !important;
-    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.7rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.04em !important;
@@ -4784,7 +4767,7 @@ body.crm-theme .priority-medium,
 body.crm-theme .priority-high,
 body.crm-theme .priority-urgent {
     border-radius: 2px !important;
-    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.65rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.04em !important;
@@ -4799,7 +4782,7 @@ body.crm-theme .crm-project-avatar--compact {
     background: #FF4433 !important;
     box-shadow: none !important;
     color: #FAFAFA !important;
-    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 body.crm-theme .crm-project-avatar--soft {
@@ -4841,5 +4824,5 @@ body.crm-theme .crm-toolbar-heading h3,
 body.crm-theme h1,
 body.crm-theme h2,
 body.crm-theme h3 {
-    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
