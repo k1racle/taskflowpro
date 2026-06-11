@@ -907,6 +907,12 @@ function loadSettings() {
             max_webhook_secret: ''
         };
         
+        this.bookingBotForm = {
+            enabled: String(this.settings?.booking_bot_telegram_enabled || '') === '1',
+            token: '',
+            welcome_text: String(this.settings?.booking_bot_welcome_text || 'Здравствуйте! Я бот для записи на услуги. Напишите /book чтобы начать.')
+        };
+        
         this.webrtcForm = {
             ice_servers_json: String(this.settings?.webrtc_ice_servers_json || '[{"urls":"stun:stun.l.google.com:19302"}]')
         };
@@ -1177,4 +1183,206 @@ if (typeof window !== 'undefined') {
     window.saveTaskTimerToServer = saveTaskTimerToServer;
     window.markNotificationRead = markNotificationRead;
     window.markAllNotificationsRead = markAllNotificationsRead;
+
+    window.notificationTemplatesTab = notificationTemplatesTab;
+    window.bookingWidgetsTab = bookingWidgetsTab;
+}
+
+/**
+ * Alpine data для вкладки "Лицензия" в настройках
+ */
+function licenseTab() {
+    return {
+        licenseStatus: null,
+        licenseRequestForm: { name: '', email: '', company: '', tier_requested: 'pro', message: '' },
+        licenseRequestSending: false,
+
+        async loadLicenseStatus() {
+            try {
+                const res = await fetch('/api/index.php?endpoint=license/status');
+                const data = await res.json();
+                if (data.success) this.licenseStatus = data.data;
+            } catch (e) { console.error(e); }
+        },
+
+        async sendLicenseRequest() {
+            this.licenseRequestSending = true;
+            try {
+                const res = await fetch('/api/index.php?endpoint=license/request', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.licenseRequestForm)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert('Заявка отправлена');
+                    this.licenseRequestForm = { name: '', email: '', company: '', tier_requested: 'pro', message: '' };
+                } else {
+                    alert(data.error || 'Ошибка отправки');
+                }
+            } catch (e) { console.error(e); alert('Ошибка отправки'); }
+            this.licenseRequestSending = false;
+        }
+    };
+}
+
+/**
+ * Alpine data для вкладки "Уведомления" в настройках
+ */
+function notificationTemplatesTab() {
+    return {
+        templates: [],
+        logs: [],
+        editingTemplate: null,
+        editForm: { subject: '', body_html: '', body_text: '', is_active: true },
+        testEmail: '',
+        saving: false,
+
+        async loadNotificationTemplates() {
+            try {
+                const res = await fetch('/api/index.php?endpoint=notifications/templates');
+                const data = await res.json();
+                if (data.success) this.templates = data.data || [];
+            } catch (e) { console.error(e); }
+            this.loadLogs();
+        },
+
+        async loadLogs() {
+            try {
+                const res = await fetch('/api/index.php?endpoint=notifications/logs?limit=20');
+                const data = await res.json();
+                if (data.success) this.logs = data.data || [];
+            } catch (e) { console.error(e); }
+        },
+
+        editTemplate(t) {
+            this.editingTemplate = t;
+            this.editForm = {
+                subject: t.subject || '',
+                body_html: t.body_html || '',
+                body_text: t.body_text || '',
+                is_active: !!t.is_active,
+            };
+        },
+
+        async saveTemplate() {
+            if (!this.editingTemplate) return;
+            this.saving = true;
+            try {
+                const res = await fetch('/api/index.php?endpoint=notifications/templates/' + this.editingTemplate.id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.editForm)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.editingTemplate = null;
+                    await this.loadNotificationTemplates();
+                }
+            } catch (e) { console.error(e); }
+            this.saving = false;
+        },
+
+        async sendTest() {
+            if (!this.editingTemplate || !this.testEmail) return;
+            this.saving = true;
+            try {
+                const res = await fetch('/api/index.php?endpoint=notifications/templates/' + this.editingTemplate.id, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: this.testEmail })
+                });
+                const data = await res.json();
+                alert(data.message || (data.success ? 'Отправлено' : 'Ошибка'));
+            } catch (e) { console.error(e); }
+            this.saving = false;
+        }
+    };
+}
+
+/**
+ * Alpine data для вкладки "Виджеты записи" в настройках
+ */
+function bookingWidgetsTab() {
+    return {
+        profiles: [],
+        editingProfile: null,
+        profileForm: { name: '', slug: '', display_mode: 'floating', brand_color: '#2563eb', hide_branding: false, require_email: false },
+        generatedCode: '',
+        saving: false,
+
+        async loadBookingWidgetProfiles() {
+            try {
+                const res = await fetch('/api/index.php?endpoint=settings/site-widgets');
+                const data = await res.json();
+                if (data.success && data.data && data.data.profiles) {
+                    this.profiles = data.data.profiles.map(p => ({...p, config: p.config || {}}));
+                }
+            } catch (e) { console.error(e); }
+        },
+
+        createNewProfile() {
+            this.editingProfile = { id: null, name: '', slug: '', config: {} };
+            this.profileForm = { name: '', slug: '', display_mode: 'floating', brand_color: '#2563eb', hide_branding: false, require_email: false };
+        },
+
+        editProfile(p) {
+            this.editingProfile = p;
+            const cfg = p.config || {};
+            this.profileForm = {
+                name: p.name || '',
+                slug: p.slug || '',
+                display_mode: cfg.display_mode || 'floating',
+                brand_color: cfg.brand_color || '#2563eb',
+                hide_branding: !!cfg.hide_branding,
+                require_email: !!cfg.require_email,
+            };
+        },
+
+        async saveProfile() {
+            this.saving = true;
+            try {
+                const payload = {
+                    name: this.profileForm.name,
+                    slug: this.profileForm.slug,
+                    ...this.profileForm,
+                };
+                const res = await fetch('/api/index.php?endpoint=settings/site-widgets', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.editingProfile = null;
+                    await this.loadBookingWidgetProfiles();
+                }
+            } catch (e) { console.error(e); }
+            this.saving = false;
+        },
+
+        generateCode(p) {
+            const baseUrl = window.location.origin;
+            const code = '<script src="' + baseUrl + '/widgets/site-widgets.js" data-mode="booking" data-profile="' + (p.slug || 'default') + '" data-base-url="' + baseUrl + '"><\/script>';
+            this.generatedCode = code;
+        },
+
+        copyCode() {
+            navigator.clipboard.writeText(this.generatedCode).then(() => alert('Код скопирован'));
+        },
+
+        widgetAnalyticsDays: 7,
+        widgetAnalytics: null,
+        widgetAnalyticsLoading: false,
+
+        async loadWidgetAnalytics() {
+            this.widgetAnalyticsLoading = true;
+            try {
+                const res = await fetch('/api/booking.php?action=widget-analytics-report&days=' + this.widgetAnalyticsDays);
+                const data = await res.json();
+                if (data.success) this.widgetAnalytics = data.data;
+            } catch (e) { console.error(e); }
+            this.widgetAnalyticsLoading = false;
+        }
+    };
 }

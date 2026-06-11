@@ -182,6 +182,15 @@ function handleUsers(string $method, ?string $action, mixed $id): void {
             echo json_encode(['success' => false, 'error' => 'Недостаточно прав']);
             exit;
         }
+
+        require_once __DIR__ . '/license.php';
+        $userCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL")->fetchColumn();
+        if (!checkLicenseLimit($pdo, 'max_users', $userCount)) {
+            $maxUsers = getLicenseTierMaxUsers($pdo);
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Достигнут лимит пользователей на текущем тарифе (' . ($maxUsers ?? '0') . '). Обратитесь в поддержку для расширения лицензии.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
         
         $data = json_decode(file_get_contents('php://input'), true);
 

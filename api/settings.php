@@ -31,6 +31,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             'omni_max_webhook_secret',
             'prostiezvonki_api_key',
             'prostiezvonki_webhook_secret',
+            'booking_bot_telegram_token',
         ], true);
     };
 
@@ -259,7 +260,11 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             'brand_color' => (string)($raw['brand_color'] ?? $raw['site_widgets_brand_color'] ?? '#2563eb'),
             'brand_button_text' => (string)($raw['brand_button_text'] ?? $raw['site_widgets_brand_button_text'] ?? '💬'),
             'brand_form_title' => (string)($raw['brand_form_title'] ?? $raw['site_widgets_brand_form_title'] ?? $siteWidgetDefaults['site_widgets_brand_form_title']),
-            'brand_form_description' => (string)($raw['brand_form_description'] ?? $raw['site_widgets_brand_form_description'] ?? $siteWidgetDefaults['site_widgets_brand_form_description'])
+            'brand_form_description' => (string)($raw['brand_form_description'] ?? $raw['site_widgets_brand_form_description'] ?? $siteWidgetDefaults['site_widgets_brand_form_description']),
+            'display_mode' => in_array(($raw['display_mode'] ?? ''), ['floating', 'inline', 'iframe'], true) ? ($raw['display_mode'] ?? 'floating') : 'floating',
+            'hide_branding' => !empty($raw['hide_branding']),
+            'require_email' => !empty($raw['require_email']),
+            'custom_css_url' => trim((string)($raw['custom_css_url'] ?? '')),
         ];
     };
 
@@ -289,6 +294,11 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             $brandColor = '#2563EB';
         }
 
+        $displayMode = $data['display_mode'] ?? 'floating';
+        if (!in_array($displayMode, ['floating', 'inline', 'iframe'], true)) {
+            $displayMode = 'floating';
+        }
+
         return [
             'api_base' => $sanitizeText($data['api_base'] ?? '', 255, ''),
             'position' => ($data['position'] ?? 'right') === 'left' ? 'left' : 'right',
@@ -304,7 +314,12 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             'brand_color' => $brandColor,
             'brand_button_text' => $sanitizeText($data['brand_button_text'] ?? '', 24, '💬'),
             'brand_form_title' => $sanitizeText($data['brand_form_title'] ?? '', 120, $siteWidgetDefaults['site_widgets_brand_form_title']),
-            'brand_form_description' => $sanitizeText($data['brand_form_description'] ?? '', 255, $siteWidgetDefaults['site_widgets_brand_form_description'])
+            'brand_form_description' => $sanitizeText($data['brand_form_description'] ?? '', 255, $siteWidgetDefaults['site_widgets_brand_form_description']),
+            'display_mode' => $displayMode,
+            'hide_branding' => !empty($data['hide_branding']),
+            'require_email' => !empty($data['require_email']),
+            'custom_css_url' => $sanitizeText($data['custom_css_url'] ?? '', 500, ''),
+            'allowed_services_json' => is_array($data['allowed_services_json'] ?? null) ? json_encode($data['allowed_services_json']) : null,
         ];
     };
 
@@ -382,7 +397,7 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $count = (int)$pdo->query("SELECT COUNT(*) FROM site_widget_profiles")->fetchColumn();
         if ($count === 0) {
             $legacyConfig = $sanitizeSiteWidgetPayload($loadSiteWidgetSettings());
-            $stmt = $pdo->prepare("INSERT INTO site_widget_profiles (name, slug, is_active, config_json) VALUES (?, ?, 1, ?)");
+            $stmt = $pdo->prepare("INSERT INTO site_widget_profiles (name, slug, type, is_active, config_json) VALUES (?, ?, 'chat', 1, ?)");
             $stmt->execute([
                 'Основной профиль',
                 'default',
@@ -404,15 +419,18 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
 
     $getSiteWidgetProfiles = function() use ($pdo, $ensureSiteWidgetProfilesInitialized, $decodeSiteWidgetProfileConfig): array {
         $ensureSiteWidgetProfilesInitialized();
-        $stmt = $pdo->query("SELECT id, name, slug, is_active, config_json, created_at, updated_at FROM site_widget_profiles ORDER BY is_active DESC, updated_at DESC, id ASC");
+        $stmt = $pdo->query("SELECT id, name, slug, type, is_active, config_json, allowed_services_json, custom_css_url, created_at, updated_at FROM site_widget_profiles ORDER BY is_active DESC, updated_at DESC, id ASC");
         $profiles = [];
         foreach ($stmt->fetchAll() as $row) {
             $profiles[] = [
                 'id' => (int)$row['id'],
                 'name' => (string)$row['name'],
+                'type' => (string)($row['type'] ?? 'chat'),
                 'slug' => (string)$row['slug'],
+                'type' => (string)($row['type'] ?? 'chat'),
                 'is_active' => (bool)$row['is_active'],
                 'config' => $decodeSiteWidgetProfileConfig($row['config_json']),
+                'allowed_services_json' => $row['allowed_services_json'] ? json_decode((string)$row['allowed_services_json'], true) : [],
                 'created_at' => $row['created_at'],
                 'updated_at' => $row['updated_at']
             ];
@@ -484,6 +502,10 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $settingsData['referral_shared_secret_source'] = $referralSharedSecretSource;
         $settingsData = array_merge($settingsData, $loadOmnichannelSettingsSnapshot());
         $settingsData = array_merge($settingsData, $loadWebrtcSettingsSnapshot());
+
+        $bookingBotToken = $loadEncryptedSettingValue('booking_bot_telegram_token');
+        $settingsData['booking_bot_telegram_token'] = '';
+        $settingsData['booking_bot_telegram_token_configured'] = $bookingBotToken !== '' ? '1' : '0';
 
         echo json_encode([
             'success' => true,
@@ -951,9 +973,15 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
             }
 
             $payload = $sanitizeSiteWidgetPayload($data);
-            $stmt = $pdo->prepare("UPDATE site_widget_profiles SET config_json = ? WHERE id = ?");
+            $profileType = in_array(($data['type'] ?? ''), ['chat', 'booking', 'unified'], true) ? ($data['type'] ?? 'chat') : 'chat';
+            $allowedServices = is_array($data['allowed_services_json'] ?? null) ? json_encode($data['allowed_services_json'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+            $customCss = $sanitizeText($data['custom_css_url'] ?? '', 500, '');
+            $stmt = $pdo->prepare("UPDATE site_widget_profiles SET config_json = ?, type = ?, allowed_services_json = ?, custom_css_url = ? WHERE id = ?");
             $stmt->execute([
                 json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                $profileType,
+                $allowedServices,
+                $customCss,
                 $profileId
             ]);
 
@@ -1082,11 +1110,17 @@ function handleSettings(string $method, ?string $action, mixed $id): void {
         $sourceProfile = $findSiteWidgetProfile($data['clone_from_profile_id'] ?? null);
         $config = $sanitizeSiteWidgetPayload($sourceProfile['config'] ?? $loadSiteWidgetSettings());
 
-        $stmt = $pdo->prepare("INSERT INTO site_widget_profiles (name, slug, is_active, config_json) VALUES (?, ?, 0, ?)");
+        $profileType = in_array(($data['type'] ?? ''), ['chat', 'booking', 'unified'], true) ? ($data['type'] ?? 'chat') : 'chat';
+        $allowedServices = is_array($data['allowed_services_json'] ?? null) ? json_encode($data['allowed_services_json'], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : null;
+        $customCss = $sanitizeText($data['custom_css_url'] ?? '', 500, '');
+        $stmt = $pdo->prepare("INSERT INTO site_widget_profiles (name, slug, type, is_active, config_json, allowed_services_json, custom_css_url) VALUES (?, ?, ?, 0, ?, ?, ?)");
         $stmt->execute([
             $name,
             $slug,
-            json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+            $profileType,
+            json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            $allowedServices,
+            $customCss
         ]);
 
         $newId = (int)$pdo->lastInsertId();

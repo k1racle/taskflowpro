@@ -3352,6 +3352,14 @@ window.app = function() {
             return window.TaskFlowAdmin?.pingOmniMax(this);
         },
 
+        async saveBookingBotSettings() {
+            return window.TaskFlowAdmin?.saveBookingBotSettings(this);
+        },
+
+        async pingBookingBot() {
+            return window.TaskFlowAdmin?.pingBookingBot(this);
+        },
+
         async retryCall() {
             return window.TaskFlowChat?.retryCall?.(this);
         },

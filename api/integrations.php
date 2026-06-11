@@ -660,7 +660,13 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
 
     if ($action === 'telegram') {
         $enabled = trim((string)($loadSetting('omni_tg_enabled') ?? '0')) === '1';
-        if (!$enabled) {
+        $botEnabled = false;
+        try {
+            $stmt = $pdo->query("SELECT value FROM settings WHERE `key` = 'booking_bot_telegram_enabled' LIMIT 1");
+            $botEnabled = trim((string)$stmt->fetchColumn()) === '1';
+        } catch (Throwable $e) {}
+
+        if (!$enabled && !$botEnabled) {
             echo json_encode(['success' => true]);
             exit;
         }
@@ -676,6 +682,21 @@ function handleIntegrations(string $method, ?string $action, mixed $id, ?string 
         $text = $msg['text'] ?? ($msg['caption'] ?? '');
         $messageId = $msg['message_id'] ?? null;
         if (!$chatId) {
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
+        // Booking bot dispatcher (runs before HelpDesk ticket creation)
+        if ($botEnabled) {
+            require_once __DIR__ . '/booking-bot.php';
+            $handledByBot = handleBookingBot($pdo, $payload);
+            if ($handledByBot) {
+                echo json_encode(['success' => true]);
+                exit;
+            }
+        }
+
+        if (!$enabled) {
             echo json_encode(['success' => true]);
             exit;
         }

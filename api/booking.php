@@ -9,6 +9,7 @@ require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/roles.php';
 require_once __DIR__ . '/audit.php';
 require_once __DIR__ . '/booking-schema.php';
+require_once __DIR__ . '/notification-service.php';
 
 appSecurityApplyApiHeaders();
 
@@ -626,6 +627,10 @@ function bookingRespond(array $payload, int $statusCode = 200): void {
 }
 
 function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $now = null): void {
+    require_once __DIR__ . '/license.php';
+    if (!isFeatureEnabled($pdo, 'booking')) {
+        bookingRespond(['success' => false, 'error' => 'Модуль записи недоступен на текущем тарифе. Обратитесь в поддержку для подключения.'], 403);
+    }
     $now ??= new DateTimeImmutable('now');
     $data = bookingReadJsonBody();
 
@@ -638,6 +643,19 @@ function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $
     $notes = bookingNormalizeString($data['notes'] ?? $data['comment'] ?? null, 5000);
     $crmClientId = (int)($data['crm_client_id'] ?? $data['client_id'] ?? 0);
     $crmClientId = $crmClientId > 0 ? $crmClientId : null;
+    $source = bookingNormalizeString($data['source'] ?? null, 32) ?? 'web';
+    $pageUrl = bookingNormalizeString($data['page_url'] ?? null, 1000);
+    $widgetProfileSlug = bookingNormalizeString($data['profile'] ?? $data['widget_profile'] ?? null, 120);
+    $widgetProfileId = null;
+    if ($widgetProfileSlug) {
+        try {
+            $stmt = $pdo->prepare("SELECT id FROM site_widget_profiles WHERE slug = ? LIMIT 1");
+            $stmt->execute([$widgetProfileSlug]);
+            $widgetProfileId = (int)$stmt->fetchColumn();
+        } catch (Throwable $e) {
+            $widgetProfileId = null;
+        }
+    }
 
     if (!$clientName || !$clientPhone) {
         bookingRespond(['success' => false, 'error' => 'Укажите имя и телефон для связи'], 400);
@@ -746,10 +764,13 @@ function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $
             notes,
             admin_comment,
             status,
+            source,
+            page_url,
+            widget_profile_id,
             created_by,
             reviewed_by,
             reviewed_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, NULL, 'pending', ?, NULL, NULL)");
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, NULL, 'pending', ?, ?, ?, ?, NULL, NULL)");
         $insertStmt->execute([
             $requestNumber,
             (int)($primaryService['id'] ?? 0),
@@ -764,8 +785,16 @@ function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $
             round($totalPriceRub, 2),
             $holdExpiresAt->format('Y-m-d H:i:s'),
             $notes,
+            $source,
+            $pageUrl,
+            $widgetProfileId,
             $createdBy ? (int)$createdBy : null,
         ]);
+
+        // Логируем аналитику виджета
+        if ($widgetProfileId && $widgetProfileId > 0) {
+            bookingLogWidgetAnalytics($pdo, $widgetProfileId, 'submit', $pageUrl, $_SERVER['HTTP_USER_AGENT'] ?? null);
+        }
 
         $requestId = (int)$pdo->lastInsertId();
 
@@ -889,6 +918,17 @@ function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $
         error_log('bookingHandleCreate notification failed: ' . $e->getMessage());
     }
 
+    // Отправляем уведомления
+    try {
+        $adminIds = bookingAdminRecipientIds($pdo);
+        notificationServiceSendBooking($pdo, 'booking.created', $freshRequest, [
+            'admin_ids' => $adminIds,
+            'creator_id' => $createdBy ? (int)$createdBy : null,
+        ]);
+    } catch (Throwable $e) {
+        error_log('bookingHandleCreate notification service failed: ' . $e->getMessage());
+    }
+
     bookingRespond([
         'success' => true,
         'data' => $freshRequest,
@@ -897,6 +937,10 @@ function bookingHandleCreate(PDO $pdo, ?array $currentUser, ?DateTimeImmutable $
 }
 
 function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision, ?DateTimeImmutable $now = null): void {
+    require_once __DIR__ . '/license.php';
+    if (!isFeatureEnabled($pdo, 'booking')) {
+        bookingRespond(['success' => false, 'error' => 'Модуль записи недоступен на текущем тарифе. Обратитесь в поддержку для подключения.'], 403);
+    }
     $now ??= new DateTimeImmutable('now');
 
     if (!$currentUser || !hasAdminAccess($currentUser)) {
@@ -995,6 +1039,15 @@ function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision, 
         }
     }
 
+    // Отправляем уведомления
+    try {
+        notificationServiceSendBooking($pdo, $targetStatus === 'confirmed' ? 'booking.confirmed' : 'booking.rejected', $freshRequest, [
+            'creator_id' => $creatorId > 0 ? $creatorId : null,
+        ]);
+    } catch (Throwable $e) {
+        error_log('bookingHandleDecision notification service failed: ' . $e->getMessage());
+    }
+
     bookingRespond([
         'success' => true,
         'data' => $freshRequest,
@@ -1003,6 +1056,10 @@ function bookingHandleDecision(PDO $pdo, ?array $currentUser, string $decision, 
 }
 
 function bookingHandleServiceUpsert(PDO $pdo, ?array $currentUser): void {
+    require_once __DIR__ . '/license.php';
+    if (!isFeatureEnabled($pdo, 'booking')) {
+        bookingRespond(['success' => false, 'error' => 'Модуль записи недоступен на текущем тарифе. Обратитесь в поддержку для подключения.'], 403);
+    }
     if (!$currentUser || !hasAdminAccess($currentUser)) {
         bookingRespond(['success' => false, 'error' => 'Только администраторы могут управлять услугами'], 403);
     }
@@ -1134,6 +1191,10 @@ function bookingHandleServiceDelete(PDO $pdo, ?array $currentUser): void {
 }
 
 function bookingHandleWorkingHoursUpsert(PDO $pdo, ?array $currentUser): void {
+    require_once __DIR__ . '/license.php';
+    if (!isFeatureEnabled($pdo, 'booking')) {
+        bookingRespond(['success' => false, 'error' => 'Модуль записи недоступен на текущем тарифе. Обратитесь в поддержку для подключения.'], 403);
+    }
     if (!$currentUser || !hasAdminAccess($currentUser)) {
         bookingRespond(['success' => false, 'error' => 'Только администраторы могут управлять расписанием'], 403);
     }
@@ -1193,6 +1254,137 @@ function bookingHandleWorkingHoursUpsert(PDO $pdo, ?array $currentUser): void {
     bookingRespond(['success' => true, 'data' => $hours]);
 }
 
+/**
+ * Рассчитать доступные слоты на дату
+ */
+function bookingCalculateSlots(PDO $pdo, string $date, array $serviceIds): array {
+    $serviceCatalog = bookingLoadServiceCatalog($pdo);
+    $totalDuration = 0;
+    foreach ($serviceIds as $sid) {
+        if (isset($serviceCatalog[$sid])) {
+            $totalDuration += max(0, (int)($serviceCatalog[$sid]['duration_minutes'] ?? 0));
+        }
+    }
+    if ($totalDuration <= 0) {
+        $totalDuration = 30;
+    }
+
+    try {
+        $dayStart = new DateTimeImmutable($date . ' 00:00:00');
+    } catch (Throwable $e) {
+        return [];
+    }
+    $weekday = (int)$dayStart->format('N');
+
+    $workingHours = bookingWorkingHoursByWeekday(bookingFetchWorkingHours($pdo));
+    $daySchedule = $workingHours[$weekday] ?? null;
+    if (!$daySchedule || empty($daySchedule['is_open'])) {
+        return [];
+    }
+
+    $openMin = bookingTimeToMinutes($daySchedule['opens_at'] ?? null) ?? 0;
+    $closeMin = bookingTimeToMinutes($daySchedule['closes_at'] ?? null) ?? (24 * 60);
+    $breakStart = bookingTimeToMinutes($daySchedule['break_starts_at'] ?? null);
+    $breakEnd = bookingTimeToMinutes($daySchedule['break_ends_at'] ?? null);
+
+    // Получаем подтвержденные и pending заявки на этот день
+    $dayStartStr = $dayStart->format('Y-m-d H:i:s');
+    $dayEndStr = $dayStart->setTime(23, 59, 59)->format('Y-m-d H:i:s');
+    $nowStr = (new DateTimeImmutable('now'))->format('Y-m-d H:i:s');
+
+    $stmt = $pdo->prepare("
+        SELECT preferred_datetime, preferred_end_at, total_duration_minutes, status, hold_expires_at, created_at
+        FROM booking_requests
+        WHERE preferred_datetime IS NOT NULL
+          AND preferred_datetime < ?
+          AND COALESCE(preferred_end_at, DATE_ADD(preferred_datetime, INTERVAL GREATEST(total_duration_minutes, 0) MINUTE)) > ?
+          AND (
+                LOWER(status) IN ('confirmed', 'approved')
+                OR (
+                    LOWER(status) IN ('pending', 'new')
+                    AND COALESCE(hold_expires_at, DATE_ADD(created_at, INTERVAL 30 MINUTE)) > ?
+                )
+          )
+    ");
+    $stmt->execute([$dayEndStr, $dayStartStr, $nowStr]);
+    $busyIntervals = [];
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $s = strtotime((string)$row['preferred_datetime']);
+        $e = strtotime((string)($row['preferred_end_at'] ?? $row['preferred_datetime'])) + max(0, (int)($row['total_duration_minutes'] ?? 0)) * 60;
+        if ($s && $e) {
+            $busyIntervals[] = ['s' => $s, 'e' => $e];
+        }
+    }
+
+    $slots = [];
+    $step = 30; // шаг слотов в минутах
+    for ($min = $openMin; $min + $totalDuration <= $closeMin; $min += $step) {
+        $slotStart = $dayStart->setTime((int)floor($min / 60), $min % 60);
+        $slotEnd = $slotStart->modify('+' . $totalDuration . ' minutes');
+
+        // Пропускаем перерыв
+        if ($breakStart !== null && $breakEnd !== null && $breakEnd > $breakStart) {
+            $slotStartMin = ((int)$slotStart->format('H') * 60) + (int)$slotStart->format('i');
+            $slotEndMin = ((int)$slotEnd->format('H') * 60) + (int)$slotEnd->format('i');
+            if ($slotStartMin < $breakEnd && $slotEndMin > $breakStart) {
+                continue;
+            }
+        }
+
+        // Пропускаем прошедшее время
+        if ($slotStart <= new DateTimeImmutable('now')) {
+            continue;
+        }
+
+        // Проверяем конфликты
+        $conflict = false;
+        $slotStartTs = $slotStart->getTimestamp();
+        $slotEndTs = $slotEnd->getTimestamp();
+        foreach ($busyIntervals as $busy) {
+            if ($slotStartTs < $busy['e'] && $slotEndTs > $busy['s']) {
+                $conflict = true;
+                break;
+            }
+        }
+
+        if (!$conflict) {
+            $slots[] = [
+                'time' => $slotStart->format('H:i'),
+                'datetime' => $slotStart->format('Y-m-d H:i:s'),
+                'duration_minutes' => $totalDuration,
+            ];
+        }
+    }
+
+    return $slots;
+}
+
+/**
+ * Записать аналитику виджета
+ */
+function bookingLogWidgetAnalytics(PDO $pdo, int $widgetProfileId, string $event, ?string $pageUrl = null, ?string $pageTitle = null, ?string $referrer = null, ?string $sessionId = null, ?string $userAgent = null): void {
+    try {
+        $uaHash = $userAgent ? hash('sha256', $userAgent) : null;
+        $ipHash = !empty($_SERVER['REMOTE_ADDR']) ? hash('sha256', $_SERVER['REMOTE_ADDR']) : null;
+        $stmt = $pdo->prepare("
+            INSERT INTO booking_widget_analytics (widget_profile_id, event, page_url, page_title, referrer, user_agent_hash, session_id, ip_hash)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $widgetProfileId,
+            $event,
+            $pageUrl ? substr($pageUrl, 0, 1000) : null,
+            $pageTitle ? substr($pageTitle, 0, 500) : null,
+            $referrer ? substr($referrer, 0, 1000) : null,
+            $uaHash ? substr($uaHash, 0, 64) : null,
+            $sessionId ? substr($sessionId, 0, 64) : null,
+            $ipHash ? substr($ipHash, 0, 64) : null,
+        ]);
+    } catch (Throwable $e) {
+        error_log('bookingLogWidgetAnalytics failed: ' . $e->getMessage());
+    }
+}
+
 function handleBooking(string $method): void {
     $pdo = getPDO();
 
@@ -1211,7 +1403,133 @@ function handleBooking(string $method): void {
         error_log('booking.php pending expiration failed: ' . $e->getMessage());
     }
 
+    // Обрабатываем напоминания
+    try {
+        notificationServiceProcessReminders($pdo, $now);
+    } catch (Throwable $e) {
+        error_log('booking.php reminders failed: ' . $e->getMessage());
+    }
+
     if ($method === 'GET') {
+        $getAction = strtolower(trim((string)($_GET['action'] ?? '')));
+
+        // Публичная конфигурация виджета (без авторизации)
+        if ($getAction === 'widget-analytics') {
+            // Логирование аналитики виджета (без авторизации)
+            $data = json_decode(file_get_contents('php://input'), true);
+            $widgetProfileId = (int)($data['widget_profile_id'] ?? 0);
+            $event = bookingNormalizeString($data['event'] ?? null, 32);
+            $analyticsPageUrl = bookingNormalizeString($data['page_url'] ?? null, 1000);
+            $analyticsPageTitle = bookingNormalizeString($data['page_title'] ?? null, 500);
+            $analyticsReferrer = bookingNormalizeString($data['referrer'] ?? null, 1000);
+            $analyticsSessionId = bookingNormalizeString($data['session_id'] ?? null, 64);
+            if ($widgetProfileId > 0 && $event) {
+                bookingLogWidgetAnalytics($pdo, $widgetProfileId, $event, $analyticsPageUrl, $analyticsPageTitle, $analyticsReferrer, $analyticsSessionId, $_SERVER['HTTP_USER_AGENT'] ?? null);
+            }
+            bookingRespond(['success' => true]);
+        }
+
+        if ($getAction === 'widget-analytics-report') {
+            // Admin-only analytics report
+            if (!$currentUser || !hasAdminAccess($currentUser)) {
+                bookingRespond(['success' => false, 'error' => 'Требуется авторизация'], 403);
+            }
+            $days = max(1, min(90, (int)($_GET['days'] ?? 7)));
+            $profileId = isset($_GET['profile_id']) && is_numeric($_GET['profile_id']) ? (int)$_GET['profile_id'] : null;
+            $params = [];
+            $where = "WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)";
+            $params[] = $days;
+            if ($profileId) {
+                $where .= " AND widget_profile_id = ?";
+                $params[] = $profileId;
+            }
+            $stmt = $pdo->prepare("SELECT event, COUNT(*) as cnt FROM booking_widget_analytics {$where} GROUP BY event");
+            $stmt->execute($params);
+            $summary = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt2 = $pdo->prepare("SELECT DATE(created_at) as date, event, COUNT(*) as cnt FROM booking_widget_analytics {$where} GROUP BY DATE(created_at), event ORDER BY date DESC");
+            $stmt2->execute($params);
+            $daily = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+            bookingRespond(['success' => true, 'data' => ['summary' => $summary, 'daily' => $daily, 'days' => $days]]);
+        }
+
+        if ($getAction === 'widget-config') {
+            $profileSlug = trim((string)($_GET['profile'] ?? ''));
+            $profile = null;
+            if ($profileSlug !== '') {
+                $stmt = $pdo->prepare("SELECT id, name, slug, type, config_json, allowed_services_json, custom_css_url FROM site_widget_profiles WHERE slug = ? LIMIT 1");
+                $stmt->execute([$profileSlug]);
+                $profile = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            if (!$profile) {
+                $stmt = $pdo->query("SELECT id, name, slug, type, config_json, allowed_services_json, custom_css_url FROM site_widget_profiles WHERE is_active = 1 LIMIT 1");
+                $profile = $stmt->fetch(PDO::FETCH_ASSOC);
+            }
+
+            $config = [];
+            if ($profile) {
+                $config = json_decode((string)($profile['config_json'] ?? '{}'), true) ?: [];
+                $config['profile_id'] = (int)$profile['id'];
+                $config['profile_slug'] = $profile['slug'];
+                $config['profile_name'] = $profile['name'];
+                $config['type'] = $profile['type'] ?? 'chat';
+                $config['allowed_service_ids'] = json_decode((string)($profile['allowed_services_json'] ?? '[]'), true) ?: [];
+                $config['custom_css_url'] = $profile['custom_css_url'] ?? null;
+            }
+
+            $companyName = 'TaskFlow';
+            $logoUrl = '';
+            try {
+                $stmt = $pdo->query("SELECT `key`, value FROM settings WHERE `key` IN ('company_name', 'logo')");
+                foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                    if ($row['key'] === 'company_name') $companyName = (string)$row['value'];
+                    if ($row['key'] === 'logo') $logoUrl = (string)$row['value'];
+                }
+            } catch (Throwable $e) {
+                // ignore
+            }
+
+            $serviceTypes = bookingFetchServiceTypes($pdo);
+            if (!empty($config['allowed_service_ids'])) {
+                $allowed = array_map('intval', (array)$config['allowed_service_ids']);
+                $serviceTypes = array_values(array_filter($serviceTypes, static fn($s) => in_array((int)($s['id'] ?? 0), $allowed, true)));
+            }
+
+            bookingRespond(['success' => true, 'data' => [
+                'config' => $config,
+                'company_name' => $companyName,
+                'logo_url' => $logoUrl,
+                'service_types' => $serviceTypes,
+                'working_hours' => bookingFetchWorkingHours($pdo),
+                'hold_minutes' => 30,
+                'server_time' => $now->format('Y-m-d H:i:s'),
+                'powered_by' => [
+                    'enabled' => empty($config['hide_branding']),
+                    'text' => 'Работает на базе TaskFlow',
+                    'link' => 'https://taskflow.pro',
+                ],
+            ]]);
+        }
+
+        // Доступные слоты на дату
+        if ($getAction === 'slots') {
+            $date = trim((string)($_GET['date'] ?? ''));
+            $serviceIds = [];
+            if (!empty($_GET['service_ids'])) {
+                $raw = is_array($_GET['service_ids']) ? $_GET['service_ids'] : explode(',', (string)$_GET['service_ids']);
+                foreach ($raw as $id) {
+                    $id = (int)$id;
+                    if ($id > 0) $serviceIds[] = $id;
+                }
+            }
+
+            if (!$date || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                bookingRespond(['success' => false, 'error' => 'Укажите date в формате YYYY-MM-DD'], 400);
+            }
+
+            $slots = bookingCalculateSlots($pdo, $date, $serviceIds);
+            bookingRespond(['success' => true, 'data' => ['date' => $date, 'slots' => $slots]]);
+        }
+
         $serviceTypes = bookingFetchServiceTypes($pdo);
         $workingHours = bookingFetchWorkingHours($pdo);
         $canManage = (bool)($currentUser && hasAdminAccess($currentUser));
@@ -1225,7 +1543,6 @@ function handleBooking(string $method): void {
         ];
 
         if ($currentUser) {
-            // lightweight debug to help diagnose permission issues in UI
             $data['current_user'] = [
                 'id' => (int)($currentUser['id'] ?? 0),
                 'login' => (string)($currentUser['login'] ?? ''),
@@ -1251,6 +1568,20 @@ function handleBooking(string $method): void {
 
     $data = bookingReadJsonBody();
     $action = strtolower(trim((string)($data['action'] ?? ($_GET['action'] ?? $data['decision'] ?? ''))));
+
+    // Public widget analytics logging (no auth required)
+    if ($action === 'widget-analytics') {
+        $widgetProfileId = (int)($data['widget_profile_id'] ?? 0);
+        $event = bookingNormalizeString($data['event'] ?? null, 32);
+        $analyticsPageUrl = bookingNormalizeString($data['page_url'] ?? null, 1000);
+        $analyticsPageTitle = bookingNormalizeString($data['page_title'] ?? null, 500);
+        $analyticsReferrer = bookingNormalizeString($data['referrer'] ?? null, 1000);
+        $analyticsSessionId = bookingNormalizeString($data['session_id'] ?? null, 64);
+        if ($widgetProfileId > 0 && $event) {
+            bookingLogWidgetAnalytics($pdo, $widgetProfileId, $event, $analyticsPageUrl, $analyticsPageTitle, $analyticsReferrer, $analyticsSessionId, $_SERVER['HTTP_USER_AGENT'] ?? null);
+        }
+        bookingRespond(['success' => true]);
+    }
 
     if ($action === 'approve') {
         $action = 'confirm';

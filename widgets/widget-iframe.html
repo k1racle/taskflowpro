@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн-запись</title>
+    <style>
+        html, body { margin: 0; padding: 0; background: transparent; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        * { box-sizing: border-box; }
+    </style>
+</head>
+<body>
+    <div id="widget-root"></div>
+    <script>
+        (function() {
+            var params = new URLSearchParams(window.location.search);
+            var profile = params.get('profile') || '';
+            var baseUrl = window.location.href.replace(/\/widgets\/widget-iframe\.html(?:\?.*)?$/, '');
+            var apiBase = baseUrl + '/api';
+
+            var script = document.createElement('script');
+            script.src = baseUrl + '/widgets/site-widgets.js';
+            script.setAttribute('data-mode', 'booking');
+            script.setAttribute('data-api-base', apiBase);
+            script.setAttribute('data-base-url', baseUrl);
+            script.setAttribute('data-display-mode', 'inline');
+            script.setAttribute('data-target', 'widget-root');
+            if (profile) {
+                script.setAttribute('data-profile', profile);
+            }
+            document.head.appendChild(script);
+        })();
+    </script>
+</body>
+</html>

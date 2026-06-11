@@ -1816,6 +1816,22 @@ function createTables(PDO $pdo): void {
             FOREIGN KEY (to_participant_id) REFERENCES conference_participants(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT 'WebRTC SDP ответы для видеоконференций'
     ");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS license_requests (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            email VARCHAR(255) NOT NULL,
+            company VARCHAR(255) NOT NULL,
+            tier_requested VARCHAR(32) NULL,
+            message TEXT NULL,
+            status VARCHAR(20) NOT NULL DEFAULT 'new',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_status (status),
+            INDEX idx_created (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
 }
 
 function createAdmin(PDO $pdo, string $password): void {
@@ -2174,6 +2190,72 @@ function seedData(PDO $pdo): void {
         ON DUPLICATE KEY UPDATE service_name=VALUES(service_name)
     ");
 
+    // Seed notification templates
+    $pdo->exec("
+        INSERT INTO notification_templates (event, channel, subject, body_html, body_text, is_active, sort_order) VALUES
+        ('booking.created', 'internal', 'Новая заявка на запись', '<p>Новая заявка <strong>#{{request_number}}</strong> от {{client_name}}.</p><p>Услуги: {{services}}</p><p>Дата: {{datetime}}</p>', 'Новая заявка #{{request_number}} от {{client_name}}. Услуги: {{services}}. Дата: {{datetime}}.', 1, 0),
+        ('booking.created', 'email', 'Ваша заявка #{{request_number}} принята', '<p>Здравствуйте, {{client_name}}!</p><p>Ваша заявка на запись <strong>#{{request_number}}</strong> принята и ожидает подтверждения.</p><p>Услуги: {{services}}</p><p>Дата и время: {{datetime}}</p><p>Сумма: {{total_price}}</p>', 'Здравствуйте, {{client_name}}! Ваша заявка на запись #{{request_number}} принята и ожидает подтверждения. Услуги: {{services}}. Дата и время: {{datetime}}. Сумма: {{total_price}}.', 1, 1),
+        ('booking.created', 'telegram', NULL, NULL, '🔔 <b>Новая заявка на запись</b>\n\nНомер: #{{request_number}}\nКлиент: {{client_name}}\nТелефон: {{client_phone}}\nУслуги: {{services}}\nДата: {{datetime}}\nСумма: {{total_price}}', 1, 2),
+        ('booking.confirmed', 'email', 'Ваша запись #{{request_number}} подтверждена', '<p>Здравствуйте, {{client_name}}!</p><p>Ваша запись <strong>#{{request_number}}</strong> подтверждена.</p><p>Услуги: {{services}}</p><p>Дата и время: {{datetime}}</p><p>Сумма: {{total_price}}</p><p>Ждем вас!</p>', 'Здравствуйте, {{client_name}}! Ваша запись #{{request_number}} подтверждена. Услуги: {{services}}. Дата и время: {{datetime}}. Сумма: {{total_price}}. Ждем вас!', 1, 3),
+        ('booking.confirmed', 'internal', 'Заявка подтверждена', '<p>Заявка <strong>#{{request_number}}</strong> подтверждена.</p>', 'Заявка #{{request_number}} подтверждена.', 1, 4),
+        ('booking.rejected', 'email', 'Ваша заявка #{{request_number}} отклонена', '<p>Здравствуйте, {{client_name}}!</p><p>К сожалению, ваша заявка <strong>#{{request_number}}</strong> не может быть выполнена.</p><p>Комментарий: {{admin_comment}}</p>', 'Здравствуйте, {{client_name}}! К сожалению, ваша заявка #{{request_number}} не может быть выполнена. Комментарий: {{admin_comment}}.', 1, 5),
+        ('booking.reminder_24h', 'email', 'Напоминание: запись #{{request_number}} завтра', '<p>Здравствуйте, {{client_name}}!</p><p>Напоминаем, что завтра у вас запись <strong>#{{request_number}}</strong>.</p><p>Услуги: {{services}}</p><p>Дата и время: {{datetime}}</p><p>Сумма: {{total_price}}</p>', 'Здравствуйте, {{client_name}}! Напоминаем, что завтра у вас запись #{{request_number}}. Услуги: {{services}}. Дата и время: {{datetime}}. Сумма: {{total_price}}.', 1, 6),
+        ('booking.reminder_1h', 'email', 'Напоминание: запись #{{request_number}} через час', '<p>Здравствуйте, {{client_name}}!</p><p>Напоминаем, что через час у вас запись <strong>#{{request_number}}</strong>.</p><p>Услуги: {{services}}</p><p>Дата и время: {{datetime}}</p>', 'Здравствуйте, {{client_name}}! Напоминаем, что через час у вас запись #{{request_number}}. Услуги: {{services}}. Дата и время: {{datetime}}.', 1, 7)
+        ON DUPLICATE KEY UPDATE subject=VALUES(subject), body_html=VALUES(body_html), body_text=VALUES(body_text)
+    ");
+
+    // Booking bot tables
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS booking_bot_sessions (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            channel VARCHAR(16) NOT NULL DEFAULT 'telegram',
+            external_chat_id VARCHAR(128) NOT NULL,
+            step VARCHAR(32) NOT NULL DEFAULT 'idle',
+            data_json LONGTEXT NULL,
+            expires_at TIMESTAMP NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY uniq_channel_chat (channel, external_chat_id),
+            INDEX idx_expires (expires_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS booking_bot_logs (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            session_id INT NULL,
+            channel VARCHAR(16) NOT NULL DEFAULT 'telegram',
+            external_chat_id VARCHAR(128) NOT NULL,
+            direction VARCHAR(8) NOT NULL,
+            message TEXT NULL,
+            step VARCHAR(32) NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_session (session_id),
+            INDEX idx_chat (channel, external_chat_id),
+            INDEX idx_created (created_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    ");
+
+    // Booking bot settings
+    $botSettings = [
+        ['booking_bot_telegram_enabled', '0'],
+        ['booking_bot_telegram_token', ''],
+        ['booking_bot_welcome_text', 'Здравствуйте! Я бот для записи на услуги. Напишите /book чтобы начать.']
+    ];
+    $botStmt = $pdo->prepare("INSERT IGNORE INTO settings (`key`, value) VALUES (?, ?)");
+    foreach ($botSettings as $s) {
+        $botStmt->execute($s);
+    }
+
+    // License tier settings
+    $licenseSettings = [
+        ['license_tier', 'free'],
+        ['license_expires_at', ''],
+        ['license_support_priority', 'low'],
+    ];
+    $licenseStmt = $pdo->prepare("INSERT IGNORE INTO settings (`key`, value) VALUES (?, ?)");
+    foreach ($licenseSettings as $s) {
+        $licenseStmt->execute($s);
+    }
 }
 
 function createBootstrapLock($host, $user, $pass, $dbname, $licenseDomain = ''): void {

@@ -279,187 +279,347 @@
     function renderBookingMode() {
         injectStyles();
 
-        var root = createNode('div', 'wh-widget-root');
-        var panel = createNode('div', 'wh-widget-panel');
-        var launcher = createNode('button', 'wh-widget-launcher', config.brandButtonText);
-        launcher.type = 'button';
-        launcher.setAttribute('aria-label', 'Открыть запись');
-        root.setAttribute('data-wh-widget-build', widgetBuild);
-        panel.setAttribute('data-wh-widget-build', widgetBuild);
+        var widgetConfig = {};
+        var hideBranding = false;
+        var displayMode = dataset.displayMode === 'inline' ? 'inline' : 'floating';
+        var requireEmail = dataset.requireEmail === 'true';
+        var widgetSessionId = 'wh_' + Date.now() + '_' + Math.random().toString(36).slice(2, 9);
+        var pageReferrer = document.referrer || '';
 
-        var brandHeaderIcon = renderIconBadge(config.brandButtonText, 'wh-widget-icon-badge-sm', 'wh-widget-avatar');
-        panel.innerHTML = '' +
-            '<div class="wh-widget-header">' +
-                '<div class="wh-widget-header-top">' +
-                    '<div class="wh-widget-brand">' +
-                        brandHeaderIcon +
-                        '<div><h1 class="wh-widget-title">' + config.bookingTitle + '</h1><p class="wh-widget-subtitle">' + config.bookingDescription + '</p></div>' +
-                    '</div>' +
-                    '<button type="button" class="wh-widget-close">×</button>' +
-                '</div>' +
-            '</div>' +
-            '<div class="wh-widget-body">' +
-                '<form class="wh-widget-request-form" data-role="booking-form">' +
-                    '<div class="wh-widget-status" data-role="booking-status"></div>' +
-                    '<div class="wh-widget-field">' +
-                        '<label class="wh-widget-label">Услуги</label>' +
-                        '<div class="wh-widget-panel-block" style="border-radius:16px;border:1px solid #e2e8f0;background:#fff;padding:10px" data-role="service-list">Загружаем…</div>' +
-                    '</div>' +
-                    '<div class="wh-widget-field wh-widget-inline">' +
-                        '<div style="flex:1">' +
-                            '<label class="wh-widget-label">Дата и время</label>' +
-                            '<input class="wh-widget-input" name="preferred_datetime" type="datetime-local" required>' +
-                        '</div>' +
-                        '<div style="min-width:120px;text-align:right">' +
-                            '<div class="wh-widget-label">Итого</div>' +
-                            '<div style="font-weight:800;color:#0f172a" data-role="booking-total">0 ₽</div>' +
-                            '<div style="font-size:11px;color:#64748b" data-role="booking-duration"></div>' +
-                        '</div>' +
-                    '</div>' +
-                    '<div class="wh-widget-field"><label class="wh-widget-label">Имя</label><input class="wh-widget-input" name="client_name" maxlength="255" required></div>' +
-                    '<div class="wh-widget-field"><label class="wh-widget-label">Телефон</label><input class="wh-widget-input" name="client_phone" maxlength="80" required></div>' +
-                    '<div class="wh-widget-field"><label class="wh-widget-label">Почта (необязательно)</label><input class="wh-widget-input" name="client_email" type="email" maxlength="255"></div>' +
-                    '<div class="wh-widget-field"><label class="wh-widget-label">Комментарий (необязательно)</label><textarea class="wh-widget-textarea" name="notes" maxlength="5000"></textarea></div>' +
-                    '<button class="wh-widget-primary" type="submit">Отправить заявку</button>' +
-                '</form>' +
-                '<div class="wh-widget-brandline"><span class="wh-widget-brandline-mark">TF</span>Работает на базе <strong>TaskFlow</strong></div>' +
-            '</div>';
-
-        root.appendChild(panel);
-        root.appendChild(launcher);
-
-        var closeBtn = panel.querySelector('.wh-widget-close');
-        function closePanel() {
-            panel.classList.remove('open');
+        function trackWidgetEvent(eventName, extra) {
+            if (!widgetConfig.profile_id) return;
+            try {
+                fetch(apiBase + '/booking.php?action=widget-analytics', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.assign({
+                        widget_profile_id: widgetConfig.profile_id,
+                        event: eventName,
+                        page_url: pageUrl,
+                        page_title: pageTitle,
+                        referrer: pageReferrer,
+                        session_id: widgetSessionId
+                    }, extra || {}))
+                }).catch(function(){});
+            } catch (e) {}
         }
-        function openPanel() {
-            panel.classList.add('open');
-        }
-        launcher.addEventListener('click', function () {
-            if (panel.classList.contains('open')) {
-                closePanel();
+
+        function initBookingWidget(configData) {
+            widgetConfig = configData || {};
+            hideBranding = !!widgetConfig.hide_branding;
+
+            var companyName = widgetConfig.company_name || config.bookingTitle;
+            var brandText = widgetConfig.brand_button_text || config.brandButtonText;
+
+            var root = createNode('div', displayMode === 'inline' ? 'wh-widget-form-inline' : 'wh-widget-root');
+            var panel = createNode('div', 'wh-widget-panel');
+            var launcher = null;
+
+            if (displayMode === 'floating') {
+                launcher = createNode('button', 'wh-widget-launcher', brandText);
+                launcher.type = 'button';
+                launcher.setAttribute('aria-label', 'Открыть запись');
+                root.appendChild(panel);
+                root.appendChild(launcher);
             } else {
-                openPanel();
+                panel.classList.add('open');
+                panel.style.position = 'relative';
+                panel.style.bottom = 'auto';
+                panel.style.left = 'auto';
+                panel.style.right = 'auto';
+                panel.style.width = '100%';
+                panel.style.maxHeight = 'none';
+                root.appendChild(panel);
             }
-        });
-        closeBtn.addEventListener('click', closePanel);
 
-        var form = panel.querySelector('[data-role="booking-form"]');
-        var status = panel.querySelector('[data-role="booking-status"]');
-        var serviceList = panel.querySelector('[data-role="service-list"]');
-        var totalNode = panel.querySelector('[data-role="booking-total"]');
-        var durationNode = panel.querySelector('[data-role="booking-duration"]');
-        var servicesById = {};
+            root.setAttribute('data-wh-widget-build', widgetBuild);
+            panel.setAttribute('data-wh-widget-build', widgetBuild);
 
-        function setStatus(type, message) {
-            if (!message) {
-                status.className = 'wh-widget-status';
-                status.textContent = '';
-                return;
+            var brandHeaderIcon = renderIconBadge(brandText, 'wh-widget-icon-badge-sm', 'wh-widget-avatar');
+            var slotHtml = '<div class="wh-widget-field">' +
+                '<label class="wh-widget-label">Дата</label>' +
+                '<input class="wh-widget-input" name="preferred_date" type="date" required>' +
+                '</div>' +
+                '<div class="wh-widget-field">' +
+                '<label class="wh-widget-label">Время</label>' +
+                '<div data-role="slot-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">Сначала выберите дату</div>' +
+                '</div>';
+
+            panel.innerHTML = '' +
+                '<div class="wh-widget-header">' +
+                    '<div class="wh-widget-header-top">' +
+                        '<div class="wh-widget-brand">' +
+                            brandHeaderIcon +
+                            '<div><h1 class="wh-widget-title">' + companyName + '</h1><p class="wh-widget-subtitle">' + (widgetConfig.booking_description || config.bookingDescription) + '</p></div>' +
+                        '</div>' +
+                        (displayMode === 'floating' ? '<button type="button" class="wh-widget-close">×</button>' : '') +
+                    '</div>' +
+                '</div>' +
+                '<div class="wh-widget-body">' +
+                    '<form class="wh-widget-request-form" data-role="booking-form">' +
+                        '<div class="wh-widget-status" data-role="booking-status"></div>' +
+                        '<div class="wh-widget-field">' +
+                            '<label class="wh-widget-label">Услуги</label>' +
+                            '<div class="wh-widget-panel-block" style="border-radius:16px;border:1px solid #e2e8f0;background:#fff;padding:10px" data-role="service-list">Загружаем…</div>' +
+                        '</div>' +
+                        '<div class="wh-widget-field wh-widget-inline">' +
+                            '<div style="flex:1">' + slotHtml + '</div>' +
+                            '<div style="min-width:120px;text-align:right">' +
+                                '<div class="wh-widget-label">Итого</div>' +
+                                '<div style="font-weight:800;color:#0f172a" data-role="booking-total">0 ₽</div>' +
+                                '<div style="font-size:11px;color:#64748b" data-role="booking-duration"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="wh-widget-field"><label class="wh-widget-label">Имя</label><input class="wh-widget-input" name="client_name" maxlength="255" required></div>' +
+                        '<div class="wh-widget-field"><label class="wh-widget-label">Телефон</label><input class="wh-widget-input" name="client_phone" maxlength="80" required placeholder="+7 (___) ___-__-__"></div>' +
+                        '<div class="wh-widget-field"><label class="wh-widget-label">Почта ' + (requireEmail ? '' : '(необязательно)') + '</label><input class="wh-widget-input" name="client_email" type="email" maxlength="255" ' + (requireEmail ? 'required' : '') + '></div>' +
+                        '<div class="wh-widget-field"><label class="wh-widget-label">Комментарий (необязательно)</label><textarea class="wh-widget-textarea" name="notes" maxlength="5000"></textarea></div>' +
+                        '<button class="wh-widget-primary" type="submit">Отправить заявку</button>' +
+                    '</form>' +
+                    (hideBranding ? '' : '<div class="wh-widget-brandline"><span class="wh-widget-brandline-mark">TF</span>Работает на базе <strong>TaskFlow</strong></div>') +
+                '</div>';
+
+            var closeBtn = panel.querySelector('.wh-widget-close');
+            function closePanel() {
+                panel.classList.remove('open');
             }
-            status.className = 'wh-widget-status ' + type;
-            status.textContent = message;
-        }
+            function openPanel() {
+                panel.classList.add('open');
+                trackWidgetEvent('open');
+            }
+            if (launcher) {
+                launcher.addEventListener('click', function () {
+                    if (panel.classList.contains('open')) {
+                        closePanel();
+                    } else {
+                        openPanel();
+                    }
+                });
+            }
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closePanel);
+            }
 
-        function recalc() {
-            var ids = [];
-            var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]');
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
-                    ids.push(parseInt(checkboxes[i].value, 10));
+            var form = panel.querySelector('[data-role="booking-form"]');
+            var status = panel.querySelector('[data-role="booking-status"]');
+            var serviceList = panel.querySelector('[data-role="service-list"]');
+            var slotList = panel.querySelector('[data-role="slot-list"]');
+            var totalNode = panel.querySelector('[data-role="booking-total"]');
+            var durationNode = panel.querySelector('[data-role="booking-duration"]');
+            var dateInput = panel.querySelector('[name="preferred_date"]');
+            var servicesById = {};
+            var selectedSlot = null;
+
+            function setStatus(type, message) {
+                if (!message) {
+                    status.className = 'wh-widget-status';
+                    status.textContent = '';
+                    return;
+                }
+                status.className = 'wh-widget-status ' + type;
+                status.textContent = message;
+            }
+
+            function recalc() {
+                var ids = [];
+                var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]');
+                for (var i = 0; i < checkboxes.length; i++) {
+                    if (checkboxes[i].checked) {
+                        ids.push(parseInt(checkboxes[i].value, 10));
+                    }
+                }
+                var total = 0;
+                var minutes = 0;
+                for (var j = 0; j < ids.length; j++) {
+                    var svc = servicesById[ids[j]];
+                    if (!svc) continue;
+                    total += Number(svc.effective_price_rub || svc.price_rub || 0);
+                    minutes += Number(svc.duration_minutes || 0);
+                }
+                totalNode.textContent = rub(total);
+                durationNode.textContent = minutes > 0 ? (minutes + ' мин') : '';
+                // Сбрасываем слот при изменении услуг
+                selectedSlot = null;
+                if (dateInput.value) {
+                    loadSlots(dateInput.value, ids);
                 }
             }
-            var total = 0;
-            var minutes = 0;
-            for (var j = 0; j < ids.length; j++) {
-                var svc = servicesById[ids[j]];
-                if (!svc) continue;
-                total += Number(svc.effective_price_rub || svc.price_rub || 0);
-                minutes += Number(svc.duration_minutes || 0);
-            }
-            totalNode.textContent = rub(total);
-            durationNode.textContent = minutes > 0 ? (minutes + ' мин') : '';
-        }
 
-        function renderServiceList(list) {
-            if (!list || !list.length) {
-                serviceList.textContent = 'Услуги не настроены';
-                return;
-            }
-            var html = '';
-            for (var i = 0; i < list.length; i++) {
-                var svc = list[i];
-                servicesById[svc.id] = svc;
-                var line = '<label style="display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-radius:12px;cursor:pointer">' +
-                    '<input type="checkbox" name="service_type_id" value="' + svc.id + '" style="margin-top:3px">' +
-                    '<span style="flex:1;min-width:0">' +
-                        '<span style="display:flex;align-items:center;justify-content:space-between;gap:10px">' +
-                            '<strong style="font-size:13px;color:#0f172a">' + (svc.service_name || svc.name || 'Услуга') + '</strong>' +
-                            '<span style="font-weight:800;color:#0f172a;white-space:nowrap">' + rub(svc.effective_price_rub || svc.price_rub || 0) + '</span>' +
+            function renderServiceList(list) {
+                if (!list || !list.length) {
+                    serviceList.textContent = 'Услуги не настроены';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < list.length; i++) {
+                    var svc = list[i];
+                    servicesById[svc.id] = svc;
+                    var line = '<label style="display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-radius:12px;cursor:pointer">' +
+                        '<input type="checkbox" name="service_type_id" value="' + svc.id + '" style="margin-top:3px">' +
+                        '<span style="flex:1;min-width:0">' +
+                            '<span style="display:flex;align-items:center;justify-content:space-between;gap:10px">' +
+                                '<strong style="font-size:13px;color:#0f172a">' + (svc.service_name || svc.name || 'Услуга') + '</strong>' +
+                                '<span style="font-weight:800;color:#0f172a;white-space:nowrap">' + rub(svc.effective_price_rub || svc.price_rub || 0) + '</span>' +
+                            '</span>' +
+                            '<span style="display:block;font-size:11px;color:#64748b;margin-top:2px">' + (svc.duration_minutes ? (svc.duration_minutes + ' мин') : '') + (svc.promo_label ? (' • ' + svc.promo_label) : '') + '</span>' +
                         '</span>' +
-                        '<span style="display:block;font-size:11px;color:#64748b;margin-top:2px">' + (svc.duration_minutes ? (svc.duration_minutes + ' мин') : '') + (svc.promo_label ? (' • ' + svc.promo_label) : '') + '</span>' +
-                    '</span>' +
-                '</label>';
-                html += line;
+                    '</label>';
+                    html += line;
+                }
+                serviceList.innerHTML = html;
+                serviceList.addEventListener('change', recalc);
+                recalc();
             }
-            serviceList.innerHTML = html;
-            serviceList.addEventListener('change', recalc);
-            recalc();
-        }
 
-        request(apiBase + '/booking.php', { method: 'GET' }).then(function (result) {
-            renderServiceList((result.data && (result.data.service_types || result.data.services)) || []);
-            publishDebugInfo('booking-catalog-loaded', { count: (result.data && result.data.service_types ? result.data.service_types.length : 0) });
-        }).catch(function (error) {
-            serviceList.textContent = 'Не удалось загрузить услуги';
-            setStatus('error', error.message || 'Ошибка загрузки');
-        });
+            function loadSlots(date, serviceIds) {
+                if (!date || !serviceIds.length) {
+                    slotList.textContent = 'Выберите услуги и дату';
+                    return;
+                }
+                slotList.innerHTML = '<span style="font-size:12px;color:#64748b">Загружаем слоты…</span>';
+                var url = apiBase + '/booking.php?action=slots&date=' + encodeURIComponent(date) + '&service_ids=' + encodeURIComponent(serviceIds.join(','));
+                request(url, { method: 'GET' }).then(function (result) {
+                    var slots = (result.data && result.data.slots) || [];
+                    if (!slots.length) {
+                        slotList.innerHTML = '<span style="font-size:12px;color:#64748b">Нет доступных слотов на эту дату</span>';
+                        return;
+                    }
+                    var html = '';
+                    for (var i = 0; i < slots.length; i++) {
+                        var s = slots[i];
+                        html += '<button type="button" data-slot="' + s.datetime + '" style="padding:8px 12px;border:1px solid #e2e8f0;border-radius:12px;background:#fff;cursor:pointer;font-size:13px;font-weight:600;color:#0f172a;transition:all .15s">' + s.time + '</button>';
+                    }
+                    slotList.innerHTML = html;
+                    slotList.querySelectorAll('button[data-slot]').forEach(function (btn) {
+                        btn.addEventListener('click', function () {
+                            slotList.querySelectorAll('button[data-slot]').forEach(function (b) {
+                                b.style.borderColor = '#e2e8f0';
+                                b.style.background = '#fff';
+                                b.style.color = '#0f172a';
+                            });
+                            btn.style.borderColor = 'rgba(99,102,241,.7)';
+                            btn.style.background = '#eef2ff';
+                            btn.style.color = '#4338ca';
+                            selectedSlot = btn.getAttribute('data-slot');
+                        });
+                    });
+                }).catch(function () {
+                    slotList.innerHTML = '<span style="font-size:12px;color:#dc2626">Не удалось загрузить слоты</span>';
+                });
+            }
 
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            setStatus(null, null);
+            if (dateInput) {
+                var tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                dateInput.min = tomorrow.toISOString().split('T')[0];
+                dateInput.addEventListener('change', function () {
+                    var ids = [];
+                    var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]:checked');
+                    for (var i = 0; i < checkboxes.length; i++) ids.push(parseInt(checkboxes[i].value, 10));
+                    loadSlots(dateInput.value, ids);
+                });
+            }
 
-            var submit = form.querySelector('button[type="submit"]');
-            submit.disabled = true;
-            submit.textContent = 'Отправляем…';
+            // Маска телефона
+            var phoneInput = panel.querySelector('[name="client_phone"]');
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function () {
+                    var val = phoneInput.value.replace(/[^\d+\-\(\)\s]/g, '');
+                    if (val.length > 80) val = val.slice(0, 80);
+                    phoneInput.value = val;
+                });
+            }
 
-            var selected = [];
-            var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]');
-            for (var i = 0; i < checkboxes.length; i++) {
-                if (checkboxes[i].checked) {
+            // Загрузка услуг
+            var widgetProfileSlug = profile || '';
+            var configUrl = apiBase + '/booking.php?action=widget-config' + (widgetProfileSlug ? '&profile=' + encodeURIComponent(widgetProfileSlug) : '');
+            request(configUrl, { method: 'GET' }).then(function (result) {
+                var data = result.data || {};
+                var services = data.service_types || [];
+                renderServiceList(services);
+                publishDebugInfo('booking-catalog-loaded', { count: services.length });
+
+                // Логируем просмотр
+                if (data.config && data.config.profile_id) {
+                    widgetConfig.profile_id = data.config.profile_id;
+                    trackWidgetEvent('view');
+                }
+            }).catch(function (error) {
+                serviceList.textContent = 'Не удалось загрузить услуги';
+                setStatus('error', error.message || 'Ошибка загрузки');
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                setStatus(null, null);
+
+                if (!selectedSlot) {
+                    setStatus('error', 'Выберите дату и время');
+                    return;
+                }
+
+                var submit = form.querySelector('button[type="submit"]');
+                submit.disabled = true;
+                submit.textContent = 'Отправляем…';
+
+                var selected = [];
+                var checkboxes = serviceList.querySelectorAll('input[type="checkbox"][name="service_type_id"]:checked');
+                for (var i = 0; i < checkboxes.length; i++) {
                     selected.push(parseInt(checkboxes[i].value, 10));
                 }
-            }
 
-            request(apiBase + '/booking.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    service_type_ids: selected,
-                    client_name: (form.client_name.value || '').trim(),
-                    client_phone: (form.client_phone.value || '').trim(),
-                    client_email: (form.client_email.value || '').trim(),
-                    preferred_datetime: (form.preferred_datetime.value || '').trim(),
-                    notes: (form.notes.value || '').trim(),
-                    page_url: pageUrl,
-                    page_title: pageTitle,
-                    profile: profile
-                })
-            }).then(function () {
-                setStatus('success', config.bookingSuccessText);
-                form.reset();
-                var cb = serviceList.querySelectorAll('input[type="checkbox"]');
-                for (var i = 0; i < cb.length; i++) cb[i].checked = false;
-                recalc();
-            }).catch(function (error) {
-                setStatus('error', error.message || 'Не удалось создать заявку');
-            }).finally(function () {
-                submit.disabled = false;
-                submit.textContent = 'Отправить заявку';
+                request(apiBase + '/booking.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        service_type_ids: selected,
+                        client_name: (form.client_name.value || '').trim(),
+                        client_phone: (form.client_phone.value || '').trim(),
+                        client_email: (form.client_email.value || '').trim(),
+                        preferred_datetime: selectedSlot,
+                        notes: (form.notes.value || '').trim(),
+                        source: 'widget',
+                        page_url: pageUrl,
+                        page_title: pageTitle,
+                        profile: profile
+                    })
+                }).then(function () {
+                    setStatus('success', config.bookingSuccessText);
+                    trackWidgetEvent('submit');
+                    form.reset();
+                    selectedSlot = null;
+                    if (slotList) slotList.innerHTML = '<span style="font-size:12px;color:#64748b">Сначала выберите дату</span>';
+                    var cb = serviceList.querySelectorAll('input[type="checkbox"]');
+                    for (var i = 0; i < cb.length; i++) cb[i].checked = false;
+                    recalc();
+                }).catch(function (error) {
+                    setStatus('error', error.message || 'Не удалось создать заявку');
+                }).finally(function () {
+                    submit.disabled = false;
+                    submit.textContent = 'Отправить заявку';
+                });
             });
-        });
 
-        mountRoot(root, 'workhub-site-widget-booking-root');
+            if (displayMode === 'inline') {
+                var mountTarget = document.getElementById(dataset.target || '');
+                if (mountTarget) {
+                    mountTarget.appendChild(root);
+                } else {
+                    mountRoot(root, 'workhub-site-widget-booking-inline');
+                }
+            } else {
+                mountRoot(root, 'workhub-site-widget-booking-root');
+            }
+        }
+
+        // Загружаем конфигурацию виджета
+        var widgetProfileSlug = profile || '';
+        var configUrl = apiBase + '/booking.php?action=widget-config' + (widgetProfileSlug ? '&profile=' + encodeURIComponent(widgetProfileSlug) : '');
+        request(configUrl, { method: 'GET' }).then(function (result) {
+            initBookingWidget(result.data);
+        }).catch(function () {
+            initBookingWidget({});
+        });
     }
 
     function renderFormMode() {

@@ -715,6 +715,15 @@ function handleAuth(string $method, ?string $action, mixed $id): void {
             exit;
         }
         
+        require_once __DIR__ . '/license.php';
+        $userCount = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL")->fetchColumn();
+        if (!checkLicenseLimit($pdo, 'max_users', $userCount)) {
+            $maxUsers = getLicenseTierMaxUsers($pdo);
+            http_response_code(403);
+            echo json_encode(['success' => false, 'error' => 'Достигнут лимит пользователей на текущем тарифе (' . ($maxUsers ?? '0') . '). Обратитесь в поддержку для расширения лицензии.'], JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
         // Создание пользователя
         $passwordHash = password_hash($data['password'], PASSWORD_DEFAULT);
         

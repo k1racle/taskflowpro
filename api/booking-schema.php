@@ -698,7 +698,22 @@ function ensureBookingModuleSchema(PDO $pdo): void {
         KEY idx_booking_working_hours_sort (sort_order)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
 
-    foreach (['booking_service_types', 'booking_extra_services', 'booking_requests', 'booking_request_services', 'booking_working_hours'] as $table) {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS booking_widget_analytics (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        widget_profile_id INT NULL,
+        event VARCHAR(32) NOT NULL,
+        page_url VARCHAR(1000) NULL,
+        page_title VARCHAR(500) NULL,
+        referrer VARCHAR(1000) NULL,
+        user_agent_hash VARCHAR(64) NULL,
+        session_id VARCHAR(64) NULL,
+        ip_hash VARCHAR(64) NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        KEY idx_widget_profile_event (widget_profile_id, event),
+        KEY idx_widget_analytics_created (created_at)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+
+    foreach (['booking_service_types', 'booking_extra_services', 'booking_requests', 'booking_request_services', 'booking_working_hours', 'booking_widget_analytics'] as $table) {
         bookingEnsureCharset($pdo, $table);
     }
 

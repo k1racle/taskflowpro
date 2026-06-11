@@ -288,6 +288,12 @@ window.TaskFlowAdmin = (function () {
             max_webhook_secret: ''
         };
 
+        ctx.bookingBotForm = {
+            enabled: String(ctx.settings?.booking_bot_telegram_enabled || '') === '1',
+            token: '',
+            welcome_text: String(ctx.settings?.booking_bot_welcome_text || 'Здравствуйте! Я бот для записи на услуги. Напишите /book чтобы начать.')
+        };
+
         ctx.referralIntegration = {
             orderWebhookUrl: buildReferralEndpointUrl('referrals/webhook/woocommerce'),
             visitEndpointUrl: buildReferralEndpointUrl('referrals/visit'),
@@ -299,7 +305,8 @@ window.TaskFlowAdmin = (function () {
             tgTokenConfigured: String(ctx.settings?.omni_tg_bot_token_configured || '') === '1',
             tgSecretConfigured: String(ctx.settings?.omni_tg_webhook_secret_configured || '') === '1',
             maxTokenConfigured: String(ctx.settings?.omni_max_bot_token_configured || '') === '1',
-            maxSecretConfigured: String(ctx.settings?.omni_max_webhook_secret_configured || '') === '1'
+            maxSecretConfigured: String(ctx.settings?.omni_max_webhook_secret_configured || '') === '1',
+            bookingBotTokenConfigured: String(ctx.settings?.booking_bot_telegram_token_configured || '') === '1'
         };
 
         const defaultIceServersJson = '[{"urls":"stun:stun.l.google.com:19302"}]';
@@ -1097,6 +1104,45 @@ window.TaskFlowAdmin = (function () {
                 }
             } catch (error) {
                 ctx.showToast(error?.userMessage || error?.message || 'Не удалось подключиться к MAX', 'error');
+            }
+        },
+
+        async saveBookingBotSettings(ctx) {
+            try {
+                if (!ctx?.can?.('admin.full') && ctx.currentUser?.role !== 'root') {
+                    ctx.showToast('Недостаточно прав', 'error');
+                    return;
+                }
+                const payload = {
+                    booking_bot_telegram_enabled: ctx.bookingBotForm?.enabled ? '1' : '0',
+                    booking_bot_welcome_text: String(ctx.bookingBotForm?.welcome_text || '').trim()
+                };
+                const token = String(ctx.bookingBotForm?.token || '').trim();
+                if (token) payload.booking_bot_telegram_token = token;
+                await apiUpdateSettings(payload);
+                ctx.bookingBotForm.token = '';
+                await this.loadSettings(ctx);
+                ctx.showToast('Настройки бота сохранены', 'success');
+            } catch (error) {
+                ctx.showToast(error?.userMessage || error?.message || 'Ошибка сохранения настроек бота', 'error');
+            }
+        },
+
+        async pingBookingBot(ctx) {
+            try {
+                if (!ctx?.can?.('admin.full') && ctx.currentUser?.role !== 'root') {
+                    ctx.showToast('Недостаточно прав', 'error');
+                    return;
+                }
+                const res = await apiGet('integrations/telegram/ping');
+                if (res.success) {
+                    const username = res?.data?.response?.result?.username;
+                    ctx.showToast(username ? `Бот подключен: @${username}` : 'Бот подключен', 'success');
+                } else {
+                    ctx.showToast(res.error || 'Не удалось подключиться к боту', 'error');
+                }
+            } catch (error) {
+                ctx.showToast(error?.userMessage || error?.message || 'Не удалось подключиться к боту', 'error');
             }
         },
 
