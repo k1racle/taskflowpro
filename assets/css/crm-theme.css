@@ -1954,9 +1954,10 @@ body.crm-theme.dark .crm-page-kicker {
 .crm-section-head__title {
     margin: 0;
     color: var(--crm-text);
-    font-size: 1rem;
+    font-size: 1.125rem;
     line-height: 1.35;
     font-weight: 700;
+    letter-spacing: -0.03em;
 }
 
 .crm-section-head__meta {
@@ -4922,6 +4923,7 @@ body.crm-theme .lg-toast {
 body.crm-theme .crm-section-head__title,
 body.crm-theme .crm-toolbar-heading h2,
 body.crm-theme .crm-toolbar-heading h3,
+body.crm-theme .crm-title,
 body.crm-theme h1,
 body.crm-theme h2,
 body.crm-theme h3 {
@@ -4944,5 +4946,7 @@ body.crm-theme .crm-stat-value,
 body.crm-theme .crm-count-badge,
 body.crm-theme .crm-summary-value,
 body.crm-theme .crm-screen-title {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
 }
