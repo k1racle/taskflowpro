@@ -4282,3 +4282,31 @@ body.crm-theme.dark .conference-status-ended {
 
 .crm-opacity-muted { opacity: 0.95; }
 .crm-min-w-table   { min-width: 600px; }
+
+/* Additional unified utilities */
+.crm-border-warn {
+    border: 1px solid rgba(245,158,11,.25);
+    background: rgba(120,53,15,.10);
+}
+.crm-border-warn-light {
+    border: 1px solid rgba(245,158,11,.18);
+    background: rgba(120,53,15,.08);
+}
+.crm-border-success {
+    border: 1px solid rgba(34,197,94,.18);
+    background: rgba(20,83,45,.08);
+}
+.crm-bg-error-soft {
+    background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg));
+}
+.crm-bg-dark-soft {
+    border: 1px solid var(--lg-border);
+    background: color-mix(in oklab, #000 35%, var(--lg-glass-bg));
+}
+
+.crm-metric-value {
+    font-size: var(--crm-title-size);
+    line-height: var(--crm-title-line);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}

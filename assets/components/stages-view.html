@@ -78,8 +78,8 @@
                         <div class="flex items-center gap-3">
                             <div class="w-3 h-3 rounded-full" :style="'background:' + (s.color || 'var(--lg-primary)')"></div>
                             <div>
-                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="s.name"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Порядок: <span x-text="Number(s.order || 0)"></span></div>
+                                <div class="font-semibold crm-text-primary" x-text="s.name"></div>
+                                <div class="text-xs mt-1 crm-text-tertiary">Порядок: <span x-text="Number(s.order || 0)"></span></div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -101,8 +101,8 @@
                         <div class="flex items-center gap-3">
                             <div class="w-3 h-3 rounded-full" :style="'background:' + (s.color || '#6B7280')"></div>
                             <div>
-                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="s.name"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">ID: <span x-text="s.id"></span></div>
+                                <div class="font-semibold crm-text-primary" x-text="s.name"></div>
+                                <div class="text-xs mt-1 crm-text-tertiary">ID: <span x-text="s.id"></span></div>
                             </div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -124,8 +124,8 @@
                         <div class="flex items-center gap-3">
                             <div class="w-3 h-3 rounded-full" :style="'background:' + (s.color || 'var(--lg-primary)')"></div>
                             <div>
-                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="translateDealStage(s.name)"></div>
-                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs" style="color: var(--lg-text-tertiary)">
+                                <div class="font-semibold crm-text-primary" x-text="translateDealStage(s.name)"></div>
+                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs crm-text-tertiary">
                                     <span>Порядок: <span x-text="Number(s.order || 0)"></span></span>
                                     <span x-show="Number(s.is_won)!==1 && Number(s.is_lost)!==1">Обычный этап</span>
                                 </div>
@@ -147,7 +147,7 @@
 
                 <div class="mt-5">
                     <button class="crm-btn-primary" @click="crmReorderDealStages()" :disabled="stagesManagerSaving || !(dealStages || []).length" :class="(stagesManagerSaving || !(dealStages || []).length) ? 'opacity-60 cursor-not-allowed' : ''">Сохранить порядок</button>
-                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Подсказка: порядок берётся из поля <b>order</b> (мы его выставляем автоматически по списку).</div>
+                    <div class="text-xs mt-2 crm-text-tertiary">Подсказка: порядок берётся из поля <b>order</b> (мы его выставляем автоматически по списку).</div>
                 </div>
 
                 <div class="mt-8 pt-6" style="border-top:1px solid var(--lg-border)">
@@ -162,8 +162,8 @@
                             <div class="flex items-center gap-3">
                                 <div class="w-3 h-3 rounded-full" :style="'background:' + (s.color || '#6B7280')"></div>
                                 <div>
-                                    <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="s.name"></div>
-                                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">ID: <span x-text="s.id"></span></div>
+                                    <div class="font-semibold crm-text-primary" x-text="s.name"></div>
+                                    <div class="text-xs mt-1 crm-text-tertiary">ID: <span x-text="s.id"></span></div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -199,31 +199,31 @@
 
         <div class="crm-modal-body crm-modal-body--compact crm-modal-form crm-modal-form--compact">
             <div class="crm-form-stack--compact">
-                <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Название</label>
-                <input type="text" x-model="stageManagerForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: В работе" :disabled="stagesManagerSaving" />
+                <label class="block text-sm font-medium mb-2 crm-text-secondary">Название</label>
+                <input type="text" x-model="stageManagerForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: В работе" :disabled="stagesManagerSaving" />
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 crm-form-grid--compact">
                 <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Цвет</label>
-                    <input type="color" x-model="stageManagerForm.color" class="w-full h-12 rounded-xl crm-control-input" :disabled="stagesManagerSaving" />
+                    <label class="block text-sm font-medium mb-2 crm-text-secondary">Цвет</label>
+                    <input type="color" x-model="stageManagerForm.color" class="w-full h-12 crm-control-input" :disabled="stagesManagerSaving" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Порядок</label>
-                    <input type="number" x-model="stageManagerForm.order" class="w-full px-4 py-3 rounded-xl crm-control-input" :disabled="stagesManagerSaving" />
+                    <label class="block text-sm font-medium mb-2 crm-text-secondary">Порядок</label>
+                    <input type="number" x-model="stageManagerForm.order" class="w-full px-4 py-3 crm-control-input" :disabled="stagesManagerSaving" />
                 </div>
             </div>
-            <div class="text-xs" style="color: var(--lg-text-tertiary)">
+            <div class="text-xs crm-text-tertiary">
                 <span x-show="stagesManagerType === 'tasks'">Этап появится как колонка в канбане задач.</span>
                 <span x-show="stagesManagerType === 'deals'">Этап будет доступен только в выбранной CRM-воронке.</span>
             </div>
             <div x-show="stagesManagerType === 'deals'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-2xl px-4 py-3" style="border:1px solid var(--lg-border)">
+                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-2xl px-4 py-3 crm-border">
                     <input type="checkbox" x-model="stageManagerForm.is_won" class="w-4 h-4" :disabled="stagesManagerSaving" />
-                    <span class="text-sm" style="color: var(--lg-text-secondary)">Завершено успешно</span>
+                    <span class="text-sm crm-text-secondary">Завершено успешно</span>
                 </label>
-                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-2xl px-4 py-3" style="border:1px solid var(--lg-border)">
+                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-2xl px-4 py-3 crm-border">
                     <input type="checkbox" x-model="stageManagerForm.is_lost" class="w-4 h-4" :disabled="stagesManagerSaving" />
-                    <span class="text-sm" style="color: var(--lg-text-secondary)">Завершено неуспешно</span>
+                    <span class="text-sm crm-text-secondary">Завершено неуспешно</span>
                 </label>
             </div>
         </div>
@@ -252,12 +252,12 @@
 
         <div class="crm-modal-body crm-modal-body--compact crm-modal-form crm-modal-form--compact">
             <div class="crm-form-stack--compact">
-                <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Название</label>
-                <input type="text" x-model="substageForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Проверка документов" :disabled="stagesManagerSaving" />
+                <label class="block text-sm font-medium mb-2 crm-text-secondary">Название</label>
+                <input type="text" x-model="substageForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Проверка документов" :disabled="stagesManagerSaving" />
             </div>
             <div class="crm-form-stack--compact">
-                <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Цвет</label>
-                <input type="color" x-model="substageForm.color" class="w-full h-12 rounded-xl crm-control-input" :disabled="stagesManagerSaving" />
+                <label class="block text-sm font-medium mb-2 crm-text-secondary">Цвет</label>
+                <input type="color" x-model="substageForm.color" class="w-full h-12 crm-control-input" :disabled="stagesManagerSaving" />
             </div>
         </div>
 
@@ -285,12 +285,12 @@
 
         <div class="crm-modal-body crm-modal-body--compact crm-modal-form crm-modal-form--compact">
             <div class="crm-form-stack--compact">
-                <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Название</label>
-                <input type="text" x-model="crmDealSubstageForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Согласование бюджета" :disabled="stagesManagerSaving" />
+                <label class="block text-sm font-medium mb-2 crm-text-secondary">Название</label>
+                <input type="text" x-model="crmDealSubstageForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Согласование бюджета" :disabled="stagesManagerSaving" />
             </div>
             <div class="crm-form-stack--compact">
-                <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Цвет</label>
-                <input type="color" x-model="crmDealSubstageForm.color" class="w-full h-12 rounded-xl crm-control-input" :disabled="stagesManagerSaving" />
+                <label class="block text-sm font-medium mb-2 crm-text-secondary">Цвет</label>
+                <input type="color" x-model="crmDealSubstageForm.color" class="w-full h-12 crm-control-input" :disabled="stagesManagerSaving" />
             </div>
         </div>
 

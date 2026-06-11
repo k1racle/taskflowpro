@@ -43,11 +43,11 @@
             <div x-show="departmentModalTab === 'department'" class="space-y-4">
             <div>
                 <label for="department-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
-                <input id="department-name" name="department_name" type="text" x-model="departmentForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Маркетинг" />
+                <input id="department-name" name="department_name" type="text" x-model="departmentForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Маркетинг" />
             </div>
             <div>
                 <label for="department-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
-                <textarea id="department-description" name="department_description" x-model="departmentForm.description" rows="4" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Чем занимается отдел..."></textarea>
+                <textarea id="department-description" name="department_description" x-model="departmentForm.description" rows="4" class="w-full px-4 py-3 crm-control-textarea" placeholder="Чем занимается отдел..."></textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Иконка</label>
@@ -61,7 +61,7 @@
                         </button>
                     </template>
                 </div>
-                <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">
+                <div class="text-xs mt-2 crm-text-tertiary">
                     Выбранная иконка: <span class="font-semibold" x-text="departmentForm.icon"></span>
                 </div>
             </div>
@@ -69,57 +69,57 @@
 
             <div x-show="departmentModalTab === 'employees'" class="space-y-3">
                 <div class="liquid-glass-pro rounded-2xl overflow-hidden">
-                    <div class="p-4 font-semibold" style="color: var(--lg-text-primary)">Сотрудники отдела</div>
+                    <div class="p-4 font-semibold crm-text-primary">Сотрудники отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="u in (departmentEmployees || [])" :key="u.id">
                             <div class="liquid-glass-pro rounded-2xl p-3 flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold" style="background: var(--lg-primary)" x-text="getInitials(u.full_name || u.login)"></div>
+                                <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold crm-bg-primary" x-text="getInitials(u.full_name || u.login)"></div>
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="u.full_name || u.login"></div>
-                                    <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="translateRole(u.role)"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="u.full_name || u.login"></div>
+                                    <div class="text-xs truncate crm-text-secondary" x-text="translateRole(u.role)"></div>
                                 </div>
                             </div>
                         </template>
-                        <div x-show="(departmentEmployees || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока нет сотрудников.</div>
+                        <div x-show="(departmentEmployees || []).length === 0" class="text-sm crm-text-secondary">Пока нет сотрудников.</div>
                     </div>
                 </div>
             </div>
 
             <div x-show="departmentModalTab === 'projects'" class="space-y-3">
                 <div class="liquid-glass-pro rounded-2xl overflow-hidden">
-                    <div class="p-4 font-semibold" style="color: var(--lg-text-primary)">Проекты отдела</div>
+                    <div class="p-4 font-semibold crm-text-primary">Проекты отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="p in (departmentProjects || [])" :key="p.id">
                             <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="p.name"></div>
-                                    <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="p.description || ''"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="p.name"></div>
+                                    <div class="text-xs crm-text-secondary" x-text="p.description || ''"></div>
                                 </div>
                                 <button @click="openProjectModal(p)" class="crm-btn-secondary text-sm">Открыть</button>
                             </div>
                         </template>
-                        <div x-show="(departmentProjects || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока нет проектов.</div>
+                        <div x-show="(departmentProjects || []).length === 0" class="text-sm crm-text-secondary">Пока нет проектов.</div>
                     </div>
                 </div>
             </div>
 
             <div x-show="departmentModalTab === 'tasks'" class="space-y-3">
                 <div class="liquid-glass-pro rounded-2xl overflow-hidden">
-                    <div class="p-4 font-semibold" style="color: var(--lg-text-primary)">Задачи отдела</div>
+                    <div class="p-4 font-semibold crm-text-primary">Задачи отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="t in (departmentTasks || [])" :key="t.id">
                             <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="t.title"></div>
-                                    <div class="text-xs" style="color: var(--lg-text-secondary)" x-text="t.status || ''"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
+                                    <div class="text-xs crm-text-secondary" x-text="t.status || ''"></div>
                                 </div>
                                 <button @click="openTaskModal(t)" class="crm-btn-secondary text-sm">Открыть</button>
                             </div>
                         </template>
-                        <div x-show="(departmentTasks || []).length === 0" class="text-sm" style="color: var(--lg-text-secondary)">Пока нет задач.</div>
+                        <div x-show="(departmentTasks || []).length === 0" class="text-sm crm-text-secondary">Пока нет задач.</div>
                     </div>
                 </div>
             </div>
@@ -158,25 +158,25 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
                     <label for="user-login" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Логин / Email</label>
-                    <input id="user-login" name="user_login" type="text" x-model="userForm.login" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="user@company.ru" autocomplete="off" />
+                    <input id="user-login" name="user_login" type="text" x-model="userForm.login" class="w-full px-4 py-3 crm-control-input" placeholder="user@company.ru" autocomplete="off" />
                 </div>
 
                 <div>
                     <label for="user-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Пароль
-                        <span class="text-xs font-normal" style="color: var(--lg-text-secondary)" x-show="editingUser">(оставьте пустым, чтобы не менять)</span>
+                        <span class="text-xs font-normal crm-text-secondary" x-show="editingUser">(оставьте пустым, чтобы не менять)</span>
                     </label>
-                    <input id="user-password" name="user_password" type="password" x-model="userForm.password" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="••••••••" autocomplete="new-password" />
+                    <input id="user-password" name="user_password" type="password" x-model="userForm.password" class="w-full px-4 py-3 crm-control-input" placeholder="••••••••" autocomplete="new-password" />
                 </div>
 
                 <div>
                     <label for="user-full-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ФИО</label>
-                    <input id="user-full-name" name="full_name" type="text" x-model="userForm.full_name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Иванов Иван" />
+                    <input id="user-full-name" name="full_name" type="text" x-model="userForm.full_name" class="w-full px-4 py-3 crm-control-input" placeholder="Иванов Иван" />
                 </div>
 
                 <div>
                     <label for="user-role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Роль</label>
-                    <select id="user-role" name="role" x-model="userForm.role" class="w-full px-4 py-3 rounded-xl crm-control-select" style="position: relative; z-index: 60;">
+                    <select id="user-role" name="role" x-model="userForm.role" class="w-full px-4 py-3 crm-control-select" style="position: relative; z-index: 60;">
                         <option value="" x-show="!(roles || []).filter(x => x.name !== 'root' && ((currentUser?.role === 'root') || (can && can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) && x.permission_codes.includes('admin.full')))).length">— Выберите роль —</option>
                         <template x-for="r in (roles || []).filter(x => x.name !== 'root' && ((currentUser?.role === 'root') || (can && can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) && x.permission_codes.includes('admin.full'))))" :key="r.id">
                             <option :value="r.name" x-text="r.name"></option>
@@ -186,20 +186,20 @@
 
                 <div class="md:col-span-2">
                     <label for="user-departments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отделы</label>
-                    <select id="user-departments" name="department_ids" x-model="userForm.department_ids" class="w-full px-4 py-3 rounded-xl crm-control-select" multiple size="5">
+                    <select id="user-departments" name="department_ids" x-model="userForm.department_ids" class="w-full px-4 py-3 crm-control-select" multiple size="5">
                         <template x-for="d in (departments || [])" :key="d.id">
                             <option :value="String(d.id)" x-text="d.name"></option>
                         </template>
                     </select>
-                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Можно выбрать несколько отделов. Основной отдел будет взят первым в списке.</div>
+                    <div class="text-xs mt-2 crm-text-tertiary">Можно выбрать несколько отделов. Основной отдел будет взят первым в списке.</div>
                 </div>
 
                 <div class="md:col-span-2">
                     <div class="liquid-glass-pro rounded-2xl p-4 relative z-0">
                         <div class="flex items-start justify-between gap-4">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Подсказка</div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-secondary)">Если роль не отображается — обновите список ролей в админке или проверьте права доступа.</div>
+                                <div class="text-sm font-semibold crm-text-primary">Подсказка</div>
+                                <div class="text-xs mt-1 crm-text-secondary">Если роль не отображается — обновите список ролей в админке или проверьте права доступа.</div>
                             </div>
                             <button type="button" class="crm-btn-secondary text-sm" @click="loadRoles && loadRoles()">Обновить роли</button>
                         </div>
@@ -247,11 +247,11 @@
         <div class="crm-modal-body crm-drawer-body p-6 space-y-4">
             <div>
                 <label for="role-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
-                <input id="role-name" name="role_name" type="text" x-model="roleForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Менеджер" />
+                <input id="role-name" name="role_name" type="text" x-model="roleForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Менеджер" />
             </div>
             <div>
                 <label for="role-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
-                <textarea id="role-description" name="role_description" x-model="roleForm.description" rows="3" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Коротко о роли..."></textarea>
+                <textarea id="role-description" name="role_description" x-model="roleForm.description" rows="3" class="w-full px-4 py-3 crm-control-textarea" placeholder="Коротко о роли..."></textarea>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Иконка</label>
@@ -263,43 +263,43 @@
                                 @click="roleForm.icon = ic"
                                 :title="ic">
                             <template x-if="ic === 'shield'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 5-3 9-7 9s-7-4-7-9V7l7-4z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 5-3 9-7 9s-7-4-7-9V7l7-4z"/></svg>
                             </template>
                             <template x-if="ic === 'users'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h5m6-4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h5m6-4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                             </template>
                             <template x-if="ic === 'user-check'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11a4 4 0 100-8 4 4 0 000 8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l2 2 4-4"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11a4 4 0 100-8 4 4 0 000 8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l2 2 4-4"/></svg>
                             </template>
                             <template x-if="ic === 'lock'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 00-8 0v4m10 0h-8a2 2 0 00-2 2v7a2 2 0 002 2h8a2 2 0 002-2v-7a2 2 0 00-2-2z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 00-8 0v4m10 0h-8a2 2 0 00-2 2v7a2 2 0 002 2h8a2 2 0 002-2v-7a2 2 0 00-2-2z"/></svg>
                             </template>
                             <template x-if="ic === 'key'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a4 4 0 11-8 0 4 4 0 018 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11l-6 6v3h3l6-6"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a4 4 0 11-8 0 4 4 0 018 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11l-6 6v3h3l6-6"/></svg>
                             </template>
                             <template x-if="ic === 'briefcase'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6V5a2 2 0 012-2h2a2 2 0 012 2v1"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6V5a2 2 0 012-2h2a2 2 0 012 2v1"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18"/></svg>
                             </template>
                             <template x-if="ic === 'folder'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
                             </template>
                             <template x-if="ic === 'document'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                             </template>
                             <template x-if="ic === 'clipboard'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
                             </template>
                             <template x-if="ic === 'chart-bar'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 19V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 19v-4"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 19V8"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 19V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 19v-4"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 19V8"/></svg>
                             </template>
                             <template x-if="ic === 'cog'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </template>
                             <template x-if="ic === 'star'">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.03 6.24a1 1 0 00.95.69h6.56c.969 0 1.371 1.24.588 1.81l-5.307 3.855a1 1 0 00-.364 1.118l2.03 6.24c.3.921-.755 1.688-1.539 1.118l-5.307-3.855a1 1 0 00-1.175 0l-5.307 3.855c-.784.57-1.838-.197-1.539-1.118l2.03-6.24a1 1 0 00-.364-1.118L.93 11.667c-.783-.57-.38-1.81.588-1.81h6.56a1 1 0 00.95-.69l2.03-6.24z"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.03 6.24a1 1 0 00.95.69h6.56c.969 0 1.371 1.24.588 1.81l-5.307 3.855a1 1 0 00-.364 1.118l2.03 6.24c.3.921-.755 1.688-1.539 1.118l-5.307-3.855a1 1 0 00-1.175 0l-5.307 3.855c-.784.57-1.838-.197-1.539-1.118l2.03-6.24a1 1 0 00-.364-1.118L.93 11.667c-.783-.57-.38-1.81.588-1.81h6.56a1 1 0 00.95-.69l2.03-6.24z"/></svg>
                             </template>
                             <template x-if="!['shield','users','user-check','lock','key','briefcase','folder','document','clipboard','chart-bar','cog','star'].includes(ic)">
-                                <svg class="w-5 h-5" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
+                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
                             </template>
                         </button>
                     </template>
@@ -333,7 +333,7 @@
             <div class="min-w-0">
                 <h2 class="crm-modal-title">Права роли</h2>
                 <p class="crm-modal-description" x-text="editingRole?.name || ''"></p>
-                <p class="mt-1 text-xs" style="color: var(--lg-text-secondary)" x-text="editingRole ? `Активных прав: ${getRoleEnabledPermissionsCount(editingRole)}` : ''"></p>
+                <p class="mt-1 text-xs crm-text-secondary" x-text="editingRole ? `Активных прав: ${getRoleEnabledPermissionsCount(editingRole)}` : ''"></p>
             </div>
             <button @click="closeRolePermissionsModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть права роли">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,11 +343,11 @@
         </div>
 
         <div class="crm-modal-body crm-drawer-body p-6">
-            <div class="mb-4 rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+            <div class="mb-4 rounded-2xl p-4 crm-border-subtle">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div>
-                        <div class="font-semibold" style="color: var(--lg-text-primary)">Быстрый пресет</div>
-                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Выберите базовую модель и потом уточните отдельные права вручную.</div>
+                        <div class="font-semibold crm-text-primary">Быстрый пресет</div>
+                        <div class="text-xs mt-1 crm-text-tertiary">Выберите базовую модель и потом уточните отдельные права вручную.</div>
                     </div>
                     <select class="crm-control-select text-sm min-w-[220px]" x-model="rolePermissionPreset" @change="applyRolePermissionPreset($data, rolePermissionPreset)">
                         <option value="custom">Своя настройка</option>
@@ -365,7 +365,7 @@
                 <template x-for="section in Object.keys(rolePermissions || {})" :key="section">
                     <div class="liquid-glass-pro rounded-2xl p-4">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white" style="background: var(--lg-primary)">
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white crm-bg-primary">
                                 <template x-if="section === 'tasks'">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                 </template>
@@ -399,28 +399,28 @@
                             </div>
 
                             <div class="min-w-0">
-                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="({tasks:'Задачи',projects:'Проекты',departments:'Отделы',files:'Файлы',knowledge:'База знаний',chat:'Чат',crm:'CRM',leader:'Руководитель',mail:'Почта',users:'Пользователи',admin:'Администрирование'}[section] || section)"></div>
-                                <div class="text-xs" style="color: var(--lg-text-secondary)">Доступы к разделу</div>
+                                <div class="font-semibold crm-text-primary" x-text="({tasks:'Задачи',projects:'Проекты',departments:'Отделы',files:'Файлы',knowledge:'База знаний',chat:'Чат',crm:'CRM',leader:'Руководитель',mail:'Почта',users:'Пользователи',admin:'Администрирование'}[section] || section)"></div>
+                                <div class="text-xs crm-text-secondary">Доступы к разделу</div>
                             </div>
                         </div>
 
                         <div class="space-y-2">
-                            <div class="mb-3 rounded-xl px-3 py-2" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Область доступа</div>
-                                <select class="w-full px-3 py-2 rounded-xl crm-control-select text-sm" x-model="rolePermissionScopes[section]" :disabled="section === 'admin'">
+                            <div class="mb-3 rounded-xl px-3 py-2 crm-border-subtle">
+                                <div class="text-xs mb-2 crm-text-tertiary">Область доступа</div>
+                                <select class="w-full px-3 py-2 crm-control-select text-sm" x-model="rolePermissionScopes[section]" :disabled="section === 'admin'">
                                     <option value="none">Нет доступа</option>
                                     <option value="view">Только просмотр</option>
                                     <option value="own">Только свои</option>
                                     <option value="department">Свои отделы</option>
                                     <option value="all">Все</option>
                                 </select>
-                                <div x-show="section === 'admin'" class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Админка всегда выдаётся как системный доступ.</div>
+                                <div x-show="section === 'admin'" class="text-xs mt-2 crm-text-tertiary">Админка всегда выдаётся как системный доступ.</div>
                             </div>
                             <template x-for="action in Object.keys(rolePermissions[section] || {})" :key="action">
                                 <label class="flex items-center justify-between gap-3">
-                                    <span class="text-sm" style="color: var(--lg-text-secondary)">
+                                    <span class="text-sm crm-text-secondary">
                                         <span x-text="({view:'Просмотр',create:'Создание',edit:'Редактирование',delete:'Удаление',upload:'Загрузка',send:'Отправка',forward:'Пересылка',create_group:'Создание групп',export:'Экспорт',stages_manage:'Управление этапами',shifts_manage:'Управление сменами',full:'Полный доступ'}[action] || action)"></span>
-                                        <span class="ml-2 text-xs" style="color: var(--lg-text-tertiary)" x-text="(section==='crm' && action==='stages_manage') ? 'crm.stages.manage' : ((section==='leader' && action==='shifts_manage') ? 'leader.shifts.manage' : `${section}.${action}`)"></span>
+                                        <span class="ml-2 text-xs crm-text-tertiary" x-text="(section==='crm' && action==='stages_manage') ? 'crm.stages.manage' : ((section==='leader' && action==='shifts_manage') ? 'leader.shifts.manage' : `${section}.${action}`)"></span>
                                     </span>
                                     <button type="button" class="ios-toggle" :class="rolePermissions[section][action] ? 'on' : 'off'" @click="rolePermissions[section][action] = !rolePermissions[section][action]">
                                         <span class="ios-toggle-knob"></span>
@@ -597,12 +597,12 @@
 
             <div class="mt-6 flex items-center justify-center gap-6">
                 <button @click="toggleMute()" class="w-14 h-14 rounded-full flex items-center justify-center crm-btn-ghost" :aria-label="isMuted ? 'Микрофон выключен' : 'Микрофон включен'">
-                    <svg x-show="!isMuted" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="!isMuted" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 10v2a7 7 0 01-14 0v-2"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v4m-4 0h8"/>
                     </svg>
-                    <svg x-show="isMuted" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="isMuted" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-9 6.71"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v4"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
@@ -610,10 +610,10 @@
                 </button>
 
                 <button x-show="callType === 'video'" @click="toggleCamera()" class="w-14 h-14 rounded-full flex items-center justify-center crm-btn-ghost" :aria-label="isCameraOff ? 'Камера выключена' : 'Камера включена'">
-                    <svg x-show="!isCameraOff" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="!isCameraOff" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
-                    <svg x-show="isCameraOff" class="w-6 h-6" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="isCameraOff" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 8H5a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2v-1"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14"/>
@@ -634,16 +634,16 @@
             </div>
 
             <div class="mt-6" x-show="(can && can('admin.full')) || currentUser?.role === 'root'">
-                <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">WebRTC диагностика</div>
-                    <div class="text-xs mt-2 grid grid-cols-1 md:grid-cols-2 gap-2" style="color: var(--lg-text-secondary)">
-                        <div><span style="color: var(--lg-text-tertiary)">ICE:</span> <span x-text="callDebug?.iceConnectionState || '—'"></span></div>
-                        <div><span style="color: var(--lg-text-tertiary)">Conn:</span> <span x-text="callDebug?.connectionState || '—'"></span></div>
-                        <div><span style="color: var(--lg-text-tertiary)">Signaling:</span> <span x-text="callDebug?.signalingState || '—'"></span></div>
-                        <div><span style="color: var(--lg-text-tertiary)">Gathering:</span> <span x-text="callDebug?.iceGatheringState || '—'"></span></div>
-                        <div class="md:col-span-2"><span style="color: var(--lg-text-tertiary)">Last event:</span> <span x-text="callDebug?.lastEvent || '—'"></span></div>
+                <div class="rounded-2xl p-4 crm-border-subtle">
+                    <div class="text-sm font-semibold crm-text-primary">WebRTC диагностика</div>
+                    <div class="text-xs mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 crm-text-secondary">
+                        <div><span class="crm-text-tertiary">ICE:</span> <span x-text="callDebug?.iceConnectionState || '—'"></span></div>
+                        <div><span class="crm-text-tertiary">Conn:</span> <span x-text="callDebug?.connectionState || '—'"></span></div>
+                        <div><span class="crm-text-tertiary">Signaling:</span> <span x-text="callDebug?.signalingState || '—'"></span></div>
+                        <div><span class="crm-text-tertiary">Gathering:</span> <span x-text="callDebug?.iceGatheringState || '—'"></span></div>
+                        <div class="md:col-span-2"><span class="crm-text-tertiary">Last event:</span> <span x-text="callDebug?.lastEvent || '—'"></span></div>
                     </div>
-                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)" x-show="callDebug?.lastError" x-text="'Error: ' + callDebug.lastError"></div>
+                    <div class="text-xs mt-2 crm-text-tertiary" x-show="callDebug?.lastError" x-text="'Error: ' + callDebug.lastError"></div>
                 </div>
             </div>
         </div>

@@ -23,31 +23,26 @@
         <!-- Live timer + actions -->
         <div class="xl:col-span-1 liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-screen-section">
             <div class="flex items-center justify-between">
-                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">Статус</div>
-                <div class="text-xs px-3 py-1 rounded-xl crm-surface-card-soft" style="color: var(--lg-text-secondary)"
-                     x-text="({
-                       'offline': 'Не на смене',
-                       'working': 'Работа',
-                       'break': 'Перерыв'
-                     }[shiftStatus] || shiftStatus)"></div>
+                <div class="text-sm font-semibold crm-text-secondary">Статус</div>
+                <div class="text-xs px-3 py-1 rounded-xl crm-surface-card-soft crm-text-secondary" x-text="({ 'offline': 'Не на смене', 'working': 'Работа', 'break': 'Перерыв' }[shiftStatus] || shiftStatus)"></div>
             </div>
 
             <div class="mt-5">
-                <div class="text-5xl font-semibold tracking-tight" style="color: var(--lg-text-primary)" x-text="shiftTimer"></div>
-                <div class="mt-2 text-sm" style="color: var(--lg-text-tertiary)">
+                <div class="text-5xl font-semibold tracking-tight crm-text-primary" x-text="shiftTimer"></div>
+                <div class="mt-2 text-sm crm-text-tertiary">
                     <span>Старт:</span>
-                    <span class="font-semibold" style="color: var(--lg-text-secondary)" x-text="shiftStart ? formatDateTime(shiftStart) : '—'"></span>
+                    <span class="font-semibold crm-text-secondary" x-text="shiftStart ? formatDateTime(shiftStart) : '—'"></span>
                 </div>
             </div>
 
             <div class="mt-5 grid grid-cols-2 gap-3">
                 <div class="rounded-2xl p-4 crm-surface-card-soft">
-                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Перерыв</div>
-                    <div class="mt-1 text-lg font-semibold" style="color: var(--lg-text-primary)" x-text="breakTime"></div>
+                    <div class="text-xs crm-text-tertiary">Перерыв</div>
+                    <div class="mt-1 text-lg font-semibold crm-text-primary" x-text="breakTime"></div>
                 </div>
                 <div class="rounded-2xl p-4 crm-surface-card-soft">
-                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Отработано</div>
-                    <div class="mt-1 text-lg font-semibold" style="color: var(--lg-text-primary)" x-text="workedTime"></div>
+                    <div class="text-xs crm-text-tertiary">Отработано</div>
+                    <div class="mt-1 text-lg font-semibold crm-text-primary" x-text="workedTime"></div>
                 </div>
             </div>
 
@@ -73,7 +68,7 @@
                     </div>
                 </div>
                 <div class="mt-4">
-                    <textarea x-model="shiftNote" rows="4" class="w-full px-4 py-3 rounded-2xl crm-control-textarea" placeholder="Например: закрываю 2 задачи по проекту X, жду ответ от клиента, завтра созвон..."></textarea>
+                    <textarea x-model="shiftNote" rows="4" class="w-full px-4 py-3 crm-control-textarea" placeholder="Например: закрываю 2 задачи по проекту X, жду ответ от клиента, завтра созвон..."></textarea>
                 </div>
             </div>
 
@@ -87,8 +82,8 @@
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-7 gap-2">
                     <template x-for="day in weekSchedule" :key="day.date">
                         <div class="rounded-2xl p-3 text-center" :style="day.isToday ? 'border:1px solid color-mix(in oklab, var(--lg-primary) 40%, var(--lg-border)); background: color-mix(in oklab, var(--lg-primary) 10%, var(--crm-surface));' : 'border:1px solid var(--lg-border); background: color-mix(in oklab, var(--crm-surface-alt) 80%, var(--crm-surface));'">
-                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="day.name"></div>
-                            <div class="text-[11px] mt-1" style="color: var(--lg-text-tertiary)" x-text="day.status"></div>
+                            <div class="text-sm font-semibold crm-text-primary" x-text="day.name"></div>
+                            <div class="text-[11px] mt-1 crm-text-tertiary" x-text="day.status"></div>
                         </div>
                     </template>
                 </div>

@@ -19,27 +19,15 @@
                 <div class="crm-mail-search crm-filter-field crm-filter-field--compact flex-1 min-w-[240px] xl:min-w-[320px]">
                     <div class="crm-filter-label">Поиск</div>
                     <div class="mt-2 crm-inline-search-shell transition-all">
-                        <svg class="w-5 h-5 flex-shrink-0" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 flex-shrink-0 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
                         </svg>
                         <label for="mail-search" class="sr-only">Поиск писем</label>
-                        <input id="mail-search"
-                                name="mail_search"
-                                type="text"
-                                x-model="mailSearch"
-                                @input.debounce.300ms="loadMailFromFolder(currentMailFolder)"
-                                @keydown.enter.prevent="loadMailFromFolder(currentMailFolder)"
-                                placeholder="Тема, адрес, текст письма"
-                                class="flex-1 crm-control-input text-sm crm-input-no-suggest"
-                                autocomplete="off"
-                                autocapitalize="off"
-                                autocorrect="off"
-                                spellcheck="false"
-                                style="color: var(--lg-text-primary)">
+                        <input id="mail-search" name="mail_search" type="text" x-model="mailSearch" @input.debounce.300ms="loadMailFromFolder(currentMailFolder)" @keydown.enter.prevent="loadMailFromFolder(currentMailFolder)" placeholder="Тема, адрес, текст письма" class="flex-1 crm-control-input text-sm crm-input-no-suggest crm-text-primary" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
                         <button x-show="mailSearch"
                                 @click="mailSearch = ''; loadMailFromFolder(currentMailFolder)"
                                 class="crm-clear-button transition-colors">
-                            <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
@@ -51,7 +39,7 @@
                             :disabled="mailSyncing"
                             class="crm-btn-secondary text-sm flex items-center gap-2 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
                             title="Синхронизировать почту">
-                        <svg class="w-5 h-5" :class="mailSyncing ? 'animate-spin' : ''" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 crm-text-primary" :class="mailSyncing ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8 8 0 104.582 9m0 0H9m11 11v-5h-.581m0 0a8 8 0 01-15.357-2m15.357 2H15"/>
                         </svg>
                         <span x-show="!mailSyncing">Синхронизация</span>
@@ -105,11 +93,11 @@
 
             <!-- Кнопка создания папки -->
             <div class="flex items-center justify-between mb-3 px-2">
-                <span class="text-xs font-semibold uppercase tracking-wider" style="color: var(--lg-text-tertiary)">Папки</span>
+                <span class="text-xs font-semibold uppercase tracking-wider crm-text-tertiary">Папки</span>
                 <button @click="createImapFolderPrompt()"
                         class="rounded-lg crm-btn-ghost crm-icon-button crm-icon-button-sm"
                         title="Создать папку">
-                    <svg class="w-4 h-4" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
                 </button>
@@ -188,7 +176,7 @@
 
             <div x-show="lastSyncTime"
                  class="mt-auto pt-3 border-t border-gray-200/50 dark:border-gray-700/50">
-                <div class="flex items-center gap-2 text-xs" style="color: var(--lg-text-tertiary)">
+                <div class="flex items-center gap-2 text-xs crm-text-tertiary">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -213,7 +201,7 @@
                 <div x-show="selectedEmails.length > 0"
                      x-transition
                      class="crm-action-bar">
-                    <span class="text-sm font-semibold" style="color: var(--lg-primary)" x-text="selectedEmails.length + ' выбрано'"></span>
+                    <span class="text-sm font-semibold crm-text-accent" x-text="selectedEmails.length + ' выбрано'"></span>
                     <button @click="moveSelectedEmails('trash')"
                             class="rounded-lg crm-icon-button crm-btn-danger"
                             style="width: 32px; min-width: 32px; height: 32px;"
@@ -242,7 +230,7 @@
                             class="rounded-lg crm-btn-ghost crm-icon-button"
                             style="width: 32px; min-width: 32px; height: 32px;"
                             title="Снять выделение">
-                        <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
@@ -291,21 +279,21 @@
                                             :style="!email.is_read ? 'color: var(--lg-text-primary)' : 'color: var(--lg-text-secondary)'"
                                             x-text="email.contact_name || email.sender_name || email.recipient_email"></h3>
                                         <span x-show="!email.is_read" class="crm-inline-badge crm-inline-badge-accent">Новое</span>
-                                        <svg x-show="email.has_attachments" class="w-4 h-4 flex-shrink-0" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg x-show="email.has_attachments" class="w-4 h-4 flex-shrink-0 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 00-6 6 6 6 0 006 6 6 6 0 006-6 6 6 0 00-6-6 6 6 0 00-6 6z"/>
                                         </svg>
                                     </div>
                                     <p class="mt-1 text-sm leading-[1.35] crm-mail-row-subject"
                                           :style="!email.is_read ? 'color: var(--lg-text-primary); font-weight: 700' : 'color: var(--lg-text-secondary)'"
                                           x-text="email.subject || 'Без темы'"></p>
-                                    <p class="mt-0.5 text-xs crm-mail-row-snippet" style="color: var(--lg-text-tertiary)" x-text="stripHtml(email.body) || 'Без предпросмотра'"></p>
+                                    <p class="mt-0.5 text-xs crm-mail-row-snippet crm-text-tertiary" x-text="stripHtml(email.body) || 'Без предпросмотра'"></p>
                                     <div class="crm-mail-row-footer mt-1">
                                         <span x-show="Number(email.is_starred)" class="crm-inline-badge">Важное</span>
                                         <span x-show="email.has_attachments" class="crm-inline-badge">Вложение</span>
                                         <span x-show="email.folder && email.folder !== 'inbox'" class="crm-inline-badge" x-text="getFolderName(email.folder)"></span>
                                     </div>
                                 </div>
-                                <span class="text-[11px] whitespace-nowrap shrink-0 mt-0.5" style="color: var(--lg-text-tertiary)" x-text="formatEmailDate(email.sent_at)"></span>
+                                <span class="text-[11px] whitespace-nowrap shrink-0 mt-0.5 crm-text-tertiary" x-text="formatEmailDate(email.sent_at)"></span>
                             </div>
                         </div>
 
@@ -343,7 +331,7 @@
 
                 <div x-show="mailList.length === 0 && !mailLoading"
                      class="crm-empty-state text-center flex flex-col items-center justify-center h-full py-20 px-6">
-                    <svg class="w-24 h-24 opacity-20 mb-4" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-24 h-24 opacity-20 mb-4 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                     <div class="crm-empty-state-title">Нет писем</div>
@@ -382,12 +370,12 @@
                                 </div>
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2 flex-wrap">
-                                        <h4 class="text-base font-semibold" style="color: var(--lg-text-primary)" x-text="previewEmail.contact_name || previewEmail.sender_name || previewEmail.recipient_email"></h4>
+                                        <h4 class="text-base font-semibold crm-text-primary" x-text="previewEmail.contact_name || previewEmail.sender_name || previewEmail.recipient_email"></h4>
                                         <span x-show="!previewEmail.is_read" class="crm-inline-badge">Непрочитанное</span>
                                         <span x-show="Number(previewEmail.is_starred)" class="crm-inline-badge">Важное</span>
                                     </div>
-                                    <div class="mt-1 text-sm break-all" style="color: var(--lg-text-secondary)" x-text="previewEmail.sender_email || previewEmail.recipient_email"></div>
-                                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs" style="color: var(--lg-text-tertiary)">
+                                    <div class="mt-1 text-sm break-all crm-text-secondary" x-text="previewEmail.sender_email || previewEmail.recipient_email"></div>
+                                    <div class="mt-2 flex flex-wrap items-center gap-2 text-xs crm-text-tertiary">
                                         <span x-text="formatEmailDate(previewEmail.sent_at)"></span>
                                         <span x-show="previewEmail.has_attachments" class="crm-inline-badge">Есть вложения</span>
                                         <span x-show="previewEmail.folder" class="crm-inline-badge" x-text="getFolderName(previewEmail.folder)"></span>
@@ -398,12 +386,12 @@
 
                         <div class="mt-4 crm-panel-muted rounded-3xl p-4">
                             <div class="crm-summary-label">Тема</div>
-                            <div class="mt-2 text-lg font-semibold leading-tight" style="color: var(--lg-text-primary)" x-text="previewEmail.subject || 'Без темы'"></div>
+                            <div class="mt-2 text-lg font-semibold leading-tight crm-text-primary" x-text="previewEmail.subject || 'Без темы'"></div>
                         </div>
 
                         <div class="mt-4 crm-panel-muted rounded-3xl p-5 crm-mail-reader-body">
                             <div class="crm-summary-label">Предпросмотр</div>
-                            <div class="mt-3 text-sm whitespace-pre-line leading-[1.55]" style="color: var(--lg-text-primary)" x-text="stripHtml(previewEmail.body) || 'Тело письма отсутствует'"></div>
+                            <div class="mt-3 text-sm whitespace-pre-line leading-[1.55] crm-text-primary" x-text="stripHtml(previewEmail.body) || 'Тело письма отсутствует'"></div>
                         </div>
 
                         <div class="mt-4 crm-toolbar crm-toolbar--dense">
@@ -419,7 +407,7 @@
 
             <div x-show="!mailPreviewId || !mailList.find(email => email.id === mailPreviewId)" class="flex-1 flex items-center justify-center">
                 <div class="crm-empty-state text-center w-full">
-                    <svg class="w-16 h-16 mx-auto mb-4 opacity-30" style="color: var(--lg-text-primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-16 h-16 mx-auto mb-4 opacity-30 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
                     <div class="crm-empty-state-title">Письмо не выбрано</div>

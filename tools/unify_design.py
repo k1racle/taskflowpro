@@ -2,10 +2,11 @@
 """
 Unify inline styles across HTML components by replacing common
 static style="..." patterns with CSS utility classes.
+
+Safe approach: process tag-by-tag using regex.
 """
 
 import re
-import sys
 from pathlib import Path
 
 COMPONENTS_DIR = Path(__file__).parent.parent / "assets" / "components"
@@ -25,135 +26,119 @@ STYLE_TO_CLASS = {
     'color: #3B82F6': 'crm-text-info',
     'color: #10B981': 'crm-text-success',
     'color: #EF4444': 'crm-text-error',
-    'color: #dc2626; border-color: rgba(220, 38, 38, 0.2)': 'crm-text-error',  # special
     'border:1px solid var(--lg-border); background:rgba(255,255,255,.02)': 'crm-border-subtle',
     'border-bottom:1px solid var(--lg-border)': 'crm-border-bottom',
     'border:1px solid var(--lg-border)': 'crm-border',
-    'border-color: var(--lg-border)': 'crm-border',  # keep inline border-style, just add class? tricky
     'font-family: ui-monospace, monospace;': 'crm-mono',
-    'font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \'Liberation Mono\', \'Courier New\', monospace;': 'crm-mono',
+    "font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;": 'crm-mono',
     'opacity:.95': 'crm-opacity-muted',
     'min-width:600px': 'crm-min-w-table',
     'background: var(--lg-primary)': 'crm-bg-primary',
     'background: var(--crm-accent);': 'crm-bg-accent',
-    'color: var(--lg-text-primary); direction: ltr; text-align: left;': 'crm-text-primary',  # keep direction inline
+    'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)': 'crm-border-warn',
+    'border:1px solid rgba(245,158,11,.18); background:rgba(120,53,15,.08)': 'crm-border-warn-light',
+    'border:1px solid rgba(34,197,94,.18); background:rgba(20,83,45,.08)': 'crm-border-success',
+    'background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))': 'crm-bg-error-soft',
+    'border:1px solid var(--lg-border); background: color-mix(in oklab, #000 35%, var(--lg-glass-bg));': 'crm-bg-dark-soft',
 }
 
-# Some replacements need to preserve remaining inline styles
-PARTIAL_REPLACEMENTS = {
-    'color: var(--lg-text-primary); direction: ltr; text-align: left;': ('crm-text-primary', 'direction: ltr; text-align: left;'),
-}
+
+def find_tag_boundaries(text: str, pos: int) -> tuple[int, int]:
+    """Find the start (<) and end (>) of the HTML tag containing position pos."""
+    start = text.rfind('<', 0, pos)
+    if start == -1:
+        return -1, -1
+    end = text.find('>', pos)
+    if end == -1:
+        return -1, -1
+    # Make sure there isn't another '>' between start and pos that would close a previous tag
+    prev_close = text.find('>', start, pos)
+    if prev_close != -1:
+        # We're inside text content, not inside a tag
+        return -1, -1
+    return start, end + 1
 
 
-def process_file(path: Path) -> tuple[int, int]:
-    """Returns (replacements_count, lines_changed)"""
+def add_class_to_tag(tag_text: str, new_class: str) -> str:
+    """Add a class to an HTML tag string. Returns modified tag."""
+    class_match = re.search(r'class="([^"]*)"', tag_text)
+    if class_match:
+        old_classes = class_match.group(1)
+        if new_class in old_classes.split():
+            return tag_text
+        new_classes = old_classes.rstrip() + ' ' + new_class
+        return tag_text[:class_match.start()] + f'class="{new_classes}"' + tag_text[class_match.end():]
+    else:
+        # Insert class right after tag name
+        # Find position after tag name: <tagname ...
+        m = re.match(r'(<[^\s>]+)', tag_text)
+        if m:
+            insert_pos = m.end()
+            return tag_text[:insert_pos] + f' class="{new_class}"' + tag_text[insert_pos:]
+    return tag_text
+
+
+def remove_style_from_tag(tag_text: str, style_val: str) -> str:
+    """Remove exact style="value" from tag."""
+    needle = f'style="{style_val}"'
+    idx = tag_text.find(needle)
+    if idx == -1:
+        return tag_text
+    return tag_text[:idx] + tag_text[idx + len(needle):]
+
+
+def process_file(path: Path) -> int:
     content = path.read_text(encoding='utf-8')
     original = content
     total_replacements = 0
 
-    # Pattern to match style="..." inside a tag (not :style)
-    style_pattern = re.compile(r'(?<![:\w])style="([^"]*)"')
-
-    def replace_tag(matchobj):
-        nonlocal total_replacements
-        tag_start = content[:matchobj.start()]
-        tag_end = content[matchobj.end():]
-        style_val = matchobj.group(1).strip()
-
-        # Skip if this looks dynamic (contains Alpine/JS expressions)
-        if any(ch in style_val for ch in ['+', '?', '&&', '||', '===', '!==', '<', '>', '(', ')', '{', '}', 'color-mix']):
-            return matchobj.group(0)
-
-        # Exact match
-        replacement = STYLE_TO_CLASS.get(style_val)
-        if replacement:
-            total_replacements += 1
-            # Add class to existing class attr or create new one
-            tag_text = tag_start + matchobj.group(0) + tag_end
-            # We operate on the whole content, so we reconstruct below
-            return f'__STYLE_REMOVED__CLASS_{replacement}__'
-
-        # Partial match
-        partial = PARTIAL_REPLACEMENTS.get(style_val)
-        if partial:
-            total_replacements += 1
-            return f'__STYLE_REMOVED__CLASS_{partial[0]}__STYLE_{partial[1]}__'
-
-        return matchobj.group(0)
-
-    # We need to process each tag individually, but regex on whole file is tricky.
-    # Instead, find all tags with static style and replace.
-    # Simpler approach: iterate known patterns and replace exact occurrences.
-
-    # Actually, let's do it per exact style string to be safe.
+    # Process each style mapping
     for style_val, cls in STYLE_TO_CLASS.items():
-        needle = f'style="{style_val}"'
-        if needle not in content:
-            continue
-        # Split by needle to add class
-        parts = content.split(needle)
-        new_parts = []
-        for i, part in enumerate(parts):
-            new_parts.append(part)
-            if i < len(parts) - 1:
-                # Add class to the tag that precedes this needle
-                # Find the opening '<tag' before needle
-                tag_start = part.rfind('<')
-                if tag_start == -1:
-                    new_parts.append(needle)  # keep original
-                    continue
-                tag_content = part[tag_start:]
-                if 'class="' in tag_content:
-                    # Append to existing class
-                    idx = tag_content.rfind('class="')
-                    before = part[:tag_start] + tag_content[:idx + 7]
-                    after = tag_content[idx + 7:]
-                    new_parts.append(before + cls + ' ' + after + f' ')
-                else:
-                    # Insert class attribute before style
-                    new_parts.append(f' class="{cls}" ')
-                total_replacements += 1
-        content = ''.join(new_parts)
+        offset = 0
+        while True:
+            idx = content.find(f'style="{style_val}"', offset)
+            if idx == -1:
+                break
 
-    # Handle partials
-    for style_val, (cls, remain_style) in PARTIAL_REPLACEMENTS.items():
-        needle = f'style="{style_val}"'
-        if needle not in content:
-            continue
-        parts = content.split(needle)
-        new_parts = []
-        for i, part in enumerate(parts):
-            new_parts.append(part)
-            if i < len(parts) - 1:
-                tag_start = part.rfind('<')
-                if tag_start == -1:
-                    new_parts.append(needle)
-                    continue
-                tag_content = part[tag_start:]
-                if 'class="' in tag_content:
-                    idx = tag_content.rfind('class="')
-                    before = part[:tag_start] + tag_content[:idx + 7]
-                    after = tag_content[idx + 7:]
-                    new_parts.append(before + cls + ' ' + after + f' style="{remain_style}" ')
-                else:
-                    new_parts.append(f' class="{cls}" style="{remain_style}" ')
-                total_replacements += 1
-        content = ''.join(new_parts)
+            # Skip if preceded by ':' (dynamic :style)
+            if idx > 0 and content[idx - 1] == ':':
+                offset = idx + 1
+                continue
+
+            tag_start, tag_end = find_tag_boundaries(content, idx)
+            if tag_start == -1:
+                offset = idx + 1
+                continue
+
+            old_tag = content[tag_start:tag_end]
+            new_tag = remove_style_from_tag(old_tag, style_val)
+            new_tag = add_class_to_tag(new_tag, cls)
+
+            # Clean up extra spaces
+            new_tag = re.sub(r'\s{2,}', ' ', new_tag)
+            new_tag = new_tag.replace(' >', '>')
+
+            content = content[:tag_start] + new_tag + content[tag_end:]
+            total_replacements += 1
+            offset = tag_start + len(new_tag)
 
     if content != original:
         path.write_text(content, encoding='utf-8')
 
-    return total_replacements, 0
+    return total_replacements
 
 
 def main():
     files = sorted(COMPONENTS_DIR.glob('*.html'))
     grand_total = 0
     for f in files:
-        count, _ = process_file(f)
-        if count:
-            print(f'{f.name}: {count} replacements')
-            grand_total += count
+        try:
+            count = process_file(f)
+            if count:
+                print(f'{f.name}: {count} replacements')
+                grand_total += count
+        except Exception as e:
+            print(f'{f.name}: ERROR {e}')
     print(f'\nTotal replacements across all files: {grand_total}')
 
 

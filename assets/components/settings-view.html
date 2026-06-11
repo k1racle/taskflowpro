@@ -33,76 +33,76 @@
 
         <div x-show="settingsAdminTab === 'general'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-2 crm-panel-block p-4">
-                <label for="settings-company-name" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Название компании</label>
-                <input id="settings-company-name" name="company_name" type="text" x-model="settingsForm.company_name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="TaskFlow" />
+                <label for="settings-company-name" class="block text-sm font-medium mb-2 crm-text-secondary">Название компании</label>
+                <input id="settings-company-name" name="company_name" type="text" x-model="settingsForm.company_name" class="w-full px-4 py-3 crm-control-input" placeholder="TaskFlow" />
             </div>
             <div class="crm-panel-block p-4">
-                <label for="settings-app-name" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Имя приложения</label>
-                <input id="settings-app-name" name="app_name" type="text" x-model="settingsForm.app_name" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="TaskFlow" />
+                <label for="settings-app-name" class="block text-sm font-medium mb-2 crm-text-secondary">Имя приложения</label>
+                <input id="settings-app-name" name="app_name" type="text" x-model="settingsForm.app_name" class="w-full px-4 py-3 crm-control-input" placeholder="TaskFlow" />
             </div>
             <div class="md:col-span-3 crm-panel-block p-4">
-                <label for="settings-logo-path" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Логотип (путь)</label>
-                <input id="settings-logo-path" name="logo" type="text" x-model="settingsForm.logo" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="uploads/logo.png" />
+                <label for="settings-logo-path" class="block text-sm font-medium mb-2 crm-text-secondary">Логотип (путь)</label>
+                <input id="settings-logo-path" name="logo" type="text" x-model="settingsForm.logo" class="w-full px-4 py-3 crm-control-input" placeholder="uploads/logo.png" />
             </div>
         </div>
 
         <div x-show="settingsAdminTab === 'integrations'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-3 crm-panel-block p-4 space-y-4">
                 <div>
-                    <div class="font-semibold" style="color: var(--lg-text-primary)">WooCommerce Referral integration</div>
-                    <div class="text-sm mt-1" style="color: var(--lg-text-secondary)">Настройка CRM для плагина WorkHub Woo Referrals: URL магазина, общий секрет и готовые endpoint'ы для вставки в WooCommerce.</div>
+                    <div class="font-semibold crm-text-primary">WooCommerce Referral integration</div>
+                    <div class="text-sm mt-1 crm-text-secondary">Настройка CRM для плагина WorkHub Woo Referrals: URL магазина, общий секрет и готовые endpoint'ы для вставки в WooCommerce.</div>
                 </div>
 
                 <div>
-                    <label for="settings-referral-woocommerce-base-url" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">URL WooCommerce-магазина для referral-ссылок</label>
-                    <input id="settings-referral-woocommerce-base-url" name="referral_woocommerce_base_url" type="url" x-model="settingsForm.referral_woocommerce_base_url" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="https://shop.example.com/" />
-                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Базовый адрес магазина, куда CRM будет вести по referral-ссылкам. Пример: https://shop.example.com/</div>
+                    <label for="settings-referral-woocommerce-base-url" class="block text-sm font-medium mb-2 crm-text-secondary">URL WooCommerce-магазина для referral-ссылок</label>
+                    <input id="settings-referral-woocommerce-base-url" name="referral_woocommerce_base_url" type="url" x-model="settingsForm.referral_woocommerce_base_url" class="w-full px-4 py-3 crm-control-input" placeholder="https://shop.example.com/" />
+                    <div class="text-xs mt-2 crm-text-tertiary">Базовый адрес магазина, куда CRM будет вести по referral-ссылкам. Пример: https://shop.example.com/</div>
                 </div>
 
                 <div>
                     <div class="flex items-center justify-between gap-3 mb-2">
-                        <label for="settings-referral-shared-secret" class="block text-sm font-medium" style="color: var(--lg-text-secondary)">Shared secret для webhook</label>
+                        <label for="settings-referral-shared-secret" class="block text-sm font-medium crm-text-secondary">Shared secret для webhook</label>
                         <span class="text-xs px-2 py-1 rounded-full" style="border:1px solid var(--lg-border); color: var(--lg-text-tertiary)" x-text="'Источник: ' + getReferralSecretSourceLabel((referralIntegration && referralIntegration.sharedSecretSource) || 'none')"></span>
                     </div>
-                    <input id="settings-referral-shared-secret" name="referral_shared_secret" type="password" x-model="settingsForm.referral_shared_secret" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Введите новый secret или оставьте пустым, чтобы не менять текущий" autocomplete="new-password" />
-                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">CRM сначала использует secret из настроек, а если он не сохранён - fallback на legacy `REFERRAL_SHARED_SECRET` из config/env. Пустое поле не перезаписывает текущий secret.</div>
-                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="(referralIntegration && referralIntegration.sharedSecretConfigured) ? 'Secret уже настроен. Для замены введите новое значение и сохраните настройки.' : 'Secret пока не настроен. CRM не упадёт, но webhook и visit endpoint будут отклонять запросы, пока secret не задан.'"></div>
+                    <input id="settings-referral-shared-secret" name="referral_shared_secret" type="password" x-model="settingsForm.referral_shared_secret" class="w-full px-4 py-3 crm-control-input" placeholder="Введите новый secret или оставьте пустым, чтобы не менять текущий" autocomplete="new-password" />
+                    <div class="text-xs mt-2 crm-text-tertiary">CRM сначала использует secret из настроек, а если он не сохранён - fallback на legacy `REFERRAL_SHARED_SECRET` из config/env. Пустое поле не перезаписывает текущий secret.</div>
+                    <div class="text-xs mt-1 crm-text-tertiary" x-text="(referralIntegration && referralIntegration.sharedSecretConfigured) ? 'Secret уже настроен. Для замены введите новое значение и сохраните настройки.' : 'Secret пока не настроен. CRM не упадёт, но webhook и visit endpoint будут отклонять запросы, пока secret не задан.'"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="settings-woocommerce-api-consumer-key" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">WooCommerce Consumer Key</label>
-                        <input id="settings-woocommerce-api-consumer-key" name="woocommerce_api_consumer_key" type="password" x-model="settingsForm.woocommerce_api_consumer_key" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="ck_xxxxxxxxxxxxxxxxxxxxx" autocomplete="new-password" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Ключ хранится в настройках и скрыт в поле ввода. Оставьте пустым, чтобы не менять текущий ключ.</div>
+                        <label for="settings-woocommerce-api-consumer-key" class="block text-sm font-medium mb-2 crm-text-secondary">WooCommerce Consumer Key</label>
+                        <input id="settings-woocommerce-api-consumer-key" name="woocommerce_api_consumer_key" type="password" x-model="settingsForm.woocommerce_api_consumer_key" class="w-full px-4 py-3 crm-control-input" placeholder="ck_xxxxxxxxxxxxxxxxxxxxx" autocomplete="new-password" />
+                        <div class="text-xs mt-2 crm-text-tertiary">Ключ хранится в настройках и скрыт в поле ввода. Оставьте пустым, чтобы не менять текущий ключ.</div>
                     </div>
 
                     <div>
-                        <label for="settings-woocommerce-api-consumer-secret" class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">WooCommerce Consumer Secret</label>
-                        <input id="settings-woocommerce-api-consumer-secret" name="woocommerce_api_consumer_secret" type="password" x-model="settingsForm.woocommerce_api_consumer_secret" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="cs_xxxxxxxxxxxxxxxxxxxxx" autocomplete="new-password" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Пустое поле не перезаписывает текущий секрет. Используется только для API-импорта истории заказов.</div>
+                        <label for="settings-woocommerce-api-consumer-secret" class="block text-sm font-medium mb-2 crm-text-secondary">WooCommerce Consumer Secret</label>
+                        <input id="settings-woocommerce-api-consumer-secret" name="woocommerce_api_consumer_secret" type="password" x-model="settingsForm.woocommerce_api_consumer_secret" class="w-full px-4 py-3 crm-control-input" placeholder="cs_xxxxxxxxxxxxxxxxxxxxx" autocomplete="new-password" />
+                        <div class="text-xs mt-2 crm-text-tertiary">Пустое поле не перезаписывает текущий секрет. Используется только для API-импорта истории заказов.</div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 gap-3">
                     <div>
-                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Order webhook endpoint</label>
+                        <label class="block text-sm font-medium mb-2 crm-text-secondary">Order webhook endpoint</label>
                         <div class="flex flex-col md:flex-row gap-2">
-                            <input type="text" readonly :value="(referralIntegration && referralIntegration.orderWebhookUrl) || ''" class="w-full px-4 py-3 rounded-xl crm-control-input" style="opacity:.95" />
+                            <input type="text" readonly :value="(referralIntegration && referralIntegration.orderWebhookUrl) || ''" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
                             <button type="button" class="crm-btn-secondary whitespace-nowrap" @click="copyReferralText((referralIntegration && referralIntegration.orderWebhookUrl) || '', 'Webhook endpoint скопирован')">Копировать</button>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Visit endpoint</label>
+                        <label class="block text-sm font-medium mb-2 crm-text-secondary">Visit endpoint</label>
                         <div class="flex flex-col md:flex-row gap-2">
-                            <input type="text" readonly :value="(referralIntegration && referralIntegration.visitEndpointUrl) || ''" class="w-full px-4 py-3 rounded-xl crm-control-input" style="opacity:.95" />
+                            <input type="text" readonly :value="(referralIntegration && referralIntegration.visitEndpointUrl) || ''" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
                             <button type="button" class="crm-btn-secondary whitespace-nowrap" @click="copyReferralText((referralIntegration && referralIntegration.visitEndpointUrl) || '', 'Visit endpoint скопирован')">Копировать</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                    <div class="text-sm font-medium mb-2" style="color: var(--lg-text-primary)">Что вставить в WooCommerce-плагин</div>
+                <div class="rounded-2xl p-4 crm-border-subtle">
+                    <div class="text-sm font-medium mb-2 crm-text-primary">Что вставить в WooCommerce-плагин</div>
                     <ol class="text-sm space-y-1" style="color: var(--lg-text-secondary); padding-left: 18px;">
                         <li>В поле <strong>CRM webhook URL</strong> вставьте <strong>Order webhook endpoint</strong>.</li>
                         <li>В поле <strong>Shared secret</strong> укажите тот же secret, который сохранён в CRM.</li>
@@ -114,42 +114,40 @@
 
             <div class="md:col-span-3 crm-panel-block p-4 space-y-4">
                 <div>
-                    <div class="font-semibold" style="color: var(--lg-text-primary)">ProstieZvonki.ru</div>
-                    <div class="text-sm mt-1" style="color: var(--lg-text-secondary)">Интеграция телефонии: хранение ключей доступа и секрета вебхуков. Логику обработки звонков добавим следующим шагом.</div>
+                    <div class="font-semibold crm-text-primary">ProstieZvonki.ru</div>
+                    <div class="text-sm mt-1 crm-text-secondary">Интеграция телефонии: хранение ключей доступа и секрета вебхуков. Логику обработки звонков добавим следующим шагом.</div>
                 </div>
 
                 <label class="flex items-center justify-between gap-3">
-                    <span class="text-sm font-medium" style="color: var(--lg-text-secondary)">Включить интеграцию</span>
+                    <span class="text-sm font-medium crm-text-secondary">Включить интеграцию</span>
                     <input type="checkbox" x-model="settingsForm.prostiezvonki_enabled" class="rounded" />
                 </label>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">API key / Token</label>
-                        <input type="password" x-model="settingsForm.prostiezvonki_api_key" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Оставьте пустым, если менять не нужно" autocomplete="new-password" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Пустое поле не перезаписывает текущий ключ.</div>
+                        <label class="block text-sm font-medium mb-2 crm-text-secondary">API key / Token</label>
+                        <input type="password" x-model="settingsForm.prostiezvonki_api_key" class="w-full px-4 py-3 crm-control-input" placeholder="Оставьте пустым, если менять не нужно" autocomplete="new-password" />
+                        <div class="text-xs mt-2 crm-text-tertiary">Пустое поле не перезаписывает текущий ключ.</div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Webhook secret</label>
-                        <input type="password" x-model="settingsForm.prostiezvonki_webhook_secret" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Оставьте пустым, если менять не нужно" autocomplete="new-password" />
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Используется для проверки входящих вебхуков.</div>
+                        <label class="block text-sm font-medium mb-2 crm-text-secondary">Webhook secret</label>
+                        <input type="password" x-model="settingsForm.prostiezvonki_webhook_secret" class="w-full px-4 py-3 crm-control-input" placeholder="Оставьте пустым, если менять не нужно" autocomplete="new-password" />
+                        <div class="text-xs mt-2 crm-text-tertiary">Используется для проверки входящих вебхуков.</div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 gap-3">
                     <div>
-                        <label class="block text-sm font-medium mb-2" style="color: var(--lg-text-secondary)">Webhook URL (для ProstieZvonki)</label>
+                        <label class="block text-sm font-medium mb-2 crm-text-secondary">Webhook URL (для ProstieZvonki)</label>
                         <div class="flex flex-col md:flex-row gap-2">
-                            <input type="text" readonly
-                                   :value="(new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href"
-                                   class="w-full px-4 py-3 rounded-xl crm-control-input" style="opacity:.95" />
+                            <input type="text" readonly :value="(new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
                             <button type="button" class="crm-btn-secondary whitespace-nowrap"
                                     @click="copyReferralText((new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href, 'Webhook URL скопирован')">
                                 Копировать
                             </button>
                         </div>
-                        <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Вставьте этот URL в настройках интеграции «Простые звонки» как адрес CRM для вебхуков.</div>
+                        <div class="text-xs mt-2 crm-text-tertiary">Вставьте этот URL в настройках интеграции «Простые звонки» как адрес CRM для вебхуков.</div>
                     </div>
                 </div>
 
@@ -164,25 +162,25 @@
 
         <div x-show="can('admin.full')" class="space-y-6">
             <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'omni'">
-                <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Telegram уведомления</div>
-                <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте бота для получения уведомлений администраторам.</div>
+                <div class="font-semibold mb-2 crm-text-primary">Telegram уведомления</div>
+                <div class="text-sm mb-4 crm-text-secondary">Настройте бота для получения уведомлений администраторам.</div>
 
                 <div class="space-y-3">
                     <div>
-                        <label for="telegram-bot-token" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Bot Token</label>
-                        <input id="telegram-bot-token" name="telegram_bot_token" type="text" x-model="telegramForm.bot_token" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" class="w-full px-4 py-3 rounded-xl crm-control-input" />
-                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Получите у @BotFather в Telegram</div>
+                        <label for="telegram-bot-token" class="block text-xs mb-1 crm-text-tertiary">Bot Token</label>
+                        <input id="telegram-bot-token" name="telegram_bot_token" type="text" x-model="telegramForm.bot_token" placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz" class="w-full px-4 py-3 crm-control-input" />
+                        <div class="text-xs mt-1 crm-text-tertiary">Получите у @BotFather в Telegram</div>
                     </div>
 
                     <div>
-                        <label for="telegram-chat-id" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Chat ID</label>
-                        <input id="telegram-chat-id" name="telegram_chat_id" type="text" x-model="telegramForm.chat_id" placeholder="-1001234567890" class="w-full px-4 py-3 rounded-xl crm-control-input" />
-                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Узнайте у @userinfobot</div>
+                        <label for="telegram-chat-id" class="block text-xs mb-1 crm-text-tertiary">Chat ID</label>
+                        <input id="telegram-chat-id" name="telegram_chat_id" type="text" x-model="telegramForm.chat_id" placeholder="-1001234567890" class="w-full px-4 py-3 crm-control-input" />
+                        <div class="text-xs mt-1 crm-text-tertiary">Узнайте у @userinfobot</div>
                     </div>
 
                     <div class="flex items-center justify-between pt-2">
                         <label class="flex items-center gap-3">
-                            <span class="text-sm" style="color: var(--lg-text-secondary)">Включить уведомления</span>
+                            <span class="text-sm crm-text-secondary">Включить уведомления</span>
                             <input type="checkbox" x-model="telegramForm.enabled" class="rounded" />
                         </label>
                         <button @click="testTelegram()" class="crm-btn-secondary text-sm">Тест</button>
@@ -191,43 +189,43 @@
             </div>
 
             <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'omni'">
-                <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Омниканал: Telegram и MAX (HelpDesk)</div>
-                <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
+                <div class="font-semibold mb-2 crm-text-primary">Омниканал: Telegram и MAX (HelpDesk)</div>
+                <div class="text-sm mb-4 crm-text-secondary">
                     Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
                     Пока домен не выбран, заполните секреты и токены позже.
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
-                        <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Публичный URL CRM (HTTPS)</label>
+                        <label class="block text-xs mb-1 crm-text-tertiary">Публичный URL CRM (HTTPS)</label>
                         <input type="text" x-model="omniForm.app_public_base_url" placeholder="https://crm.example.ru"
-                               class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Нужен для генерации URL вебхуков. Можно заполнить позже.</div>
+                               class="w-full px-4 py-3 crm-control-input text-sm" />
+                        <div class="text-xs mt-1 crm-text-tertiary">Нужен для генерации URL вебхуков. Можно заполнить позже.</div>
                     </div>
 
                     <div class="crm-panel-block p-4">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <div class="font-semibold" style="color: var(--lg-text-primary)">Telegram</div>
-                            <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                            <div class="font-semibold crm-text-primary">Telegram</div>
+                            <label class="flex items-center gap-2 text-sm crm-text-secondary">
                                 <span>Включить</span>
                                 <input type="checkbox" x-model="omniForm.tg_enabled" class="rounded" />
                             </label>
                         </div>
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Bot token</label>
+                                <label class="block text-xs mb-1 crm-text-tertiary">Bot token</label>
                                 <input type="text" x-model="omniForm.tg_bot_token" placeholder="вставьте токен"
-                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                       class="w-full px-4 py-3 crm-control-input text-sm" />
+                                <div class="text-xs mt-1 crm-text-tertiary">
                                     <span x-show="omniIntegration?.tgTokenConfigured">Токен уже сохранён. Оставьте пустым, чтобы не менять.</span>
                                     <span x-show="!omniIntegration?.tgTokenConfigured">Токен не задан.</span>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Webhook secret</label>
+                                <label class="block text-xs mb-1 crm-text-tertiary">Webhook secret</label>
                                 <input type="text" x-model="omniForm.tg_webhook_secret" placeholder="секретная строка"
-                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                       class="w-full px-4 py-3 crm-control-input text-sm" />
+                                <div class="text-xs mt-1 crm-text-tertiary">
                                     <span x-show="omniIntegration?.tgSecretConfigured">Секрет уже сохранён. Оставьте пустым, чтобы не менять.</span>
                                     <span x-show="!omniIntegration?.tgSecretConfigured">Секрет не задан.</span>
                                 </div>
@@ -237,27 +235,27 @@
 
                     <div class="crm-panel-block p-4">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <div class="font-semibold" style="color: var(--lg-text-primary)">MAX</div>
-                            <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                            <div class="font-semibold crm-text-primary">MAX</div>
+                            <label class="flex items-center gap-2 text-sm crm-text-secondary">
                                 <span>Включить</span>
                                 <input type="checkbox" x-model="omniForm.max_enabled" class="rounded" />
                             </label>
                         </div>
                         <div class="space-y-3">
                             <div>
-                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Bot token</label>
+                                <label class="block text-xs mb-1 crm-text-tertiary">Bot token</label>
                                 <input type="text" x-model="omniForm.max_bot_token" placeholder="вставьте токен"
-                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                       class="w-full px-4 py-3 crm-control-input text-sm" />
+                                <div class="text-xs mt-1 crm-text-tertiary">
                                     <span x-show="omniIntegration?.maxTokenConfigured">Токен уже сохранён. Оставьте пустым, чтобы не менять.</span>
                                     <span x-show="!omniIntegration?.maxTokenConfigured">Токен не задан.</span>
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Webhook secret</label>
+                                <label class="block text-xs mb-1 crm-text-tertiary">Webhook secret</label>
                                 <input type="text" x-model="omniForm.max_webhook_secret" placeholder="секретная строка"
-                                       class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                       class="w-full px-4 py-3 crm-control-input text-sm" />
+                                <div class="text-xs mt-1 crm-text-tertiary">
                                     <span x-show="omniIntegration?.maxSecretConfigured">Секрет уже сохранён. Оставьте пустым, чтобы не менять.</span>
                                     <span x-show="!omniIntegration?.maxSecretConfigured">Секрет не задан.</span>
                                 </div>
@@ -266,27 +264,27 @@
                     </div>
                 </div>
 
-                <div class="crm-panel-block p-4 mt-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                    <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Telegram бот для записи</div>
-                    <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
+                <div class="crm-panel-block p-4 mt-4 crm-border-subtle">
+                    <div class="font-semibold mb-2 crm-text-primary">Telegram бот для записи</div>
+                    <div class="text-sm mb-4 crm-text-secondary">
                         Автоматический чат-бот для приёма заявок на запись через Telegram.
                         Использует тот же Bot token и webhook secret, что и омниканал Telegram (HelpDesk).
                     </div>
                     <div class="space-y-3">
                         <label class="flex items-center justify-between gap-3">
-                            <span class="text-sm font-medium" style="color: var(--lg-text-secondary)">Включить бота записи</span>
+                            <span class="text-sm font-medium crm-text-secondary">Включить бота записи</span>
                             <input type="checkbox" x-model="bookingBotForm.enabled" class="rounded" />
                         </label>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Приветственное сообщение</label>
+                            <label class="block text-xs mb-1 crm-text-tertiary">Приветственное сообщение</label>
                             <textarea rows="2" x-model="bookingBotForm.welcome_text" placeholder="Здравствуйте! Я бот для записи на услуги..."
-                                      class="w-full px-4 py-3 rounded-xl crm-control-input text-sm"></textarea>
+                                      class="w-full px-4 py-3 crm-control-input text-sm"></textarea>
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Bot token (для отправки ответов)</label>
+                            <label class="block text-xs mb-1 crm-text-tertiary">Bot token (для отправки ответов)</label>
                             <input type="text" x-model="bookingBotForm.token" placeholder="оставьте пустым, чтобы не менять"
-                                   class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                            <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                                   class="w-full px-4 py-3 crm-control-input text-sm" />
+                            <div class="text-xs mt-1 crm-text-tertiary">
                                 <span x-show="omniIntegration?.bookingBotTokenConfigured">Токен уже сохранён. Оставьте пустым, чтобы не менять.</span>
                                 <span x-show="!omniIntegration?.bookingBotTokenConfigured">Токен не задан.</span>
                             </div>
@@ -306,16 +304,15 @@
             </div>
 
             <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'webrtc'">
-                <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">WebRTC (звонки и конференции)</div>
-                <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">
+                <div class="font-semibold mb-2 crm-text-primary">WebRTC (звонки и конференции)</div>
+                <div class="text-sm mb-4 crm-text-secondary">
                     Настройка ICE servers (STUN/TURN). Для обычных сетей достаточно STUN. TURN нужен, если у части пользователей не соединяются звонки из-за NAT/ограничений.
                 </div>
 
                 <div>
-                    <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">ICE servers (JSON-массив)</label>
-                    <textarea rows="4" x-model="webrtcForm.ice_servers_json" placeholder='[{"urls":"stun:stun.l.google.com:19302"}]'
-                              class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;"></textarea>
-                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">
+                    <label class="block text-xs mb-1 crm-text-tertiary">ICE servers (JSON-массив)</label>
+                    <textarea rows="4" x-model="webrtcForm.ice_servers_json" placeholder='[{"urls":"stun:stun.l.google.com:19302"}]' class="w-full px-4 py-3 crm-control-input text-sm crm-mono"></textarea>
+                    <div class="text-xs mt-1 crm-text-tertiary">
                         Пример TURN: [{"urls":"turn:turn.example.ru:3478","username":"u","credential":"p"}]
                     </div>
                 </div>
@@ -326,18 +323,18 @@
             </div>
 
             <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'weather'">
-                <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Погода (OpenWeatherMap)</div>
-                <div class="text-sm mb-4" style="color: var(--lg-text-secondary)">Настройте погодный виджет под общий интерфейс.</div>
+                <div class="font-semibold mb-2 crm-text-primary">Погода (OpenWeatherMap)</div>
+                <div class="text-sm mb-4 crm-text-secondary">Настройте погодный виджет под общий интерфейс.</div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="weather-api-key" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">API Key</label>
-                        <input id="weather-api-key" name="weather_api_key" type="password" x-model="weatherApiKey" placeholder="ваш ключ" autocomplete="new-password" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
-                        <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Ключ можно хранить в настройках; поле показывается скрыто.</div>
+                        <label for="weather-api-key" class="block text-xs mb-1 crm-text-tertiary">API Key</label>
+                        <input id="weather-api-key" name="weather_api_key" type="password" x-model="weatherApiKey" placeholder="ваш ключ" autocomplete="new-password" class="w-full px-4 py-3 crm-control-input text-sm" />
+                        <div class="text-xs mt-1 crm-text-tertiary">Ключ можно хранить в настройках; поле показывается скрыто.</div>
                     </div>
                     <div>
-                        <label for="weather-city" class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Город</label>
-                        <input id="weather-city" name="weather_city" type="text" x-model="weatherCity" placeholder="Москва" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                        <label for="weather-city" class="block text-xs mb-1 crm-text-tertiary">Город</label>
+                        <input id="weather-city" name="weather_city" type="text" x-model="weatherCity" placeholder="Москва" class="w-full px-4 py-3 crm-control-input text-sm" />
                     </div>
                 </div>
             </div>
@@ -356,7 +353,7 @@
                     </button>
                 </div>
 
-                <div class="text-xs mt-3" style="color: var(--lg-text-tertiary)">
+                <div class="text-xs mt-3 crm-text-tertiary">
                     Проверяются только безопасные read-only сигналы коробочной готовности: ядро API, auth/CRM baseline, manifest/sw, ключевые каталоги, служебные writable-paths и базовое окружение PHP.
                 </div>
 
@@ -371,7 +368,7 @@
                 </div>
 
                 <div x-show="adminHealth" class="mt-4 crm-panel-stack crm-panel-stack--compact">
-                    <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                    <div class="rounded-2xl p-4 crm-border-subtle">
                         <div class="crm-section-head">
                             <div class="crm-section-head__content">
                                 <div class="crm-section-head__title">Production readiness</div>
@@ -380,39 +377,39 @@
                             <span class="text-xs px-2 py-1 rounded-full" :style="adminHealth?.release_ready ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : 'background:rgba(239,68,68,.18); color:#fecaca'" x-text="adminHealth?.release_ready ? 'READY' : 'NOT READY'"></span>
                         </div>
                         <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Release gate</div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Release gate</div>
                                 <div class="font-semibold mt-1" :style="adminHealth?.release_ready ? 'color:#bbf7d0' : 'color:#fecaca'" x-text="adminHealth?.release_ready ? 'READY' : 'NOT READY'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Blocking issues</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="(adminHealth?.blocking_issues || []).length"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Blocking issues</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="(adminHealth?.blocking_issues || []).length"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Check source</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Check source</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mt-4 text-sm">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">RBAC source</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">RBAC source</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Break-glass</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.break_glass_role || 'unknown'"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Break-glass</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.break_glass_role || 'unknown'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Administrator break-glass</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.administrator_break_glass ? 'yes' : 'no'"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Administrator break-glass</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.administrator_break_glass ? 'yes' : 'no'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Chat realtime</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="adminHealth?.chat_realtime || 'unknown'"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Chat realtime</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.chat_realtime || 'unknown'"></div>
                             </div>
                         </div>
                         <div class="mt-4">
-                            <div class="text-xs uppercase tracking-wide font-semibold" style="color: var(--lg-text-tertiary)">Supported integrations</div>
+                            <div class="text-xs uppercase tracking-wide font-semibold crm-text-tertiary">Supported integrations</div>
                             <div class="mt-2 flex flex-wrap gap-2">
                                 <template x-for="integration in (adminHealth?.supported_integrations || [])" :key="integration">
                                     <span class="crm-inline-badge" x-text="integration"></span>
@@ -420,8 +417,8 @@
                             </div>
                         </div>
                         <div class="mt-4" x-show="(adminHealth?.notes || []).length">
-                            <div class="text-xs uppercase tracking-wide font-semibold" style="color: var(--lg-text-tertiary)">Notes</div>
-                            <ul class="mt-2 space-y-1 text-sm" style="color: var(--lg-text-secondary)">
+                            <div class="text-xs uppercase tracking-wide font-semibold crm-text-tertiary">Notes</div>
+                            <ul class="mt-2 space-y-1 text-sm crm-text-secondary">
                                 <template x-for="note in (adminHealth?.notes || [])" :key="note">
                                     <li x-text="'• ' + note"></li>
                                 </template>
@@ -429,7 +426,7 @@
                         </div>
 
                         <div class="mt-4" x-show="(adminHealth?.blocking_issues || []).length">
-                            <div class="text-xs uppercase tracking-wide font-semibold" style="color: var(--lg-text-tertiary)">Blocking issues</div>
+                            <div class="text-xs uppercase tracking-wide font-semibold crm-text-tertiary">Blocking issues</div>
                             <ul class="mt-2 space-y-2 text-sm">
                                 <template x-for="issue in (adminHealth?.blocking_issues || [])" :key="issue.key">
                                     <li class="rounded-2xl p-3" :style="issue.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10); color:#fecaca' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10); color:#fde68a'">
@@ -441,11 +438,11 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+                    <div class="rounded-2xl p-4 crm-border-subtle">
                         <div class="flex items-center justify-between gap-3 flex-wrap">
                             <div>
-                                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Release gate control</div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Сбросьте устаревшие данные и запустите проверку перед передачей клиенту.</div>
+                                <div class="text-sm font-semibold crm-text-primary">Release gate control</div>
+                                <div class="text-xs mt-1 crm-text-tertiary">Сбросьте устаревшие данные и запустите проверку перед передачей клиенту.</div>
                             </div>
                             <button class="crm-btn-primary text-sm" :disabled="adminHealthLoading || diagnosticsBaseline.loading" @click="runReleaseGate()">
                                 <span x-show="!(adminHealthLoading || diagnosticsBaseline.loading)">Проверить готовность</span>
@@ -489,40 +486,40 @@
                     </div>
 
                     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 text-sm">
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Всего проверок</div>
-                            <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="diagnosticsBaseline.data?.summary?.total_count ?? 0"></div>
+                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="text-xs crm-text-tertiary">Всего проверок</div>
+                            <div class="font-semibold mt-1 crm-text-primary" x-text="diagnosticsBaseline.data?.summary?.total_count ?? 0"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(34,197,94,.18); background:rgba(20,83,45,.08)">
-                            <div class="text-xs" style="color: var(--lg-text-tertiary)">OK</div>
+                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-success">
+                            <div class="text-xs crm-text-tertiary">OK</div>
                             <div class="font-semibold mt-1" style="color:#bbf7d0" x-text="diagnosticsBaseline.data?.summary?.ok_count ?? 0"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(245,158,11,.18); background:rgba(120,53,15,.08)">
-                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Warnings</div>
+                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-warn-light">
+                            <div class="text-xs crm-text-tertiary">Warnings</div>
                             <div class="font-semibold mt-1" style="color:#fde68a" x-text="diagnosticsBaseline.data?.summary?.warning_count ?? 0"></div>
                         </div>
                         <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(239,68,68,.18); background:rgba(127,29,29,.08)">
-                            <div class="text-xs" style="color: var(--lg-text-tertiary)">Errors</div>
+                            <div class="text-xs crm-text-tertiary">Errors</div>
                             <div class="font-semibold mt-1" style="color:#fecaca" x-text="diagnosticsBaseline.data?.summary?.error_count ?? 0"></div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs" x-show="diagnosticsBaseline.data?.environment">
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                            <div style="color: var(--lg-text-tertiary)">PHP</div>
-                            <div class="mt-1 font-semibold" style="color: var(--lg-text-primary)" x-text="diagnosticsBaseline.data?.environment?.php_version || '—'"></div>
+                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-text-tertiary">PHP</div>
+                            <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.php_version || '—'"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                            <div style="color: var(--lg-text-tertiary)">SAPI</div>
-                            <div class="mt-1 font-semibold" style="color: var(--lg-text-primary)" x-text="diagnosticsBaseline.data?.environment?.sapi || '—'"></div>
+                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-text-tertiary">SAPI</div>
+                            <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.sapi || '—'"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                            <div style="color: var(--lg-text-tertiary)">OS family</div>
-                            <div class="mt-1 font-semibold" style="color: var(--lg-text-primary)" x-text="diagnosticsBaseline.data?.environment?.os_family || '—'"></div>
+                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-text-tertiary">OS family</div>
+                            <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.os_family || '—'"></div>
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-4 space-y-4" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)" x-show="diagnosticsBaseline.data?.box_readiness">
+                    <div class="rounded-2xl p-4 space-y-4 crm-border-subtle" x-show="diagnosticsBaseline.data?.box_readiness">
                         <div class="crm-section-head">
                             <div class="crm-section-head__content">
                                 <div class="crm-section-head__title">Box readiness</div>
@@ -532,36 +529,36 @@
                         </div>
 
                         <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 text-sm">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Всего сигналов</div>
-                                <div class="font-semibold mt-1" style="color: var(--lg-text-primary)" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.total_count ?? 0"></div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                                <div class="text-xs crm-text-tertiary">Всего сигналов</div>
+                                <div class="font-semibold mt-1 crm-text-primary" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.total_count ?? 0"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(34,197,94,.18); background:rgba(20,83,45,.08)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Подтверждено</div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-success">
+                                <div class="text-xs crm-text-tertiary">Подтверждено</div>
                                 <div class="font-semibold mt-1" style="color:#bbf7d0" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.ok_count ?? 0"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(245,158,11,.18); background:rgba(120,53,15,.08)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Требует внимания</div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-warn-light">
+                                <div class="text-xs crm-text-tertiary">Требует внимания</div>
                                 <div class="font-semibold mt-1" style="color:#fde68a" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.missing_count ?? 0"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(245,158,11,.18); background:rgba(120,53,15,.08)">
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)">Warnings</div>
+                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-warn-light">
+                                <div class="text-xs crm-text-tertiary">Warnings</div>
                                 <div class="font-semibold mt-1" style="color:#fde68a" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.warning_count ?? 0"></div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 text-xs" x-show="(diagnosticsBaseline.data?.box_readiness?.missing_items || []).length || (diagnosticsBaseline.data?.box_readiness?.warning_items || []).length">
-                            <div class="rounded-2xl p-3" style="border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)" x-show="(diagnosticsBaseline.data?.box_readiness?.missing_items || []).length">
+                            <div class="rounded-2xl p-3 crm-border-warn" x-show="(diagnosticsBaseline.data?.box_readiness?.missing_items || []).length">
                                 <div class="font-semibold" style="color:#fde68a">Missing / attention</div>
-                                <ul class="mt-2 space-y-1" style="color: var(--lg-text-secondary)">
+                                <ul class="mt-2 space-y-1 crm-text-secondary">
                                     <template x-for="item in (diagnosticsBaseline.data?.box_readiness?.missing_items || [])" :key="item">
                                         <li x-text="'• ' + item"></li>
                                     </template>
                                 </ul>
                             </div>
-                            <div class="rounded-2xl p-3" style="border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)" x-show="(diagnosticsBaseline.data?.box_readiness?.warning_items || []).length">
+                            <div class="rounded-2xl p-3 crm-border-warn" x-show="(diagnosticsBaseline.data?.box_readiness?.warning_items || []).length">
                                 <div class="font-semibold" style="color:#fde68a">Warning items</div>
-                                <ul class="mt-2 space-y-1" style="color: var(--lg-text-secondary)">
+                                <ul class="mt-2 space-y-1 crm-text-secondary">
                                     <template x-for="item in (diagnosticsBaseline.data?.box_readiness?.warning_items || [])" :key="item">
                                         <li x-text="'• ' + item"></li>
                                     </template>
@@ -573,13 +570,13 @@
                             <template x-for="signal in (diagnosticsBaseline.data?.box_readiness?.signals || [])" :key="signal.key">
                                 <div class="crm-card-compact crm-card-equal rounded-2xl p-4" :style="signal.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)'">
                                     <div class="flex items-center justify-between gap-3">
-                                        <div class="font-semibold text-sm uppercase tracking-wide" style="color: var(--lg-text-primary)" x-text="signal.label"></div>
+                                        <div class="font-semibold text-sm uppercase tracking-wide crm-text-primary" x-text="signal.label"></div>
                                         <span class="text-xs px-2 py-1 rounded-full" :style="signal.ok ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : 'background:rgba(245,158,11,.18); color:#fde68a'" x-text="signal.ok ? 'OK' : 'WARN'"></span>
                                     </div>
-                                    <div class="text-sm mt-2" style="color: var(--lg-text-secondary)" x-text="signal.message"></div>
-                                    <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)" x-show="signal.path" x-text="'Путь: ' + signal.path"></div>
-                                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-show="signal.group" x-text="'Группа: ' + signal.group"></div>
-                                    <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-show="typeof signal.items_count === 'number'" x-text="'Элементов: ' + signal.items_count"></div>
+                                    <div class="text-sm mt-2 crm-text-secondary" x-text="signal.message"></div>
+                                    <div class="text-xs mt-2 crm-text-tertiary" x-show="signal.path" x-text="'Путь: ' + signal.path"></div>
+                                    <div class="text-xs mt-1 crm-text-tertiary" x-show="signal.group" x-text="'Группа: ' + signal.group"></div>
+                                    <div class="text-xs mt-1 crm-text-tertiary" x-show="typeof signal.items_count === 'number'" x-text="'Элементов: ' + signal.items_count"></div>
                                 </div>
                             </template>
                         </div>
@@ -589,13 +586,13 @@
                         <template x-for="(check, key) in (diagnosticsBaseline.data?.checks || {})" :key="key">
                             <div class="crm-card-compact crm-card-equal rounded-2xl p-4" :style="check.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : (check.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)')">
                                 <div class="flex items-center justify-between gap-3">
-                                    <div class="font-semibold text-sm uppercase tracking-wide" style="color: var(--lg-text-primary)" x-text="key.replace(/_/g, ' ')"></div>
+                                    <div class="font-semibold text-sm uppercase tracking-wide crm-text-primary" x-text="key.replace(/_/g, ' ')"></div>
                                     <span class="text-xs px-2 py-1 rounded-full" :style="check.ok ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : (check.severity === 'error' ? 'background:rgba(239,68,68,.18); color:#fecaca' : 'background:rgba(245,158,11,.18); color:#fde68a')" x-text="check.ok ? 'OK' : (check.severity === 'error' ? 'ERROR' : 'WARN')"></span>
                                 </div>
-                                <div class="text-sm mt-2" style="color: var(--lg-text-secondary)" x-text="check.message"></div>
-                                <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)" x-show="check.path" x-text="'Путь: ' + check.path"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-show="check.group" x-text="'Группа: ' + check.group"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-show="typeof check.items_count === 'number'" x-text="'Элементов: ' + check.items_count"></div>
+                                <div class="text-sm mt-2 crm-text-secondary" x-text="check.message"></div>
+                                <div class="text-xs mt-2 crm-text-tertiary" x-show="check.path" x-text="'Путь: ' + check.path"></div>
+                                <div class="text-xs mt-1 crm-text-tertiary" x-show="check.group" x-text="'Группа: ' + check.group"></div>
+                                <div class="text-xs mt-1 crm-text-tertiary" x-show="typeof check.items_count === 'number'" x-text="'Элементов: ' + check.items_count"></div>
                             </div>
                         </template>
                     </div>
@@ -609,23 +606,23 @@
             <div class="grid grid-cols-1 gap-4">
                 <div class="crm-panel-block p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="font-semibold" style="color: var(--lg-text-primary)">Шаблоны уведомлений</div>
+                        <div class="font-semibold crm-text-primary">Шаблоны уведомлений</div>
                         <button class="crm-btn-secondary text-sm" @click="loadNotificationTemplates()">Обновить</button>
                     </div>
                     <div class="overflow-auto">
-                        <table class="w-full text-sm" style="min-width:600px">
+                        <table class="w-full text-sm crm-min-w-table">
                             <thead>
-                                <tr style="border-bottom:1px solid var(--lg-border)">
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Событие</th>
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Канал</th>
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Тема</th>
-                                    <th class="text-center py-2 px-3" style="color: var(--lg-text-secondary)">Активен</th>
-                                    <th class="text-right py-2 px-3" style="color: var(--lg-text-secondary)">Действия</th>
+                                <tr class="crm-border-bottom">
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Событие</th>
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Канал</th>
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Тема</th>
+                                    <th class="text-center py-2 px-3 crm-text-secondary">Активен</th>
+                                    <th class="text-right py-2 px-3 crm-text-secondary">Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template x-for="t in templates" :key="t.id">
-                                    <tr style="border-bottom:1px solid var(--lg-border)">
+                                    <tr class="crm-border-bottom">
                                         <td class="py-2 px-3" x-text="t.event"></td>
                                         <td class="py-2 px-3" x-text="t.channel"></td>
                                         <td class="py-2 px-3" x-text="t.subject || '—'"></td>
@@ -643,29 +640,29 @@
                 </div>
 
                 <div class="crm-panel-block p-4" x-show="editingTemplate">
-                    <div class="font-semibold mb-3" style="color: var(--lg-text-primary)">
+                    <div class="font-semibold mb-3 crm-text-primary">
                         Редактирование: <span x-text="editingTemplate?.event + ' (' + editingTemplate?.channel + ')'"></span>
                     </div>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Тема</label>
-                            <input type="text" x-model="editForm.subject" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Тема</label>
+                            <input type="text" x-model="editForm.subject" class="w-full px-4 py-3 crm-control-input text-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">HTML шаблон</label>
-                            <textarea rows="6" x-model="editForm.body_html" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" style="font-family: ui-monospace, monospace;"></textarea>
-                            <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)">Переменные: {{request_number}}, {{client_name}}, {{client_phone}}, {{services}}, {{datetime}}, {{total_price}}, {{admin_comment}}, {{company_name}}</div>
+                            <label class="block text-xs mb-1 crm-text-tertiary">HTML шаблон</label>
+                            <textarea rows="6" x-model="editForm.body_html" class="w-full px-4 py-3 crm-control-input text-sm crm-mono"></textarea>
+                            <div class="text-xs mt-1 crm-text-tertiary">Переменные: {{request_number}}, {{client_name}}, {{client_phone}}, {{services}}, {{datetime}}, {{total_price}}, {{admin_comment}}, {{company_name}}</div>
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Текстовая версия</label>
-                            <textarea rows="4" x-model="editForm.body_text" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" style="font-family: ui-monospace, monospace;"></textarea>
+                            <label class="block text-xs mb-1 crm-text-tertiary">Текстовая версия</label>
+                            <textarea rows="4" x-model="editForm.body_text" class="w-full px-4 py-3 crm-control-input text-sm crm-mono"></textarea>
                         </div>
-                        <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                        <label class="flex items-center gap-2 text-sm crm-text-secondary">
                             <input type="checkbox" x-model="editForm.is_active" class="rounded" />
                             <span>Шаблон активен</span>
                         </label>
                         <div class="flex items-center justify-end gap-3 flex-wrap">
-                            <input type="email" x-model="testEmail" placeholder="Email для теста" class="px-4 py-3 rounded-xl crm-control-input text-sm" style="min-width:200px" />
+                            <input type="email" x-model="testEmail" placeholder="Email для теста" class="px-4 py-3 crm-control-input text-sm" style="min-width:200px" />
                             <button class="crm-btn-secondary text-sm" @click="sendTest()" :disabled="saving">Тест</button>
                             <button class="crm-btn-primary text-sm" @click="saveTemplate()" :disabled="saving">Сохранить</button>
                             <button class="crm-btn-secondary text-sm" @click="editingTemplate = null">Отмена</button>
@@ -674,21 +671,21 @@
                 </div>
 
                 <div class="crm-panel-block p-4">
-                    <div class="font-semibold mb-3" style="color: var(--lg-text-primary)">Логи отправки</div>
+                    <div class="font-semibold mb-3 crm-text-primary">Логи отправки</div>
                     <div class="overflow-auto">
-                        <table class="w-full text-sm" style="min-width:600px">
+                        <table class="w-full text-sm crm-min-w-table">
                             <thead>
-                                <tr style="border-bottom:1px solid var(--lg-border)">
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Время</th>
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Событие</th>
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Канал</th>
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Получатель</th>
-                                    <th class="text-center py-2 px-3" style="color: var(--lg-text-secondary)">Статус</th>
+                                <tr class="crm-border-bottom">
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Время</th>
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Событие</th>
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Канал</th>
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Получатель</th>
+                                    <th class="text-center py-2 px-3 crm-text-secondary">Статус</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template x-for="log in logs" :key="log.id">
-                                    <tr style="border-bottom:1px solid var(--lg-border)">
+                                    <tr class="crm-border-bottom">
                                         <td class="py-2 px-3" x-text="new Date(log.created_at).toLocaleString()"></td>
                                         <td class="py-2 px-3" x-text="log.event"></td>
                                         <td class="py-2 px-3" x-text="log.channel"></td>
@@ -709,9 +706,9 @@
         <div x-show="settingsAdminTab === 'license'" x-data="licenseTab()" x-init="loadLicenseStatus()">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="crm-panel-block p-4">
-                    <div class="font-semibold mb-3" style="color: var(--lg-text-primary)">Текущая лицензия</div>
-                    <div class="space-y-2 text-sm" style="color: var(--lg-text-secondary)">
-                        <div class="flex justify-between"><span>Тариф:</span> <strong style="color: var(--lg-text-primary)" x-text="licenseStatus?.tier?.name || '-'"></strong></div>
+                    <div class="font-semibold mb-3 crm-text-primary">Текущая лицензия</div>
+                    <div class="space-y-2 text-sm crm-text-secondary">
+                        <div class="flex justify-between"><span>Тариф:</span> <strong class="crm-text-primary" x-text="licenseStatus?.tier?.name || '-'"></strong></div>
                         <div class="flex justify-between"><span>Статус:</span> <span :style="licenseStatus?.valid ? 'color:#4ade80' : 'color:#f87171'" x-text="licenseStatus?.valid ? 'Действительна' : 'Недействительна'"></span></div>
                         <div class="flex justify-between"><span>Срок:</span> <span x-text="licenseStatus?.tier?.expires_at ? new Date(licenseStatus.tier.expires_at).toLocaleDateString('ru-RU') : 'Бессрочно'"></span></div>
                         <div class="flex justify-between"><span>Пользователи:</span> <span x-text="(licenseStatus?.tier?.max_users ?? '∞') + ' макс'"></span></div>
@@ -726,30 +723,30 @@
                 </div>
 
                 <div class="crm-panel-block p-4">
-                    <div class="font-semibold mb-3" style="color: var(--lg-text-primary)">Запросить коммерческое предложение</div>
+                    <div class="font-semibold mb-3 crm-text-primary">Запросить коммерческое предложение</div>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Ваше имя</label>
-                            <input type="text" x-model="licenseRequestForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Ваше имя</label>
+                            <input type="text" x-model="licenseRequestForm.name" class="w-full px-4 py-3 crm-control-input text-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Email</label>
-                            <input type="email" x-model="licenseRequestForm.email" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Email</label>
+                            <input type="email" x-model="licenseRequestForm.email" class="w-full px-4 py-3 crm-control-input text-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Компания</label>
-                            <input type="text" x-model="licenseRequestForm.company" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Компания</label>
+                            <input type="text" x-model="licenseRequestForm.company" class="w-full px-4 py-3 crm-control-input text-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Интересующий тариф</label>
-                            <select x-model="licenseRequestForm.tier_requested" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm">
+                            <label class="block text-xs mb-1 crm-text-tertiary">Интересующий тариф</label>
+                            <select x-model="licenseRequestForm.tier_requested" class="w-full px-4 py-3 crm-control-input text-sm">
                                 <option value="pro">Pro</option>
                                 <option value="enterprise">Enterprise</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Сообщение</label>
-                            <textarea rows="3" x-model="licenseRequestForm.message" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm"></textarea>
+                            <label class="block text-xs mb-1 crm-text-tertiary">Сообщение</label>
+                            <textarea rows="3" x-model="licenseRequestForm.message" class="w-full px-4 py-3 crm-control-input text-sm"></textarea>
                         </div>
                         <div class="flex items-center justify-end gap-3">
                             <button class="crm-btn-primary text-sm" @click="sendLicenseRequest()" :disabled="licenseRequestSending">Отправить заявку</button>
@@ -763,22 +760,22 @@
             <div class="grid grid-cols-1 gap-4">
                 <div class="crm-panel-block p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="font-semibold" style="color: var(--lg-text-primary)">Профили виджетов записи</div>
+                        <div class="font-semibold crm-text-primary">Профили виджетов записи</div>
                         <button class="crm-btn-primary text-sm" @click="createNewProfile()">Новый профиль</button>
                     </div>
                     <div class="overflow-auto">
-                        <table class="w-full text-sm" style="min-width:600px">
+                        <table class="w-full text-sm crm-min-w-table">
                             <thead>
-                                <tr style="border-bottom:1px solid var(--lg-border)">
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Название</th>
-                                    <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Slug</th>
-                                    <th class="text-center py-2 px-3" style="color: var(--lg-text-secondary)">Активен</th>
-                                    <th class="text-right py-2 px-3" style="color: var(--lg-text-secondary)">Действия</th>
+                                <tr class="crm-border-bottom">
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Название</th>
+                                    <th class="text-left py-2 px-3 crm-text-secondary">Slug</th>
+                                    <th class="text-center py-2 px-3 crm-text-secondary">Активен</th>
+                                    <th class="text-right py-2 px-3 crm-text-secondary">Действия</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <template x-for="p in profiles" :key="p.id">
-                                    <tr style="border-bottom:1px solid var(--lg-border)">
+                                    <tr class="crm-border-bottom">
                                         <td class="py-2 px-3" x-text="p.name"></td>
                                         <td class="py-2 px-3" x-text="p.slug"></td>
                                         <td class="py-2 px-3 text-center">
@@ -796,34 +793,34 @@
                 </div>
 
                 <div class="crm-panel-block p-4" x-show="editingProfile">
-                    <div class="font-semibold mb-3" style="color: var(--lg-text-primary)">
+                    <div class="font-semibold mb-3 crm-text-primary">
                         <span x-text="editingProfile?.id ? 'Редактирование' : 'Новый профиль'"></span>
                     </div>
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Название</label>
-                            <input type="text" x-model="profileForm.name" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Название</label>
+                            <input type="text" x-model="profileForm.name" class="w-full px-4 py-3 crm-control-input text-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Slug (латиница)</label>
-                            <input type="text" x-model="profileForm.slug" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Slug (латиница)</label>
+                            <input type="text" x-model="profileForm.slug" class="w-full px-4 py-3 crm-control-input text-sm" />
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Режим отображения</label>
-                            <select x-model="profileForm.display_mode" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm">
+                            <label class="block text-xs mb-1 crm-text-tertiary">Режим отображения</label>
+                            <select x-model="profileForm.display_mode" class="w-full px-4 py-3 crm-control-input text-sm">
                                 <option value="floating">Плавающая кнопка</option>
                                 <option value="inline">Встроенный (inline)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs mb-1" style="color: var(--lg-text-tertiary)">Цвет бренда</label>
-                            <input type="color" x-model="profileForm.brand_color" class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" style="height:48px" />
+                            <label class="block text-xs mb-1 crm-text-tertiary">Цвет бренда</label>
+                            <input type="color" x-model="profileForm.brand_color" class="w-full px-4 py-3 crm-control-input text-sm" style="height:48px" />
                         </div>
-                        <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                        <label class="flex items-center gap-2 text-sm crm-text-secondary">
                             <input type="checkbox" x-model="profileForm.hide_branding" class="rounded" />
                             <span>Скрыть брендинг TaskFlow</span>
                         </label>
-                        <label class="flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                        <label class="flex items-center gap-2 text-sm crm-text-secondary">
                             <input type="checkbox" x-model="profileForm.require_email" class="rounded" />
                             <span>Email обязателен</span>
                         </label>
@@ -835,8 +832,8 @@
                 </div>
 
                 <div class="crm-panel-block p-4" x-show="generatedCode">
-                    <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Код для вставки</div>
-                    <textarea readonly class="w-full px-4 py-3 rounded-xl crm-control-input text-sm" style="font-family: ui-monospace, monospace; min-height:120px" x-text="generatedCode"></textarea>
+                    <div class="font-semibold mb-2 crm-text-primary">Код для вставки</div>
+                    <textarea readonly class="w-full px-4 py-3 crm-control-input text-sm" style="font-family: ui-monospace, monospace; min-height:120px" x-text="generatedCode"></textarea>
                     <div class="flex items-center justify-end gap-3 mt-3">
                         <button class="crm-btn-secondary text-sm" @click="copyCode()">Копировать</button>
                         <button class="crm-btn-secondary text-sm" @click="generatedCode = null">Закрыть</button>
@@ -845,9 +842,9 @@
 
                 <div class="crm-panel-block p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="font-semibold" style="color: var(--lg-text-primary)">Аналитика виджетов</div>
+                        <div class="font-semibold crm-text-primary">Аналитика виджетов</div>
                         <div class="flex items-center gap-2">
-                            <select x-model="widgetAnalyticsDays" @change="loadWidgetAnalytics()" class="px-3 py-2 rounded-xl crm-control-input text-sm">
+                            <select x-model="widgetAnalyticsDays" @change="loadWidgetAnalytics()" class="px-3 py-2 crm-control-input text-sm">
                                 <option value="7">7 дней</option>
                                 <option value="30">30 дней</option>
                                 <option value="90">90 дней</option>
@@ -855,28 +852,28 @@
                             <button class="crm-btn-secondary text-sm" @click="loadWidgetAnalytics()">Обновить</button>
                         </div>
                     </div>
-                    <div x-show="widgetAnalyticsLoading" class="text-sm py-4" style="color: var(--lg-text-secondary)">Загрузка…</div>
+                    <div x-show="widgetAnalyticsLoading" class="text-sm py-4 crm-text-secondary">Загрузка…</div>
                     <div x-show="!widgetAnalyticsLoading && widgetAnalytics">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                             <template x-for="item in (widgetAnalytics.summary || [])" :key="item.event">
                                 <div class="crm-panel-block p-3 text-center">
-                                    <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="item.cnt"></div>
-                                    <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="item.event === 'view' ? 'Просмотры' : (item.event === 'open' ? 'Открытия' : (item.event === 'submit' ? 'Отправки' : item.event))"></div>
+                                    <div class="crm-metric-value crm-text-primary" x-text="item.cnt"></div>
+                                    <div class="text-xs mt-1 crm-text-secondary" x-text="item.event === 'view' ? 'Просмотры' : (item.event === 'open' ? 'Открытия' : (item.event === 'submit' ? 'Отправки' : item.event))"></div>
                                 </div>
                             </template>
                         </div>
                         <div class="overflow-auto">
                             <table class="w-full text-sm" style="min-width:400px">
                                 <thead>
-                                    <tr style="border-bottom:1px solid var(--lg-border)">
-                                        <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Дата</th>
-                                        <th class="text-left py-2 px-3" style="color: var(--lg-text-secondary)">Событие</th>
-                                        <th class="text-right py-2 px-3" style="color: var(--lg-text-secondary)">Кол-во</th>
+                                    <tr class="crm-border-bottom">
+                                        <th class="text-left py-2 px-3 crm-text-secondary">Дата</th>
+                                        <th class="text-left py-2 px-3 crm-text-secondary">Событие</th>
+                                        <th class="text-right py-2 px-3 crm-text-secondary">Кол-во</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <template x-for="row in (widgetAnalytics.daily || [])" :key="row.date + '-' + row.event">
-                                        <tr style="border-bottom:1px solid var(--lg-border)">
+                                        <tr class="crm-border-bottom">
                                             <td class="py-2 px-3" x-text="row.date"></td>
                                             <td class="py-2 px-3" x-text="row.event === 'view' ? 'Просмотры' : (row.event === 'open' ? 'Открытия' : (row.event === 'submit' ? 'Отправки' : row.event))"></td>
                                             <td class="py-2 px-3 text-right font-medium" x-text="row.cnt"></td>

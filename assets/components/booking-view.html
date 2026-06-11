@@ -28,7 +28,7 @@
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
-                    <h2 class="text-2xl font-bold" style="color: var(--lg-text-primary)">Запись</h2>
+                    <h2 class="crm-screen-title crm-text-primary">Запись</h2>
                 </div>
             </div>
 
@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="mt-4 text-xs" style="color: var(--lg-text-tertiary)" x-show="bookingLastLoadedAt">
+        <div class="mt-4 text-xs crm-text-tertiary" x-show="bookingLastLoadedAt">
             Обновлено <span x-text="formatDateTime(bookingLastLoadedAt)"></span>
         </div>
     </div>
@@ -84,7 +84,7 @@
                                 <span class="crm-status-pill text-[11px]" :class="service.is_active ? 'crm-status-pill-success' : 'crm-status-pill-muted'" x-text="service.is_active ? 'Активна' : 'Выключена'"></span>
                             </div>
                             <div class="mt-1 text-xs crm-text-tertiary" x-text="service.description || 'Без описания'"></div>
-                            <div class="mt-2 flex flex-wrap gap-2 text-xs" style="color: var(--lg-text-secondary)">
+                            <div class="mt-2 flex flex-wrap gap-2 text-xs crm-text-secondary">
                                 <span class="crm-inline-badge">Длительность: <span class="ml-1" x-text="service.duration_minutes"></span> мин</span>
                                 <span class="crm-inline-badge">Цена: <span class="ml-1" x-text="service.price_rub"></span> ₽</span>
                                 <template x-if="service.discount_type && service.discount_type !== 'none'">
@@ -118,8 +118,8 @@
         <div class="liquid-glass-pro rounded-3xl p-5 w-full max-w-2xl">
             <div class="flex items-start justify-between gap-3">
                 <div>
-                    <div class="text-lg font-bold" style="color: var(--lg-text-primary)" x-text="bookingServiceForm.id ? 'Редактирование услуги' : 'Новая услуга'"></div>
-                    <div class="text-sm" style="color: var(--lg-text-secondary)">Длительность обязательна. Валюта: RUB.</div>
+                    <div class="text-lg font-bold crm-text-primary" x-text="bookingServiceForm.id ? 'Редактирование услуги' : 'Новая услуга'"></div>
+                    <div class="text-sm crm-text-secondary">Длительность обязательна. Валюта: RUB.</div>
                 </div>
                 <button type="button" class="crm-btn-secondary" @click="bookingServiceModalOpen = false">Закрыть</button>
             </div>
@@ -127,12 +127,12 @@
             <form class="mt-4 space-y-4" @submit.prevent="saveBookingService()">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Название</label>
-                        <input type="text" x-model="bookingServiceForm.type_name" required class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Название услуги">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Название</label>
+                        <input type="text" x-model="bookingServiceForm.type_name" required class="w-full px-4 py-3 ios-glass-input" placeholder="Название услуги">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Иконка</label>
-                        <select x-model="bookingServiceForm.icon" class="w-full px-4 py-3 rounded-2xl crm-control-select">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Иконка</label>
+                        <select x-model="bookingServiceForm.icon" class="w-full px-4 py-3 crm-control-select">
                             <option value="calendar">Календарь</option>
                             <option value="star">Звезда</option>
                             <option value="tool">Инструменты</option>
@@ -145,46 +145,46 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Описание</label>
-                    <textarea rows="3" x-model="bookingServiceForm.description" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Короткое описание"></textarea>
+                    <label class="block text-sm font-semibold mb-2 crm-text-secondary">Описание</label>
+                    <textarea rows="3" x-model="bookingServiceForm.description" class="w-full px-4 py-3 ios-glass-input" placeholder="Короткое описание"></textarea>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Длительность (мин)</label>
-                        <input type="number" min="1" step="1" x-model="bookingServiceForm.duration_minutes" required class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Длительность (мин)</label>
+                        <input type="number" min="1" step="1" x-model="bookingServiceForm.duration_minutes" required class="w-full px-4 py-3 ios-glass-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Цена (₽)</label>
-                        <input type="number" min="0" step="0.01" x-model="bookingServiceForm.price_rub" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Цена (₽)</label>
+                        <input type="number" min="0" step="0.01" x-model="bookingServiceForm.price_rub" class="w-full px-4 py-3 ios-glass-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Порядок</label>
-                        <input type="number" step="1" x-model="bookingServiceForm.sort_order" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Порядок</label>
+                        <input type="number" step="1" x-model="bookingServiceForm.sort_order" class="w-full px-4 py-3 ios-glass-input">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Скидка</label>
-                        <select x-model="bookingServiceForm.discount_type" class="w-full px-4 py-3 rounded-2xl crm-control-select">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Скидка</label>
+                        <select x-model="bookingServiceForm.discount_type" class="w-full px-4 py-3 crm-control-select">
                             <option value="none">Нет</option>
                             <option value="percent">% (процент)</option>
                             <option value="amount">₽ (сумма)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Значение</label>
-                        <input type="number" min="0" step="0.01" x-model="bookingServiceForm.discount_value" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Значение</label>
+                        <input type="number" min="0" step="0.01" x-model="bookingServiceForm.discount_value" class="w-full px-4 py-3 ios-glass-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Промо-лейбл</label>
-                        <input type="text" maxlength="120" x-model="bookingServiceForm.promo_label" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Например: -10% до конца недели">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Промо-лейбл</label>
+                        <input type="text" maxlength="120" x-model="bookingServiceForm.promo_label" class="w-full px-4 py-3 ios-glass-input" placeholder="Например: -10% до конца недели">
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between gap-3">
-                    <label class="inline-flex items-center gap-2 text-sm" style="color: var(--lg-text-secondary)">
+                    <label class="inline-flex items-center gap-2 text-sm crm-text-secondary">
                         <input type="checkbox" x-model="bookingServiceForm.is_active" class="rounded">
                         Активна
                     </label>
@@ -203,7 +203,7 @@
                 <div class="crm-section-head__text">По выбранному дню: строки = услуги, колонки = время. Показывает заявки (pending/confirmed).</div>
             </div>
             <div class="crm-section-head__meta flex items-center gap-2">
-                <input type="date" x-model="bookingScheduleDate" class="px-4 py-2 rounded-2xl ios-glass-input" />
+                <input type="date" x-model="bookingScheduleDate" class="px-4 py-2 ios-glass-input" />
                 <button type="button" class="crm-btn-secondary text-sm" @click="setBookingScheduleToday()">Сегодня</button>
             </div>
         </div>
@@ -219,8 +219,8 @@
                     <template x-for="service in (bookingServiceTypes || []).filter(s => s && (s.is_active == null || s.is_active))" :key="'sched-service-' + service.id">
                         <template>
                             <div class="sticky left-0 z-10 px-4 py-3 text-sm" style="background: color-mix(in oklab, var(--lg-glass-bg) 82%, transparent); border-top: 1px solid var(--lg-border); border-right: 1px solid var(--lg-border)">
-                                <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="service.type_name"></div>
-                                <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="(service.duration_minutes ? (service.duration_minutes + ' мин') : '')"></div>
+                                <div class="font-semibold crm-text-primary" x-text="service.type_name"></div>
+                                <div class="text-xs crm-text-tertiary" x-text="(service.duration_minutes ? (service.duration_minutes + ' мин') : '')"></div>
                             </div>
                             <template x-for="slot in bookingScheduleSlots" :key="'sched-cell-' + service.id + '-' + slot">
                                 <div class="px-2 py-2" style="border-top: 1px solid var(--lg-border); border-left: 1px solid var(--lg-border)">
@@ -243,7 +243,7 @@
             </div>
         </div>
 
-        <div class="mt-3 text-xs" style="color: var(--lg-text-tertiary)">
+        <div class="mt-3 text-xs crm-text-tertiary">
             <span x-show="bookingScheduleHint" x-text="bookingScheduleHint"></span>
         </div>
     </div>
@@ -302,38 +302,38 @@
                 <form @submit.prevent="submitBookingRequest()" class="mt-4 space-y-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-name">Имя клиента</label>
-                            <input id="booking-client-name" type="text" x-model="bookingForm.client_name" required class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Иван Иванов">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary" for="booking-client-name">Имя клиента</label>
+                            <input id="booking-client-name" type="text" x-model="bookingForm.client_name" required class="w-full px-4 py-3 ios-glass-input" placeholder="Иван Иванов">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-company">Компания</label>
-                            <input id="booking-client-company" type="text" x-model="bookingForm.client_company" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Название компании">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary" for="booking-client-company">Компания</label>
+                            <input id="booking-client-company" type="text" x-model="bookingForm.client_company" class="w-full px-4 py-3 ios-glass-input" placeholder="Название компании">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-email">Email</label>
-                            <input id="booking-client-email" type="email" x-model="bookingForm.client_email" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="ivan@example.com">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary" for="booking-client-email">Email</label>
+                            <input id="booking-client-email" type="email" x-model="bookingForm.client_email" class="w-full px-4 py-3 ios-glass-input" placeholder="ivan@example.com">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-client-phone">Телефон</label>
-                            <input id="booking-client-phone" type="tel" x-model="bookingForm.client_phone" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="+7 (999) 123-45-67">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary" for="booking-client-phone">Телефон</label>
+                            <input id="booking-client-phone" type="tel" x-model="bookingForm.client_phone" class="w-full px-4 py-3 ios-glass-input" placeholder="+7 (999) 123-45-67">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-preferred-datetime">Желаемое время</label>
-                        <input id="booking-preferred-datetime" type="datetime-local" x-model="bookingForm.preferred_datetime" class="w-full px-4 py-3 rounded-2xl ios-glass-input">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary" for="booking-preferred-datetime">Желаемое время</label>
+                        <input id="booking-preferred-datetime" type="datetime-local" x-model="bookingForm.preferred_datetime" class="w-full px-4 py-3 ios-glass-input">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)" for="booking-notes">Комментарий</label>
-                        <textarea id="booking-notes" x-model="bookingForm.notes" rows="4" class="w-full px-4 py-3 rounded-2xl ios-glass-input" placeholder="Кратко опишите пожелания клиента или детали записи"></textarea>
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary" for="booking-notes">Комментарий</label>
+                        <textarea id="booking-notes" x-model="bookingForm.notes" rows="4" class="w-full px-4 py-3 ios-glass-input" placeholder="Кратко опишите пожелания клиента или детали записи"></textarea>
                     </div>
 
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div class="text-xs" style="color: var(--lg-text-tertiary)">
+                        <div class="text-xs crm-text-tertiary">
                             Для отправки укажите имя, телефон, услуги и желаемое время.
                         </div>
                         <button type="submit" :disabled="bookingSubmitting || bookingLoading || !bookingServiceTypes.length" class="crm-btn-primary crm-btn-lg disabled:opacity-50 disabled:cursor-not-allowed">
@@ -378,7 +378,7 @@
                                 <div class="min-w-0">
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="font-semibold crm-text-primary" x-text="request.request_number"></span>
-                                        <span class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(request.created_at)"></span>
+                                        <span class="text-xs crm-text-tertiary" x-text="formatDateTime(request.created_at)"></span>
                                     </div>
                                     <div class="mt-1 text-sm crm-text-secondary" x-text="request.client_name"></div>
                                     <div class="mt-1 text-xs crm-text-tertiary" x-text="request.service_summary || request.service_type_name"></div>
@@ -387,7 +387,7 @@
                                     <span x-text="getBookingStatusLabel(request.status)"></span>
                                 </span>
                             </div>
-                            <div class="mt-3 flex items-center justify-between gap-3 text-xs" style="color: var(--lg-text-tertiary)">
+                            <div class="mt-3 flex items-center justify-between gap-3 text-xs crm-text-tertiary">
                                 <span x-text="request.client_phone || request.client_email || 'Без контакта'"></span>
                                 <span x-text="request.preferred_datetime ? formatDateTime(request.preferred_datetime) : 'Без времени'"></span>
                             </div>
@@ -428,35 +428,35 @@
 
                             <div class="mt-4 grid grid-cols-2 gap-3 text-xs">
                                 <div>
-                                    <div style="color: var(--lg-text-tertiary)">Телефон</div>
+                                    <div class="crm-text-tertiary">Телефон</div>
                                     <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().client_phone || '—'"></div>
                                 </div>
                                 <div>
-                                    <div style="color: var(--lg-text-tertiary)">Email</div>
+                                    <div class="crm-text-tertiary">Email</div>
                                     <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().client_email || '—'"></div>
                                 </div>
                                 <div>
-                                    <div style="color: var(--lg-text-tertiary)">Компания</div>
+                                    <div class="crm-text-tertiary">Компания</div>
                                     <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().client_company || '—'"></div>
                                 </div>
                                 <div>
-                                    <div style="color: var(--lg-text-tertiary)">Желаемое время</div>
+                                    <div class="crm-text-tertiary">Желаемое время</div>
                                     <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().preferred_datetime ? formatDateTime(getSelectedBookingRequest().preferred_datetime) : '—'"></div>
                                 </div>
                             </div>
 
-                            <div class="mt-4 text-sm" style="color: var(--lg-text-secondary)">
-                                <div class="text-xs mb-1" style="color: var(--lg-text-tertiary)">Комментарий</div>
+                            <div class="mt-4 text-sm crm-text-secondary">
+                                <div class="text-xs mb-1 crm-text-tertiary">Комментарий</div>
                                 <div x-text="getSelectedBookingRequest().notes || 'Без комментария'"></div>
                             </div>
 
                             <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                                 <div class="crm-panel-block rounded-xl p-3">
-                                    <div style="color: var(--lg-text-tertiary)">Создана</div>
+                                    <div class="crm-text-tertiary">Создана</div>
                                     <div class="mt-1 crm-text-primary" x-text="formatDateTime(getSelectedBookingRequest().created_at)"></div>
                                 </div>
                                 <div class="crm-panel-block rounded-xl p-3">
-                                    <div style="color: var(--lg-text-tertiary)">Обработана</div>
+                                    <div class="crm-text-tertiary">Обработана</div>
                                     <div class="mt-1 crm-text-primary" x-text="getSelectedBookingRequest().reviewed_at ? formatDateTime(getSelectedBookingRequest().reviewed_at) : '—'"></div>
                                 </div>
                             </div>

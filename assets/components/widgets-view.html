@@ -9,19 +9,19 @@
                         </svg>
                     </div>
                     <div class="crm-section-head__content">
-                        <h1 class="crm-section-head__title" style="color: var(--lg-text-primary)">Виджеты сайта</h1>
-                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Два понятных сценария: кнопка с чатом или встроенная форма.</p>
+                        <h1 class="crm-section-head__title crm-text-primary">Виджеты сайта</h1>
+                        <p class="crm-section-head__text crm-text-secondary">Два понятных сценария: кнопка с чатом или встроенная форма.</p>
                     </div>
                 </div>
-                <p class="text-sm leading-6" style="color: var(--lg-text-tertiary)">
+                <p class="text-sm leading-6 crm-text-tertiary">
                     Оставлены только основные параметры публикации: профиль, базовые тексты, брендирование и готовые коды вставки.
                 </p>
             </div>
 
             <div class="crm-widget-note crm-toolbar-actions rounded-2xl p-4 max-w-md">
-                <div class="text-xs font-semibold uppercase tracking-[0.16em] mb-2" style="color: var(--lg-text-tertiary)">Активный профиль</div>
-                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-primary)" x-text="getSelectedSiteWidgetProfileName()"></div>
-                <div class="text-sm" style="color: var(--lg-text-secondary)">
+                <div class="text-xs font-semibold uppercase tracking-[0.16em] mb-2 crm-text-tertiary">Активный профиль</div>
+                <div class="text-sm font-semibold mb-1 crm-text-primary" x-text="getSelectedSiteWidgetProfileName()"></div>
+                <div class="text-sm crm-text-secondary">
                     Один профиль управляет и плавающим чатом, и формой заявки.
                 </div>
             </div>
@@ -38,8 +38,8 @@
                         </svg>
                     </div>
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title" style="color: var(--lg-text-primary)">Основные настройки</h2>
-                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Общий профиль, тексты и бренд для всех публичных сценариев.</p>
+                        <h2 class="crm-section-head__title crm-text-primary">Основные настройки</h2>
+                        <p class="crm-section-head__text crm-text-secondary">Общий профиль, тексты и бренд для всех публичных сценариев.</p>
                     </div>
                 </div>
 
@@ -47,21 +47,21 @@
                     <div class="crm-table-toolbar crm-table-toolbar--compact">
                         <div class="crm-section-head__content">
                             <div class="crm-section-head__title">Профили</div>
-                            <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Отдельные профили помогают держать разные сайты и бренды без лишних переключений.</p>
+                            <p class="crm-section-head__text crm-text-secondary">Отдельные профили помогают держать разные сайты и бренды без лишних переключений.</p>
                         </div>
                         <div class="crm-section-head__meta crm-panel-muted rounded-2xl px-4 py-3 text-sm">
-                            <div class="font-semibold" style="color: var(--lg-text-primary)">Статус</div>
-                            <div style="color: var(--lg-text-secondary)" x-text="getSelectedSiteWidgetProfileSnippetLabel()"></div>
+                            <div class="font-semibold crm-text-primary">Статус</div>
+                            <div class="crm-text-secondary" x-text="getSelectedSiteWidgetProfileSnippetLabel()"></div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-[1fr_220px_auto] gap-3" x-show="siteWidgetsCanManage">
-                        <input x-model="siteWidgetsNewProfileName" type="text" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Основной сайт">
-                        <input x-model="siteWidgetsNewProfileSlug" type="text" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="slug необязателен">
+                        <input x-model="siteWidgetsNewProfileName" type="text" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Основной сайт">
+                        <input x-model="siteWidgetsNewProfileSlug" type="text" class="w-full px-4 py-3 crm-control-input" placeholder="slug необязателен">
                         <button @click="createSiteWidgetProfile()" class="crm-btn-primary whitespace-nowrap">Создать профиль</button>
                     </div>
 
-                    <div x-show="!siteWidgetsCanManage" class="crm-panel-muted rounded-2xl px-4 py-3 text-sm" style="color: var(--lg-text-secondary)">
+                    <div x-show="!siteWidgetsCanManage" class="crm-panel-muted rounded-2xl px-4 py-3 text-sm crm-text-secondary">
                         Просмотр доступен всем авторизованным пользователям, изменение профилей и сохранение настроек доступны только пользователям с `admin.full`.
                     </div>
 
@@ -76,10 +76,10 @@
                                         @click="selectSiteWidgetProfile(profile.id)"
                                         class="min-w-0 flex-1 text-left">
                                         <div class="flex flex-wrap items-center gap-2 mb-1">
-                                            <span class="font-semibold" style="color: var(--lg-text-primary)" x-text="profile.name"></span>
+                                            <span class="font-semibold crm-text-primary" x-text="profile.name"></span>
                                             <span class="crm-widget-profile-badge" x-show="profile.is_active">Активный</span>
                                         </div>
-                                        <div class="text-xs uppercase tracking-[0.14em]" style="color: var(--lg-text-tertiary)" x-text="profile.slug"></div>
+                                        <div class="text-xs uppercase tracking-[0.14em] crm-text-tertiary" x-text="profile.slug"></div>
                                     </button>
                                     <div class="flex flex-wrap gap-2">
                                         <button type="button" @click="selectSiteWidgetProfile(profile.id)" class="crm-btn-secondary text-sm">Открыть</button>
@@ -100,17 +100,17 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">API base</label>
-                        <input x-model="siteWidgetsConfig.apiBase" type="text" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="https://example.com/api">
-                        <p class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Используется для заявок, чата и загрузки публичной конфигурации.</p>
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">API base</label>
+                        <input x-model="siteWidgetsConfig.apiBase" type="text" class="w-full px-4 py-3 crm-control-input" placeholder="https://example.com/api">
+                        <p class="mt-2 text-xs crm-text-tertiary">Используется для заявок, чата и загрузки публичной конфигурации.</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Положение кнопки</label>
-                        <select x-model="siteWidgetsConfig.position" class="w-full px-4 py-3 rounded-xl crm-control-select">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Положение кнопки</label>
+                        <select x-model="siteWidgetsConfig.position" class="w-full px-4 py-3 crm-control-select">
                             <option value="right">Справа</option>
                             <option value="left">Слева</option>
                         </select>
-                        <p class="mt-2 text-xs" style="color: var(--lg-text-tertiary)">Нужно только для плавающего chat-widget.</p>
+                        <p class="mt-2 text-xs crm-text-tertiary">Нужно только для плавающего chat-widget.</p>
                     </div>
                 </div>
 
@@ -118,54 +118,54 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
-                        <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2" style="color: var(--lg-text-tertiary)">Сценарий 1</div>
-                        <div class="font-semibold mb-1" style="color: var(--lg-text-primary)">Кнопка и чат</div>
-                        <p class="text-sm" style="color: var(--lg-text-secondary)">Подходит для большинства сайтов: компактная кнопка, внутри - чат и форма обращения.</p>
+                        <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2 crm-text-tertiary">Сценарий 1</div>
+                        <div class="font-semibold mb-1 crm-text-primary">Кнопка и чат</div>
+                        <p class="text-sm crm-text-secondary">Подходит для большинства сайтов: компактная кнопка, внутри - чат и форма обращения.</p>
                     </div>
                     <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
-                        <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2" style="color: var(--lg-text-tertiary)">Сценарий 2</div>
-                        <div class="font-semibold mb-1" style="color: var(--lg-text-primary)">Встроенная форма</div>
-                        <p class="text-sm" style="color: var(--lg-text-secondary)">Нужна, когда на странице уже предусмотрен отдельный блок для входящего обращения.</p>
+                        <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2 crm-text-tertiary">Сценарий 2</div>
+                        <div class="font-semibold mb-1 crm-text-primary">Встроенная форма</div>
+                        <p class="text-sm crm-text-secondary">Нужна, когда на странице уже предусмотрен отдельный блок для входящего обращения.</p>
                     </div>
                 </div>
 
                 <div class="space-y-4">
                     <div class="crm-section-head">
                         <div class="crm-section-head__content">
-                            <h3 class="crm-section-head__title" style="color: var(--lg-text-primary)">Кнопка виджета</h3>
-                            <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Плавающий сценарий на `site-widgets.js`: открывает чат и форму прямо на сайте, без `iframe`.</p>
+                            <h3 class="crm-section-head__title crm-text-primary">Кнопка виджета</h3>
+                            <p class="crm-section-head__text crm-text-secondary">Плавающий сценарий на `site-widgets.js`: открывает чат и форму прямо на сайте, без `iframe`.</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Иконка или короткий текст</label>
-                            <input x-model="siteWidgetsConfig.brandButtonText" type="text" maxlength="24" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="💬">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary">Иконка или короткий текст</label>
+                            <input x-model="siteWidgetsConfig.brandButtonText" type="text" maxlength="24" class="w-full px-4 py-3 crm-control-input" placeholder="💬">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Основной цвет</label>
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary">Основной цвет</label>
                             <input x-model="siteWidgetsConfig.brandColor" type="color" class="w-full crm-control-input px-2 py-2 crm-widget-color-input">
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Подпись кнопки</label>
-                        <input x-model="siteWidgetsConfig.contactLabel" type="text" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Написать в TaskFlow">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Подпись кнопки</label>
+                        <input x-model="siteWidgetsConfig.contactLabel" type="text" class="w-full px-4 py-3 crm-control-input" placeholder="Написать в TaskFlow">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Короткая подводка</label>
-                        <textarea x-model="siteWidgetsConfig.contactDescription" rows="2" class="w-full px-4 py-3 rounded-xl crm-control-textarea !h-auto" placeholder="Ответим в чате и при необходимости оформим обращение."></textarea>
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Короткая подводка</label>
+                        <textarea x-model="siteWidgetsConfig.contactDescription" rows="2" class="w-full px-4 py-3 crm-control-textarea !h-auto" placeholder="Ответим в чате и при необходимости оформим обращение."></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Заголовок окна</label>
-                            <input x-model="siteWidgetsConfig.chatTitle" type="text" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Чат с командой">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary">Заголовок окна</label>
+                            <input x-model="siteWidgetsConfig.chatTitle" type="text" class="w-full px-4 py-3 crm-control-input" placeholder="Чат с командой">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Короткий статус</label>
-                            <input x-model="siteWidgetsConfig.chatDescription" type="text" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Обычно отвечаем в рабочее время">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary">Короткий статус</label>
+                            <input x-model="siteWidgetsConfig.chatDescription" type="text" class="w-full px-4 py-3 crm-control-input" placeholder="Обычно отвечаем в рабочее время">
                         </div>
                     </div>
                 </div>
@@ -175,29 +175,29 @@
                 <div class="space-y-4">
                     <div class="crm-section-head">
                         <div class="crm-section-head__content">
-                            <h3 class="crm-section-head__title" style="color: var(--lg-text-primary)">Виджет с полями</h3>
-                            <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Отдельная встроенная форма для страниц, где не нужен плавающий чат.</p>
+                            <h3 class="crm-section-head__title crm-text-primary">Виджет с полями</h3>
+                            <p class="crm-section-head__text crm-text-secondary">Отдельная встроенная форма для страниц, где не нужен плавающий чат.</p>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Заголовок формы</label>
-                        <input x-model="siteWidgetsConfig.brandFormTitle" type="text" maxlength="120" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Оставить обращение">
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Заголовок формы</label>
+                        <input x-model="siteWidgetsConfig.brandFormTitle" type="text" maxlength="120" class="w-full px-4 py-3 crm-control-input" placeholder="Оставить обращение">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Описание формы</label>
-                        <textarea x-model="siteWidgetsConfig.brandFormDescription" rows="2" class="w-full px-4 py-3 rounded-xl crm-control-textarea !h-auto" placeholder="Коротко опишите вопрос, и мы зарегистрируем обращение."></textarea>
+                        <label class="block text-sm font-semibold mb-2 crm-text-secondary">Описание формы</label>
+                        <textarea x-model="siteWidgetsConfig.brandFormDescription" rows="2" class="w-full px-4 py-3 crm-control-textarea !h-auto" placeholder="Коротко опишите вопрос, и мы зарегистрируем обращение."></textarea>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Ширина формы</label>
-                            <input x-model="siteWidgetsConfig.formWidth" type="number" min="320" step="10" class="w-full px-4 py-3 rounded-xl crm-control-input">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary">Ширина формы</label>
+                            <input x-model="siteWidgetsConfig.formWidth" type="number" min="320" step="10" class="w-full px-4 py-3 crm-control-input">
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold mb-2" style="color: var(--lg-text-secondary)">Высота формы</label>
-                            <input x-model="siteWidgetsConfig.formHeight" type="number" min="480" step="10" class="w-full px-4 py-3 rounded-xl crm-control-input">
+                            <label class="block text-sm font-semibold mb-2 crm-text-secondary">Высота формы</label>
+                            <input x-model="siteWidgetsConfig.formHeight" type="number" min="480" step="10" class="w-full px-4 py-3 crm-control-input">
                         </div>
                     </div>
                 </div>
@@ -217,16 +217,16 @@
             <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title" style="color: var(--lg-text-primary)">Кнопка-виджет</h2>
-                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Плавающая кнопка открывает интерфейс сайта в фирменном стиле.</p>
+                        <h2 class="crm-section-head__title crm-text-primary">Кнопка-виджет</h2>
+                        <p class="crm-section-head__text crm-text-secondary">Плавающая кнопка открывает интерфейс сайта в фирменном стиле.</p>
                     </div>
                     <div class="crm-section-head__meta">
                         <span class="crm-inline-badge" x-text="getSelectedSiteWidgetProfileName()"></span>
                     </div>
                 </div>
 
-                <div class="crm-panel-muted rounded-2xl px-4 py-3 text-sm" style="color: var(--lg-text-secondary)">
-                    Профиль для вставки: <span class="font-semibold" style="color: var(--lg-text-primary)" x-text="getSelectedSiteWidgetProfileName()"></span>
+                <div class="crm-panel-muted rounded-2xl px-4 py-3 text-sm crm-text-secondary">
+                    Профиль для вставки: <span class="font-semibold crm-text-primary" x-text="getSelectedSiteWidgetProfileName()"></span>
                 </div>
 
                 <pre class="crm-code-block" x-text="getSiteWidgetScriptCode()"></pre>
@@ -240,7 +240,7 @@
                     </button>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-panel-muted text-sm" style="color: var(--lg-text-secondary)">
+                <div class="rounded-2xl p-4 crm-panel-muted text-sm crm-text-secondary">
                     Подходит для подключения в `head` или перед `&lt;/body&gt;`.
                 </div>
             </div>
@@ -248,8 +248,8 @@
             <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title" style="color: var(--lg-text-primary)">Встраиваемая форма</h2>
-                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Отдельная форма для страниц с выделенным местом под заявку.</p>
+                        <h2 class="crm-section-head__title crm-text-primary">Встраиваемая форма</h2>
+                        <p class="crm-section-head__text crm-text-secondary">Отдельная форма для страниц с выделенным местом под заявку.</p>
                     </div>
                 </div>
 
@@ -264,7 +264,7 @@
                     </button>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-panel-muted text-sm" style="color: var(--lg-text-secondary)">
+                <div class="rounded-2xl p-4 crm-panel-muted text-sm crm-text-secondary">
                     Удобно для лендингов, контактных секций и внутренних страниц.
                 </div>
             </div>
@@ -272,8 +272,8 @@
             <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title" style="color: var(--lg-text-primary)">Виджет «Запись»</h2>
-                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Плавающая кнопка с записью на услуги (без мастеров). Заявка создается со статусом ожидания и требует подтверждения в CRM.</p>
+                        <h2 class="crm-section-head__title crm-text-primary">Виджет «Запись»</h2>
+                        <p class="crm-section-head__text crm-text-secondary">Плавающая кнопка с записью на услуги (без мастеров). Заявка создается со статусом ожидания и требует подтверждения в CRM.</p>
                     </div>
                 </div>
 
@@ -288,7 +288,7 @@
                     </button>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-panel-muted text-sm" style="color: var(--lg-text-secondary)">
+                <div class="rounded-2xl p-4 crm-panel-muted text-sm crm-text-secondary">
                     Слот удерживается на 30 минут, пока заявка ожидает подтверждения.
                 </div>
             </div>
@@ -296,18 +296,18 @@
             <div class="liquid-glass-pro p-5 rounded-3xl crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title" style="color: var(--lg-text-primary)">Что настраивается</h2>
-                        <p class="crm-section-head__text" style="color: var(--lg-text-secondary)">Быстрый срез по двум публичным сценариям без отдельного редизайна экрана.</p>
+                        <h2 class="crm-section-head__title crm-text-primary">Что настраивается</h2>
+                        <p class="crm-section-head__text crm-text-secondary">Быстрый срез по двум публичным сценариям без отдельного редизайна экрана.</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
-                        <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Кнопка и чат</div>
-                        <p style="color: var(--lg-text-secondary)">Позиция, тексты, заголовок окна и общий визуальный стиль.</p>
+                        <div class="font-semibold mb-2 crm-text-primary">Кнопка и чат</div>
+                        <p class="crm-text-secondary">Позиция, тексты, заголовок окна и общий визуальный стиль.</p>
                     </div>
                     <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
-                        <div class="font-semibold mb-2" style="color: var(--lg-text-primary)">Форма заявки</div>
-                        <p style="color: var(--lg-text-secondary)">Заголовок, краткое описание и размеры iframe-вставки.</p>
+                        <div class="font-semibold mb-2 crm-text-primary">Форма заявки</div>
+                        <p class="crm-text-secondary">Заголовок, краткое описание и размеры iframe-вставки.</p>
                     </div>
                 </div>
             </div>

@@ -23,9 +23,9 @@
       </div>
     </div>
 
-    <div class="mt-4 rounded-2xl p-4" style="border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)" x-show="typeof window.Chart === 'undefined'">
+    <div class="mt-4 rounded-2xl p-4 crm-border-warn" x-show="typeof window.Chart === 'undefined'">
       <div class="text-sm font-semibold" style="color:#fde68a">График отключён</div>
-      <div class="text-xs mt-1" style="color: var(--lg-text-secondary)">
+      <div class="text-xs mt-1 crm-text-secondary">
         Не подключена библиотека Chart.js, поэтому месячная диаграмма не будет отображаться. Таблица заказов и аналитика при этом работают.
       </div>
     </div>
@@ -175,7 +175,7 @@
                   <td class="px-4 py-3">
                     <span class="px-2 py-1 rounded-xl text-xs" style="border:1px solid var(--lg-border); color:var(--lg-text-secondary)" x-text="order.order_status || '—'"></span>
                   </td>
-                  <td class="px-4 py-3 text-sm" style="color: var(--lg-text-secondary)">
+                  <td class="px-4 py-3 text-sm crm-text-secondary">
                     <span x-text="(order.items_count || 0) + ' поз.'"></span>
                     <span class="crm-ui-faint" x-text="' • ' + (order.total_items_qty || 0) + ' шт.'"></span>
                   </td>

@@ -8,7 +8,7 @@
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
-                    <h2 class="text-2xl font-bold" style="color: var(--lg-text-primary)">Руководитель</h2>
+                    <h2 class="crm-screen-title crm-text-primary">Руководитель</h2>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@
             <div class="crm-toolbar-main">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #3B82F6 20%, var(--lg-glass-bg))">
-                        <svg class="w-4 h-4" style="color: #3B82F6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <svg class="w-4 h-4 crm-text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     </div>
                     <div>
                         <div class="crm-title">CRM показатели</div>
@@ -67,16 +67,16 @@
         </div>
         <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="rounded-2xl p-4" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
-                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Клиентов</div>
-                <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.crm?.clients || 0"></div>
+                <div class="text-xs mb-2 crm-text-tertiary">Клиентов</div>
+                <div class="crm-metric-value crm-text-primary" x-text="leaderOverview?.crm?.clients || 0"></div>
             </div>
             <div class="rounded-2xl p-4" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
-                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Сумма в воронке</div>
-                <div class="text-2xl font-bold" style="color: var(--lg-text-primary)" x-text="formatMoney(leaderOverview?.crm?.pipeline_sum)"></div>
+                <div class="text-xs mb-2 crm-text-tertiary">Сумма в воронке</div>
+                <div class="crm-metric-value crm-text-primary" x-text="formatMoney(leaderOverview?.crm?.pipeline_sum)"></div>
             </div>
             <div class="rounded-2xl p-4" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
-                <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">Win rate</div>
-                <div class="text-2xl font-bold" style="color: var(--lg-success)"><span x-text="leaderOverview?.crm?.win_rate || 0"></span>%</div>
+                <div class="text-xs mb-2 crm-text-tertiary">Win rate</div>
+                <div class="crm-metric-value crm-text-success"><span x-text="leaderOverview?.crm?.win_rate || 0"></span>%</div>
             </div>
         </div>
     </div>
@@ -86,34 +86,34 @@
         <div class="liquid-glass-pro rounded-3xl p-5">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #10B981 20%, var(--lg-glass-bg))">
-                    <svg class="w-5 h-5" style="color: #10B981" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <svg class="w-5 h-5 crm-text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">На смене</div>
+                <div class="text-sm font-semibold crm-text-secondary">На смене</div>
             </div>
-            <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.on_shift?.length || 0"></div>
-            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Сотрудников работает сейчас</div>
+            <div class="text-3xl font-bold crm-text-primary" x-text="leaderOverview?.on_shift?.length || 0"></div>
+            <div class="text-xs mt-2 crm-text-tertiary">Сотрудников работает сейчас</div>
         </div>
 
         <div class="liquid-glass-pro rounded-3xl p-5">
             <div class="flex items-center gap-3 mb-3">
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #3B82F6 20%, var(--lg-glass-bg))">
-                    <svg class="w-5 h-5" style="color: #3B82F6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <svg class="w-5 h-5 crm-text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                 </div>
-                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">В работе</div>
+                <div class="text-sm font-semibold crm-text-secondary">В работе</div>
             </div>
-            <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.tasks_in_progress || 0"></div>
-            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Задач в работе</div>
+            <div class="text-3xl font-bold crm-text-primary" x-text="leaderOverview?.tasks_in_progress || 0"></div>
+            <div class="text-xs mt-2 crm-text-tertiary">Задач в работе</div>
         </div>
 
         <div class="liquid-glass-pro rounded-3xl p-5">
             <div class="flex items-center gap-3 mb-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
-                    <svg class="w-5 h-5" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center crm-bg-error-soft">
+                    <svg class="w-5 h-5 crm-text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 </div>
-                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">Горят</div>
+                <div class="text-sm font-semibold crm-text-secondary">Горят</div>
             </div>
-            <div class="text-3xl font-bold" style="color: #EF4444" x-text="leaderOverview?.tasks_burning?.length || 0"></div>
-            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Срочных задач</div>
+            <div class="text-3xl font-bold crm-text-error" x-text="leaderOverview?.tasks_burning?.length || 0"></div>
+            <div class="text-xs mt-2 crm-text-tertiary">Срочных задач</div>
         </div>
 
         <div class="liquid-glass-pro rounded-3xl p-5">
@@ -121,10 +121,10 @@
                 <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #8B5CF6 20%, var(--lg-glass-bg))">
                     <svg class="w-5 h-5" style="color: #8B5CF6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                 </div>
-                <div class="text-sm font-semibold" style="color: var(--lg-text-secondary)">Проектов</div>
+                <div class="text-sm font-semibold crm-text-secondary">Проектов</div>
             </div>
-            <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="leaderOverview?.projects?.length || 0"></div>
-            <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Активных проектов</div>
+            <div class="text-3xl font-bold crm-text-primary" x-text="leaderOverview?.projects?.length || 0"></div>
+            <div class="text-xs mt-2 crm-text-tertiary">Активных проектов</div>
         </div>
     </div>
 
@@ -135,9 +135,9 @@
                 <div class="crm-section-head__content">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #10B981 20%, var(--lg-glass-bg))">
-                            <svg class="w-4 h-4" style="color: #10B981" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            <svg class="w-4 h-4 crm-text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
-                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Кто на смене</div>
+                        <div class="crm-section-head__title crm-text-primary">Кто на смене</div>
                     </div>
                 </div>
                 <div class="crm-section-head__meta">
@@ -146,13 +146,13 @@
             </div>
             <div class="space-y-2 flex-1 min-h-0 overflow-y-auto">
                 <template x-for="s in (leaderOverview?.on_shift || [])" :key="s.id">
-                    <div class="liquid-glass-pro rounded-2xl p-2" style="border:1px solid var(--lg-border)">
+                    <div class="liquid-glass-pro rounded-2xl p-2 crm-border">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background: var(--lg-primary)" x-text="getInitials(s.full_name)"></div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 crm-bg-primary" x-text="getInitials(s.full_name)"></div>
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="s.full_name || 'Сотрудник'"></div>
-                                    <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(s.started_at)"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="s.full_name || 'Сотрудник'"></div>
+                                    <div class="text-xs crm-text-tertiary" x-text="formatDateTime(s.started_at)"></div>
                                 </div>
                             </div>
                             <div class="text-xs px-3 py-1 rounded-xl flex-shrink-0"
@@ -172,20 +172,20 @@
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
                 <div class="crm-section-head__content">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
-                            <svg class="w-4 h-4" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center crm-bg-error-soft">
+                            <svg class="w-4 h-4 crm-text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
-                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Горящие задачи</div>
+                        <div class="crm-section-head__title crm-text-primary">Горящие задачи</div>
                     </div>
                 </div>
             </div>
             <div class="space-y-2 flex-1 min-h-0 overflow-y-auto">
                 <template x-for="t in (leaderOverview?.tasks_burning || [])" :key="t.id">
-                    <div class="liquid-glass-pro rounded-2xl p-2" style="border:1px solid var(--lg-border)">
+                    <div class="liquid-glass-pro rounded-2xl p-2 crm-border">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex-1">
-                                <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="t.title"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="(t.project_name || 'Без проекта') + ' • ' + (t.assignee_name || '—')"></div>
+                                <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
+                                <div class="text-xs mt-1 crm-text-tertiary" x-text="(t.project_name || 'Без проекта') + ' • ' + (t.assignee_name || '—')"></div>
                             </div>
                             <div class="text-xs px-3 py-1 rounded-xl flex-shrink-0" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg)); color: #EF4444" x-text="t.deadline"></div>
                         </div>
@@ -203,22 +203,22 @@
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
                 <div class="crm-section-head__content">
                     <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
-                            <svg class="w-4 h-4" style="color: #EF4444" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center crm-bg-error-soft">
+                            <svg class="w-4 h-4 crm-text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
-                        <div class="crm-section-head__title" style="color: var(--lg-text-primary)">Нарушения графика</div>
+                        <div class="crm-section-head__title crm-text-primary">Нарушения графика</div>
                     </div>
                 </div>
             </div>
             <div class="space-y-2 flex-1 min-h-0 overflow-y-auto">
                 <template x-for="violation in getShiftViolations()" :key="violation.id">
-                    <div class="liquid-glass-pro rounded-2xl p-2" style="border:1px solid var(--lg-border)">
+                    <div class="liquid-glass-pro rounded-2xl p-2 crm-border">
                         <div class="flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0" style="background: var(--lg-primary)" x-text="getInitials(violation.user_name)"></div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 crm-bg-primary" x-text="getInitials(violation.user_name)"></div>
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate" style="color: var(--lg-text-primary)" x-text="violation.user_name"></div>
-                                    <div class="text-xs" style="color: var(--lg-text-tertiary)" x-text="formatDate(violation.schedule_date) + ' • ' + violation.shift_start + ' - ' + violation.shift_end"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="violation.user_name"></div>
+                                    <div class="text-xs crm-text-tertiary" x-text="formatDate(violation.schedule_date) + ' • ' + violation.shift_start + ' - ' + violation.shift_end"></div>
                                 </div>
                             </div>
                             <div class="text-xs px-3 py-1 rounded-xl flex-shrink-0" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg)); color: #EF4444" x-text="violation.reason"></div>
@@ -302,21 +302,21 @@
                                 <tr>
                                     <td class="px-4 py-3">
                                         <div class="flex items-center gap-2">
-                                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style="background: var(--lg-primary)" x-text="getInitials(s.user_name)"></div>
-                                            <span class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="s.user_name"></span>
+                                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 crm-bg-primary" x-text="getInitials(s.user_name)"></div>
+                                            <span class="text-sm font-semibold crm-text-primary" x-text="s.user_name"></span>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-sm" style="color: var(--lg-text-secondary)" x-text="formatDate(s.schedule_date)"></td>
-                                    <td class="px-4 py-3 text-sm" style="color: var(--lg-text-primary)">
+                                    <td class="px-4 py-3 text-sm crm-text-secondary" x-text="formatDate(s.schedule_date)"></td>
+                                    <td class="px-4 py-3 text-sm crm-text-primary">
                                         <span x-text="(s.shift_start || '—') + ' - ' + (s.shift_end || '—')"></span>
                                     </td>
-                                    <td class="px-4 py-3 text-sm" style="color: var(--lg-text-secondary)" x-text="(s.break_start || '—') + ' - ' + (s.break_end || '—')"></td>
+                                    <td class="px-4 py-3 text-sm crm-text-secondary" x-text="(s.break_start || '—') + ' - ' + (s.break_end || '—')"></td>
                                     <td class="px-4 py-3">
                                         <span class="px-3 py-1 rounded-full text-xs font-medium"
                                               :class="s.is_day_off ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'"
                                               x-text="s.is_day_off ? 'Выходной' : 'Рабочий'"></span>
                                     </td>
-                                    <td class="px-4 py-3 text-sm truncate max-w-[200px]" style="color: var(--lg-text-secondary)" x-text="s.note || '—'"></td>
+                                    <td class="px-4 py-3 text-sm truncate max-w-[200px] crm-text-secondary" x-text="s.note || '—'"></td>
                                     <td class="px-4 py-3 text-right">
                                         <button x-show="can('leader.shifts.manage')" @click="editSchedule(s)" class="crm-btn-ghost text-xs">✏️</button>
                                         <button x-show="can('leader.shifts.manage')" @click="deleteSchedule(s)" class="crm-btn-ghost text-xs">🗑️</button>
@@ -395,56 +395,56 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Задачи созданы -->
             <div class="liquid-glass-pro rounded-3xl p-5">
-                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Задачи созданы</div>
-                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="analyticsData?.current?.tasks_created || 0"></div>
+                <div class="text-sm font-semibold mb-1 crm-text-secondary">Задачи созданы</div>
+                <div class="text-3xl font-bold crm-text-primary" x-text="analyticsData?.current?.tasks_created || 0"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :style="(analyticsData.current.tasks_created - analyticsData.compare.tasks_created) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
                         <span x-text="(analyticsData.current.tasks_created - analyticsData.compare.tasks_created) >= 0 ? '↑' : '↓'"></span>
                         <span x-text="Math.abs(analyticsData.current.tasks_created - analyticsData.compare.tasks_created)"></span>
-                        <span style="color: var(--lg-text-tertiary)">к прошлому</span>
+                        <span class="crm-text-tertiary">к прошлому</span>
                     </div>
                 </template>
             </div>
 
             <!-- Задачи завершены -->
             <div class="liquid-glass-pro rounded-3xl p-5">
-                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Задачи завершены</div>
-                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="analyticsData?.current?.tasks_completed || 0"></div>
+                <div class="text-sm font-semibold mb-1 crm-text-secondary">Задачи завершены</div>
+                <div class="text-3xl font-bold crm-text-primary" x-text="analyticsData?.current?.tasks_completed || 0"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :style="(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
                         <span x-text="(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed) >= 0 ? '↑' : '↓'"></span>
                         <span x-text="Math.abs(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed)"></span>
-                        <span style="color: var(--lg-text-tertiary)">к прошлому</span>
+                        <span class="crm-text-tertiary">к прошлому</span>
                     </div>
                 </template>
             </div>
 
             <!-- Часы работы -->
             <div class="liquid-glass-pro rounded-3xl p-5">
-                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Часы работы</div>
-                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="(analyticsData?.current?.total_worked_hours || 0) + 'ч'"></div>
+                <div class="text-sm font-semibold mb-1 crm-text-secondary">Часы работы</div>
+                <div class="text-3xl font-bold crm-text-primary" x-text="(analyticsData?.current?.total_worked_hours || 0) + 'ч'"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :style="(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
                         <span x-text="(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours) >= 0 ? '↑' : '↓'"></span>
                         <span x-text="Math.abs(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours).toFixed(1)"></span>
-                        <span style="color: var(--lg-text-tertiary)">ч к прошлому</span>
+                        <span class="crm-text-tertiary">ч к прошлому</span>
                     </div>
                 </template>
             </div>
 
             <!-- Новые клиенты -->
             <div class="liquid-glass-pro rounded-3xl p-5">
-                <div class="text-sm font-semibold mb-1" style="color: var(--lg-text-secondary)">Новые клиенты</div>
-                <div class="text-3xl font-bold" style="color: var(--lg-text-primary)" x-text="analyticsData?.current?.new_clients || 0"></div>
+                <div class="text-sm font-semibold mb-1 crm-text-secondary">Новые клиенты</div>
+                <div class="text-3xl font-bold crm-text-primary" x-text="analyticsData?.current?.new_clients || 0"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :style="(analyticsData.current.new_clients - analyticsData.compare.new_clients) >= 0 ? 'color: #10B981' : 'color: #EF4444'">
                         <span x-text="(analyticsData.current.new_clients - analyticsData.compare.new_clients) >= 0 ? '↑' : '↓'"></span>
                         <span x-text="Math.abs(analyticsData.current.new_clients - analyticsData.compare.new_clients)"></span>
-                        <span style="color: var(--lg-text-tertiary)">к прошлому</span>
+                        <span class="crm-text-tertiary">к прошлому</span>
                     </div>
                 </template>
             </div>
@@ -517,8 +517,8 @@
                     <template x-for="stage in (analyticsCRMData?.funnel || [])" :key="stage.name">
                         <div class="rounded-2xl p-3" style="background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); border:1px solid var(--lg-border);">
                             <div class="flex items-center justify-between">
-                                <div class="text-sm font-semibold" style="color: var(--lg-text-primary)" x-text="stage.name"></div>
-                                <div class="text-sm" style="color: var(--lg-text-secondary)">
+                                <div class="text-sm font-semibold crm-text-primary" x-text="stage.name"></div>
+                                <div class="text-sm crm-text-secondary">
                                     <span x-text="stage.cnt"></span> сделок ·
                                     <span x-text="formatMoney(stage.total_amount)"></span>
                                 </div>
@@ -594,19 +594,19 @@
                 <div class="grid grid-cols-4 gap-2">
                     <button @click="applyScheduleTemplate('5/2')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
                             style="background: color-mix(in oklab, #3B82F6 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #3B82F6 30%, var(--lg-border)); color: var(--lg-text-primary);">
-                        5/2 <span style="color: var(--lg-text-tertiary)">(Пн-Пт)</span>
+                        5/2 <span class="crm-text-tertiary">(Пн-Пт)</span>
                     </button>
                     <button @click="applyScheduleTemplate('2/2')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
                             style="background: color-mix(in oklab, #8B5CF6 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #8B5CF6 30%, var(--lg-border)); color: var(--lg-text-primary);">
-                        2/2 <span style="color: var(--lg-text-tertiary)">(2 раб/2 вых)</span>
+                        2/2 <span class="crm-text-tertiary">(2 раб/2 вых)</span>
                     </button>
                     <button @click="applyScheduleTemplate('1/3')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
                             style="background: color-mix(in oklab, #F59E0B 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #F59E0B 30%, var(--lg-border)); color: var(--lg-text-primary);">
-                        1/3 <span style="color: var(--lg-text-tertiary)">(1 раб/3 вых)</span>
+                        1/3 <span class="crm-text-tertiary">(1 раб/3 вых)</span>
                     </button>
                     <button @click="applyScheduleTemplate('3/3')" class="px-3 py-2.5 rounded-xl text-xs font-medium transition-all"
                             style="background: color-mix(in oklab, #10B981 15%, var(--lg-glass-bg)); border: 1px solid color-mix(in oklab, #10B981 30%, var(--lg-border)); color: var(--lg-text-primary);">
-                        3/3 <span style="color: var(--lg-text-tertiary)">(3 раб/3 вых)</span>
+                        3/3 <span class="crm-text-tertiary">(3 раб/3 вых)</span>
                     </button>
                 </div>
             </div>
@@ -645,8 +645,8 @@
             <label class="crm-filter-field crm-filter-field--compact flex items-center gap-3">
                 <input id="schedule-day-off" name="is_day_off" type="checkbox" x-model="scheduleForm.is_day_off" class="w-5 h-5" />
                 <div>
-                    <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Выходной</div>
-                    <div class="text-xs" style="color: var(--lg-text-tertiary)">Сотрудник не работает в этот день</div>
+                    <div class="text-sm font-semibold crm-text-primary">Выходной</div>
+                    <div class="text-xs crm-text-tertiary">Сотрудник не работает в этот день</div>
                 </div>
             </label>
 

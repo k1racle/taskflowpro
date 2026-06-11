@@ -98,7 +98,7 @@
             <div class="relative flex items-center">
                 <div class="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2">
                     <button @click="topbarSearchOpen ? closeTopbarSearch() : openTopbarSearch()"
-                            class="rounded-xl crm-btn-ghost crm-icon-button"
+                            class="crm-btn-ghost crm-icon-button"
                             :class="topbarSearchOpen ? 'liquid-glass-pro' : ''"
                             title="Поиск">
                         <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,7 +106,7 @@
                         </svg>
                     </button>
 
-                    <button @click="toggleTheme()" class="rounded-xl crm-btn-ghost crm-icon-button" title="Тема">
+                    <button @click="toggleTheme()" class="crm-btn-ghost crm-icon-button" title="Тема">
                         <svg x-show="!isDark" class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                         </svg>
@@ -175,7 +175,7 @@
 
             <!-- Уведомления -->
             <button @click="toggleNotificationsPanel()"
-                    class="relative rounded-xl crm-btn-ghost crm-icon-button"
+                    class="relative crm-btn-ghost crm-icon-button"
                     :class="notificationCount > 0 ? 'notifications-trigger-active' : ''"
                     type="button"
                     title="Уведомления">
@@ -197,7 +197,7 @@
             </button>
 
             <!-- Виджеты -->
-            <button @click="toggleWidgetsPanel()" class="rounded-xl crm-btn-ghost crm-icon-button" type="button">
+            <button @click="toggleWidgetsPanel()" class="crm-btn-ghost crm-icon-button" type="button">
                 <svg class="w-5 h-5 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
                 </svg>

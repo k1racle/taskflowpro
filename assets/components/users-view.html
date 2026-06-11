@@ -25,7 +25,7 @@
             <div class="crm-filter-field crm-filter-field-search crm-filter-field--compact">
                 <div class="crm-filter-label">Поиск</div>
                 <div class="mt-2 flex items-center gap-3">
-                    <svg class="w-4 h-4" style="color: var(--lg-text-tertiary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
                     </svg>
                     <input type="text" x-model="usersSearch" placeholder="Имя, логин, отдел" class="crm-control-input text-sm" />
@@ -88,16 +88,16 @@
                                 <div class="flex items-center gap-3">
                                     <div class="crm-avatar" x-text="getInitials(u.full_name || u.login)"></div>
                                     <div class="min-w-0">
-                                        <div class="font-semibold truncate" style="color: var(--lg-text-primary)" x-text="u.full_name || u.login"></div>
-                                        <div class="text-xs truncate" style="color: var(--lg-text-secondary)" x-text="u.login"></div>
+                                        <div class="font-semibold truncate crm-text-primary" x-text="u.full_name || u.login"></div>
+                                        <div class="text-xs truncate crm-text-secondary" x-text="u.login"></div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm" style="color: var(--lg-text-secondary)">
+                            <td class="px-6 py-4 text-sm crm-text-secondary">
                                 <div class="font-medium" x-text="translateRole(u.role)"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="u.role || '—'"></div>
+                                <div class="text-xs mt-1 crm-text-tertiary" x-text="u.role || '—'"></div>
                             </td>
-                            <td class="px-6 py-4 text-sm" style="color: var(--lg-text-secondary)" x-text="u.department_name || '—'"></td>
+                            <td class="px-6 py-4 text-sm crm-text-secondary" x-text="u.department_name || '—'"></td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button class="crm-soft-action text-sm" @click.stop="openUserModal && await openUserModal(u)">
