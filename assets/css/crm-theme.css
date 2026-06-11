@@ -7,7 +7,15 @@
 @font-face {
     font-family: 'Nothing';
     src: url('../components/fonts/nothing-font.otf.woff2') format('woff2');
-    font-weight: 400 700;
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Nothing';
+    src: url('../components/fonts/nothing-font.otf.woff2') format('woff2');
+    font-weight: 700;
     font-style: normal;
     font-display: swap;
 }
@@ -4711,4 +4719,127 @@ body.crm-theme .crm-empty-state {
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.75rem;
+}
+
+/* ── Fix: filter / summary tiles (Nothing OS pills → flat chips) ── */
+body.crm-theme .crm-summary-tile,
+body.crm-theme .crm-summary-tile--compact,
+body.crm-theme .crm-toolbar-summary .crm-summary-tile {
+    border-radius: 2px !important;
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+    box-shadow: none !important;
+}
+
+body.crm-theme .crm-summary-value {
+    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing: -0.02em;
+}
+
+body.crm-theme .crm-inline-badge,
+body.crm-theme .crm-inline-badge-accent {
+    border-radius: 2px !important;
+    background: var(--crm-surface-alt) !important;
+    border: 1px solid var(--crm-border) !important;
+    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    font-weight: 600 !important;
+}
+
+body.crm-theme .crm-filter-field {
+    border-radius: 2px !important;
+    background: var(--crm-surface) !important;
+    border: 1px solid var(--crm-border) !important;
+}
+
+/* ── Fix: tab active class used in JS ── */
+body.crm-theme .crm-tabbar-button-active,
+body.crm-theme .crm-tabbar-button.active,
+body.crm-theme .crm-tabbar-button[aria-selected="true"] {
+    background: var(--crm-surface) !important;
+    border-color: var(--crm-border) !important;
+    color: var(--crm-text) !important;
+    box-shadow: none !important;
+}
+
+body.crm-theme .crm-tabbar-button-active::before,
+body.crm-theme .crm-tabbar-button.active::before,
+body.crm-theme .crm-tabbar-button[aria-selected="true"]::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    background: #FF4433;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+
+/* ── Fix: priority pills ── */
+body.crm-theme .crm-priority-pill,
+body.crm-theme .priority-low,
+body.crm-theme .priority-medium,
+body.crm-theme .priority-high,
+body.crm-theme .priority-urgent {
+    border-radius: 2px !important;
+    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.65rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    font-weight: 600 !important;
+}
+
+/* ── Fix: project avatars ── */
+body.crm-theme .crm-project-avatar,
+body.crm-theme .crm-project-avatar--soft,
+body.crm-theme .crm-project-avatar--compact {
+    border-radius: 2px !important;
+    background: #FF4433 !important;
+    box-shadow: none !important;
+    color: #FAFAFA !important;
+    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+body.crm-theme .crm-project-avatar--soft {
+    background: var(--crm-surface-alt) !important;
+    color: var(--crm-text) !important;
+    border: 1px solid var(--crm-border) !important;
+}
+
+/* ── Fix: project metric chips ── */
+body.crm-theme .crm-project-metric {
+    border-radius: 2px !important;
+    background: var(--crm-surface-alt) !important;
+    border: 1px solid var(--crm-border) !important;
+}
+
+/* ── Fix: remove gradient top bar on project cards ── */
+body.crm-theme .crm-project-card::before {
+    display: none !important;
+}
+
+/* ── Fix: project cards empty space ── */
+body.crm-theme .crm-card-equal {
+    height: auto !important;
+}
+
+body.crm-theme .crm-project-card {
+    padding: 12px !important;
+}
+
+body.crm-theme .crm-project-card-head,
+body.crm-theme .crm-project-card-head--compact {
+    padding-bottom: 8px !important;
+}
+
+/* ── Fix: section headings font ── */
+body.crm-theme .crm-section-head__title,
+body.crm-theme .crm-toolbar-heading h2,
+body.crm-theme .crm-toolbar-heading h3,
+body.crm-theme h1,
+body.crm-theme h2,
+body.crm-theme h3 {
+    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
