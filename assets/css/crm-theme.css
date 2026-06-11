@@ -4249,3 +4249,36 @@ body.crm-theme.dark .conference-status-ended {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+
+/* ============================================
+   Unified Utility Classes
+   Replace common inline styles across components
+   ============================================ */
+
+.crm-text-primary   { color: var(--lg-text-primary) !important; }
+.crm-text-secondary { color: var(--lg-text-secondary) !important; }
+.crm-text-tertiary  { color: var(--lg-text-tertiary) !important; }
+.crm-text-success   { color: var(--lg-success) !important; }
+.crm-text-error     { color: var(--lg-error) !important; }
+.crm-text-warning   { color: var(--lg-warning) !important; }
+.crm-text-info      { color: var(--lg-info) !important; }
+.crm-text-accent    { color: var(--crm-accent) !important; }
+.crm-text-muted     { color: var(--crm-text-muted) !important; }
+
+.crm-bg-primary     { background: var(--lg-primary) !important; }
+.crm-bg-accent      { background: var(--crm-accent) !important; }
+
+.crm-border-subtle {
+    border: 1px solid var(--lg-border);
+    background: rgba(255,255,255,.02);
+}
+.crm-border-bottom { border-bottom: 1px solid var(--lg-border); }
+.crm-border        { border: 1px solid var(--lg-border); }
+
+.crm-mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+}
+
+.crm-opacity-muted { opacity: 0.95; }
+.crm-min-w-table   { min-width: 600px; }
