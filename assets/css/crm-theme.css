@@ -4918,13 +4918,31 @@ body.crm-theme .lg-toast {
     padding: 14px 18px !important;
 }
 
-/* ── Section headings ── */
+/* ── Section headings: Inter (clean, premium) ── */
 body.crm-theme .crm-section-head__title,
 body.crm-theme .crm-toolbar-heading h2,
 body.crm-theme .crm-toolbar-heading h3,
 body.crm-theme h1,
 body.crm-theme h2,
 body.crm-theme h3 {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+/* ── Menu / Sidebar items: Inter ── */
+body.crm-theme .crm-nav-item,
+body.crm-theme .crm-sidebar-group-toggle,
+body.crm-theme .crm-sidebar-brand-title {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* ── Mono only for metrics, numbers, code ── */
+body.crm-theme .crm-mono,
+body.crm-theme .crm-metric-value,
+body.crm-theme .crm-stat-value,
+body.crm-theme .crm-count-badge,
+body.crm-theme .crm-summary-value,
+body.crm-theme .crm-screen-title {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    letter-spacing: -0.02em;
 }
