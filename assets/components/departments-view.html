@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4">
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
@@ -35,7 +35,7 @@
 
         <div x-show="(departments || []).length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
             <template x-for="dept in departments" :key="dept.id">
-                <div class="liquid-glass-pro p-6 cursor-pointer crm-card-compact crm-card-equal"
+                <div class="liquid-glass-pro p-5 cursor-pointer crm-card-compact crm-card-equal"
                      @click="openDepartmentModal(dept)"
                      @contextmenu.prevent.stop="openDepartmentContextMenu($event, dept)">
                     <div class="flex items-start justify-between mb-4">

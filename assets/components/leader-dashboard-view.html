@@ -4,7 +4,7 @@
 
 <div class="space-y-4">
     <!-- Header с вкладками -->
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
@@ -48,7 +48,7 @@
     <div x-show="leaderTab === 'dashboard'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-3 scale-[0.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.98]" class="space-y-6">
 
     <!-- CRM Статистика -->
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="flex items-center gap-3">
@@ -130,7 +130,7 @@
 
     <!-- Крупные панели дашборда -->
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <div class="liquid-glass-pro rounded-sm p-4 h-[300px] flex flex-col">
+        <div class="liquid-glass-pro rounded-sm p-5 h-[300px] flex flex-col">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
                 <div class="crm-section-head__content">
                     <div class="flex items-center gap-3">
@@ -168,7 +168,7 @@
             </div>
         </div>
 
-        <div class="liquid-glass-pro rounded-sm p-4 h-[300px] flex flex-col">
+        <div class="liquid-glass-pro rounded-sm p-5 h-[300px] flex flex-col">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
                 <div class="crm-section-head__content">
                     <div class="flex items-center gap-3">
@@ -199,7 +199,7 @@
         </div>
 
         <!-- Нарушения по смене -->
-        <div class="liquid-glass-pro rounded-sm p-4 h-[300px] flex flex-col" x-show="can('leader.shifts.manage') || can('leader.view')">
+        <div class="liquid-glass-pro rounded-sm p-5 h-[300px] flex flex-col" x-show="can('leader.shifts.manage') || can('leader.view')">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-3">
                 <div class="crm-section-head__content">
                     <div class="flex items-center gap-3">
@@ -236,7 +236,7 @@
 
     <!-- ======================== Вкладка: ГРАФИКИ РАБОТ ======================== -->
     <div x-show="leaderTab === 'schedules'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-3 scale-[0.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.98]" class="space-y-6">
-        <div class="liquid-glass-pro rounded-sm crm-screen-section" x-show="can('leader.shifts.manage') || can('leader.view')">
+        <div class="liquid-glass-pro rounded-sm crm-screen-section p-5" x-show="can('leader.shifts.manage') || can('leader.view')">
             <div class="crm-toolbar crm-toolbar--dense">
                 <div class="crm-toolbar-main">
                     <div>
@@ -340,7 +340,7 @@
     <div x-show="leaderTab === 'analytics'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-3 scale-[0.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.98]" class="space-y-6">
 
         <!-- Выбор периода -->
-        <div class="liquid-glass-pro rounded-sm crm-screen-section">
+        <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
                 <div class="crm-toolbar-main">
                     <div>
@@ -451,7 +451,7 @@
         </div>
 
         <!-- График: Создание и завершение задач по дням -->
-        <div class="liquid-glass-pro rounded-sm p-6">
+        <div class="liquid-glass-pro rounded-sm p-5">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">Создание и завершение задач по дням</div>
@@ -465,7 +465,7 @@
         <!-- Два графика в ряд -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Задачи по статусам -->
-            <div class="liquid-glass-pro rounded-sm p-6">
+            <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Задачи по статусам</div>
@@ -477,7 +477,7 @@
             </div>
 
             <!-- Задачи по приоритетам -->
-            <div class="liquid-glass-pro rounded-sm p-6">
+            <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Задачи по приоритетам</div>
@@ -490,7 +490,7 @@
         </div>
 
         <!-- Часы работы по дням -->
-        <div class="liquid-glass-pro rounded-sm p-6">
+        <div class="liquid-glass-pro rounded-sm p-5">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">Часы работы по дням</div>
@@ -502,7 +502,7 @@
         </div>
 
         <!-- CRM воронка -->
-        <div class="liquid-glass-pro rounded-sm p-6">
+        <div class="liquid-glass-pro rounded-sm p-5">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">CRM воронка</div>
@@ -534,7 +534,7 @@
         </div>
 
         <!-- Эффективность сотрудников -->
-        <div class="liquid-glass-pro rounded-sm p-6">
+        <div class="liquid-glass-pro rounded-sm p-5">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">Эффективность сотрудников</div>
@@ -546,7 +546,7 @@
         </div>
 
         <!-- Задачи по проектам -->
-        <div class="liquid-glass-pro rounded-sm p-6">
+        <div class="liquid-glass-pro rounded-sm p-5">
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">Задачи по проектам</div>

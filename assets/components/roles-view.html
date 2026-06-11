@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4">
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
 
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main flex-1 min-w-0">
@@ -93,17 +93,17 @@
             <table class="w-full crm-data-table">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Роль</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Описание</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Права</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Тип</th>
-                        <th class="px-6 py-4"></th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Роль</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Описание</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Права</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Тип</th>
+                        <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="r in getFilteredRoles()" :key="r.id">
                         <tr class="cursor-pointer" @click="openRolePermissions(r)">
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3">
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-sm flex items-center justify-center text-white crm-bg-primary">
                                         <template x-if="!r.icon || r.icon === 'shield'">
@@ -149,13 +149,13 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm crm-text-secondary" x-text="r.description || '—'"></td>
-                            <td class="px-6 py-4 text-sm crm-text-secondary">
+                            <td class="px-4 py-3 text-sm crm-text-secondary" x-text="r.description || '—'"></td>
+                            <td class="px-4 py-3 text-sm crm-text-secondary">
                                 <div class="font-medium crm-text-primary" x-text="`${getRoleEnabledPermissionsCount(r)} активных`"></div>
                                 <div class="text-xs" x-text="r.users_count ? `Назначена: ${r.users_count}` : 'Пока не назначена'"></div>
                             </td>
-                            <td class="px-6 py-4 text-sm crm-text-secondary" x-text="r.is_system ? 'Системная' : 'Пользовательская'"></td>
-                            <td class="px-6 py-4 text-right">
+                            <td class="px-4 py-3 text-sm crm-text-secondary" x-text="r.is_system ? 'Системная' : 'Пользовательская'"></td>
+                            <td class="px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button class="crm-btn-secondary text-sm flex items-center gap-2" @click.stop="openRolePermissions(r)">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -391,7 +391,7 @@
                                 <div class="text-xs mb-2 chat-bubble-author crm-text-tertiary" x-show="item.showAuthor" x-text="item.msg.sender_name"></div>
 
                                 <div x-show="item.msg.message_type === 'task' && item.msg.task_id">
-                                    <button class="w-full text-left liquid-glass-pro rounded-sm p-4 chat-attachment-card" @click="openTaskFromMessage(item.msg.task_id)">
+                                    <button class="w-full text-left liquid-glass-pro rounded-sm p-5 chat-attachment-card" @click="openTaskFromMessage(item.msg.task_id)">
                                         <div class="text-xs chat-attachment-card__eyebrow crm-text-tertiary">Задача</div>
                                         <div class="mt-1 font-semibold crm-text-primary" x-text="item.msg.task_title || item.msg.message"></div>
                                         <div class="mt-1 text-xs chat-attachment-card__meta crm-text-tertiary" x-text="item.msg.task_status || ''"></div>
@@ -399,13 +399,13 @@
                                 </div>
 
                                 <div x-show="item.msg.message_type === 'project' && item.msg.project_id">
-                                    <button class="w-full text-left liquid-glass-pro rounded-sm p-4 chat-attachment-card" @click="openProjectFromMessage(item.msg.project_id)">
+                                    <button class="w-full text-left liquid-glass-pro rounded-sm p-5 chat-attachment-card" @click="openProjectFromMessage(item.msg.project_id)">
                                         <div class="text-xs chat-attachment-card__eyebrow crm-text-tertiary">Проект</div>
                                         <div class="mt-1 font-semibold crm-text-primary" x-text="item.msg.project_name || item.msg.message"></div>
                                     </button>
                                 </div>
 
-                                <div x-show="(item.msg.message_type === 'file' || item.msg.message_type === 'image') && item.msg.file_url" class="liquid-glass-pro rounded-sm p-4 chat-attachment-card">
+                                <div x-show="(item.msg.message_type === 'file' || item.msg.message_type === 'image') && item.msg.file_url" class="liquid-glass-pro rounded-sm p-5 chat-attachment-card">
                                     <div class="text-xs chat-attachment-card__eyebrow crm-text-tertiary" x-text="item.msg.message_type === 'image' ? 'Изображение' : 'Файл'"></div>
                                     <button x-show="item.msg.message_type === 'image'" class="mt-2 w-full overflow-hidden rounded-sm" @click="previewChatImage(item.msg)">
                                         <img :src="item.msg.file_url" class="w-full max-h-[260px] object-cover" alt="" />

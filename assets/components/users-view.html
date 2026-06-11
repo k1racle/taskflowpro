@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4">
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-section-head__content">
@@ -21,7 +21,7 @@
             </div>
         </div>
 
-        <div class="mt-5 crm-filterbar">
+        <div class="mt-4 crm-filterbar">
             <div class="crm-filter-field crm-filter-field-search crm-filter-field--compact">
                 <div class="crm-filter-label">Поиск</div>
                 <div class="mt-2 flex items-center gap-3">
@@ -75,16 +75,16 @@
             <table class="w-full crm-data-table">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Пользователь</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Роль</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Отдел</th>
-                        <th class="px-6 py-4"></th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Пользователь</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Роль</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Отдел</th>
+                        <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <template x-for="u in getFilteredUsers()" :key="u.id">
                         <tr class="cursor-pointer" @click="openUserModal && await openUserModal(u)">
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3">
                                 <div class="flex items-center gap-3">
                                     <div class="crm-avatar" x-text="getInitials(u.full_name || u.login)"></div>
                                     <div class="min-w-0">
@@ -93,12 +93,12 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm crm-text-secondary">
+                            <td class="px-4 py-3 text-sm crm-text-secondary">
                                 <div class="font-medium" x-text="translateRole(u.role)"></div>
                                 <div class="text-xs mt-1 crm-text-tertiary" x-text="u.role || '—'"></div>
                             </td>
-                            <td class="px-6 py-4 text-sm crm-text-secondary" x-text="u.department_name || '—'"></td>
-                            <td class="px-6 py-4 text-right">
+                            <td class="px-4 py-3 text-sm crm-text-secondary" x-text="u.department_name || '—'"></td>
+                            <td class="px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     <button class="crm-soft-action text-sm" @click.stop="openUserModal && await openUserModal(u)">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

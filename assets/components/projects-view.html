@@ -2,168 +2,8 @@
      PROJECTS VIEW - PRO 2027
      ============================================ -->
 
-<style>
-    .crm-project-card {
-        position: relative;
-        overflow: hidden;
-        border: 1px solid color-mix(in oklab, var(--lg-primary) 14%, var(--crm-border));
-        background: linear-gradient(180deg, color-mix(in oklab, var(--crm-surface) 97%, white) 0%, var(--crm-surface) 100%);
-        box-shadow: var(--crm-shadow-sm);
-        transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    }
-
-    .crm-project-card::before {
-        content: '';
-        position: absolute;
-        inset: 0 0 auto 0;
-        height: 3px;
-        background: linear-gradient(90deg, color-mix(in oklab, var(--lg-primary) 72%, white) 0%, var(--lg-primary) 100%);
-        opacity: .7;
-        pointer-events: none;
-    }
-
-    .crm-project-card:hover {
-        transform: translateY(-1px);
-        border-color: color-mix(in oklab, var(--lg-primary) 24%, var(--crm-border));
-        box-shadow: 0 12px 28px color-mix(in oklab, var(--lg-primary) 9%, transparent);
-    }
-
-    .crm-project-avatar--compact {
-        width: 36px;
-        height: 36px;
-        border-radius: 12px;
-        font-size: 13px;
-    }
-
-    .crm-project-meta-cluster {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .crm-project-compact-stack {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        min-width: 0;
-    }
-
-    .crm-project-summary-strip {
-        display: flex;
-        flex-direction: column;
-        gap: 5px;
-        min-width: 0;
-        padding: 7px 9px;
-        border-radius: 12px;
-        border: 1px solid color-mix(in oklab, var(--crm-border) 84%, transparent);
-        background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));
-    }
-
-    .crm-project-summary-strip--progress {
-        background: linear-gradient(180deg, color-mix(in oklab, var(--lg-primary) 7%, var(--crm-surface)) 0%, color-mix(in oklab, var(--crm-surface-alt) 86%, var(--crm-surface)) 100%);
-    }
-
-    .crm-project-summary-strip__meta {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        min-width: 0;
-    }
-
-    .crm-project-summary-strip__row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        min-width: 0;
-        font-size: 10px;
-        color: var(--lg-text-secondary);
-    }
-
-    .crm-project-summary-strip__progress {
-        height: 5px;
-        border-radius: 999px;
-        overflow: hidden;
-        background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));
-    }
-
-    .crm-project-summary-strip__progress-bar {
-        height: 100%;
-        border-radius: inherit;
-        background: var(--lg-primary);
-    }
-
-    .crm-project-compact-card__label {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: .08em;
-        text-transform: uppercase;
-        color: var(--lg-text-tertiary);
-    }
-
-    .crm-project-compact-card__value {
-        margin-top: 6px;
-        font-size: 14px;
-        font-weight: 700;
-        line-height: 1.25;
-        color: var(--lg-text-primary);
-    }
-
-    .crm-project-footer {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 6px;
-        flex-wrap: wrap;
-        padding-top: 6px;
-        margin-top: 6px;
-        border-top: 1px solid var(--crm-border);
-    }
-
-    .crm-project-footer__departments {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        flex-wrap: wrap;
-        min-width: 0;
-    }
-
-    .crm-inline-badge-accent {
-        background: color-mix(in oklab, var(--lg-primary) 12%, var(--crm-surface-alt));
-        border-color: color-mix(in oklab, var(--lg-primary) 28%, var(--crm-border));
-        color: var(--lg-primary);
-    }
-
-    .crm-project-mini-meta {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 3px;
-        margin-top: 4px;
-    }
-
-    @media (max-width: 1024px) {
-        .crm-project-mini-meta {
-            gap: 4px;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .crm-project-mini-meta {
-            margin-top: 6px;
-        }
-
-        .crm-project-summary-strip__row {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-    }
-</style>
-
 <div x-data="{ projectSearch: '', filtersOpen: false }" class="space-y-4">
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
@@ -252,8 +92,8 @@
 
     <div x-show="projectsView === 'cards'" class="grid grid-cols-1 lg:grid-cols-3 lg:justify-items-center gap-2">
         <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="project.id">
-            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-sm cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card w-full max-w-[360px]" style="padding: 5px;">
-                <div class="crm-project-card-head crm-project-card-head--compact" style="padding-bottom: 8px;">
+            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-sm cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card w-full max-w-[360px]">
+                <div class="crm-project-card-head crm-project-card-head--compact">
                     <div class="flex items-start gap-1.5 min-w-0">
                         <div class="crm-project-avatar crm-project-avatar--soft crm-project-avatar--compact">
                             <span x-text="(project.name || '?').charAt(0).toUpperCase()"></span>
@@ -323,13 +163,13 @@
                 <tbody class="divide-y" style="border-color: var(--lg-border)">
                     <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="'list-' + project.id">
                         <tr @click="openProjectModal(project)" class="cursor-pointer">
-                            <td class="px-4 py-4 min-w-[240px]">
+                            <td class="px-4 py-3 min-w-[240px]">
                                 <div class="min-w-0">
                                     <div class="font-semibold truncate crm-text-primary" x-text="project.name"></div>
                                     <div class="text-xs mt-1 truncate crm-text-tertiary" x-text="project.description || ''"></div>
                                 </div>
                             </td>
-                            <td class="px-4 py-4">
+                            <td class="px-4 py-3">
                                 <div class="flex flex-wrap gap-2">
                                     <template x-if="project.departments && project.departments.length">
                                         <template x-for="department in project.departments.slice(0, 2)" :key="department.id">
@@ -341,7 +181,7 @@
                                     </template>
                                 </div>
                             </td>
-                            <td class="px-4 py-4">
+                            <td class="px-4 py-3">
                                 <div class="flex items-center gap-2">
                                     <div class="flex -space-x-2">
                                         <template x-for="member in (project.members || []).slice(0, 3)" :key="member.id">
@@ -354,7 +194,7 @@
                                     <span class="text-sm crm-text-secondary" x-text="(project.members || []).length ? (project.members || []).length : '0'"></span>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 min-w-[160px]">
+                            <td class="px-4 py-3 min-w-[160px]">
                                 <div class="flex items-center gap-3">
                                     <div class="flex-1 h-2 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 88%, var(--crm-surface));">
                                         <div class="h-full rounded-full crm-bg-primary" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
@@ -362,8 +202,8 @@
                                     <span class="text-sm font-semibold crm-text-primary" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></span>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 text-sm" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" x-text="project.deadline ? (() => { const remaining = getDaysUntilDeadline(project.deadline); if (remaining === 'Просрочено') return formatDate(project.deadline) + ' · просрочено'; if (remaining === 'Сегодня') return formatDate(project.deadline) + ' · сегодня'; return formatDate(project.deadline) + ' · осталось ' + remaining; })() : 'Не задан'"></td>
-                            <td class="px-4 py-4"><span :class="'priority-' + project.priority" class="crm-priority-pill text-xs capitalize" x-text="translatePriority(project.priority)"></span></td>
+                            <td class="px-4 py-3 text-sm" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" x-text="project.deadline ? (() => { const remaining = getDaysUntilDeadline(project.deadline); if (remaining === 'Просрочено') return formatDate(project.deadline) + ' · просрочено'; if (remaining === 'Сегодня') return formatDate(project.deadline) + ' · сегодня'; return formatDate(project.deadline) + ' · осталось ' + remaining; })() : 'Не задан'"></td>
+                            <td class="px-4 py-3"><span :class="'priority-' + project.priority" class="crm-priority-pill text-xs capitalize" x-text="translatePriority(project.priority)"></span></td>
                         </tr>
                     </template>
                 </tbody>

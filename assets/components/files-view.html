@@ -4,7 +4,7 @@
 
 <div class="space-y-4">
 
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div x-show="filesError" class="mt-4 liquid-glass-pro rounded-sm p-4 border border-red-500/20">
+        <div x-show="filesError" class="mt-4 liquid-glass-pro rounded-sm p-5 border border-red-500/20">
             <div class="flex items-start justify-between gap-3">
                 <div>
                     <div class="text-sm font-semibold crm-text-primary">Не удалось полностью обновить файловый раздел</div>
@@ -54,14 +54,14 @@
             </div>
         </div>
 
-        <div x-show="fileActionBusy || filesLoading" class="mt-4 liquid-glass-pro rounded-sm p-4">
+        <div x-show="fileActionBusy || filesLoading" class="mt-4 liquid-glass-pro rounded-sm p-5">
             <div class="flex items-center gap-3 text-sm crm-text-secondary">
                 <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5M5.64 18.36A9 9 0 103.51 8H9"/></svg>
                 <span x-text="fileActionBusy ? (fileActionLabel || 'Выполняется операция с файлами') : 'Обновляем список файлов и папок'"></span>
             </div>
         </div>
 
-        <div class="mt-5 crm-filterbar crm-filterbar-wide">
+        <div class="mt-4 crm-filterbar crm-filterbar-wide">
             <div class="crm-filter-field crm-filter-field-search">
                 <div class="crm-filter-label">Поиск</div>
                 <div class="mt-2 flex items-center gap-3">
@@ -105,7 +105,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-[280px,minmax(0,1fr)] gap-4 items-start" @click="clearFileSelection()" @contextmenu.prevent="openFilesContextMenu($event, null)">
 
-        <div class="liquid-glass-pro rounded-sm p-4 flex flex-col crm-sidebar-panel files-nav-panel crm-panel-stack crm-panel-stack--compact crm-panel-scroll-70">
+        <div class="liquid-glass-pro rounded-sm p-5 flex flex-col crm-sidebar-panel files-nav-panel crm-panel-stack crm-panel-stack--compact crm-panel-scroll-70">
             <div class="crm-section-head">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">Быстрый доступ</div>
@@ -159,7 +159,7 @@
 
             <div x-show="filesViewMode === 'grid'" class="p-5 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4">
                 <template x-for="folder in (folders || [])" :key="'folder-' + folder.id">
-                    <div @dblclick="navigateToFolder(folder.id)" @contextmenu.prevent.stop="openFilesContextMenu($event, {type:'folder', item: folder})" @dragover.prevent @drop="moveSelectedFilesToFolder(folder.id)" class="liquid-glass-pro p-4 cursor-pointer group crm-file-tile crm-folder-tile crm-card-compact crm-card-equal">
+                    <div @dblclick="navigateToFolder(folder.id)" @contextmenu.prevent.stop="openFilesContextMenu($event, {type:'folder', item: folder})" @dragover.prevent @drop="moveSelectedFilesToFolder(folder.id)" class="liquid-glass-pro p-5 cursor-pointer group crm-file-tile crm-folder-tile crm-card-compact crm-card-equal">
                         <div class="w-16 h-16 rounded-sm flex items-center justify-center crm-file-icon-tile">
                             <svg class="w-9 h-9 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
                         </div>
@@ -171,7 +171,7 @@
                 </template>
 
                 <template x-for="file in filteredFilesUi" :key="'file-' + file.id">
-                    <div @click="previewFile(file); toggleFileSelection(file, $event)" @dblclick="openFileInNewTab(file)" @contextmenu.prevent.stop="toggleFileSelection(file, $event); openFilesContextMenu($event, {type:'file', item: file})" draggable="true" @dragstart="onFileDragStart($event, file)" :class="selectedFileIds.includes(String(file.id)) ? 'ring-2 ring-[color:var(--lg-primary)] crm-file-tile-selected' : ''" class="liquid-glass-pro p-4 cursor-pointer group crm-file-tile crm-card-compact crm-card-equal">
+                    <div @click="previewFile(file); toggleFileSelection(file, $event)" @dblclick="openFileInNewTab(file)" @contextmenu.prevent.stop="toggleFileSelection(file, $event); openFilesContextMenu($event, {type:'file', item: file})" draggable="true" @dragstart="onFileDragStart($event, file)" :class="selectedFileIds.includes(String(file.id)) ? 'ring-2 ring-[color:var(--lg-primary)] crm-file-tile-selected' : ''" class="liquid-glass-pro p-5 cursor-pointer group crm-file-tile crm-card-compact crm-card-equal">
                         <div class="w-16 h-16 rounded-sm overflow-hidden flex items-center justify-center crm-file-icon-tile">
                             <template x-if="isImage(file.original_name || file.name)"><img :src="`api/index.php?endpoint=files/${file.id}/preview&_t=${Date.now()}&token=${encodeURIComponent(getToken() || '')}`" class="w-full h-full object-cover" alt=""></template>
                             <template x-if="!isImage(file.original_name || file.name)">
@@ -200,30 +200,30 @@
                 <table class="w-full crm-data-table">
                     <thead>
                         <tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Тип</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Название</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Размер</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Дата</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Расширение</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Тип</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Название</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Размер</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Дата</th>
+                            <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Расширение</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200/50 dark:divide-gray-700/50">
                         <template x-for="file in filteredFilesUi" :key="file.id">
                             <tr @click="previewFile(file); toggleFileSelection(file, $event)" @dblclick="downloadFile(file)" @contextmenu.prevent.stop="toggleFileSelection(file, $event); openFilesContextMenu($event, {type:'file', item: file})" class="cursor-pointer crm-file-row" :class="selectedFileIds.includes(String(file.id)) ? 'crm-file-row-selected' : ''">
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-3">
                                     <div class="w-10 h-10 rounded-sm overflow-hidden crm-surface-card-soft flex items-center justify-center">
                                         <template x-if="isImage(file.original_name || file.name)"><img :src="`api/index.php?endpoint=files/${file.id}/preview&_t=${Date.now()}&token=${encodeURIComponent(getToken() || '')}`" class="w-full h-full object-cover" alt=""></template>
                                         <template x-if="!isImage(file.original_name || file.name)"><svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></template>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4">
+                                <td class="px-4 py-3">
                                     <div class="min-w-0">
                                         <span class="font-medium block truncate crm-text-primary" x-text="file.original_name || file.name"></span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm crm-text-secondary" x-text="formatFileSize(Number(file.size || 0))"></td>
-                                <td class="px-6 py-4 text-sm crm-text-secondary" x-text="formatDate(file.created_at)"></td>
-                                <td class="px-6 py-4"><span class="crm-inline-badge crm-inline-badge-accent" x-text="(getFileExtension(file.original_name || file.name) || 'file').toUpperCase()"></span></td>
+                                <td class="px-4 py-3 text-sm crm-text-secondary" x-text="formatFileSize(Number(file.size || 0))"></td>
+                                <td class="px-4 py-3 text-sm crm-text-secondary" x-text="formatDate(file.created_at)"></td>
+                                <td class="px-4 py-3"><span class="crm-inline-badge crm-inline-badge-accent" x-text="(getFileExtension(file.original_name || file.name) || 'file').toUpperCase()"></span></td>
                             </tr>
                         </template>
                     </tbody>

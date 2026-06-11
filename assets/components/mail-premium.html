@@ -38,7 +38,7 @@
     <div class="flex-1 flex gap-6 overflow-hidden">
         
         <!-- Боковая панель -->
-        <div class="w-72 liquid-glass-pro rounded-sm p-4 overflow-y-auto">
+        <div class="w-72 liquid-glass-pro rounded-sm p-5 overflow-y-auto">
             <nav class="space-y-2">
                 <template x-for="folder in mailFolders" :key="folder.id">
                     <button @click="loadMailFromFolder(folder.id)"

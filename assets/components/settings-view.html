@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4" x-data="{ settingsAdminTab: 'general' }" x-init="$watch('settingsAdminTab', (value) => { window.__taskflowSettingsAdminTab = value; }); settingsAdminTab = window.__taskflowSettingsAdminTab || settingsAdminTab">
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-spacer">
                 <div class="crm-screen-title">Настройки</div>
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-sm p-5 lg:p-6 crm-detail-panel">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-detail-panel">
         <div class="crm-modal-tabbar-shell" style="margin:-4px -4px 16px -4px; padding:4px; border-radius:16px; border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
             <div class="crm-tabbar flex flex-wrap gap-2">
                 <button type="button" @click="settingsAdminTab='general'" x-on:click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>

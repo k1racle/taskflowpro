@@ -1,5 +1,5 @@
 <div class="space-y-4" @dragover.prevent>
-  <div class="liquid-glass-pro rounded-sm crm-screen-section">
+  <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
     <div class="crm-toolbar crm-toolbar--dense">
       <div class="crm-toolbar-main">
         <div class="crm-toolbar-summary">
@@ -62,7 +62,7 @@
       </div>
     </div>
 
-    <div class="mt-5 crm-filterbar">
+    <div class="mt-4 crm-filterbar">
       <div class="crm-filter-field">
         <div class="crm-filter-label">Поиск</div>
         <div class="mt-2 flex items-center gap-3">
@@ -101,7 +101,7 @@
   <div class="overflow-x-auto">
     <div class="min-w-[980px] grid" :style="'grid-template-columns: repeat(' + (crmStages.length || 1) + ', minmax(250px, 1fr)); gap: 12px;'">
       <template x-for="stage in crmStages" :key="stage.id">
-        <div class="liquid-glass-pro rounded-sm p-4 crm-kanban-column"
+        <div class="liquid-glass-pro rounded-sm p-5 crm-kanban-column"
              @drop.prevent="crmOnDealDrop(stage.id)"
              @dragenter.prevent
              @dragover.prevent>

@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div x-data="{ knowledgeSearch: '', knowledgeType: 'all', knowledgePreviewId: null }" class="space-y-4">
-    <div class="liquid-glass-pro rounded-sm p-5 lg:p-6 crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-summary">
@@ -36,7 +36,7 @@
             </div>
         </div>
 
-        <div class="mt-5 crm-filterbar crm-filterbar-wide">
+        <div class="mt-4 crm-filterbar crm-filterbar-wide">
             <div class="crm-filter-field crm-filter-field-search">
                 <div class="crm-filter-label">Поиск</div>
                 <div class="mt-2 flex items-center gap-3">
@@ -116,7 +116,7 @@
             </div>
         </div>
 
-        <div class="liquid-glass-pro rounded-sm p-6 crm-detail-panel min-h-[420px] crm-knowledge-reader" x-effect="knowledgePreviewId = window.TaskFlowKnowledge.ensureKnowledgePreviewId($data, knowledgePreviewId)">
+        <div class="liquid-glass-pro rounded-sm p-5 crm-detail-panel min-h-[420px] crm-knowledge-reader" x-effect="knowledgePreviewId = window.TaskFlowKnowledge.ensureKnowledgePreviewId($data, knowledgePreviewId)">
 
             <template x-if="window.TaskFlowKnowledge.getKnowledgeSelectedArticle($data, knowledgePreviewId)">
                 <div class="crm-panel-stack crm-panel-stack--compact" x-data="{ selectedArticle: window.TaskFlowKnowledge.getKnowledgeSelectedArticle($data, knowledgePreviewId) }" x-effect="selectedArticle = window.TaskFlowKnowledge.getKnowledgeSelectedArticle($data, knowledgePreviewId)">

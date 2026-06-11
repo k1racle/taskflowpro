@@ -278,7 +278,7 @@
 
                 <div class="space-y-3">
                     <template x-for="c in (taskComments || []).filter(x => !x.parent_id)" :key="c.id">
-                        <div class="liquid-glass-pro p-4 rounded-2xl">
+                        <div class="liquid-glass-pro p-5 rounded-2xl">
                             <div class="flex items-center justify-between gap-4">
                                 <div class="text-sm font-semibold text-gray-800 dark:text-white" x-text="c.author_name || '—'"></div>
                                 <div class="text-xs text-gray-500" x-text="formatDateTime(c.created_at)"></div>
@@ -346,7 +346,7 @@
 
             <div x-show="taskTab === 'history'" class="space-y-3">
                 <template x-for="h in taskHistory" :key="h.id">
-                    <div class="liquid-glass-pro p-4 rounded-2xl">
+                    <div class="liquid-glass-pro p-5 rounded-2xl">
                         <div class="flex items-center justify-between gap-4">
                             <div class="text-sm font-semibold text-gray-800 dark:text-white" x-text="getHistoryActionText(h)"></div>
                             <div class="text-xs text-gray-500" x-text="formatDateTime(h.created_at)"></div>

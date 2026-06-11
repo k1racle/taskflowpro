@@ -289,7 +289,7 @@
             </div>
 
             <!-- Тело письма -->
-            <div class="liquid-glass-pro rounded-sm p-6 mb-6">
+            <div class="liquid-glass-pro rounded-sm p-5 mb-6">
                 <template x-if="viewingEmail && viewingEmail.is_html">
                     <div class="prose dark:prose-invert max-w-none crm-text-primary" x-html="sanitizeEmailHtml(viewingEmail.body)"></div>
                 </template>
@@ -304,7 +304,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <template x-for="att in (viewingEmail?.attachments || [])" :key="att.id">
                         <a :href="getMailAttachmentDownloadUrl(att.id)" target="_blank"
-                           class="liquid-glass-pro p-4 rounded-sm flex items-center gap-3 hover:shadow-lg transition-all group">
+                           class="liquid-glass-pro p-5 rounded-sm flex items-center gap-3 hover:shadow-lg transition-all group">
                             <div class="w-12 h-12 rounded-sm flex items-center justify-center flex-shrink-0" 
                                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

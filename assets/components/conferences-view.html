@@ -4,7 +4,7 @@
 
 <div class="space-y-4 lg:space-y-6">
     
-    <div class="liquid-glass-pro rounded-sm crm-screen-section conference-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5 conference-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-section-head__content">
@@ -388,7 +388,7 @@
                 <textarea id="conference-description" name="description" x-model="createConferenceForm.description" class="w-full px-4 py-3 crm-control-textarea" rows="3" placeholder="Коротко о встрече"></textarea>
             </div>
 
-            <div x-show="lastCreatedConference" x-cloak class="liquid-glass-pro rounded-sm p-4">
+            <div x-show="lastCreatedConference" x-cloak class="liquid-glass-pro rounded-sm p-5">
                 <div class="text-sm font-semibold crm-text-primary">Гостевой доступ</div>
                 <div class="mt-2 text-xs crm-text-tertiary">Ссылка</div>
                 <div class="text-xs break-all crm-text-secondary" x-text="guestJoinUrl(lastCreatedConference?.room_id)"></div>

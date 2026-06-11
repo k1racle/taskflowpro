@@ -31,7 +31,7 @@
         </div>
 
         <div class="grid grid-cols-1 gap-4 crm-mobile-home-snapshot-grid">
-            <div class="liquid-glass-pro rounded-sm p-4 crm-screen-section">
+            <div class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
                 <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
                         <div class="text-base font-semibold crm-text-primary">Оперативный фокус</div>
@@ -66,7 +66,7 @@
                 </div>
             </div>
 
-            <div x-show="canCrm" class="liquid-glass-pro rounded-sm p-4 crm-screen-section">
+            <div x-show="canCrm" class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
                 <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
                         <div class="text-base font-semibold crm-text-primary">CRM snapshot</div>
@@ -90,7 +90,7 @@
                 </div>
             </div>
 
-            <div x-show="can('leader.view')" class="liquid-glass-pro rounded-sm p-4 crm-screen-section">
+            <div x-show="can('leader.view')" class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
                 <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
                         <div class="text-base font-semibold crm-text-primary">Команда</div>
@@ -112,7 +112,7 @@
         </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-summary">
@@ -384,13 +384,13 @@
         <table class="w-full crm-data-table">
             <thead>
                 <tr>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Задача</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Контекст</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">CRM</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Статус</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Приоритет</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Исполнитель</th>
-                    <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider">Срок</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Задача</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Контекст</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">CRM</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Статус</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Приоритет</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Исполнитель</th>
+                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider">Срок</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200/50 dark:divide-gray-700/50">
@@ -399,19 +399,19 @@
                         @contextmenu.prevent.stop="openContextMenu($event, task, task.stage_id)"
                         class="cursor-pointer crm-task-row"
                         :class="isOverdue(task.deadline) ? 'crm-task-row-overdue' : ''">
-                        <td class="px-6 py-4" data-label="Задача">
+                        <td class="px-4 py-3" data-label="Задача">
                             <div>
                                 <h4 class="font-semibold text-sm leading-[1.35] crm-text-primary" x-text="task.title"></h4>
                                 <p class="text-xs line-clamp-1 crm-text-muted" x-text="task.description || task.project_name || 'Без описания'"></p>
                             </div>
                         </td>
-                            <td class="px-4 py-4" data-label="Контекст">
+                            <td class="px-4 py-3" data-label="Контекст">
                             <div class="space-y-1 min-w-[180px]">
                                 <div class="text-xs font-medium crm-text-primary" x-text="task.project_name || 'Без проекта'"></div>
                                 <div class="text-xs crm-text-tertiary" x-text="task.department_name || task.department?.name || (task.departments && task.departments[0] ? task.departments[0].name : '') || 'Без отдела'"></div>
                             </div>
                         </td>
-                            <td class="px-4 py-4" data-label="CRM">
+                            <td class="px-4 py-3" data-label="CRM">
                             <div class="space-y-1">
                                 <div x-show="task.deal_id" class="crm-status-pill crm-status-pill-accent text-xs inline-block truncate">
                                     <span x-text="task.deal_title || 'Сделка #' + task.deal_id"></span>
@@ -422,22 +422,22 @@
                                 <span x-show="!task.deal_id && !task.client_id" class="text-xs text-gray-400">—</span>
                             </div>
                         </td>
-                            <td class="px-4 py-4" data-label="Статус">
+                            <td class="px-4 py-3" data-label="Статус">
                             <div class="space-y-1">
                                 <span class="crm-status-pill text-xs inline-flex" :style="'background: color-mix(in oklab, ' + task.status_color + ' 12%, var(--crm-surface)); color: ' + task.status_color + '; border-color: color-mix(in oklab, ' + task.status_color + ' 24%, var(--crm-border))'" x-text="task.status"></span>
                                 <div x-show="task.current_substage_id && taskSubstages && taskSubstages.length" class="text-[11px] crm-text-tertiary" x-text="taskSubstages.find(s => String(s.id) === String(task.current_substage_id))?.name || ''"></div>
                             </div>
                         </td>
-                        <td class="px-4 py-4" data-label="Приоритет">
+                        <td class="px-4 py-3" data-label="Приоритет">
                                     <span :class="'priority-' + task.priority" class="text-xs capitalize" x-text="translatePriority(task.priority)"></span>
                         </td>
-                        <td class="px-4 py-4" data-label="Исполнитель">
+                        <td class="px-4 py-3" data-label="Исполнитель">
                             <div class="flex items-center gap-2">
                                   <div class="crm-avatar crm-bg-primary" x-text="getInitials(task.assignee_name)"></div>
                                 <span class="text-sm crm-text-primary" x-text="task.assignee_name || '—'"></span>
                             </div>
                         </td>
-                        <td class="px-4 py-4" data-label="Срок">
+                        <td class="px-4 py-3" data-label="Срок">
                             <div>
                                 <span class="text-sm crm-text-primary" x-text="formatDate(task.deadline)"></span>
                                 <div class="text-[11px] mt-1" :class="isOverdue(task.deadline) ? 'text-red-600 dark:text-red-400 font-semibold' : ''" :style="!isOverdue(task.deadline) ? 'color: var(--crm-text-muted)' : ''" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>
@@ -459,7 +459,7 @@
     </div>
 
     <!-- Гант -->
-    <div x-show="tasksView === 'gantt'" x-cloak class="liquid-glass-pro rounded-sm p-4 overflow-hidden">
+    <div x-show="tasksView === 'gantt'" x-cloak class="liquid-glass-pro rounded-sm p-5 overflow-hidden">
         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
             <div class="crm-section-head__content min-w-0">
                 <div class="crm-section-head__title">Диаграмма Ганта</div>
@@ -478,7 +478,7 @@
     <!-- Календарь задач -->
     <div x-show="tasksView === 'calendar'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-3 scale-[0.98]" x-transition:enter-end="opacity-100 translate-y-0 scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 scale-100" x-transition:leave-end="opacity-0 -translate-y-2 scale-[0.98]" x-cloak
          x-init="$watch('tasks', () => { if (tasksView === 'calendar') $nextTick(() => initCalendar('tasks-calendar', filteredTasks)); })"
-         class="liquid-glass-pro rounded-sm p-4">
+         class="liquid-glass-pro rounded-sm p-5">
         <div id="tasks-calendar" class="min-h-[640px]"></div>
     </div>
 </div>

@@ -4,7 +4,7 @@
 
 <div class="space-y-4">
     <!-- Header -->
-    <div class="liquid-glass-pro rounded-sm crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
@@ -21,7 +21,7 @@
     <!-- Main cards -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <!-- Live timer + actions -->
-        <div class="xl:col-span-1 liquid-glass-pro rounded-sm p-5 lg:p-6 crm-screen-section">
+        <div class="xl:col-span-1 liquid-glass-pro rounded-sm p-5 crm-screen-section">
             <div class="flex items-center justify-between">
                 <div class="text-sm font-semibold crm-text-secondary">Статус</div>
                 <div class="text-xs px-3 py-1 rounded-sm crm-surface-card-soft crm-text-secondary" x-text="({ 'offline': 'Не на смене', 'working': 'Работа', 'break': 'Перерыв' }[shiftStatus] || shiftStatus)"></div>
@@ -57,7 +57,7 @@
 
         <!-- Notes + schedule -->
         <div class="xl:col-span-2 space-y-6 crm-panel-stack crm-panel-stack--compact">
-            <div class="liquid-glass-pro rounded-sm crm-screen-section">
+            <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Заметка по смене</div>
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <div class="liquid-glass-pro rounded-sm crm-screen-section">
+            <div class="liquid-glass-pro rounded-sm crm-screen-section p-5">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Неделя</div>
@@ -106,23 +106,23 @@
             <table class="w-full crm-data-table">
                 <thead>
                     <tr>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Дата</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Начало</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Конец</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Перерыв</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Отработано</th>
-                        <th class="px-6 py-4 text-left text-xs font-semibold uppercase">Статус</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Дата</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Начало</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Конец</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Перерыв</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Отработано</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Статус</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200/50 dark:divide-gray-700/50">
                     <template x-for="shift in (shiftHistory || [])" :key="shift.id">
                         <tr>
-                            <td class="px-6 py-4 text-sm text-gray-800 dark:text-white" x-text="shift.date"></td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400" x-text="shift.start"></td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400" x-text="shift.end"></td>
-                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400" x-text="shift.break"></td>
-                            <td class="px-6 py-4 text-sm font-semibold text-green-500" x-text="shift.worked"></td>
-                            <td class="px-6 py-4">
+                            <td class="px-4 py-3 text-sm text-gray-800 dark:text-white" x-text="shift.date"></td>
+                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" x-text="shift.start"></td>
+                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" x-text="shift.end"></td>
+                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" x-text="shift.break"></td>
+                            <td class="px-4 py-3 text-sm font-semibold text-green-500" x-text="shift.worked"></td>
+                            <td class="px-4 py-3">
                                 <span class="px-3 py-1 rounded-full text-xs font-medium"
                                       :class="shift.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'"
                                       x-text="shift.status === 'completed' ? 'Завершена' : 'В процессе'"></span>

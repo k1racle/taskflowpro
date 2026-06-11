@@ -120,7 +120,7 @@
 
                 <div class="space-y-3">
                     <template x-for="c in (projectComments || []).filter(x => !x.parent_id)" :key="c.id">
-                        <div class="liquid-glass-pro p-4 rounded-2xl">
+                        <div class="liquid-glass-pro p-5 rounded-2xl">
                             <div class="flex items-center justify-between gap-4">
                                 <div class="flex items-center gap-3 min-w-0">
                                     <img x-show="c.author_avatar && c.author_avatar !== 'null'"
