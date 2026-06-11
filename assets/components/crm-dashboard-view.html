@@ -1,5 +1,5 @@
 <div class="space-y-4">
-  <div class="liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-screen-section">
+  <div class="liquid-glass-pro rounded-sm p-5 lg:p-6 crm-screen-section">
     <div class="crm-toolbar crm-toolbar--dense">
       <div class="crm-toolbar-main">
         <div class="crm-toolbar-summary">
@@ -29,7 +29,7 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-kpi-head">
         <div class="text-sm font-semibold crm-ui-muted">Клиенты</div>
         <div class="crm-inline-badge">База</div>
@@ -37,7 +37,7 @@
       <div class="mt-2 crm-ui-kpi-value" x-text="crmDashboard?.clients ?? '—'"></div>
       <div class="mt-2 text-xs crm-ui-faint">Всего карточек клиентов в CRM.</div>
     </div>
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-kpi-head">
         <div class="text-sm font-semibold crm-ui-muted">Сделки</div>
         <div class="crm-inline-badge">В работе</div>
@@ -45,7 +45,7 @@
       <div class="mt-2 crm-ui-kpi-value" x-text="crmDashboard?.active_deals ?? '—'"></div>
       <div class="mt-2 text-xs crm-ui-faint">Общее количество активных сделок.</div>
     </div>
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-kpi-head">
         <div class="text-sm font-semibold crm-ui-muted">Сумма воронки</div>
         <div class="crm-inline-badge">Оборот</div>
@@ -53,7 +53,7 @@
       <div class="mt-2 crm-ui-kpi-value" x-text="crmFormatMoney(crmDashboard?.pipeline_sum)"></div>
       <div class="mt-2 text-xs crm-ui-faint">Потенциальный объем по этапам.</div>
     </div>
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-kpi-head">
         <div class="text-sm font-semibold crm-ui-muted">Win rate</div>
         <div class="crm-inline-badge">Эффективность</div>
@@ -64,7 +64,7 @@
   </div>
 
   <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.4fr),380px] gap-4 items-start">
-    <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-card">
+    <div class="liquid-glass-pro rounded-sm p-6 crm-detail-card">
       <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
         <div class="crm-section-head__content">
           <div class="crm-section-head__title">Воронка</div>
@@ -76,7 +76,7 @@
       </div>
       <div class="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
         <template x-for="s in (crmDashboard?.by_stage || [])" :key="s.stage_id">
-          <div class="rounded-2xl p-4 crm-stage-overview-card crm-ui-subcard">
+          <div class="rounded-sm p-4 crm-stage-overview-card crm-ui-subcard">
             <div class="flex items-center justify-between gap-3">
               <div class="text-sm font-semibold truncate crm-ui-title" x-text="s.name"></div>
               <div class="w-2.5 h-2.5 rounded-full" :style="'background:' + (s.color || '#3B82F6')"></div>
@@ -97,7 +97,7 @@
     </div>
 
     <div class="space-y-4">
-      <div class="liquid-glass-pro rounded-3xl p-5 crm-queue-card">
+      <div class="liquid-glass-pro rounded-sm p-5 crm-queue-card">
         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
           <div class="crm-section-head__content">
             <div class="crm-section-head__title">Очередь внимания</div>
@@ -109,7 +109,7 @@
         </div>
         <div class="mt-4 space-y-2">
           <template x-for="s in ((crmDashboard?.by_stage || []).slice().sort((a, b) => (b.deals_count || 0) - (a.deals_count || 0)).slice(0, 4))" :key="'queue-' + s.stage_id">
-            <div class="crm-queue-row crm-ui-subcard rounded-2xl p-3">
+            <div class="crm-queue-row crm-ui-subcard rounded-sm p-3">
               <div class="min-w-0">
                 <div class="text-sm font-semibold truncate crm-ui-title" x-text="s.name"></div>
                 <div class="text-xs mt-1 crm-ui-muted" x-text="crmFormatMoney(s.amount_sum)"></div>

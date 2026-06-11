@@ -4,7 +4,7 @@
 
 <div class="space-y-4">
     <!-- Header -->
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
@@ -21,10 +21,10 @@
     <!-- Main cards -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <!-- Live timer + actions -->
-        <div class="xl:col-span-1 liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-screen-section">
+        <div class="xl:col-span-1 liquid-glass-pro rounded-sm p-5 lg:p-6 crm-screen-section">
             <div class="flex items-center justify-between">
                 <div class="text-sm font-semibold crm-text-secondary">Статус</div>
-                <div class="text-xs px-3 py-1 rounded-xl crm-surface-card-soft crm-text-secondary" x-text="({ 'offline': 'Не на смене', 'working': 'Работа', 'break': 'Перерыв' }[shiftStatus] || shiftStatus)"></div>
+                <div class="text-xs px-3 py-1 rounded-sm crm-surface-card-soft crm-text-secondary" x-text="({ 'offline': 'Не на смене', 'working': 'Работа', 'break': 'Перерыв' }[shiftStatus] || shiftStatus)"></div>
             </div>
 
             <div class="mt-5">
@@ -36,11 +36,11 @@
             </div>
 
             <div class="mt-5 grid grid-cols-2 gap-3">
-                <div class="rounded-2xl p-4 crm-surface-card-soft">
+                <div class="rounded-sm p-4 crm-surface-card-soft">
                     <div class="text-xs crm-text-tertiary">Перерыв</div>
                     <div class="mt-1 text-lg font-semibold crm-text-primary" x-text="breakTime"></div>
                 </div>
-                <div class="rounded-2xl p-4 crm-surface-card-soft">
+                <div class="rounded-sm p-4 crm-surface-card-soft">
                     <div class="text-xs crm-text-tertiary">Отработано</div>
                     <div class="mt-1 text-lg font-semibold crm-text-primary" x-text="workedTime"></div>
                 </div>
@@ -57,7 +57,7 @@
 
         <!-- Notes + schedule -->
         <div class="xl:col-span-2 space-y-6 crm-panel-stack crm-panel-stack--compact">
-            <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+            <div class="liquid-glass-pro rounded-sm crm-screen-section">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Заметка по смене</div>
@@ -72,7 +72,7 @@
                 </div>
             </div>
 
-            <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+            <div class="liquid-glass-pro rounded-sm crm-screen-section">
                 <div class="crm-section-head">
                     <div class="crm-section-head__content">
                         <div class="crm-section-head__title">Неделя</div>
@@ -81,7 +81,7 @@
                 </div>
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-7 gap-2">
                     <template x-for="day in weekSchedule" :key="day.date">
-                        <div class="rounded-2xl p-3 text-center" :style="day.isToday ? 'border:1px solid color-mix(in oklab, var(--lg-primary) 40%, var(--lg-border)); background: color-mix(in oklab, var(--lg-primary) 10%, var(--crm-surface));' : 'border:1px solid var(--lg-border); background: color-mix(in oklab, var(--crm-surface-alt) 80%, var(--crm-surface));'">
+                        <div class="rounded-sm p-3 text-center" :style="day.isToday ? 'border:1px solid color-mix(in oklab, var(--lg-primary) 40%, var(--lg-border)); background: color-mix(in oklab, var(--lg-primary) 10%, var(--crm-surface));' : 'border:1px solid var(--lg-border); background: color-mix(in oklab, var(--crm-surface-alt) 80%, var(--crm-surface));'">
                             <div class="text-sm font-semibold crm-text-primary" x-text="day.name"></div>
                             <div class="text-[11px] mt-1 crm-text-tertiary" x-text="day.status"></div>
                         </div>
@@ -92,7 +92,7 @@
     </div>
 
     <!-- История смен -->
-    <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+    <div class="liquid-glass-pro rounded-sm overflow-hidden crm-table-shell">
         <div class="crm-table-toolbar crm-toolbar crm-toolbar--dense crm-table-toolbar--compact">
             <div class="crm-section-head__content">
                 <div class="crm-section-head__title">История смен</div>

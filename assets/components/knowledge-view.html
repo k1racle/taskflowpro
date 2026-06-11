@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div x-data="{ knowledgeSearch: '', knowledgeType: 'all', knowledgePreviewId: null }" class="space-y-4">
-    <div class="liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm p-5 lg:p-6 crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-summary">
@@ -64,7 +64,7 @@
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,420px),minmax(0,1fr)] gap-4 items-start">
-        <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell crm-master-panel">
+        <div class="liquid-glass-pro rounded-sm overflow-hidden crm-table-shell crm-master-panel">
             <div class="crm-table-toolbar crm-toolbar crm-toolbar--dense">
                 <div class="crm-section-head__content">
                     <div class="crm-section-head__title">Каталог материалов</div>
@@ -116,7 +116,7 @@
             </div>
         </div>
 
-        <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-panel min-h-[420px] crm-knowledge-reader" x-effect="knowledgePreviewId = window.TaskFlowKnowledge.ensureKnowledgePreviewId($data, knowledgePreviewId)">
+        <div class="liquid-glass-pro rounded-sm p-6 crm-detail-panel min-h-[420px] crm-knowledge-reader" x-effect="knowledgePreviewId = window.TaskFlowKnowledge.ensureKnowledgePreviewId($data, knowledgePreviewId)">
 
             <template x-if="window.TaskFlowKnowledge.getKnowledgeSelectedArticle($data, knowledgePreviewId)">
                 <div class="crm-panel-stack crm-panel-stack--compact" x-data="{ selectedArticle: window.TaskFlowKnowledge.getKnowledgeSelectedArticle($data, knowledgePreviewId) }" x-effect="selectedArticle = window.TaskFlowKnowledge.getKnowledgeSelectedArticle($data, knowledgePreviewId)">
@@ -134,7 +134,7 @@
                         </div>
                     </div>
 
-                    <div class="crm-panel-muted rounded-3xl p-5 crm-card-compact">
+                    <div class="crm-panel-muted rounded-sm p-5 crm-card-compact">
                         <div class="crm-summary-label">Содержимое</div>
                         <div class="mt-3 text-sm whitespace-pre-line crm-knowledge-body crm-text-primary" x-text="window.TaskFlowKnowledge.getKnowledgeArticleBody($data, selectedArticle)"></div>
                     </div>

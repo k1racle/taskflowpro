@@ -1,5 +1,5 @@
 <div class="space-y-4">
-  <div class="liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-screen-section">
+  <div class="liquid-glass-pro rounded-sm p-5 lg:p-6 crm-screen-section">
     <div class="crm-toolbar crm-toolbar--dense">
       <div class="crm-toolbar-main">
         <div>
@@ -23,14 +23,14 @@
       </div>
     </div>
 
-    <div class="mt-4 rounded-2xl p-4 crm-border-warn" x-show="typeof window.Chart === 'undefined'">
+    <div class="mt-4 rounded-sm p-4 crm-border-warn" x-show="typeof window.Chart === 'undefined'">
       <div class="text-sm font-semibold" style="color:#fde68a">График отключён</div>
       <div class="text-xs mt-1 crm-text-secondary">
         Не подключена библиотека Chart.js, поэтому месячная диаграмма не будет отображаться. Таблица заказов и аналитика при этом работают.
       </div>
     </div>
 
-    <div class="mt-4 rounded-2xl p-4 crm-ui-subcard">
+    <div class="mt-4 rounded-sm p-4 crm-ui-subcard">
       <div class="flex flex-wrap items-start justify-between gap-4">
         <div class="min-w-0">
           <div class="text-sm font-semibold crm-ui-title">Статус синхронизации</div>
@@ -44,7 +44,7 @@
       </div>
       <div class="mt-3 flex flex-wrap gap-2" x-show="(crmStoreSyncStatus?.recent || []).length > 0">
         <template x-for="item in (crmStoreSyncStatus?.recent || []).slice(0, 3)" :key="'store-sync-' + item.id">
-          <div class="rounded-xl px-3 py-2 text-xs crm-ui-subcard" style="border:1px solid var(--lg-border);">
+          <div class="rounded-sm px-3 py-2 text-xs crm-ui-subcard" style="border:1px solid var(--lg-border);">
             <div class="font-medium crm-ui-title" x-text="crmStoreSyncAttemptLabel(item.trigger) + ' • ' + (item.success ? 'успех' : 'ошибка')"></div>
             <div class="crm-ui-faint mt-1" x-text="crmStoreSyncTimestamp(item.created_at)"></div>
             <div class="crm-ui-muted mt-1" x-show="item.error" x-text="item.error"></div>
@@ -92,22 +92,22 @@
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-summary-label">Оборот за период</div>
       <div class="mt-2 crm-ui-kpi-value" x-text="crmFormatMoney(crmStoreAnalytics?.summary?.total_amount || 0)"></div>
       <div class="text-xs mt-2" :style="crmStoreComparisonTone(crmStoreAnalytics?.comparison?.amount_delta || 0)" x-text="crmStoreComparisonLabel(crmStoreAnalytics?.comparison?.amount_delta || 0, crmStoreAnalytics?.comparison?.amount_delta_percent)"></div>
     </div>
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-summary-label">Заказов за период</div>
       <div class="mt-2 crm-ui-kpi-value" x-text="crmStoreAnalytics?.summary?.orders_count || 0"></div>
       <div class="text-xs mt-2" :style="crmStoreComparisonTone(crmStoreAnalytics?.comparison?.orders_delta || 0)" x-text="crmStoreComparisonLabel(crmStoreAnalytics?.comparison?.orders_delta || 0, crmStoreAnalytics?.comparison?.orders_delta_percent)"></div>
     </div>
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-summary-label">Средний чек</div>
       <div class="mt-2 crm-ui-kpi-value" x-text="crmFormatMoney(crmStoreAnalytics?.summary?.average_order_amount || 0)"></div>
       <div class="text-xs mt-2 crm-ui-muted">Текущий выбранный период</div>
     </div>
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-kpi-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-kpi-card">
       <div class="crm-summary-label">Товарных позиций</div>
       <div class="mt-2 crm-ui-kpi-value" x-text="crmStoreAnalytics?.summary?.total_items_qty || 0"></div>
       <div class="text-xs mt-2 crm-ui-muted">Суммарно по заказам в выборке</div>
@@ -116,7 +116,7 @@
 
   <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.35fr),420px] gap-4 items-start">
     <div class="space-y-4">
-      <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-card">
+      <div class="liquid-glass-pro rounded-sm p-6 crm-detail-card">
         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
           <div class="crm-section-head__content">
             <div class="crm-section-head__title">Аналитика по месяцам</div>
@@ -141,7 +141,7 @@
         </div>
       </div>
 
-      <div class="liquid-glass-pro rounded-3xl p-6 crm-detail-card">
+      <div class="liquid-glass-pro rounded-sm p-6 crm-detail-card">
         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
           <div class="crm-section-head__content">
             <div class="crm-section-head__title">Заказы магазина</div>
@@ -173,7 +173,7 @@
                     <div class="text-xs crm-ui-faint" x-text="order.customer_email || order.customer_phone || ''"></div>
                   </td>
                   <td class="px-4 py-3">
-                    <span class="px-2 py-1 rounded-xl text-xs" style="border:1px solid var(--lg-border); color:var(--lg-text-secondary)" x-text="order.order_status || '—'"></span>
+                    <span class="px-2 py-1 rounded-sm text-xs" style="border:1px solid var(--lg-border); color:var(--lg-text-secondary)" x-text="order.order_status || '—'"></span>
                   </td>
                   <td class="px-4 py-3 text-sm crm-text-secondary">
                     <span x-text="(order.items_count || 0) + ' поз.'"></span>
@@ -188,11 +188,11 @@
       </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-3xl p-5 crm-queue-card">
+    <div class="liquid-glass-pro rounded-sm p-5 crm-queue-card">
       <div class="font-bold crm-ui-title">Состав заказа</div>
       <template x-if="(crmStoreAnalytics?.orders || []).find(x => Number(x.id || 0) === Number(crmStoreSelectedOrderId || 0))">
         <div class="mt-4 space-y-4" x-data="{ order: (crmStoreAnalytics?.orders || []).find(x => Number(x.id || 0) === Number(crmStoreSelectedOrderId || 0)) }">
-          <div class="rounded-2xl p-4 crm-ui-subcard">
+          <div class="rounded-sm p-4 crm-ui-subcard">
             <div class="font-semibold crm-ui-title" x-text="order.order_number || ('#' + order.external_order_id)"></div>
             <div class="text-xs mt-1 crm-ui-faint" x-text="order.customer_name || order.customer_email || order.customer_phone || '—'"></div>
             <div class="text-xs mt-2 crm-ui-muted" x-text="'Статус: ' + (order.order_status || '—')"></div>
@@ -200,7 +200,7 @@
 
           <div class="space-y-2">
             <template x-for="item in (order.items || [])" :key="item.id">
-              <div class="rounded-2xl p-4 crm-detail-card crm-ui-subcard">
+              <div class="rounded-sm p-4 crm-detail-card crm-ui-subcard">
                 <div class="flex items-start justify-between gap-3">
                   <div class="min-w-0">
                     <div class="font-semibold crm-ui-title" x-text="item.item_name"></div>
@@ -216,7 +216,7 @@
             <div x-show="!(order.items || []).length" class="text-sm crm-ui-muted">Позиции заказа пока не пришли.</div>
           </div>
 
-          <div class="rounded-2xl p-4 crm-ui-subcard space-y-2">
+          <div class="rounded-sm p-4 crm-ui-subcard space-y-2">
             <div class="flex items-center justify-between text-sm"><span class="crm-ui-muted">Подытог</span><span class="crm-ui-title" x-text="crmFormatMoney(order.subtotal_amount || 0, order.currency || 'RUB')"></span></div>
             <div class="flex items-center justify-between text-sm"><span class="crm-ui-muted">Доставка</span><span class="crm-ui-title" x-text="crmFormatMoney(order.shipping_amount || 0, order.currency || 'RUB')"></span></div>
             <div class="flex items-center justify-between text-sm"><span class="crm-ui-muted">Скидка</span><span class="crm-ui-title" x-text="crmFormatMoney(order.discount_amount || 0, order.currency || 'RUB')"></span></div>

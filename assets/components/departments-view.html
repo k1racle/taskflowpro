@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4">
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
@@ -22,7 +22,7 @@
         </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+    <div class="liquid-glass-pro rounded-sm overflow-hidden crm-table-shell">
         <div class="crm-table-toolbar crm-toolbar crm-toolbar--dense crm-table-toolbar--compact">
             <div class="crm-section-head__content">
                 <h2 class="crm-section-head__title">Список отделов</h2>
@@ -39,7 +39,7 @@
                      @click="openDepartmentModal(dept)"
                      @contextmenu.prevent.stop="openDepartmentContextMenu($event, dept)">
                     <div class="flex items-start justify-between mb-4">
-                        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
+                        <div class="w-12 h-12 rounded-sm bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white shadow-lg">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-html="getDepartmentIcon(dept.icon)"></svg>
                         </div>
                     </div>

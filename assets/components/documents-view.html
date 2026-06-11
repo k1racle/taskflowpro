@@ -1,5 +1,5 @@
 <div class="space-y-4">
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
@@ -27,7 +27,7 @@
             </div>
         </div>
 
-        <div x-show="documentsLoadError" class="mt-4 rounded-2xl p-4 crm-documents-warning">
+        <div x-show="documentsLoadError" class="mt-4 rounded-sm p-4 crm-documents-warning">
             <div class="font-semibold">Не удалось полностью загрузить модуль документов</div>
             <div class="text-sm mt-1" x-text="documentsLoadError"></div>
         </div>
@@ -63,7 +63,7 @@
 
     <div class="grid grid-cols-1 xl:grid-cols-[340px,minmax(0,1.1fr),360px] gap-4 items-start">
         <div class="space-y-4">
-            <div class="liquid-glass-pro rounded-3xl p-4">
+            <div class="liquid-glass-pro rounded-sm p-4">
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <div class="font-semibold crm-text-primary">Шаблоны</div>
@@ -72,7 +72,7 @@
                 </div>
                 <div class="mt-4 space-y-2 max-h-[68vh] overflow-y-auto pr-1">
                     <template x-for="template in (documentTemplates || [])" :key="template.id">
-                        <button @click="documentsSelectTemplate(template.id)" class="w-full text-left liquid-glass-pro rounded-2xl p-3 transition-all"
+                        <button @click="documentsSelectTemplate(template.id)" class="w-full text-left liquid-glass-pro rounded-sm p-3 transition-all"
                                 :class="documentsSelectedTemplateId === template.id ? 'crm-list-accent' : ''"
                                 :style="documentsSelectedTemplateId === template.id ? '' : 'border:1px solid var(--lg-border)'">
                             <div class="flex items-start justify-between gap-3">
@@ -113,7 +113,7 @@
         </div>
 
         <div class="space-y-4">
-            <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-start justify-between gap-3 flex-wrap">
                     <div>
                         <div class="font-semibold crm-text-primary">Генерация</div>
@@ -144,7 +144,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-2 crm-text-secondary">Текущий шаблон</label>
-                        <div class="crm-panel-block rounded-2xl px-4 py-3 crm-text-primary">
+                        <div class="crm-panel-block rounded-sm px-4 py-3 crm-text-primary">
                             <span x-text="documentsSelectedTemplate?.name || 'Не выбран'"></span>
                         </div>
                     </div>
@@ -179,7 +179,7 @@
                 </div>
 
                 <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div class="crm-documents-token-card rounded-2xl p-4">
+                    <div class="crm-documents-token-card rounded-sm p-4">
                         <div class="text-sm font-semibold crm-text-primary">Поддерживаемые переменные</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Нажмите на токен, чтобы скопировать его в формате <code>{{token}}</code>. Для DOCX в первую очередь используйте простые текстовые поля клиента, компании, банка, подписанта и системные даты.</div>
                         <div class="mt-3 space-y-3 max-h-72 overflow-y-auto pr-1">
@@ -188,7 +188,7 @@
                                     <div class="text-xs uppercase tracking-wide crm-text-tertiary" x-text="group.title"></div>
                                     <div class="mt-2 grid grid-cols-1 gap-2">
                                         <template x-for="field in (group.fields || [])" :key="field.key">
-                                            <button @click="documentsCopyField(field.key)" class="text-left rounded-2xl px-3 py-3 crm-modal-list-item crm-text-secondary">
+                                            <button @click="documentsCopyField(field.key)" class="text-left rounded-sm px-3 py-3 crm-modal-list-item crm-text-secondary">
                                                 <div class="flex items-start justify-between gap-3 flex-wrap">
                                                     <div class="min-w-0">
                                                         <div class="text-xs font-semibold crm-text-primary" x-text="field.token || ('{{' + field.key + '}}')"></div>
@@ -205,15 +205,15 @@
                         </div>
                     </div>
 
-                    <div class="crm-documents-preview-card rounded-2xl">
+                    <div class="crm-documents-preview-card rounded-sm">
                         <div class="text-sm font-semibold crm-text-primary">Данные клиента</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Контекст подстановки для выбранного клиента и шаблона.</div>
-                        <pre class="mt-3 text-xs whitespace-pre-wrap break-words rounded-2xl p-3 overflow-auto max-h-72 crm-code-preview" x-text="documentsPreviewJson"></pre>
+                        <pre class="mt-3 text-xs whitespace-pre-wrap break-words rounded-sm p-3 overflow-auto max-h-72 crm-code-preview" x-text="documentsPreviewJson"></pre>
                     </div>
                 </div>
 
                 <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div class="crm-documents-token-card rounded-2xl p-4">
+                    <div class="crm-documents-token-card rounded-sm p-4">
                         <div class="text-sm font-semibold crm-text-primary" x-text="documentsIsDocxTemplate() && documentsSelectedTemplate ? 'Карта токенов выбранного DOCX' : 'Рекомендуемые токены для документов'"></div>
                         <div class="text-xs mt-1 crm-text-tertiary" x-text="documentsIsDocxTemplate() && documentsSelectedTemplate ? 'Подборка токенов для выбранного DOCX-шаблона.' : 'Подборка токенов для коммерческих предложений, договоров и карточек клиента.'"></div>
                         <div class="mt-3 flex flex-wrap gap-2">
@@ -222,7 +222,7 @@
                             </template>
                         </div>
                     </div>
-                            <div class="crm-documents-note-card rounded-2xl p-4">
+                            <div class="crm-documents-note-card rounded-sm p-4">
                                 <div class="text-sm font-semibold">Рекомендации для DOCX</div>
                                 <div class="text-xs mt-1">Используйте простую структуру токенов для корректной подстановки в Word.</div>
                                 <ul class="mt-3 space-y-2 text-sm list-disc pl-5">
@@ -235,7 +235,7 @@
                             </div>
                         </div>
 
-                <div x-show="documentsIsDocxTemplate() && documentsSelectedTemplate" class="mt-4 crm-documents-preview-card rounded-2xl">
+                <div x-show="documentsIsDocxTemplate() && documentsSelectedTemplate" class="mt-4 crm-documents-preview-card rounded-sm">
                     <div class="flex items-start justify-between gap-3 flex-wrap">
                         <div>
                             <div class="text-sm font-semibold crm-text-primary">Готовность выбранного DOCX</div>
@@ -254,22 +254,22 @@
                             <li x-text="limitation"></li>
                         </template>
                     </ul>
-                    <div x-show="documentsSelectedTemplate?.docx_studied_basis" class="mt-4 crm-documents-token-card rounded-2xl p-4">
+                    <div x-show="documentsSelectedTemplate?.docx_studied_basis" class="mt-4 crm-documents-token-card rounded-sm p-4">
                         <div class="text-sm font-semibold crm-text-primary">Примечания по шаблону</div>
                         <div class="text-xs mt-2 crm-text-secondary" x-text="documentsSelectedTemplate?.docx_studied_basis"></div>
                     </div>
-                    <div x-show="(documentsTemplateTokenMap(documentsSelectedTemplate) || []).length" class="mt-4 crm-documents-token-card rounded-2xl p-4">
+                    <div x-show="(documentsTemplateTokenMap(documentsSelectedTemplate) || []).length" class="mt-4 crm-documents-token-card rounded-sm p-4">
                         <div class="text-sm font-semibold crm-text-primary">Рекомендуемая карта токенов</div>
                         <div class="mt-3 space-y-2">
                             <template x-for="item in (documentsTemplateTokenMap(documentsSelectedTemplate) || [])" :key="`${item.token}-${item.purpose}`">
-                                <button @click="copyText(item.token)" class="w-full text-left rounded-2xl px-3 py-3 crm-modal-list-item">
+                                <button @click="copyText(item.token)" class="w-full text-left rounded-sm px-3 py-3 crm-modal-list-item">
                                     <div class="text-xs font-semibold crm-text-primary" x-text="item.token"></div>
                                     <div class="text-xs mt-1 crm-text-secondary" x-text="item.purpose"></div>
                                 </button>
                             </template>
                         </div>
                     </div>
-                    <div x-show="(documentsTemplateTokenNotes(documentsSelectedTemplate) || []).length" class="mt-4 crm-documents-note-card rounded-2xl p-4">
+                    <div x-show="(documentsTemplateTokenNotes(documentsSelectedTemplate) || []).length" class="mt-4 crm-documents-note-card rounded-sm p-4">
                         <div class="text-sm font-semibold">Практические заметки по токенизации</div>
                         <ul class="mt-3 space-y-2 text-sm list-disc pl-5">
                             <template x-for="note in (documentsTemplateTokenNotes(documentsSelectedTemplate) || [])" :key="note">
@@ -279,7 +279,7 @@
                     </div>
                 </div>
 
-                <div x-show="documentsSelectedClientId && documentsSelectedTemplate && !documentsIsLoading" class="mt-4 crm-documents-token-card rounded-2xl p-4">
+                <div x-show="documentsSelectedClientId && documentsSelectedTemplate && !documentsIsLoading" class="mt-4 crm-documents-token-card rounded-sm p-4">
                     <div class="text-sm font-semibold crm-text-primary">Проверка перед генерацией</div>
                     <div class="text-xs mt-1 crm-text-tertiary">
                         <span x-show="documentsSelectedClientName">Клиент: <strong x-text="documentsSelectedClientName"></strong>. </span>
@@ -288,7 +288,7 @@
                 </div>
             </div>
 
-            <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-center justify-between gap-3">
                         <div>
                             <div class="font-semibold crm-text-primary">Результаты генерации</div>
@@ -299,7 +299,7 @@
                     </button>
                 </div>
 
-                <div x-show="documentsBatchArchive?.available" class="mt-4 rounded-2xl p-4 crm-documents-download-card">
+                <div x-show="documentsBatchArchive?.available" class="mt-4 rounded-sm p-4 crm-documents-download-card">
                     <div class="flex items-start justify-between gap-4 flex-wrap">
                         <div>
                             <div class="font-semibold crm-text-primary">
@@ -312,14 +312,14 @@
                     </div>
                 </div>
 
-                <div x-show="documentsLastGenerationMeta && documentsGenerationFeedback(documentsLastGenerationMeta)" class="mt-4 crm-documents-token-card rounded-2xl p-4">
+                <div x-show="documentsLastGenerationMeta && documentsGenerationFeedback(documentsLastGenerationMeta)" class="mt-4 crm-documents-token-card rounded-sm p-4">
                     <div class="text-sm font-semibold crm-text-primary">Что произошло при последней генерации</div>
                     <div class="text-sm mt-2 crm-text-secondary" x-text="documentsGenerationFeedback(documentsLastGenerationMeta)"></div>
                 </div>
 
                 <div class="mt-4 space-y-3">
                     <template x-for="item in (documentGeneratedItems || [])" :key="item.generation_id || item.file_name">
-                        <div class="liquid-glass-pro rounded-2xl p-4 border border-[color:var(--crm-border)]">
+                        <div class="liquid-glass-pro rounded-sm p-4 border border-[color:var(--crm-border)]">
                             <div class="flex items-start justify-between gap-4 flex-wrap">
                                 <div class="min-w-0">
                                     <div class="font-semibold truncate crm-text-primary" x-text="item.template_name"></div>
@@ -340,7 +340,7 @@
                 </div>
             </div>
 
-            <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-start justify-between gap-3 flex-wrap">
                     <div>
                         <div class="font-semibold crm-text-primary">История генераций</div>
@@ -351,7 +351,7 @@
                     </button>
                 </div>
 
-                <div x-show="documentsHistoryError" class="mt-4 rounded-2xl p-4 crm-documents-warning">
+                <div x-show="documentsHistoryError" class="mt-4 rounded-sm p-4 crm-documents-warning">
                     <div class="font-semibold">Историю не удалось обновить</div>
                     <div class="text-sm mt-1" x-text="documentsHistoryError"></div>
                 </div>
@@ -401,7 +401,7 @@
         </div>
 
         <div class="space-y-4">
-            <div class="liquid-glass-pro rounded-3xl p-5">
+            <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-center justify-between gap-3">
                     <div>
                         <div class="font-semibold crm-text-primary">Редактор шаблона</div>
@@ -430,7 +430,7 @@
                         <label for="document-template-content" class="block text-sm font-medium mb-2 crm-text-secondary">HTML шаблон</label>
                         <textarea id="document-template-content" name="template_content" x-model="documentTemplateForm.content" class="crm-control-input w-full min-h-[320px] crm-editor-mono" placeholder="<h1>{{client.name}}</h1>"></textarea>
                     </div>
-                    <div x-show="documentsIsDocxTemplate()" class="crm-documents-template-source rounded-2xl p-4 text-sm">
+                    <div x-show="documentsIsDocxTemplate()" class="crm-documents-template-source rounded-sm p-4 text-sm">
                         <div class="font-semibold">DOCX-шаблон из каталога</div>
                         <div class="mt-2">Источник: <code x-text="documentTemplateForm.source_path || 'docs/'"></code></div>
                         <div class="mt-2">Поддерживается подстановка простых текстовых токенов в DOCX-шаблонах.</div>

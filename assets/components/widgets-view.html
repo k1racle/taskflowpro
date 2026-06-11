@@ -1,9 +1,9 @@
 <div class="space-y-5">
-    <section class="liquid-glass-pro p-5 lg:p-6 rounded-3xl crm-screen-section">
+    <section class="liquid-glass-pro p-5 lg:p-6 rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
             <div class="max-w-3xl crm-toolbar-main">
                 <div class="crm-section-head items-center gap-3 mb-2.5">
-                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg text-white">
+                    <div class="w-11 h-11 rounded-sm bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg text-white">
                         <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
                         </svg>
@@ -18,7 +18,7 @@
                 </p>
             </div>
 
-            <div class="crm-widget-note crm-toolbar-actions rounded-2xl p-4 max-w-md">
+            <div class="crm-widget-note crm-toolbar-actions rounded-sm p-4 max-w-md">
                 <div class="text-xs font-semibold uppercase tracking-[0.16em] mb-2 crm-text-tertiary">Активный профиль</div>
                 <div class="text-sm font-semibold mb-1 crm-text-primary" x-text="getSelectedSiteWidgetProfileName()"></div>
                 <div class="text-sm crm-text-secondary">
@@ -30,9 +30,9 @@
 
     <section class="grid grid-cols-1 xl:grid-cols-[minmax(0,1.02fr)_minmax(0,1.12fr)] gap-5 items-start">
         <div class="space-y-5">
-            <div class="liquid-glass-pro p-5 rounded-3xl space-y-5 crm-panel-stack crm-panel-stack--compact">
+            <div class="liquid-glass-pro p-5 rounded-sm space-y-5 crm-panel-stack crm-panel-stack--compact">
                 <div class="crm-section-head items-center gap-3">
-                    <div class="w-11 h-11 rounded-2xl flex items-center justify-center crm-tone-accent">
+                    <div class="w-11 h-11 rounded-sm flex items-center justify-center crm-tone-accent">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0a1 1 0 00.95.69h.969c.969 0 1.371 1.24.588 1.81l-.784.57a1 1 0 00-.364 1.118l.3.921c.3.921-.755 1.688-1.539 1.118l-.784-.57a1 1 0 00-1.176 0l-.784.57c-.784.57-1.838-.197-1.539-1.118l.3-.921a1 1 0 00-.364-1.118l-.784-.57c-.783-.57-.38-1.81.588-1.81h.969a1 1 0 00.95-.69zM4 13h16M4 17h10"/>
                         </svg>
@@ -43,13 +43,13 @@
                     </div>
                 </div>
 
-                <div class="crm-widget-profiles-panel rounded-2xl p-4 space-y-4 crm-panel-stack crm-panel-stack--compact">
+                <div class="crm-widget-profiles-panel rounded-sm p-4 space-y-4 crm-panel-stack crm-panel-stack--compact">
                     <div class="crm-table-toolbar crm-table-toolbar--compact">
                         <div class="crm-section-head__content">
                             <div class="crm-section-head__title">Профили</div>
                             <p class="crm-section-head__text crm-text-secondary">Отдельные профили помогают держать разные сайты и бренды без лишних переключений.</p>
                         </div>
-                        <div class="crm-section-head__meta crm-panel-muted rounded-2xl px-4 py-3 text-sm">
+                        <div class="crm-section-head__meta crm-panel-muted rounded-sm px-4 py-3 text-sm">
                             <div class="font-semibold crm-text-primary">Статус</div>
                             <div class="crm-text-secondary" x-text="getSelectedSiteWidgetProfileSnippetLabel()"></div>
                         </div>
@@ -61,14 +61,14 @@
                         <button @click="createSiteWidgetProfile()" class="crm-btn-primary whitespace-nowrap">Создать профиль</button>
                     </div>
 
-                    <div x-show="!siteWidgetsCanManage" class="crm-panel-muted rounded-2xl px-4 py-3 text-sm crm-text-secondary">
+                    <div x-show="!siteWidgetsCanManage" class="crm-panel-muted rounded-sm px-4 py-3 text-sm crm-text-secondary">
                         Просмотр доступен всем авторизованным пользователям, изменение профилей и сохранение настроек доступны только пользователям с `admin.full`.
                     </div>
 
                     <div class="space-y-3" x-show="siteWidgetProfiles.length">
                         <template x-for="profile in siteWidgetProfiles" :key="profile.id">
                             <div
-                                class="crm-widget-profile-card w-full text-left rounded-2xl p-4"
+                                class="crm-widget-profile-card w-full text-left rounded-sm p-4"
                                 :class="{ 'is-selected': Number(siteWidgetsSelectedProfileId) === Number(profile.id) }">
                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                                     <button
@@ -117,12 +117,12 @@
                 <div class="crm-widget-settings-divider"></div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
+                    <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
                         <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2 crm-text-tertiary">Сценарий 1</div>
                         <div class="font-semibold mb-1 crm-text-primary">Кнопка и чат</div>
                         <p class="text-sm crm-text-secondary">Подходит для большинства сайтов: компактная кнопка, внутри - чат и форма обращения.</p>
                     </div>
-                    <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
+                    <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
                         <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2 crm-text-tertiary">Сценарий 2</div>
                         <div class="font-semibold mb-1 crm-text-primary">Встроенная форма</div>
                         <p class="text-sm crm-text-secondary">Нужна, когда на странице уже предусмотрен отдельный блок для входящего обращения.</p>
@@ -214,7 +214,7 @@
         </div>
 
         <div class="space-y-5 crm-panel-stack crm-panel-stack--compact">
-            <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
+            <div class="liquid-glass-pro p-5 rounded-sm space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
                         <h2 class="crm-section-head__title crm-text-primary">Кнопка-виджет</h2>
@@ -225,7 +225,7 @@
                     </div>
                 </div>
 
-                <div class="crm-panel-muted rounded-2xl px-4 py-3 text-sm crm-text-secondary">
+                <div class="crm-panel-muted rounded-sm px-4 py-3 text-sm crm-text-secondary">
                     Профиль для вставки: <span class="font-semibold crm-text-primary" x-text="getSelectedSiteWidgetProfileName()"></span>
                 </div>
 
@@ -240,12 +240,12 @@
                     </button>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-panel-muted text-sm crm-text-secondary">
+                <div class="rounded-sm p-4 crm-panel-muted text-sm crm-text-secondary">
                     Подходит для подключения в `head` или перед `&lt;/body&gt;`.
                 </div>
             </div>
 
-            <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
+            <div class="liquid-glass-pro p-5 rounded-sm space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
                         <h2 class="crm-section-head__title crm-text-primary">Встраиваемая форма</h2>
@@ -264,12 +264,12 @@
                     </button>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-panel-muted text-sm crm-text-secondary">
+                <div class="rounded-sm p-4 crm-panel-muted text-sm crm-text-secondary">
                     Удобно для лендингов, контактных секций и внутренних страниц.
                 </div>
             </div>
 
-            <div class="liquid-glass-pro p-5 rounded-3xl space-y-4 crm-card-compact crm-card-equal">
+            <div class="liquid-glass-pro p-5 rounded-sm space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
                         <h2 class="crm-section-head__title crm-text-primary">Виджет «Запись»</h2>
@@ -288,12 +288,12 @@
                     </button>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-panel-muted text-sm crm-text-secondary">
+                <div class="rounded-sm p-4 crm-panel-muted text-sm crm-text-secondary">
                     Слот удерживается на 30 минут, пока заявка ожидает подтверждения.
                 </div>
             </div>
 
-            <div class="liquid-glass-pro p-5 rounded-3xl crm-card-compact crm-card-equal">
+            <div class="liquid-glass-pro p-5 rounded-sm crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                     <div class="crm-section-head__content">
                         <h2 class="crm-section-head__title crm-text-primary">Что настраивается</h2>
@@ -301,11 +301,11 @@
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
+                    <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
                         <div class="font-semibold mb-2 crm-text-primary">Кнопка и чат</div>
                         <p class="crm-text-secondary">Позиция, тексты, заголовок окна и общий визуальный стиль.</p>
                     </div>
-                    <div class="crm-panel-muted rounded-2xl p-4 crm-card-compact crm-card-equal">
+                    <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
                         <div class="font-semibold mb-2 crm-text-primary">Форма заявки</div>
                         <p class="crm-text-secondary">Заголовок, краткое описание и размеры iframe-вставки.</p>
                     </div>

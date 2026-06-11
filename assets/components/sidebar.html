@@ -2,7 +2,7 @@
      SIDEBAR NAVIGATION - PRO 2027
      ============================================ -->
 
-    <aside class="crm-sidebar fixed lg:static inset-y-0 left-0 z-50 w-72 liquid-glass-pro transition-transform duration-300 ease-out lg:rounded-2xl lg:shadow-sm flex flex-col" style="max-height: 100vh;"
+    <aside class="crm-sidebar fixed lg:static inset-y-0 left-0 z-50 w-72 liquid-glass-pro transition-transform duration-300 ease-out lg:rounded-sm lg:shadow-sm flex flex-col" style="max-height: 100vh;"
            x-show="!mobileMoreOpen || isDesktop"
            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
 
@@ -35,7 +35,7 @@
                 <template x-for="item in (navItems || []).filter(item => ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="[(currentView === item.id ? 'crm-nav-item-active' : ''), (item.id === 'chat' ? 'crm-nav-item-chat' : '')].join(' ')"
-                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                         </svg>
@@ -58,7 +58,7 @@
                 <template x-for="item in (navItems || []).filter(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
-                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                         </svg>
@@ -81,7 +81,7 @@
                 <template x-for="item in (navItems || []).filter(item => ['mail', 'conferences', 'chat', 'booking'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
-                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                         </svg>
@@ -103,7 +103,7 @@
                 <template x-for="item in (navItems || []).filter(item => ['files', 'knowledge', 'documents'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="currentView === item.id ? 'crm-nav-item-active' : ''"
-                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                         </svg>
@@ -114,7 +114,7 @@
 
                 <button @click="currentView = 'helpdesk'; sidebarOpen = false; if (ensureHelpdeskLoaded) ensureHelpdeskLoaded()"
                         :class="currentView === 'helpdesk' ? 'crm-nav-item-active' : ''"
-                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
@@ -123,7 +123,7 @@
 
                 <button @click="currentView = 'my-shift'; sidebarOpen = false; if (ensureLeaderLoaded) ensureLeaderLoaded()"
                         :class="currentView === 'my-shift' ? 'crm-nav-item-active' : ''"
-                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                        class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                     <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
@@ -145,7 +145,7 @@
                 <template x-for="item in (navItems || []).filter(item => ['widgets'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false"
                              :class="currentView === item.id ? 'crm-nav-item-active' : ''"
-                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                             class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                         </svg>
@@ -173,7 +173,7 @@
                     <template x-for="item in adminNavItems" :key="item.id">
                         <button @click="currentView = item.id; sidebarOpen = false"
                                 :class="currentView === item.id ? 'crm-nav-item-active' : ''"
-                                class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all">
+                                class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path :d="item.icon" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
                             </svg>
@@ -189,7 +189,7 @@
     <div class="p-3 pt-2">
         <div class="px-2 pb-4"><div class="crm-divider opacity-70"></div></div>
 
-        <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+        <div class="liquid-glass-pro rounded-sm overflow-hidden">
             <div class="flex items-center justify-between gap-3 px-4 py-3.5">
                 <button @click="openProfile()" class="flex items-center min-w-0">
                     <img x-show="currentUser?.avatar && currentUser.avatar !== 'null' && currentUser.avatar !== ''"

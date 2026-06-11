@@ -5,7 +5,7 @@
 <div x-show="currentView === 'mail'" x-transition.opacity x-cloak x-data="{ mailPreviewId: null }" class="h-full flex flex-col gap-4">
 
     <!-- Верхняя панель управления -->
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section shadow-lg">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section shadow-lg">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-summary">
@@ -89,7 +89,7 @@
     <div class="grid flex-1 gap-4 min-h-0 xl:grid-cols-[260px,minmax(0,1.15fr),minmax(320px,0.85fr)]">
 
         <!-- Боковая панель с папками -->
-        <div class="liquid-glass-pro rounded-3xl p-4 shadow-lg flex flex-col overflow-hidden crm-sidebar-panel min-h-0">
+        <div class="liquid-glass-pro rounded-sm p-4 shadow-lg flex flex-col overflow-hidden crm-sidebar-panel min-h-0">
 
             <!-- Кнопка создания папки -->
             <div class="flex items-center justify-between mb-3 px-2">
@@ -107,7 +107,7 @@
             <div class="space-y-1 mb-3">
                 <template x-for="folder in mailFolders.filter(f => ['inbox', 'sent', 'drafts', 'spam', 'trash'].includes(f.id))" :key="folder.id">
                     <button @click="loadMailFromFolder(folder.id)"
-                            class="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all group crm-mail-folder-row"
+                            class="w-full flex items-center justify-between px-3 py-2.5 rounded-sm transition-all group crm-mail-folder-row"
                             :class="currentMailFolder === folder.id ? 'crm-mail-folder-row-active' : ''">
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors"
@@ -186,7 +186,7 @@
         </div>
 
         <!-- Список писем -->
-        <div class="liquid-glass-pro rounded-3xl shadow-lg overflow-hidden flex flex-col min-h-0 crm-table-shell">
+        <div class="liquid-glass-pro rounded-sm shadow-lg overflow-hidden flex flex-col min-h-0 crm-table-shell">
 
             <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                 <div class="crm-section-head__content">
@@ -266,7 +266,7 @@
                                :value="email.id"
                                class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer crm-mail-select-checkbox">
 
-                        <div class="w-10 h-10 rounded-2xl flex-shrink-0 flex items-center justify-center text-white text-sm font-bold shadow-md crm-mail-avatar"
+                        <div class="w-10 h-10 rounded-sm flex-shrink-0 flex items-center justify-center text-white text-sm font-bold shadow-md crm-mail-avatar"
                               :style="`background: ${getAvatarGradient(email.contact_name || email.sender_name || email.recipient_email)}`">
                             <span x-text="getInitials(email.contact_name || email.sender_name || email.recipient_email)"></span>
                         </div>
@@ -347,7 +347,7 @@
             </div>
         </div>
 
-        <div class="liquid-glass-pro rounded-3xl shadow-lg p-5 flex-col min-h-0 hidden xl:flex crm-mail-reader-shell">
+        <div class="liquid-glass-pro rounded-sm shadow-lg p-5 flex-col min-h-0 hidden xl:flex crm-mail-reader-shell">
             <div class="crm-section-head crm-table-toolbar crm-table-toolbar--compact">
                 <div class="crm-section-head__content min-w-0 flex-1">
                     <div class="crm-section-head__title">Область чтения</div>
@@ -362,9 +362,9 @@
             <template x-if="mailPreviewId && mailList.find(email => email.id === mailPreviewId)">
                 <div class="mt-5 space-y-4 overflow-y-auto">
                     <div x-data="{ previewEmail: mailList.find(email => email.id === mailPreviewId) }" x-effect="previewEmail = mailList.find(email => email.id === mailPreviewId)">
-                        <div class="crm-panel-muted rounded-3xl p-4">
+                        <div class="crm-panel-muted rounded-sm p-4">
                             <div class="flex items-start gap-3">
-                                <div class="w-12 h-12 rounded-2xl flex-shrink-0 flex items-center justify-center text-white text-sm font-bold"
+                                <div class="w-12 h-12 rounded-sm flex-shrink-0 flex items-center justify-center text-white text-sm font-bold"
                                      :style="`background: ${getAvatarGradient(previewEmail.contact_name || previewEmail.sender_name || previewEmail.recipient_email)}`">
                                     <span x-text="getInitials(previewEmail.contact_name || previewEmail.sender_name || previewEmail.recipient_email)"></span>
                                 </div>
@@ -384,12 +384,12 @@
                             </div>
                         </div>
 
-                        <div class="mt-4 crm-panel-muted rounded-3xl p-4">
+                        <div class="mt-4 crm-panel-muted rounded-sm p-4">
                             <div class="crm-summary-label">Тема</div>
                             <div class="mt-2 text-lg font-semibold leading-tight crm-text-primary" x-text="previewEmail.subject || 'Без темы'"></div>
                         </div>
 
-                        <div class="mt-4 crm-panel-muted rounded-3xl p-5 crm-mail-reader-body">
+                        <div class="mt-4 crm-panel-muted rounded-sm p-5 crm-mail-reader-body">
                             <div class="crm-summary-label">Предпросмотр</div>
                             <div class="mt-3 text-sm whitespace-pre-line leading-[1.55] crm-text-primary" x-text="stripHtml(previewEmail.body) || 'Тело письма отсутствует'"></div>
                         </div>

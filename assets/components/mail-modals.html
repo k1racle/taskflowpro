@@ -9,11 +9,11 @@
      @click.self="mailComposeModalOpen = false"
      x-cloak>
 
-    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div class="liquid-glass-pro rounded-sm shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <!-- Хэдер -->
         <div class="px-6 py-4 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between bg-gradient-to-r from-primary/10 to-accent/10">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, var(--lg-primary) 0%, var(--lg-accent) 100%)">
+                <div class="w-10 h-10 rounded-sm flex items-center justify-center" style="background: linear-gradient(135deg, var(--lg-primary) 0%, var(--lg-accent) 100%)">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                     </svg>
@@ -55,7 +55,7 @@
             </div>
 
             <!-- Панель форматирования -->
-            <div x-show="composeMailForm.is_html" class="flex items-center gap-1 p-2 rounded-xl bg-gray-100/50 dark:bg-gray-800/50 flex-wrap">
+            <div x-show="composeMailForm.is_html" class="flex items-center gap-1 p-2 rounded-sm bg-gray-100/50 dark:bg-gray-800/50 flex-wrap">
                 <button type="button" @click="applyMailFormat('bold')" class="p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors" title="Жирный">
                     <span class="font-bold text-sm crm-text-primary">B</span>
                 </button>
@@ -109,7 +109,7 @@
             </div>
 
             <!-- Вставка картинки -->
-            <div x-show="composeMailForm.is_html" class="flex items-center gap-3 p-3 rounded-xl bg-gray-100/50 dark:bg-gray-800/50">
+            <div x-show="composeMailForm.is_html" class="flex items-center gap-3 p-3 rounded-sm bg-gray-100/50 dark:bg-gray-800/50">
                 <button type="button" @click="$refs.mailInlineImage.click()"
                         class="crm-btn-secondary text-sm font-medium flex items-center gap-2">
                     <svg class="w-4 h-4 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,9 +138,9 @@
                 <!-- Список вложений -->
                 <div x-show="(composeMailForm.attachments || []).length" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <template x-for="(f, idx) in (composeMailForm.attachments || [])" :key="idx">
-                        <div class="liquid-glass-pro p-3 rounded-2xl flex items-center justify-between gap-3">
+                        <div class="liquid-glass-pro p-3 rounded-sm flex items-center justify-between gap-3">
                             <div class="flex items-center gap-3 min-w-0 flex-1">
-                                <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+                                <div class="w-10 h-10 rounded-sm flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
@@ -162,7 +162,7 @@
             </div>
 
             <!-- SMTP опция -->
-            <div class="flex items-center gap-3 p-4 rounded-2xl bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-800/50">
+            <div class="flex items-center gap-3 p-4 rounded-sm bg-blue-50/50 dark:bg-blue-900/20 border border-blue-200/50 dark:border-blue-800/50">
                 <input type="checkbox" id="useSmtp" x-model="composeMailForm.use_smtp" class="rounded text-primary focus:ring-primary/50">
                 <label for="useSmtp" class="text-sm flex-1 crm-text-secondary">
                     <span class="font-semibold">Отправить через SMTP</span>
@@ -185,7 +185,7 @@
                 </button>
                 <button @click="sendMail()"
                         :disabled="mailSending"
-                        class="px-8 py-2.5 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+                        class="px-8 py-2.5 rounded-sm font-semibold text-white shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
                         style="background: linear-gradient(135deg, var(--lg-primary) 0%, var(--lg-accent) 100%)">
                     <svg x-show="!mailSending" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
@@ -208,7 +208,7 @@
      @click.self="emailViewModalOpen = false"
      x-cloak>
 
-    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
+    <div class="liquid-glass-pro rounded-sm shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         <!-- Хэдер -->
         <div class="px-6 py-4 border-b border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between bg-gradient-to-r from-primary/10 to-accent/10">
             <div class="flex items-center gap-4 min-w-0 flex-1">
@@ -272,7 +272,7 @@
         <div class="flex-1 overflow-y-auto p-6">
             <!-- Информация об отправителе -->
             <div class="flex items-start gap-4 mb-6 pb-6 border-b border-gray-200/50 dark:border-gray-700/50">
-                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-bold shadow-lg flex-shrink-0"
+                <div class="w-14 h-14 rounded-sm flex items-center justify-center text-white text-lg font-bold shadow-lg flex-shrink-0"
                      :style="`background: ${getAvatarGradient(viewingEmail?.sender_name || viewingEmail?.recipient_email)}`">
                     <span x-text="getInitials(viewingEmail?.sender_name || viewingEmail?.recipient_email)"></span>
                 </div>
@@ -289,7 +289,7 @@
             </div>
 
             <!-- Тело письма -->
-            <div class="liquid-glass-pro rounded-2xl p-6 mb-6">
+            <div class="liquid-glass-pro rounded-sm p-6 mb-6">
                 <template x-if="viewingEmail && viewingEmail.is_html">
                     <div class="prose dark:prose-invert max-w-none crm-text-primary" x-html="sanitizeEmailHtml(viewingEmail.body)"></div>
                 </template>
@@ -304,8 +304,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <template x-for="att in (viewingEmail?.attachments || [])" :key="att.id">
                         <a :href="getMailAttachmentDownloadUrl(att.id)" target="_blank"
-                           class="liquid-glass-pro p-4 rounded-2xl flex items-center gap-3 hover:shadow-lg transition-all group">
-                            <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" 
+                           class="liquid-glass-pro p-4 rounded-sm flex items-center gap-3 hover:shadow-lg transition-all group">
+                            <div class="w-12 h-12 rounded-sm flex items-center justify-center flex-shrink-0" 
                                  style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -350,7 +350,7 @@
      x-cloak
      @click.outside="mailContextMenuOpen = false; contextMenuOpen = false;"
      :style="`position: fixed; left: ${contextMenuX}px; top: ${contextMenuY}px;`"
-     class="z-[150] liquid-glass-pro rounded-2xl shadow-2xl py-2 min-w-[200px]">
+     class="z-[150] liquid-glass-pro rounded-sm shadow-2xl py-2 min-w-[200px]">
     
     <template x-for="item in contextMenuItems" :key="item.action">
         <button @click="executeContextMenuAction(item.action)"
@@ -387,9 +387,9 @@
      @click.self="purgeFolderModalOpen = false"
      x-cloak>
 
-    <div class="liquid-glass-pro rounded-3xl shadow-2xl w-full max-w-md p-6">
+    <div class="liquid-glass-pro rounded-sm shadow-2xl w-full max-w-md p-6">
         <div class="flex items-center gap-4 mb-4">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-red-500/20">
+            <div class="w-12 h-12 rounded-sm flex items-center justify-center bg-red-500/20">
                 <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
@@ -410,7 +410,7 @@
                 Отмена
             </button>
             <button @click="purgeFolder()"
-                    class="flex-1 px-4 py-2.5 rounded-xl font-semibold text-white"
+                    class="flex-1 px-4 py-2.5 rounded-sm font-semibold text-white"
                     style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%)">
                 Удалить всё
             </button>

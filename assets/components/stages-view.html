@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4">
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+    <div class="liquid-glass-pro rounded-sm overflow-hidden crm-table-shell">
         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
             <div class="crm-section-head__content">
                 <div class="crm-section-head__title">
@@ -49,7 +49,7 @@
                 <div class="crm-section-head__text" x-text="getStagesManagerHelpText()"></div>
             </div>
             <div class="crm-section-head__meta flex flex-wrap items-center gap-2 text-xs">
-                <span class="px-2 py-1 rounded-xl" style="border:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 92%, transparent)" x-text="getStagesManagerSummary()"></span>
+                <span class="px-2 py-1 rounded-sm" style="border:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 92%, transparent)" x-text="getStagesManagerSummary()"></span>
                 <span x-show="stagesManagerLastLoadedAt">Обновлено: <span x-text="stagesManagerLastLoadedAt"></span></span>
                 <div x-show="stagesManagerType==='deals'" class="crm-filter-field crm-filter-field--compact">
                     <select x-model="stagesManagerPipelineId" @change="refreshStagesManager('deals')" class="crm-toolbar-select crm-control-select" :disabled="stagesManagerLoading || stagesManagerSaving">
@@ -130,8 +130,8 @@
                                     <span x-show="Number(s.is_won)!==1 && Number(s.is_lost)!==1">Обычный этап</span>
                                 </div>
                             </div>
-                            <span x-show="Number(s.is_won)===1" class="text-[11px] px-2 py-0.5 rounded-xl" style="background: color-mix(in oklab, var(--lg-success) 14%, var(--lg-glass-bg)); border:1px solid var(--lg-border); color: var(--lg-text-secondary)">Успешное завершение</span>
-                            <span x-show="Number(s.is_lost)===1" class="text-[11px] px-2 py-0.5 rounded-xl" style="background: color-mix(in oklab, var(--lg-error) 14%, var(--lg-glass-bg)); border:1px solid var(--lg-border); color: var(--lg-text-secondary)">Неуспешное завершение</span>
+                            <span x-show="Number(s.is_won)===1" class="text-[11px] px-2 py-0.5 rounded-sm" style="background: color-mix(in oklab, var(--lg-success) 14%, var(--lg-glass-bg)); border:1px solid var(--lg-border); color: var(--lg-text-secondary)">Успешное завершение</span>
+                            <span x-show="Number(s.is_lost)===1" class="text-[11px] px-2 py-0.5 rounded-sm" style="background: color-mix(in oklab, var(--lg-error) 14%, var(--lg-glass-bg)); border:1px solid var(--lg-border); color: var(--lg-text-secondary)">Неуспешное завершение</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <button class="crm-btn-secondary" @click="openStageManagerModal(s)">Редактировать</button>
@@ -184,7 +184,7 @@
 
 <!-- Модалка: Этап задач / сделок -->
 <div x-show="stageManagerModalOpen" x-cloak class="fixed inset-0 z-[130] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="stageManagerModalOpen = false">
-    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden">
+    <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-lg overflow-hidden">
         <div class="crm-modal-header">
             <div class="min-w-0">
                 <h2 class="crm-modal-title" x-text="stageManagerForm.id ? 'Редактировать этап' : 'Новый этап'"></h2>
@@ -217,11 +217,11 @@
                 <span x-show="stagesManagerType === 'deals'">Этап будет доступен только в выбранной CRM-воронке.</span>
             </div>
             <div x-show="stagesManagerType === 'deals'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-2xl px-4 py-3 crm-border">
+                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-sm px-4 py-3 crm-border">
                     <input type="checkbox" x-model="stageManagerForm.is_won" class="w-4 h-4" :disabled="stagesManagerSaving" />
                     <span class="text-sm crm-text-secondary">Завершено успешно</span>
                 </label>
-                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-2xl px-4 py-3 crm-border">
+                <label class="inline-flex items-center gap-2 liquid-glass-pro rounded-sm px-4 py-3 crm-border">
                     <input type="checkbox" x-model="stageManagerForm.is_lost" class="w-4 h-4" :disabled="stagesManagerSaving" />
                     <span class="text-sm crm-text-secondary">Завершено неуспешно</span>
                 </label>
@@ -237,7 +237,7 @@
 
 <!-- Модалка: Подэтап -->
 <div x-show="substageModalOpen" x-cloak class="fixed inset-0 z-[130] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="substageModalOpen = false">
-    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-md overflow-hidden">
         <div class="crm-modal-header">
             <div class="min-w-0">
                 <h2 class="crm-modal-title" x-text="editingSubstage ? 'Редактировать подэтап' : 'Новый подэтап'"></h2>
@@ -270,7 +270,7 @@
 
 <!-- Модалка: Подэтап CRM -->
 <div x-show="crmDealSubstageModalOpen" x-cloak class="fixed inset-0 z-[130] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="crmDealSubstageModalOpen = false">
-    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-md overflow-hidden">
+    <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-md overflow-hidden">
         <div class="crm-modal-header">
             <div class="min-w-0">
                 <h2 class="crm-modal-title" x-text="editingCrmDealSubstage ? 'Редактировать подэтап CRM' : 'Новый подэтап CRM'"></h2>

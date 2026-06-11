@@ -3,10 +3,10 @@
      ============================================ -->
 
 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-    <div class="glass-card rounded-3xl shadow-2xl p-8 w-full max-w-md">
+    <div class="glass-card rounded-sm shadow-2xl p-8 w-full max-w-md">
         <!-- Логотип -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl shadow-lg mb-4 bg-white/10">
+            <div class="inline-flex items-center justify-center w-20 h-20 rounded-sm shadow-lg mb-4 bg-white/10">
                 <img src="app.png" alt="TaskFlow" class="w-14 h-14 object-cover">
             </div>
             <h1 class="text-3xl font-bold text-gray-800 dark:text-white" x-text="settings.company_name || 'TaskFlow Pro'"></h1>
@@ -15,7 +15,7 @@
 
         <!-- Форма входа -->
         <form @submit.prevent="login" class="space-y-5">
-            <div x-show="loginError" class="p-4 rounded-xl bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800" x-text="loginError"></div>
+            <div x-show="loginError" class="p-4 rounded-sm bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800" x-text="loginError"></div>
 
             <div>
                 <label for="auth-login" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

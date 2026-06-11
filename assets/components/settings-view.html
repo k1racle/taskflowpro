@@ -3,7 +3,7 @@
      ============================================ -->
 
 <div class="space-y-4" x-data="{ settingsAdminTab: 'general' }" x-init="$watch('settingsAdminTab', (value) => { window.__taskflowSettingsAdminTab = value; }); settingsAdminTab = window.__taskflowSettingsAdminTab || settingsAdminTab">
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-spacer">
                 <div class="crm-screen-title">Настройки</div>
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="liquid-glass-pro rounded-3xl p-5 lg:p-6 crm-detail-panel">
+    <div class="liquid-glass-pro rounded-sm p-5 lg:p-6 crm-detail-panel">
         <div class="crm-modal-tabbar-shell" style="margin:-4px -4px 16px -4px; padding:4px; border-radius:16px; border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
             <div class="crm-tabbar flex flex-wrap gap-2">
                 <button type="button" @click="settingsAdminTab='general'" x-on:click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>
@@ -101,7 +101,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-2xl p-4 crm-border-subtle">
+                <div class="rounded-sm p-4 crm-border-subtle">
                     <div class="text-sm font-medium mb-2 crm-text-primary">Что вставить в WooCommerce-плагин</div>
                     <ol class="text-sm space-y-1" style="color: var(--lg-text-secondary); padding-left: 18px;">
                         <li>В поле <strong>CRM webhook URL</strong> вставьте <strong>Order webhook endpoint</strong>.</li>
@@ -368,7 +368,7 @@
                 </div>
 
                 <div x-show="adminHealth" class="mt-4 crm-panel-stack crm-panel-stack--compact">
-                    <div class="rounded-2xl p-4 crm-border-subtle">
+                    <div class="rounded-sm p-4 crm-border-subtle">
                         <div class="crm-section-head">
                             <div class="crm-section-head__content">
                                 <div class="crm-section-head__title">Production readiness</div>
@@ -377,33 +377,33 @@
                             <span class="text-xs px-2 py-1 rounded-full" :style="adminHealth?.release_ready ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : 'background:rgba(239,68,68,.18); color:#fecaca'" x-text="adminHealth?.release_ready ? 'READY' : 'NOT READY'"></span>
                         </div>
                         <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Release gate</div>
                                 <div class="font-semibold mt-1" :style="adminHealth?.release_ready ? 'color:#bbf7d0' : 'color:#fecaca'" x-text="adminHealth?.release_ready ? 'READY' : 'NOT READY'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Blocking issues</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="(adminHealth?.blocking_issues || []).length"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Check source</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mt-4 text-sm">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">RBAC source</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Break-glass</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.break_glass_role || 'unknown'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Administrator break-glass</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.administrator_break_glass ? 'yes' : 'no'"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Chat realtime</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.chat_realtime || 'unknown'"></div>
                             </div>
@@ -429,7 +429,7 @@
                             <div class="text-xs uppercase tracking-wide font-semibold crm-text-tertiary">Blocking issues</div>
                             <ul class="mt-2 space-y-2 text-sm">
                                 <template x-for="issue in (adminHealth?.blocking_issues || [])" :key="issue.key">
-                                    <li class="rounded-2xl p-3" :style="issue.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10); color:#fecaca' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10); color:#fde68a'">
+                                    <li class="rounded-sm p-3" :style="issue.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10); color:#fecaca' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10); color:#fde68a'">
                                         <div class="font-semibold" x-text="issue.label"></div>
                                         <div class="text-xs mt-1 opacity-80" x-text="(issue.group ? ('Группа: ' + issue.group + ' · ') : '') + (issue.path ? ('Путь: ' + issue.path) : '')"></div>
                                     </li>
@@ -438,7 +438,7 @@
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-4 crm-border-subtle">
+                    <div class="rounded-sm p-4 crm-border-subtle">
                         <div class="flex items-center justify-between gap-3 flex-wrap">
                             <div>
                                 <div class="text-sm font-semibold crm-text-primary">Release gate control</div>
@@ -463,7 +463,7 @@
                 </div>
 
                 <div x-show="diagnosticsBaseline.data" class="mt-4 crm-panel-stack crm-panel-stack--compact">
-                    <div class="rounded-2xl p-3 text-sm" :style="(
+                    <div class="rounded-sm p-3 text-sm" :style="(
                         diagnosticsBaseline.data?.status === 'error'
                             ? 'border:1px solid rgba(239,68,68,.35); color:#fecaca; background:rgba(127,29,29,.18)'
                             : (diagnosticsBaseline.data?.status === 'warning'
@@ -486,40 +486,40 @@
                     </div>
 
                     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 text-sm">
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="text-xs crm-text-tertiary">Всего проверок</div>
                             <div class="font-semibold mt-1 crm-text-primary" x-text="diagnosticsBaseline.data?.summary?.total_count ?? 0"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-success">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-success">
                             <div class="text-xs crm-text-tertiary">OK</div>
                             <div class="font-semibold mt-1" style="color:#bbf7d0" x-text="diagnosticsBaseline.data?.summary?.ok_count ?? 0"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-warn-light">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-warn-light">
                             <div class="text-xs crm-text-tertiary">Warnings</div>
                             <div class="font-semibold mt-1" style="color:#fde68a" x-text="diagnosticsBaseline.data?.summary?.warning_count ?? 0"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3" style="border:1px solid rgba(239,68,68,.18); background:rgba(127,29,29,.08)">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3" style="border:1px solid rgba(239,68,68,.18); background:rgba(127,29,29,.08)">
                             <div class="text-xs crm-text-tertiary">Errors</div>
                             <div class="font-semibold mt-1" style="color:#fecaca" x-text="diagnosticsBaseline.data?.summary?.error_count ?? 0"></div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs" x-show="diagnosticsBaseline.data?.environment">
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="crm-text-tertiary">PHP</div>
                             <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.php_version || '—'"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="crm-text-tertiary">SAPI</div>
                             <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.sapi || '—'"></div>
                         </div>
-                        <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                        <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="crm-text-tertiary">OS family</div>
                             <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.os_family || '—'"></div>
                         </div>
                     </div>
 
-                    <div class="rounded-2xl p-4 space-y-4 crm-border-subtle" x-show="diagnosticsBaseline.data?.box_readiness">
+                    <div class="rounded-sm p-4 space-y-4 crm-border-subtle" x-show="diagnosticsBaseline.data?.box_readiness">
                         <div class="crm-section-head">
                             <div class="crm-section-head__content">
                                 <div class="crm-section-head__title">Box readiness</div>
@@ -529,26 +529,26 @@
                         </div>
 
                         <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 text-sm">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-subtle">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Всего сигналов</div>
                                 <div class="font-semibold mt-1 crm-text-primary" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.total_count ?? 0"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-success">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-success">
                                 <div class="text-xs crm-text-tertiary">Подтверждено</div>
                                 <div class="font-semibold mt-1" style="color:#bbf7d0" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.ok_count ?? 0"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-warn-light">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-warn-light">
                                 <div class="text-xs crm-text-tertiary">Требует внимания</div>
                                 <div class="font-semibold mt-1" style="color:#fde68a" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.missing_count ?? 0"></div>
                             </div>
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-3 crm-border-warn-light">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-warn-light">
                                 <div class="text-xs crm-text-tertiary">Warnings</div>
                                 <div class="font-semibold mt-1" style="color:#fde68a" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.warning_count ?? 0"></div>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 xl:grid-cols-2 gap-3 text-xs" x-show="(diagnosticsBaseline.data?.box_readiness?.missing_items || []).length || (diagnosticsBaseline.data?.box_readiness?.warning_items || []).length">
-                            <div class="rounded-2xl p-3 crm-border-warn" x-show="(diagnosticsBaseline.data?.box_readiness?.missing_items || []).length">
+                            <div class="rounded-sm p-3 crm-border-warn" x-show="(diagnosticsBaseline.data?.box_readiness?.missing_items || []).length">
                                 <div class="font-semibold" style="color:#fde68a">Missing / attention</div>
                                 <ul class="mt-2 space-y-1 crm-text-secondary">
                                     <template x-for="item in (diagnosticsBaseline.data?.box_readiness?.missing_items || [])" :key="item">
@@ -556,7 +556,7 @@
                                     </template>
                                 </ul>
                             </div>
-                            <div class="rounded-2xl p-3 crm-border-warn" x-show="(diagnosticsBaseline.data?.box_readiness?.warning_items || []).length">
+                            <div class="rounded-sm p-3 crm-border-warn" x-show="(diagnosticsBaseline.data?.box_readiness?.warning_items || []).length">
                                 <div class="font-semibold" style="color:#fde68a">Warning items</div>
                                 <ul class="mt-2 space-y-1 crm-text-secondary">
                                     <template x-for="item in (diagnosticsBaseline.data?.box_readiness?.warning_items || [])" :key="item">
@@ -568,7 +568,7 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <template x-for="signal in (diagnosticsBaseline.data?.box_readiness?.signals || [])" :key="signal.key">
-                                <div class="crm-card-compact crm-card-equal rounded-2xl p-4" :style="signal.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)'">
+                                <div class="crm-card-compact crm-card-equal rounded-sm p-4" :style="signal.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)'">
                                     <div class="flex items-center justify-between gap-3">
                                         <div class="font-semibold text-sm uppercase tracking-wide crm-text-primary" x-text="signal.label"></div>
                                         <span class="text-xs px-2 py-1 rounded-full" :style="signal.ok ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : 'background:rgba(245,158,11,.18); color:#fde68a'" x-text="signal.ok ? 'OK' : 'WARN'"></span>
@@ -584,7 +584,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <template x-for="(check, key) in (diagnosticsBaseline.data?.checks || {})" :key="key">
-                            <div class="crm-card-compact crm-card-equal rounded-2xl p-4" :style="check.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : (check.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)')">
+                            <div class="crm-card-compact crm-card-equal rounded-sm p-4" :style="check.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : (check.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)')">
                                 <div class="flex items-center justify-between gap-3">
                                     <div class="font-semibold text-sm uppercase tracking-wide crm-text-primary" x-text="key.replace(/_/g, ' ')"></div>
                                     <span class="text-xs px-2 py-1 rounded-full" :style="check.ok ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : (check.severity === 'error' ? 'background:rgba(239,68,68,.18); color:#fecaca' : 'background:rgba(245,158,11,.18); color:#fde68a')" x-text="check.ok ? 'OK' : (check.severity === 'error' ? 'ERROR' : 'WARN')"></span>

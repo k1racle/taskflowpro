@@ -56,7 +56,7 @@
                         <button type="button"
                                 @click="departmentForm.icon = ic"
                                 :class="departmentForm.icon === ic ? 'liquid-glass-pro' : 'crm-btn-ghost'"
-                                class="p-2 rounded-xl flex items-center justify-center">
+                                class="p-2 rounded-sm flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-html="getDepartmentIcon(ic)"></svg>
                         </button>
                     </template>
@@ -68,12 +68,12 @@
             </div>
 
             <div x-show="departmentModalTab === 'employees'" class="space-y-3">
-                <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+                <div class="liquid-glass-pro rounded-sm overflow-hidden">
                     <div class="p-4 font-semibold crm-text-primary">Сотрудники отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="u in (departmentEmployees || [])" :key="u.id">
-                            <div class="liquid-glass-pro rounded-2xl p-3 flex items-center gap-3">
+                            <div class="liquid-glass-pro rounded-sm p-3 flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold crm-bg-primary" x-text="getInitials(u.full_name || u.login)"></div>
                                 <div class="min-w-0">
                                     <div class="text-sm font-semibold truncate crm-text-primary" x-text="u.full_name || u.login"></div>
@@ -87,12 +87,12 @@
             </div>
 
             <div x-show="departmentModalTab === 'projects'" class="space-y-3">
-                <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+                <div class="liquid-glass-pro rounded-sm overflow-hidden">
                     <div class="p-4 font-semibold crm-text-primary">Проекты отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="p in (departmentProjects || [])" :key="p.id">
-                            <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-4">
+                            <div class="liquid-glass-pro rounded-sm p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
                                     <div class="text-sm font-semibold truncate crm-text-primary" x-text="p.name"></div>
                                     <div class="text-xs crm-text-secondary" x-text="p.description || ''"></div>
@@ -106,12 +106,12 @@
             </div>
 
             <div x-show="departmentModalTab === 'tasks'" class="space-y-3">
-                <div class="liquid-glass-pro rounded-2xl overflow-hidden">
+                <div class="liquid-glass-pro rounded-sm overflow-hidden">
                     <div class="p-4 font-semibold crm-text-primary">Задачи отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="t in (departmentTasks || [])" :key="t.id">
-                            <div class="liquid-glass-pro rounded-2xl p-3 flex items-center justify-between gap-4">
+                            <div class="liquid-glass-pro rounded-sm p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
                                     <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
                                     <div class="text-xs crm-text-secondary" x-text="t.status || ''"></div>
@@ -195,7 +195,7 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <div class="liquid-glass-pro rounded-2xl p-4 relative z-0">
+                    <div class="liquid-glass-pro rounded-sm p-4 relative z-0">
                         <div class="flex items-start justify-between gap-4">
                             <div class="min-w-0">
                                 <div class="text-sm font-semibold crm-text-primary">Подсказка</div>
@@ -258,7 +258,7 @@
                 <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
                     <template x-for="ic in roleIcons" :key="ic">
                         <button type="button"
-                                class="w-10 h-10 rounded-xl flex items-center justify-center transition-all"
+                                class="w-10 h-10 rounded-sm flex items-center justify-center transition-all"
                                 :class="roleForm.icon === ic ? 'liquid-glass-pro ring-2 ring-[color:var(--lg-primary)]' : 'crm-btn-ghost'"
                                 @click="roleForm.icon = ic"
                                 :title="ic">
@@ -343,7 +343,7 @@
         </div>
 
         <div class="crm-modal-body crm-drawer-body p-6">
-            <div class="mb-4 rounded-2xl p-4 crm-border-subtle">
+            <div class="mb-4 rounded-sm p-4 crm-border-subtle">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div>
                         <div class="font-semibold crm-text-primary">Быстрый пресет</div>
@@ -363,9 +363,9 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <template x-for="section in Object.keys(rolePermissions || {})" :key="section">
-                    <div class="liquid-glass-pro rounded-2xl p-4">
+                    <div class="liquid-glass-pro rounded-sm p-4">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white crm-bg-primary">
+                            <div class="w-10 h-10 rounded-sm flex items-center justify-center text-white crm-bg-primary">
                                 <template x-if="section === 'tasks'">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                                 </template>
@@ -405,7 +405,7 @@
                         </div>
 
                         <div class="space-y-2">
-                            <div class="mb-3 rounded-xl px-3 py-2 crm-border-subtle">
+                            <div class="mb-3 rounded-sm px-3 py-2 crm-border-subtle">
                                 <div class="text-xs mb-2 crm-text-tertiary">Область доступа</div>
                                 <select class="w-full px-3 py-2 crm-control-select text-sm" x-model="rolePermissionScopes[section]" :disabled="section === 'admin'">
                                     <option value="none">Нет доступа</option>
@@ -449,58 +449,58 @@
      class="fixed inset-0 z-[70]">
     <div class="absolute inset-0" @click="closeContextMenu()"></div>
 
-    <div class="fixed liquid-glass-pro rounded-2xl shadow-2xl min-w-[220px] overflow-hidden"
+    <div class="fixed liquid-glass-pro rounded-sm shadow-2xl min-w-[220px] overflow-hidden"
          :style="`left:${contextMenuX}px; top:${contextMenuY}px;`">
         <div class="p-2 space-y-1">
             <button x-show="mailContextMenuEmail" @click="openMailFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Открыть письмо
             </button>
 
             <button x-show="mailContextMenuEmail" @click="replyMailFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Ответить
             </button>
 
             <button x-show="mailContextMenuEmail" @click="toggleMailStarFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 <span x-text="Number(mailContextMenuEmail?.is_starred) ? 'Убрать из важного' : 'Важное'"></span>
             </button>
 
             <button x-show="mailContextMenuEmail" @click="deleteMailFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
                 Удалить
             </button>
 
             <div x-show="mailContextMenuEmail" class="h-px my-1" style="background: color-mix(in oklab, var(--lg-glass-border) 40%, transparent);"></div>
 
             <button x-show="!mailContextMenuEmail" @click="createTaskFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Создать задачу
             </button>
 
             <button x-show="contextMenuTask" @click="openTaskModal(contextMenuTask); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Открыть
             </button>
 
             <button x-show="contextMenuTask" @click="deleteTaskFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
                 Удалить
             </button>
 
             <div class="h-px my-1" style="background: color-mix(in oklab, var(--lg-glass-border) 40%, transparent);"></div>
 
             <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="createStageFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Создать этап
             </button>
             <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="editStageFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Переименовать этап
             </button>
             <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="deleteStageFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
                 Удалить этап
             </button>
         </div>
@@ -512,7 +512,7 @@
      ============================================ -->
 
 <div x-show="imagePreviewOpen" x-transition.opacity x-cloak class="fixed inset-0 z-[130] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop" @click.self="imagePreviewOpen=false">
-    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-5xl overflow-hidden chat-image-preview-shell">
+    <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-5xl overflow-hidden chat-image-preview-shell">
         <div class="p-4 flex items-center justify-between gap-3">
             <div class="min-w-0">
                 <div class="text-sm font-semibold truncate crm-text-primary" x-text="imagePreviewName || 'Изображение'"></div>
@@ -529,7 +529,7 @@
             </div>
         </div>
         <div class="px-4 pb-4">
-            <div class="liquid-glass-pro rounded-3xl overflow-hidden crm-preview-stage chat-image-preview-stage">
+            <div class="liquid-glass-pro rounded-sm overflow-hidden crm-preview-stage chat-image-preview-stage">
                 <img :src="imagePreviewSrc" class="w-full max-h-[75vh] object-contain" alt="" />
             </div>
         </div>
@@ -541,7 +541,7 @@
      ============================================ -->
 
 <div x-show="incomingCallModal" x-transition.opacity x-cloak class="fixed inset-0 z-[140] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop">
-    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden">
+    <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-sm overflow-hidden">
         <div class="p-6 text-center">
             <div class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-white font-bold text-xl crm-avatar-accent" x-text="getInitials(incomingCaller?.name || ' ')" ></div>
             <div class="mt-4 text-lg font-bold crm-text-primary" x-text="incomingCaller?.name || 'Входящий звонок'"></div>
@@ -568,7 +568,7 @@
      ============================================ -->
 
 <div x-show="showCallModal" x-transition.opacity x-cloak class="fixed inset-0 z-[141] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop">
-    <div class="liquid-glass-pro lg-modal-shell rounded-3xl shadow-2xl w-full max-w-3xl overflow-hidden">
+    <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-3xl overflow-hidden">
         <div class="p-5 text-center">
             <div class="text-base font-bold crm-text-primary" x-text="callType === 'video' ? 'Видеозвонок' : 'Аудиозвонок'"></div>
             <div class="mt-1 text-sm crm-text-tertiary" x-text="callStatus === 'connected' ? formatCallTime(callTimer) : 'Звоним…'"></div>
@@ -580,18 +580,18 @@
             <audio id="remote-audio" autoplay playsinline></audio>
 
             <div x-show="callType === 'video'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="relative aspect-video rounded-3xl overflow-hidden crm-video-surface">
+                <div class="relative aspect-video rounded-sm overflow-hidden crm-video-surface">
                     <video id="remote-video" autoplay playsinline class="w-full h-full object-cover"></video>
                     <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-primary">Собеседник</div>
                 </div>
-                <div class="relative aspect-video rounded-3xl overflow-hidden crm-video-surface">
+                <div class="relative aspect-video rounded-sm overflow-hidden crm-video-surface">
                     <video id="local-video" autoplay muted playsinline class="w-full h-full object-cover"></video>
                     <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-primary">Вы</div>
                 </div>
             </div>
 
             <div x-show="callType !== 'video'" class="py-10 text-center">
-                <div class="w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-white font-bold crm-avatar-accent" x-text="getInitials(activeChatRoom?.interlocutor_name || activeChatRoom?.room_name || ' ')" ></div>
+                <div class="w-20 h-20 rounded-sm mx-auto flex items-center justify-center text-white font-bold crm-avatar-accent" x-text="getInitials(activeChatRoom?.interlocutor_name || activeChatRoom?.room_name || ' ')" ></div>
                 <div class="mt-4 text-sm crm-text-tertiary">Аудио</div>
             </div>
 
@@ -634,7 +634,7 @@
             </div>
 
             <div class="mt-6" x-show="(can && can('admin.full')) || currentUser?.role === 'root'">
-                <div class="rounded-2xl p-4 crm-border-subtle">
+                <div class="rounded-sm p-4 crm-border-subtle">
                     <div class="text-sm font-semibold crm-text-primary">WebRTC диагностика</div>
                     <div class="text-xs mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 crm-text-secondary">
                         <div><span class="crm-text-tertiary">ICE:</span> <span x-text="callDebug?.iceConnectionState || '—'"></span></div>

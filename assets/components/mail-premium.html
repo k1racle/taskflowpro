@@ -9,7 +9,7 @@
      class="h-full flex flex-col">
 
     <!-- Хэдер почты -->
-    <div class="liquid-glass-pro mb-6 p-6 rounded-3xl">
+    <div class="liquid-glass-pro mb-6 p-6 rounded-sm">
         <div class="flex items-center justify-between mb-4">
             <h1 class="text-3xl font-semibold crm-text-primary">Почта</h1>
             <button @click="openMailComposeModal()"
@@ -38,12 +38,12 @@
     <div class="flex-1 flex gap-6 overflow-hidden">
         
         <!-- Боковая панель -->
-        <div class="w-72 liquid-glass-pro rounded-3xl p-4 overflow-y-auto">
+        <div class="w-72 liquid-glass-pro rounded-sm p-4 overflow-y-auto">
             <nav class="space-y-2">
                 <template x-for="folder in mailFolders" :key="folder.id">
                     <button @click="loadMailFromFolder(folder.id)"
                             :class="currentMailFolder === folder.id ? 'crm-surface-card-soft' : ''"
-                            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all crm-menu-item">
+                            class="w-full flex items-center gap-3 px-4 py-3 rounded-sm transition-all crm-menu-item">
                         <!-- Иконки папок -->
                         <svg x-show="folder.id === 'inbox'" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
@@ -75,13 +75,13 @@
             <div class="space-y-2">
                 <h3 class="text-sm font-semibold px-4 crm-text-muted">Аккаунты</h3>
                 <template x-for="account in mailAccounts" :key="account.id">
-                    <div class="liquid-glass-pro p-3 text-sm rounded-2xl">
+                    <div class="liquid-glass-pro p-3 text-sm rounded-sm">
                         <p class="font-medium crm-text-primary" x-text="account.email"></p>
                         <p class="text-xs crm-text-faint" x-text="account.smtp_host"></p>
                     </div>
                 </template>
                 <button @click="openMailSettings()"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl crm-text-muted hover:bg-[color:color-mix(in_oklab,var(--crm-surface-alt)_82%,var(--crm-surface))] transition-all">
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-sm crm-text-muted hover:bg-[color:color-mix(in_oklab,var(--crm-surface-alt)_82%,var(--crm-surface))] transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -92,7 +92,7 @@
         </div>
 
         <!-- Список писем -->
-        <div class="flex-1 liquid-glass-pro rounded-3xl overflow-hidden flex flex-col">
+        <div class="flex-1 liquid-glass-pro rounded-sm overflow-hidden flex flex-col">
             <!-- Хэдер списка -->
             <div class="p-4 border-b border-[color:var(--crm-border)] flex items-center justify-between">
                 <h2 class="text-xl font-semibold crm-text-primary" x-text="getFolderName(currentMailFolder)"></h2>
@@ -169,7 +169,7 @@
          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
          @click.self="mailComposeModalOpen = false">
         
-        <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl">
+        <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-sm">
             <!-- Хэдер -->
             <div class="p-6 border-b border-[color:var(--crm-border)] flex items-center justify-between">
                 <h3 class="text-xl font-semibold crm-text-primary">Новое письмо</h3>
@@ -228,7 +228,7 @@
          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
          @click.self="emailViewModalOpen = false">
         
-        <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-3xl">
+        <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-sm">
             <!-- Хэдер -->
             <div class="p-6 border-b border-[color:var(--crm-border)] flex items-center justify-between">
                 <h3 class="text-xl font-semibold crm-text-primary" x-text="viewingEmail?.subject"></h3>

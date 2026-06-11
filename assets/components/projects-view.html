@@ -163,7 +163,7 @@
 </style>
 
 <div x-data="{ projectSearch: '', filtersOpen: false }" class="space-y-4">
-    <div class="liquid-glass-pro rounded-3xl crm-screen-section">
+    <div class="liquid-glass-pro rounded-sm crm-screen-section">
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
@@ -222,7 +222,7 @@
         </div>
     </div>
 
-    <div x-show="filtersOpen" x-cloak x-transition.opacity class="liquid-glass-pro rounded-3xl p-5 crm-screen-section">
+    <div x-show="filtersOpen" x-cloak x-transition.opacity class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
         <div class="crm-section-head">
             <div class="crm-section-head__content">
                 <h2 class="crm-section-head__title">Фильтры проектов</h2>
@@ -252,7 +252,7 @@
 
     <div x-show="projectsView === 'cards'" class="grid grid-cols-1 lg:grid-cols-3 lg:justify-items-center gap-2">
         <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="project.id">
-            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-3xl cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card w-full max-w-[360px]" style="padding: 5px;">
+            <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-sm cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card w-full max-w-[360px]" style="padding: 5px;">
                 <div class="crm-project-card-head crm-project-card-head--compact" style="padding-bottom: 8px;">
                     <div class="flex items-start gap-1.5 min-w-0">
                         <div class="crm-project-avatar crm-project-avatar--soft crm-project-avatar--compact">
@@ -297,7 +297,7 @@
         </template>
     </div>
 
-    <div x-show="projectsView === 'list'" class="liquid-glass-pro rounded-3xl overflow-hidden crm-table-shell">
+    <div x-show="projectsView === 'list'" class="liquid-glass-pro rounded-sm overflow-hidden crm-table-shell">
         <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
             <div class="crm-section-head__content">
                 <h2 class="crm-section-head__title">Список проектов</h2>
@@ -371,7 +371,7 @@
         </div>
     </div>
 
-    <div x-show="filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase())).length === 0" class="liquid-glass-pro rounded-3xl p-12 text-center crm-empty-state">
+    <div x-show="filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase())).length === 0" class="liquid-glass-pro rounded-sm p-12 text-center crm-empty-state">
         <svg class="w-24 h-24 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
         </svg>
