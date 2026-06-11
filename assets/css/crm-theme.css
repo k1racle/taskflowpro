@@ -3,6 +3,15 @@
    Conservative overrides for the shared shell
    ============================================ */
 
+/* ── Custom Nothing OS heading font ── */
+@font-face {
+    font-family: 'Nothing';
+    src: url('../components/fonts/nothing-font.otf.woff2') format('woff2');
+    font-weight: 400 700;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     /* Nothing OS inspired palette — monochrome + red accent */
     --crm-accent: #FF4433;
@@ -4323,7 +4332,7 @@ body.crm-theme .crm-metric-value,
 body.crm-theme .crm-screen-title,
 body.crm-theme .crm-stat-value,
 body.crm-theme .crm-count-badge {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'Nothing', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* ── Remove ALL glassmorphism / backdrop-filter ── */
@@ -4504,7 +4513,7 @@ body.crm-theme .crm-table thead th {
     font-size: 0.65rem !important;
     letter-spacing: 0.1em !important;
     font-weight: 600 !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Nothing', 'JetBrains Mono', monospace !important;
 }
 
 /* ── Dot indicators (Nothing OS status dots) ── */
@@ -4537,7 +4546,7 @@ body.crm-theme .crm-status-dot.info::before { background: #60A5FA; }
 body.crm-theme .crm-badge,
 body.crm-theme [class*="badge"] {
     border-radius: 2px !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Nothing', 'JetBrains Mono', monospace !important;
     font-size: 0.65rem !important;
     letter-spacing: 0.05em !important;
     font-weight: 600 !important;
@@ -4698,7 +4707,7 @@ body.crm-theme .fc .fc-daygrid-day.fc-day-today {
 /* ── Empty states ── */
 body.crm-theme .crm-empty-state {
     color: var(--crm-text-faint);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Nothing', 'JetBrains Mono', monospace;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.75rem;
