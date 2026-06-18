@@ -9,7 +9,7 @@
                 <div class="crm-screen-title">Настройки</div>
             </div>
             <div class="crm-toolbar-actions">
-                <button @click="openSettingsModal ? openSettingsModal() : (loadSettings && loadSettings())" class="crm-btn-secondary text-sm">
+                <button @click="openSettingsModal ? openSettingsModal() : (loadSettings &amp;&amp; loadSettings())" class="crm-btn-secondary text-sm">
                     Открыть модальное редактирование
                 </button>
             </div>
@@ -24,10 +24,10 @@
                 <button type="button" @click="settingsAdminTab='omni'" x-on:click="settingsAdminTab='omni'" :class="settingsAdminTab === 'omni' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Омниканал</button>
                 <button type="button" @click="settingsAdminTab='webrtc'" x-on:click="settingsAdminTab='webrtc'" :class="settingsAdminTab === 'webrtc' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">WebRTC</button>
                 <button type="button" @click="settingsAdminTab='weather'" x-on:click="settingsAdminTab='weather'" :class="settingsAdminTab === 'weather' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Погода</button>
-                <button type="button" @click="settingsAdminTab='diagnostics'" x-on:click="settingsAdminTab='diagnostics'; loadAdminHealth && loadAdminHealth(true)" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
-                <button type="button" @click="settingsAdminTab='notifications'" x-on:click="settingsAdminTab='notifications'; loadNotificationTemplates && loadNotificationTemplates()" :class="settingsAdminTab === 'notifications' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Уведомления</button>
-                <button type="button" @click="settingsAdminTab='booking-widgets'" x-on:click="settingsAdminTab='booking-widgets'; loadBookingWidgetProfiles && loadBookingWidgetProfiles(); loadWidgetAnalytics && loadWidgetAnalytics()" :class="settingsAdminTab === 'booking-widgets' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Виджеты записи</button>
-                <button type="button" @click="settingsAdminTab='license'" x-on:click="settingsAdminTab='license'; loadLicenseStatus && loadLicenseStatus()" :class="settingsAdminTab === 'license' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Лицензия</button>
+                <button type="button" @click="settingsAdminTab='diagnostics'" x-on:click="settingsAdminTab='diagnostics'; loadAdminHealth &amp;&amp; loadAdminHealth(true)" :class="settingsAdminTab === 'diagnostics' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Диагностика</button>
+                <button type="button" @click="settingsAdminTab='notifications'" x-on:click="settingsAdminTab='notifications'; loadNotificationTemplates &amp;&amp; loadNotificationTemplates()" :class="settingsAdminTab === 'notifications' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Уведомления</button>
+                <button type="button" @click="settingsAdminTab='booking-widgets'" x-on:click="settingsAdminTab='booking-widgets'; loadBookingWidgetProfiles &amp;&amp; loadBookingWidgetProfiles(); loadWidgetAnalytics &amp;&amp; loadWidgetAnalytics()" :class="settingsAdminTab === 'booking-widgets' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Виджеты записи</button>
+                <button type="button" @click="settingsAdminTab='license'" x-on:click="settingsAdminTab='license'; loadLicenseStatus &amp;&amp; loadLicenseStatus()" :class="settingsAdminTab === 'license' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Лицензия</button>
             </div>
         </div>
 

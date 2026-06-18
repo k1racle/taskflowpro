@@ -28,7 +28,7 @@
     --crm-space-6: 24px;
     --crm-control-height: 42px;
     --crm-control-height-sm: 36px;
-    --crm-tab-height: 40px;
+    --crm-tab-height: 42px;
     --crm-radius-sm: 8px;
     --crm-radius-md: 12px;
     --crm-radius-lg: 16px;
@@ -3016,12 +3016,12 @@ body.crm-theme.dark .crm-page-kicker {
 }
 
 .crm-project-card-head {
-    padding-bottom: 16px;
+    padding-bottom: 8px;
     border-bottom: 1px solid var(--crm-border);
 }
 
 .crm-project-card-head--compact {
-    padding-bottom: 12px;
+    padding-bottom: 6px;
 }
 
 .crm-project-avatar {
@@ -4683,8 +4683,7 @@ body.crm-theme input[type="checkbox"]:checked {
 }
 
 /* ── Progress ── */
-body.crm-theme .crm-progress-bar,
-body.crm-theme [class*="progress"] {
+body.crm-theme .crm-progress-bar {
     background: var(--crm-surface-alt) !important;
     border-radius: 6px !important;
     overflow: hidden;
@@ -4693,6 +4692,19 @@ body.crm-theme [class*="progress"] {
 body.crm-theme .crm-progress-fill {
     background: var(--crm-accent) !important;
     border-radius: 6px !important;
+}
+
+body.crm-theme .crm-project-summary-strip__progress {
+    background: var(--crm-surface-alt) !important;
+    border-radius: 6px !important;
+    overflow: hidden;
+    height: 6px;
+}
+
+body.crm-theme .crm-project-summary-strip__progress-bar {
+    background: linear-gradient(90deg, var(--crm-accent) 0%, color-mix(in oklab, var(--crm-accent) 70%, white) 100%) !important;
+    border-radius: 6px !important;
+    height: 100%;
 }
 
 /* ── Calendar ── */
@@ -4766,14 +4778,15 @@ body.crm-theme .priority-urgent {
 }
 
 /* ── Fix: project avatars ── */
-body.crm-theme .crm-project-avatar,
-body.crm-theme .crm-project-avatar--soft,
 body.crm-theme .crm-project-avatar--compact {
+    width: 36px !important;
+    height: 36px !important;
     border-radius: 10px !important;
     background: var(--crm-accent) !important;
     box-shadow: var(--crm-shadow-sm) !important;
     color: #FFFFFF !important;
     font-family: 'JetBrains Mono', monospace !important;
+    font-size: 14px !important;
 }
 
 body.crm-theme .crm-project-avatar--soft {
@@ -4800,7 +4813,7 @@ body.crm-theme .crm-card-equal {
 }
 
 body.crm-theme .crm-project-card {
-    padding: 16px !important;
+    padding: 10px !important;
     border-radius: 12px !important;
     box-shadow: var(--crm-shadow-sm) !important;
     transition: all 0.2s ease;
