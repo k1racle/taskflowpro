@@ -90,7 +90,7 @@
         </div>
     </div>
 
-    <div x-show="projectsView === 'cards'" class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+    <div x-show="projectsView === 'cards'" class="grid grid-cols-1 lg:grid-cols-3 gap-3 items-start">
         <template x-for="project in filteredProjects.filter(project => !projectSearch || String(project.name || '').toLowerCase().includes(projectSearch.toLowerCase()) || String(project.description || '').toLowerCase().includes(projectSearch.toLowerCase()))" :key="project.id">
             <div @click="openProjectModal(project)" class="liquid-glass-pro rounded-sm cursor-pointer group crm-record-card crm-card-compact crm-card-equal crm-project-card w-full">
                 <div class="crm-project-card-head crm-project-card-head--compact">
@@ -116,21 +116,21 @@
                 </div>
 
                 <div class="mt-1 crm-project-summary-strip crm-project-summary-strip--progress">
-                    <div class="crm-project-summary-strip__meta">
-                        <div class="crm-project-compact-card__label">Прогресс</div>
-                        <div class="text-[14px] font-bold leading-none crm-text-primary" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
+                    <div class="crm-project-summary-strip__meta flex items-center justify-between gap-2">
+                        <div class="crm-project-compact-card__label text-xs crm-text-secondary">Прогресс</div>
+                        <div class="text-[13px] font-bold leading-none crm-text-primary" x-text="Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'"></div>
                     </div>
-                    <div class="crm-project-summary-strip__progress">
+                    <div class="mt-1 crm-project-summary-strip__progress">
                         <div class="crm-project-summary-strip__progress-bar transition-all duration-500" :style="'width: ' + Math.round(project.calculated_progress ?? project.progress ?? 0) + '%'" ></div>
                     </div>
-                    <div class="crm-project-summary-strip__row">
-                        <div class="truncate" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : ''" x-text="project.deadline ? (() => { const remaining = getDaysUntilDeadline(project.deadline); if (remaining === 'Просрочено') return formatDate(project.deadline) + ' · просрочено'; if (remaining === 'Сегодня') return formatDate(project.deadline) + ' · сегодня'; return formatDate(project.deadline) + ' · осталось ' + remaining; })() : 'Не задан'"></div>
+                    <div class="mt-1 crm-project-summary-strip__row">
+                        <div class="text-xs truncate" :class="project.deadline && new Date(project.deadline) < new Date() && Math.round(project.calculated_progress ?? project.progress ?? 0) < 100 ? 'text-red-500' : 'crm-text-tertiary'" x-text="project.deadline ? (() => { const remaining = getDaysUntilDeadline(project.deadline); if (remaining === 'Просрочено') return formatDate(project.deadline) + ' · просрочено'; if (remaining === 'Сегодня') return formatDate(project.deadline) + ' · сегодня'; return formatDate(project.deadline) + ' · осталось ' + remaining; })() : 'Не задан'"></div>
                     </div>
                 </div>
 
-                <div class="mt-1 crm-project-footer">
+                <div class="mt-1.5 crm-project-footer">
                     <div class="crm-project-footer__departments">
-                        <div class="truncate text-[10px] leading-3 crm-text-secondary" x-text="(() => { const departments = (project.departments || []).filter(Boolean).map(department => department.name).filter(Boolean); if (!departments.length) return 'Отделы: не назначены'; const visible = departments.slice(0, 2).join(', '); return 'Отделы: ' + visible + (departments.length > 2 ? ' +' + (departments.length - 2) : ''); })()"></div>
+                        <div class="truncate text-[11px] leading-tight crm-text-tertiary" x-text="(() => { const departments = (project.departments || []).filter(Boolean).map(department => department.name).filter(Boolean); if (!departments.length) return 'Отделы: не назначены'; const visible = departments.slice(0, 2).join(', '); return 'Отделы: ' + visible + (departments.length > 2 ? ' +' + (departments.length - 2) : ''); })()"></div>
                     </div>
                 </div>
             </div>

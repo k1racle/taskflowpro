@@ -115,6 +115,12 @@ function getEndpoint(): array {
         }
     }
 
+    // Special handling for users/:id/password - password change endpoint
+    if ($resource === 'users' && is_numeric($action) && $id === 'password') {
+        $id = $action;
+        $action = 'password';
+    }
+
     // If action is numeric, usually treat it as id and shift.
     // Example: /conferences/1/start => id=1, subaction=start
     // But for classic CRUD resources we keep action=id (users/2, projects/10, tasks/5).

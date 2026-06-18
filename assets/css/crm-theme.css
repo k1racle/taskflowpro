@@ -550,6 +550,11 @@ body.crm-theme [x-cloak] {
     color: var(--crm-accent-strong) !important;
 }
 
+[class*="crm-tone-"] .crm-summary-label,
+[class*="crm-tone-"] .crm-summary-value {
+    color: inherit !important;
+}
+
 .crm-tone-telegram {
     background: color-mix(in oklab, #229ed9 16%, var(--crm-surface-alt)) !important;
     border-color: color-mix(in oklab, #229ed9 26%, var(--crm-border)) !important;
@@ -2223,15 +2228,6 @@ body.crm-theme.dark .crm-page-kicker {
     border-spacing: 0;
 }
 
-.crm-data-table thead th {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--crm-text-faint);
-    background: color-mix(in oklab, var(--crm-surface-alt) 92%, white);
-}
-
 .crm-data-table tbody tr:hover {
     background: color-mix(in oklab, var(--crm-surface-alt) 88%, white);
 }
@@ -2374,16 +2370,6 @@ body.crm-theme.dark .crm-page-kicker {
 
 .crm-table-shell {
     min-width: 0;
-}
-
-.crm-data-table thead {
-    background: color-mix(in oklab, var(--crm-surface-alt) 78%, var(--crm-surface));
-}
-
-.crm-data-table th {
-    color: var(--crm-text-faint);
-    font-size: 11px;
-    letter-spacing: 0.08em;
 }
 
 .crm-data-table tbody tr {
@@ -3016,12 +3002,12 @@ body.crm-theme.dark .crm-page-kicker {
 }
 
 .crm-project-card-head {
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--crm-border);
+    padding-bottom: 6px;
+    border-bottom: none;
 }
 
 .crm-project-card-head--compact {
-    padding-bottom: 6px;
+    padding-bottom: 4px;
 }
 
 .crm-project-avatar {
@@ -4324,7 +4310,7 @@ body.crm-theme .crm-screen-title,
 body.crm-theme .crm-stat-value,
 body.crm-theme .crm-count-badge,
 body.crm-theme .crm-summary-value {
-    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* ── Glassmorphism panels ── */
@@ -4477,35 +4463,33 @@ body.crm-theme .crm-tabbar-button-active::before {
 }
 
 /* ── Tables ── */
-body.crm-theme table,
-body.crm-theme .crm-table,
-body.crm-theme [class*="table"] {
+body.crm-theme .crm-data-table {
     border-collapse: separate !important;
     border-spacing: 0;
 }
 
-body.crm-theme .crm-table tbody tr:nth-child(even) {
+body.crm-theme .crm-data-table tbody tr:nth-child(even) {
     background: transparent !important;
 }
 
-body.crm-theme .crm-table tbody tr:hover {
+body.crm-theme .crm-data-table tbody tr:hover {
     background: var(--crm-surface-alt) !important;
 }
 
-body.crm-theme .crm-table th,
-body.crm-theme .crm-table td {
+body.crm-theme .crm-data-table th,
+body.crm-theme .crm-data-table td {
     border-bottom: 1px solid var(--crm-border) !important;
     padding: 10px 14px !important;
 }
 
-body.crm-theme .crm-table thead th {
+body.crm-theme .crm-data-table thead th {
     border-bottom: 1px solid var(--crm-border-strong) !important;
     color: var(--crm-text-faint) !important;
     text-transform: uppercase !important;
-    font-size: 0.65rem !important;
+    font-size: 0.7rem !important;
     letter-spacing: 0.08em !important;
     font-weight: 600 !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
 /* ── Status dots ── */
@@ -4538,7 +4522,7 @@ body.crm-theme .crm-status-dot.info::before { background: var(--lg-info); }
 body.crm-theme .crm-badge,
 body.crm-theme [class*="badge"] {
     border-radius: 8px !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     font-size: 0.7rem !important;
     letter-spacing: 0.03em !important;
     font-weight: 600 !important;
@@ -4721,7 +4705,7 @@ body.crm-theme .fc .fc-daygrid-day.fc-day-today {
 /* ── Empty states ── */
 body.crm-theme .crm-empty-state {
     color: var(--crm-text-faint);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     font-size: 0.8rem;
@@ -4748,7 +4732,7 @@ body.crm-theme .crm-inline-badge-accent {
     border-radius: 8px !important;
     background: var(--crm-surface-alt) !important;
     border: 1px solid var(--crm-border) !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     font-size: 0.7rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.03em !important;
@@ -4770,7 +4754,7 @@ body.crm-theme .priority-medium,
 body.crm-theme .priority-high,
 body.crm-theme .priority-urgent {
     border-radius: 8px !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     font-size: 0.7rem !important;
     text-transform: uppercase !important;
     letter-spacing: 0.03em !important;
@@ -4785,7 +4769,7 @@ body.crm-theme .crm-project-avatar--compact {
     background: var(--crm-accent) !important;
     box-shadow: var(--crm-shadow-sm) !important;
     color: #FFFFFF !important;
-    font-family: 'JetBrains Mono', monospace !important;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
     font-size: 14px !important;
 }
 
@@ -4813,7 +4797,7 @@ body.crm-theme .crm-card-equal {
 }
 
 body.crm-theme .crm-project-card {
-    padding: 10px !important;
+    padding: 8px !important;
     border-radius: 12px !important;
     box-shadow: var(--crm-shadow-sm) !important;
     transition: all 0.2s ease;

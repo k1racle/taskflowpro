@@ -2,6 +2,9 @@
   <div class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
     <div class="crm-toolbar crm-toolbar--dense">
       <div class="crm-toolbar-main">
+        <div class="crm-toolbar-heading">
+          <div class="crm-screen-title">CRM дашборд</div>
+        </div>
         <div class="crm-toolbar-summary">
           <div class="crm-summary-tile">
             <div class="crm-summary-label">Клиенты</div>
@@ -79,7 +82,7 @@
           <div class="rounded-sm p-4 crm-stage-overview-card crm-ui-subcard">
             <div class="flex items-center justify-between gap-3">
               <div class="text-sm font-semibold truncate crm-ui-title" x-text="s.name"></div>
-              <div class="w-2.5 h-2.5 rounded-full" :style="'background:' + (s.color || '#3B82F6')"></div>
+              <div class="w-2.5 h-2.5 rounded-full" :style="'background:' + (s.color || 'var(--crm-accent)')"></div>
             </div>
             <div class="mt-3 flex items-end justify-between gap-3">
               <div>

@@ -108,7 +108,7 @@
           <div class="flex items-start justify-between gap-3 crm-kanban-column-head">
             <div class="min-w-0">
               <div class="flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full" :style="'background:' + (stage.color || '#3B82F6')"></div>
+                <div class="w-2.5 h-2.5 rounded-full" :style="'background:' + (stage.color || 'var(--crm-accent)')"></div>
                 <div class="font-semibold truncate crm-ui-title" x-text="crmGetStageDisplayName(stage)"></div>
               </div>
               <div class="mt-3 flex flex-wrap gap-2">

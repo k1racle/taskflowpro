@@ -68,8 +68,7 @@
                         <button type="button"
                                 x-show="settingsForm.avatar"
                                 @click="settingsForm.avatar = ''; currentUser.avatar = ''"
-                                class="crm-btn-danger text-sm"
-                                style="color: #dc2626;">
+                                class="crm-btn-danger text-sm">
                             Удалить фото
                         </button>
                     </div>
@@ -117,6 +116,22 @@
                         <input type="text" x-model="settingsForm.weather_city"
                                class="w-full px-4 py-2 crm-control-input" placeholder="Москва">
                         <div class="text-xs mt-1 text-gray-500">Используется в виджете погоды</div>
+                    </div>
+                    <div class="col-span-2 border-t border-gray-200 dark:border-gray-700 pt-4 mt-2">
+                        <div class="text-sm font-semibold crm-text-primary mb-3">Смена пароля</div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Новый пароль</label>
+                                <input type="password" x-model="settingsForm.new_password"
+                                       class="w-full px-4 py-2 crm-control-input" placeholder="••••••••" autocomplete="new-password">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Повторите пароль</label>
+                                <input type="password" x-model="settingsForm.confirm_password"
+                                       class="w-full px-4 py-2 crm-control-input" placeholder="••••••••" autocomplete="new-password">
+                            </div>
+                        </div>
+                        <div class="text-xs mt-2 crm-text-tertiary">Оставьте поля пустыми, если не хотите менять пароль.</div>
                     </div>
                 </div>
             </div>

@@ -1187,6 +1187,28 @@ window.TaskFlowAdmin = (function () {
                     ctx.showToast('Профиль сохранён', 'success');
                 }
 
+                const newPassword = String(ctx.settingsForm.new_password || '');
+                const confirmPassword = String(ctx.settingsForm.confirm_password || '');
+                if (newPassword) {
+                    if (newPassword.length < 6) {
+                        ctx.showToast('Пароль должен быть не менее 6 символов', 'error');
+                        return;
+                    }
+                    if (newPassword !== confirmPassword) {
+                        ctx.showToast('Пароли не совпадают', 'error');
+                        return;
+                    }
+                    const passwordResult = await apiChangeUserPassword(ctx.currentUser.id, newPassword);
+                    if (passwordResult.success) {
+                        ctx.showToast('Пароль изменён', 'success');
+                        ctx.settingsForm.new_password = '';
+                        ctx.settingsForm.confirm_password = '';
+                    } else {
+                        ctx.showToast('Ошибка смены пароля: ' + (passwordResult.error || 'Неизвестная ошибка'), 'error');
+                        return;
+                    }
+                }
+
                 if (ctx.settingsForm.weather_city) {
                     ctx.weatherCity = ctx.settingsForm.weather_city;
                     localStorage.setItem('taskflow_weather_city', ctx.settingsForm.weather_city);

@@ -19,7 +19,7 @@ window.TaskFlowDocuments = (function () {
             docx_token_notes: [],
             docx_studied_basis: '',
             docx_studied: false,
-            content: content || '<section style="font-family:Arial,sans-serif;padding:32px"><h1>{{client.name}}</h1><p>{{client.email}}</p><div>{{tasks.table}}</div></section>'
+            content: content || '<section style="font-family:Inter,system-ui,sans-serif;padding:32px"><h1>{{client.name}}</h1><p>{{client.email}}</p><div>{{tasks.table}}</div></section>'
         };
     }
 

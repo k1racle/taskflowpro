@@ -211,9 +211,8 @@
             <button
                 x-show="editingUser && canDeleteUser && canDeleteUser(editingUser)"
                 @click="deleteUser && deleteUser(editingUser)"
-                class="crm-btn-secondary"
-                :disabled="usersSaving"
-                style="color: #dc2626; border-color: rgba(220, 38, 38, 0.2);">
+                class="crm-btn-danger"
+                :disabled="usersSaving">
                 Удалить сотрудника
             </button>
             <button @click="closeUserModal()" class="crm-btn-secondary">Закрыть</button>
@@ -309,8 +308,7 @@
         <div class="crm-modal-footer crm-drawer-footer">
             <button x-show="editingRole && canDeleteRole(editingRole)"
                     @click="deleteRole(editingRole)"
-                    class="crm-btn-secondary"
-                    style="color: #dc2626; border-color: rgba(220, 38, 38, 0.2);">
+                    class="crm-btn-danger">
                 Удалить роль
             </button>
             <button @click="closeRoleModal()" class="crm-btn-secondary">Закрыть</button>

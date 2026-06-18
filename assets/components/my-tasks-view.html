@@ -268,7 +268,7 @@
                             </div>
                         </td>
                         <td class="px-4 py-3" data-label="Статус">
-                            <span class="px-3 py-1 rounded-full text-xs font-medium" :style="'background: ' + task.status_color + '20; color: ' + task.status_color" x-text="task.status"></span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium" :style="`--status-color: ${task.status_color || '#64748B'}; background: color-mix(in oklab, var(--status-color) 20%, var(--crm-surface)); color: var(--status-color);`" x-text="task.status"></span>
                         </td>
                         <td class="px-4 py-3" data-label="Приоритет">
                             <span :class="'priority-' + task.priority" class="px-3 py-1 rounded-full text-xs capitalize" x-text="translatePriority(task.priority)"></span>

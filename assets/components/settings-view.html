@@ -17,7 +17,7 @@
     </div>
 
     <div class="liquid-glass-pro rounded-sm p-5 crm-detail-panel">
-        <div class="crm-modal-tabbar-shell" style="margin:-4px -4px 16px -4px; padding:4px; border-radius:16px; border:1px solid var(--lg-border); background:rgba(255,255,255,.02)">
+        <div class="crm-modal-tabbar-shell -m-1 mb-4 p-1 rounded-2xl border border-[var(--crm-border)] bg-transparent">
             <div class="crm-tabbar flex flex-wrap gap-2">
                 <button type="button" @click="settingsAdminTab='general'" x-on:click="settingsAdminTab='general'" :class="settingsAdminTab === 'general' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Общие</button>
                 <button type="button" @click="settingsAdminTab='integrations'" x-on:click="settingsAdminTab='integrations'" :class="settingsAdminTab === 'integrations' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button">Интеграции</button>
@@ -833,7 +833,7 @@
 
                 <div class="crm-panel-block p-4" x-show="generatedCode">
                     <div class="font-semibold mb-2 crm-text-primary">Код для вставки</div>
-                    <textarea readonly class="w-full px-4 py-3 crm-control-input text-sm" style="font-family: ui-monospace, monospace; min-height:120px" x-text="generatedCode"></textarea>
+                    <textarea readonly class="w-full px-4 py-3 crm-control-input text-sm" style="min-height:120px" x-text="generatedCode"></textarea>
                     <div class="flex items-center justify-end gap-3 mt-3">
                         <button class="crm-btn-secondary text-sm" @click="copyCode()">Копировать</button>
                         <button class="crm-btn-secondary text-sm" @click="generatedCode = null">Закрыть</button>

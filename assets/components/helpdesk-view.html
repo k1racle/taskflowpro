@@ -13,20 +13,20 @@
                         <div class="crm-summary-value" x-text="helpdeskStats?.total || 0"></div>
                     </div>
                     <div class="crm-summary-tile crm-tone-info">
-                        <div class="crm-summary-label" style="color: currentColor">Новые</div>
-                        <div class="crm-summary-value" style="color: currentColor" x-text="getStatByStatus('Новая') || 0"></div>
+                        <div class="crm-summary-label">Новые</div>
+                        <div class="crm-summary-value" x-text="getStatByStatus('Новая') || 0"></div>
                     </div>
                     <div class="crm-summary-tile crm-tone-warning">
-                        <div class="crm-summary-label" style="color: currentColor">В работе</div>
-                        <div class="crm-summary-value" style="color: currentColor" x-text="getStatByStatus('В работе') || 0"></div>
+                        <div class="crm-summary-label">В работе</div>
+                        <div class="crm-summary-value" x-text="getStatByStatus('В работе') || 0"></div>
                     </div>
                     <div class="crm-summary-tile crm-tone-success">
-                        <div class="crm-summary-label" style="color: currentColor">Решено</div>
-                        <div class="crm-summary-value" style="color: currentColor" x-text="getStatByStatus('Решена') || 0"></div>
+                        <div class="crm-summary-label">Решено</div>
+                        <div class="crm-summary-value" x-text="getStatByStatus('Решена') || 0"></div>
                     </div>
                     <div class="crm-summary-tile crm-tone-danger">
-                        <div class="crm-summary-label" style="color: currentColor">Просрочено</div>
-                        <div class="crm-summary-value" style="color: currentColor" x-text="helpdeskStats?.overdue || 0"></div>
+                        <div class="crm-summary-label">Просрочено</div>
+                        <div class="crm-summary-value" x-text="helpdeskStats?.overdue || 0"></div>
                     </div>
                 </div>
             </div>
@@ -118,14 +118,14 @@
                 <table class="w-full crm-data-table">
                 <thead>
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Номер</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Клиент</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Тема</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Категория</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Статус</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Приоритет</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Ответственный</th>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase crm-text-tertiary">Дата</th>
+                        <th class="px-4 py-3 text-left">Номер</th>
+                        <th class="px-4 py-3 text-left">Клиент</th>
+                        <th class="px-4 py-3 text-left">Тема</th>
+                        <th class="px-4 py-3 text-left">Категория</th>
+                        <th class="px-4 py-3 text-left">Статус</th>
+                        <th class="px-4 py-3 text-left">Приоритет</th>
+                        <th class="px-4 py-3 text-left">Ответственный</th>
+                        <th class="px-4 py-3 text-left">Дата</th>
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>

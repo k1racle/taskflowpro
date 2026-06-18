@@ -19,10 +19,10 @@
         <!-- Google Fonts: JetBrains Mono + Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Main application theme -->
-    <link rel="stylesheet" href="assets/css/crm-theme.css?v=11">
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=12">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
 
     <!-- Tailwind CSS -->
@@ -70,7 +70,7 @@
     <script src="assets/js/modules/booking/index.js?v=1"></script>
     <script src="assets/js/modules/chat/index.js?v=1"></script>
     <script src="assets/js/modules/stages/index.js?v=1"></script>
-    <script src="assets/js/modules/admin/index.js?v=1"></script>
+    <script src="assets/js/modules/admin/index.js?v=2"></script>
     <script src="assets/js/modules/leader/index.js?v=1"></script>
     <script src="assets/js/modules/crm/dashboard-sales.js?v=1"></script>
     <script src="assets/js/modules/crm/list-filters.js?v=2"></script>
@@ -760,8 +760,8 @@
                     <div class="text-sm mt-0.5 crm-text-secondary" x-text="t.message"></div>
                 </div>
                 <div class="flex items-center gap-2" x-show="t.type === 'call'">
-                    <button class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold" style="background:#22c55e" @click="acceptIncomingCall(); closeToast(t.id)">Принять</button>
-                    <button class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold" style="background:#ef4444" @click="declineIncomingCall(); closeToast(t.id)">Сбросить</button>
+                    <button class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold" style="background:var(--lg-success)" @click="acceptIncomingCall(); closeToast(t.id)">Принять</button>
+                    <button class="px-3 py-1.5 rounded-xl text-white text-xs font-semibold" style="background:var(--crm-danger-text)" @click="declineIncomingCall(); closeToast(t.id)">Сбросить</button>
                 </div>
                 <button class="p-2 rounded-xl ios-glass-button crm-icon-button-sm" aria-label="Закрыть" @click="closeToast(t.id)">
                     <svg class="w-4 h-4 crm-icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1134,7 +1134,7 @@
                 </svg>
                 <span x-show="chatUnreadCount > 0"
                       class="absolute -top-2 -right-2 px-2 py-0.5 text-xs rounded-full text-white font-semibold"
-                      style="background: #ef4444"
+                      style="background: var(--crm-danger-text)"
                       x-text="chatUnreadCount > 99 ? '99+' : chatUnreadCount"></span>
             </button>
         </div>
