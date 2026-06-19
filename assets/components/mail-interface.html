@@ -10,8 +10,8 @@
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-summary">
                     <div class="crm-summary-tile"><div class="crm-summary-label">Писем</div><div class="crm-summary-value" x-text="mailList.length"></div></div>
-                    <div class="crm-summary-tile"><div class="crm-summary-label">Непрочитанные</div><div class="crm-summary-value" x-text="mailList.filter(email => !email.is_read).length"></div></div>
-                    <div class="crm-summary-tile"><div class="crm-summary-label">Важные</div><div class="crm-summary-value" x-text="mailList.filter(email => Number(email.is_starred)).length"></div></div>
+                    <div class="crm-summary-tile"><div class="crm-summary-label">Непрочитанные</div><div class="crm-summary-value" x-text="mailList.filter(email =&gt; !email.is_read).length"></div></div>
+                    <div class="crm-summary-tile"><div class="crm-summary-label">Важные</div><div class="crm-summary-value" x-text="mailList.filter(email =&gt; Number(email.is_starred)).length"></div></div>
                 </div>
             </div>
 
@@ -105,7 +105,7 @@
 
             <!-- Системные папки -->
             <div class="space-y-1 mb-3">
-                <template x-for="folder in mailFolders.filter(f => ['inbox', 'sent', 'drafts', 'spam', 'trash'].includes(f.id))" :key="folder.id">
+                <template x-for="folder in mailFolders.filter(f =&gt; ['inbox', 'sent', 'drafts', 'spam', 'trash'].includes(f.id))" :key="folder.id">
                     <button @click="loadMailFromFolder(folder.id)"
                             class="w-full flex items-center justify-between px-3 py-2.5 rounded-sm transition-all group crm-mail-folder-row"
                             :class="currentMailFolder === folder.id ? 'crm-mail-folder-row-active' : ''">
@@ -142,7 +142,7 @@
                                   :style="currentMailFolder === folder.id ? 'color: var(--lg-primary)' : 'color: var(--lg-text-secondary)'"
                                   x-text="folder.name"></span>
                         </div>
-                        <span x-show="folder.count > 0"
+                        <span x-show="folder.count &gt; 0"
                               class="crm-chip"
                               x-text="folder.count">
                         </span>
@@ -154,7 +154,7 @@
 
             <!-- Пользовательские IMAP папки -->
             <div class="flex-1 overflow-y-auto space-y-0.5">
-                <template x-for="folder in mailFolders.filter(f => !['inbox', 'sent', 'drafts', 'spam', 'trash'].includes(f.id))" :key="folder.id">
+                <template x-for="folder in mailFolders.filter(f =&gt; !['inbox', 'sent', 'drafts', 'spam', 'trash'].includes(f.id))" :key="folder.id">
                     <button @click="loadMailFromFolder(folder.id)"
                             class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors group crm-mail-folder-row"
                             :class="currentMailFolder === folder.id ? 'crm-mail-folder-row-active' : ''">
@@ -166,7 +166,7 @@
                                   :style="currentMailFolder === folder.id ? 'color: var(--lg-primary)' : 'color: var(--lg-text-secondary)'"
                                   x-text="folder.name"></span>
                         </div>
-                        <span x-show="folder.count > 0"
+                        <span x-show="folder.count &gt; 0"
                               class="crm-chip"
                               x-text="folder.count">
                         </span>
@@ -198,7 +198,7 @@
                     <span class="crm-inline-badge crm-inline-badge-accent" x-text="mailList.length + ' писем'"></span>
                 </div>
 
-                <div x-show="selectedEmails.length > 0"
+                <div x-show="selectedEmails.length &gt; 0"
                      x-transition
                      class="crm-action-bar">
                     <span class="text-sm font-semibold crm-text-accent" x-text="selectedEmails.length + ' выбрано'"></span>
@@ -290,7 +290,7 @@
                                     <div class="crm-mail-row-footer mt-1">
                                         <span x-show="Number(email.is_starred)" class="crm-inline-badge">Важное</span>
                                         <span x-show="email.has_attachments" class="crm-inline-badge">Вложение</span>
-                                        <span x-show="email.folder && email.folder !== 'inbox'" class="crm-inline-badge" x-text="getFolderName(email.folder)"></span>
+                                        <span x-show="email.folder &amp;&amp; email.folder !== 'inbox'" class="crm-inline-badge" x-text="getFolderName(email.folder)"></span>
                                     </div>
                                 </div>
                                 <span class="text-[11px] whitespace-nowrap shrink-0 mt-0.5 crm-text-tertiary" x-text="formatEmailDate(email.sent_at)"></span>
@@ -329,7 +329,7 @@
                     </div>
                 </template>
 
-                <div x-show="mailList.length === 0 && !mailLoading"
+                <div x-show="mailList.length === 0 &amp;&amp; !mailLoading"
                      class="crm-empty-state text-center flex flex-col items-center justify-center h-full py-20 px-6">
                     <svg class="w-24 h-24 opacity-20 mb-4 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
@@ -354,12 +354,12 @@
                     <div class="crm-section-head__text">Выбранное письмо открывается здесь без перехода из списка в отдельный экран.</div>
                 </div>
                 <div class="crm-section-head__meta flex items-center gap-2 flex-wrap">
-                    <span class="crm-inline-badge" x-text="mailPreviewId && mailList.find(email => email.id === mailPreviewId) ? 'Выбрано письмо' : 'Нет выбранного письма'"></span>
+                    <span class="crm-inline-badge" x-text="mailPreviewId &amp;&amp; mailList.find(email =&gt; email.id === mailPreviewId) ? 'Выбрано письмо' : 'Нет выбранного письма'"></span>
                     <button x-show="mailPreviewId" @click="mailPreviewId = null" class="crm-btn-ghost text-sm">Сбросить</button>
                 </div>
             </div>
 
-            <template x-if="mailPreviewId && mailList.find(email => email.id === mailPreviewId)">
+            <template x-if="mailPreviewId &amp;&amp; mailList.find(email =&gt; email.id === mailPreviewId)">
                 <div class="mt-5 space-y-4 overflow-y-auto">
                     <div x-data="{ previewEmail: mailList.find(email => email.id === mailPreviewId) }" x-effect="previewEmail = mailList.find(email => email.id === mailPreviewId)">
                         <div class="crm-panel-muted rounded-sm p-4">
@@ -405,7 +405,7 @@
                 </div>
             </template>
 
-            <div x-show="!mailPreviewId || !mailList.find(email => email.id === mailPreviewId)" class="flex-1 flex items-center justify-center">
+            <div x-show="!mailPreviewId || !mailList.find(email =&gt; email.id === mailPreviewId)" class="flex-1 flex items-center justify-center">
                 <div class="crm-empty-state text-center w-full">
                     <svg class="w-16 h-16 mx-auto mb-4 opacity-30 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>

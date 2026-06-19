@@ -81,7 +81,7 @@
                 </div>
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-7 gap-2">
                     <template x-for="day in weekSchedule" :key="day.date">
-                        <div class="rounded-sm p-3 text-center" :style="day.isToday ? 'border:1px solid color-mix(in oklab, var(--lg-primary) 40%, var(--lg-border)); background: color-mix(in oklab, var(--lg-primary) 10%, var(--crm-surface));' : 'border:1px solid var(--lg-border); background: color-mix(in oklab, var(--crm-surface-alt) 80%, var(--crm-surface));'">
+                        <div class="rounded-sm p-3 text-center" :class="day.isToday ? 'crm-tone-accent' : 'crm-glass'">
                             <div class="text-sm font-semibold crm-text-primary" x-text="day.name"></div>
                             <div class="text-[11px] mt-1 crm-text-tertiary" x-text="day.status"></div>
                         </div>

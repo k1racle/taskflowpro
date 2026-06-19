@@ -72,7 +72,7 @@
             </div>
 
             <!-- TASK stages -->
-            <div x-show="stagesManagerType==='tasks' && !stagesManagerLoading">
+            <div x-show="stagesManagerType==='tasks' &amp;&amp; !stagesManagerLoading">
                 <template x-for="s in (stages || [])" :key="s.id">
                     <div class="flex flex-col gap-3 py-3 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-center gap-3">
@@ -95,7 +95,7 @@
             </div>
 
             <!-- TASK SUBSTAGES (dictionary) -->
-            <div x-show="stagesManagerType==='substages' && !stagesManagerLoading">
+            <div x-show="stagesManagerType==='substages' &amp;&amp; !stagesManagerLoading">
                 <template x-for="s in (taskSubstages || [])" :key="s.id">
                     <div class="flex flex-col gap-3 py-3 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-center gap-3">
@@ -118,7 +118,7 @@
             </div>
 
             <!-- DEAL stages -->
-            <div x-show="stagesManagerType==='deals' && !stagesManagerLoading">
+            <div x-show="stagesManagerType==='deals' &amp;&amp; !stagesManagerLoading">
                 <template x-for="s in (dealStages || [])" :key="s.id">
                     <div class="flex flex-col gap-3 py-3 lg:flex-row lg:items-center lg:justify-between">
                         <div class="flex items-center gap-3">
@@ -127,7 +127,7 @@
                                 <div class="font-semibold crm-text-primary" x-text="translateDealStage(s.name)"></div>
                                 <div class="flex flex-wrap items-center gap-2 mt-1 text-xs crm-text-tertiary">
                                     <span>Порядок: <span x-text="Number(s.order || 0)"></span></span>
-                                    <span x-show="Number(s.is_won)!==1 && Number(s.is_lost)!==1">Обычный этап</span>
+                                    <span x-show="Number(s.is_won)!==1 &amp;&amp; Number(s.is_lost)!==1">Обычный этап</span>
                                 </div>
                             </div>
                             <span x-show="Number(s.is_won)===1" class="text-[11px] px-2 py-0.5 rounded-sm" style="background: color-mix(in oklab, var(--lg-success) 14%, var(--lg-glass-bg)); border:1px solid var(--lg-border); color: var(--lg-text-secondary)">Успешное завершение</span>

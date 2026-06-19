@@ -24,7 +24,7 @@
     <nav class="flex-1 p-3 pt-2 space-y-3 overflow-y-auto relative min-h-0" style="overscroll-behavior: contain; -webkit-overflow-scrolling: touch; max-height: 100%;">
 
         <details class="crm-sidebar-group" open
-                 x-show="(navItems || []).some(item => ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+                 x-show="(navItems || []).some(item =&gt; ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))">
             <summary class="crm-sidebar-group-toggle">
                 <span>Рабочая область</span>
                 <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,8 +32,8 @@
                 </svg>
             </summary>
             <div class="mt-2 space-y-1">
-                <template x-for="item in (navItems || []).filter(item => ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
-                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                <template x-for="item in (navItems || []).filter(item =&gt; ['tasks', 'leader-dashboard', 'projects', 'departments'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' &amp;&amp; openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') &amp;&amp; ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') &amp;&amp; ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="[(currentView === item.id ? 'crm-nav-item-active' : ''), (item.id === 'chat' ? 'crm-nav-item-chat' : '')].join(' ')"
                              class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@
         </details>
 
         <details class="crm-sidebar-group" open
-                 x-show="(navItems || []).some(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+                 x-show="(navItems || []).some(item =&gt; ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))">
             <summary class="crm-sidebar-group-toggle">
                 <span>CRM</span>
                 <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,8 +55,8 @@
                 </svg>
             </summary>
             <div class="mt-2 space-y-1">
-                <template x-for="item in (navItems || []).filter(item => ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
-                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                <template x-for="item in (navItems || []).filter(item =&gt; ['crm-dashboard', 'crm-clients', 'crm-funnels', 'crm-sales', 'crm-store'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' &amp;&amp; openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') &amp;&amp; ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') &amp;&amp; ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
                              class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,7 +70,7 @@
         </details>
 
         <details class="crm-sidebar-group" open
-                 x-show="(navItems || []).some(item => ['mail', 'conferences', 'chat', 'booking'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+                 x-show="(navItems || []).some(item =&gt; ['mail', 'conferences', 'chat', 'booking'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))">
             <summary class="crm-sidebar-group-toggle">
                 <span>Коммуникации</span>
                 <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -78,8 +78,8 @@
                 </svg>
             </summary>
             <div class="mt-2 space-y-1">
-                <template x-for="item in (navItems || []).filter(item => ['mail', 'conferences', 'chat', 'booking'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
-                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                <template x-for="item in (navItems || []).filter(item =&gt; ['mail', 'conferences', 'chat', 'booking'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' &amp;&amp; openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') &amp;&amp; ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') &amp;&amp; ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="{ 'crm-nav-item-active': currentView === item.id, 'crm-nav-item-chat': item.id === 'chat' }"
                              class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,8 +100,8 @@
                 </svg>
             </summary>
             <div class="mt-2 space-y-1">
-                <template x-for="item in (navItems || []).filter(item => ['files', 'knowledge', 'documents'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
-                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' && openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') && ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') && ensureLeaderLoaded) ensureLeaderLoaded();"
+                <template x-for="item in (navItems || []).filter(item =&gt; ['files', 'knowledge', 'documents'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))" :key="item.id">
+                    <button @click="currentView = item.id; sidebarOpen = false; if (item.id === 'mail' &amp;&amp; openMailView) openMailView(); if (String(item.id || '').startsWith('crm-') &amp;&amp; ensureCrmLoaded) ensureCrmLoaded(); if ((item.id === 'my-shift' || item.id === 'leader-dashboard') &amp;&amp; ensureLeaderLoaded) ensureLeaderLoaded();"
                              :class="currentView === item.id ? 'crm-nav-item-active' : ''"
                              class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
                         <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@
         </details>
 
         <details class="crm-sidebar-group" open
-                 x-show="(navItems || []).some(item => ['widgets'].includes(item.id) && (!item?.visible || item.visible.call($data)))">
+                 x-show="(navItems || []).some(item =&gt; ['widgets'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))">
             <summary class="crm-sidebar-group-toggle">
                 <span>Сайт и каналы</span>
                 <svg class="w-4 h-4 crm-sidebar-group-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -142,7 +142,7 @@
                 </svg>
             </summary>
             <div class="mt-2 space-y-1">
-                <template x-for="item in (navItems || []).filter(item => ['widgets'].includes(item.id) && (!item?.visible || item.visible.call($data)))" :key="item.id">
+                <template x-for="item in (navItems || []).filter(item =&gt; ['widgets'].includes(item.id) &amp;&amp; (!item?.visible || item.visible.call($data)))" :key="item.id">
                     <button @click="currentView = item.id; sidebarOpen = false"
                              :class="currentView === item.id ? 'crm-nav-item-active' : ''"
                              class="crm-nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-sm transition-all">
@@ -159,7 +159,7 @@
         <div class="my-2 border-t" style="border-color: var(--crm-border)"></div>
 
         <!-- Админ меню -->
-        <template x-if="can && can('admin.full')">
+        <template x-if="can &amp;&amp; can('admin.full')">
             <details class="crm-sidebar-group" :open="adminMenuOpen">
                 <summary class="crm-sidebar-group-toggle"
                          @click.prevent="adminMenuOpen = !adminMenuOpen">
@@ -192,8 +192,8 @@
         <div class="liquid-glass-pro rounded-sm overflow-hidden">
             <div class="flex items-center justify-between gap-3 px-4 py-3.5">
                 <button @click="openProfile()" class="flex items-center min-w-0">
-                    <img x-show="currentUser?.avatar && currentUser.avatar !== 'null' && currentUser.avatar !== ''"
-                         :src="currentUser?.avatar && currentUser.avatar !== 'null' ? ('uploads/avatars/' + currentUser.avatar) : ''"
+                    <img x-show="currentUser?.avatar &amp;&amp; currentUser.avatar !== 'null' &amp;&amp; currentUser.avatar !== ''"
+                         :src="currentUser?.avatar &amp;&amp; currentUser.avatar !== 'null' ? ('uploads/avatars/' + currentUser.avatar) : ''"
                          class="w-10 h-10 rounded-full object-cover border-2 border-primary/20"
                          alt="Аватар"
                          @error="$el.style.display='none'">

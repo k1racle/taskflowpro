@@ -96,7 +96,7 @@
       </div>
 
       <div class="mt-5">
-        <div x-show="(crmSalesAnalytics?.monthly_totals || []).length > 0" class="relative min-h-[300px]">
+        <div x-show="(crmSalesAnalytics?.monthly_totals || []).length &gt; 0" class="relative min-h-[300px]">
           <canvas x-ref="crmSalesChartCanvas" class="w-full h-[300px] md:h-[340px]"></canvas>
         </div>
         <div x-show="(crmSalesAnalytics?.monthly_totals || []).length === 0" class="mt-4 crm-empty-state text-center">

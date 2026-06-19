@@ -113,7 +113,7 @@
                 </div>
             </div>
             <nav class="space-y-1 mb-4">
-                <button @click="fileView = 'all'; currentFolder = null; refreshFilesView({ silent: true })" :class="fileView === 'all' && !currentFolder ? 'liquid-glass-pro files-nav-item-active' : ''" class="w-full flex items-center gap-3 px-3 py-2 rounded-sm transition-all files-nav-item crm-menu-item">
+                <button @click="fileView = 'all'; currentFolder = null; refreshFilesView({ silent: true })" :class="fileView === 'all' &amp;&amp; !currentFolder ? 'liquid-glass-pro files-nav-item-active' : ''" class="w-full flex items-center gap-3 px-3 py-2 rounded-sm transition-all files-nav-item crm-menu-item">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
                     <span class="flex-1 text-left text-sm">Все файлы</span>
                 </button>
@@ -153,7 +153,7 @@
                 <div class="crm-section-head__meta flex items-center gap-2 flex-wrap">
                     <span class="crm-inline-badge">Папок: <span class="ml-1" x-text="(folders || []).length"></span></span>
                     <span class="crm-inline-badge">Файлов: <span class="ml-1" x-text="(filteredFilesUi || []).length"></span></span>
-                    <span class="crm-inline-badge crm-inline-badge-accent" x-show="selectedFileIds.length > 0">Выделение активно</span>
+                    <span class="crm-inline-badge crm-inline-badge-accent" x-show="selectedFileIds.length &gt; 0">Выделение активно</span>
                 </div>
             </div>
 
@@ -173,7 +173,7 @@
                 <template x-for="file in filteredFilesUi" :key="'file-' + file.id">
                     <div @click="previewFile(file); toggleFileSelection(file, $event)" @dblclick="openFileInNewTab(file)" @contextmenu.prevent.stop="toggleFileSelection(file, $event); openFilesContextMenu($event, {type:'file', item: file})" draggable="true" @dragstart="onFileDragStart($event, file)" :class="selectedFileIds.includes(String(file.id)) ? 'ring-2 ring-[color:var(--lg-primary)] crm-file-tile-selected' : ''" class="liquid-glass-pro p-5 cursor-pointer group crm-file-tile crm-card-compact crm-card-equal">
                         <div class="w-16 h-16 rounded-sm overflow-hidden flex items-center justify-center crm-file-icon-tile">
-                            <template x-if="isImage(file.original_name || file.name)"><img :src="`api/index.php?endpoint=files/${file.id}/preview&_t=${Date.now()}&token=${encodeURIComponent(getToken() || '')}`" class="w-full h-full object-cover" alt=""></template>
+                            <template x-if="isImage(file.original_name || file.name)"><img :src="`api/index.php?endpoint=files/${file.id}/preview&amp;_t=${Date.now()}&amp;token=${encodeURIComponent(getToken() || '')}`" class="w-full h-full object-cover" alt=""></template>
                             <template x-if="!isImage(file.original_name || file.name)">
                                 <template x-if="isPdf(file.original_name || file.name)"><svg class="w-9 h-9 crm-file-icon-pdf" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6M9 17h6"/></svg></template>
                                 <template x-if="isDoc(file.original_name || file.name)"><svg class="w-9 h-9 crm-file-icon-doc" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6M9 16h6"/></svg></template>
@@ -182,7 +182,7 @@
                                 <template x-if="isZip(file.original_name || file.name)"><svg class="w-9 h-9 crm-file-icon-zip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 3h8v4H8V3z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10v14H7V7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h4M10 15h4"/></svg></template>
                                 <template x-if="isAudio(file.original_name || file.name)"><svg class="w-9 h-9 crm-file-icon-audio" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-2v13"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19a2 2 0 11-4 0 2 2 0 014 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 17a2 2 0 11-4 0 2 2 0 014 0z"/></svg></template>
                                 <template x-if="isVideo(file.original_name || file.name)"><svg class="w-9 h-9 crm-file-icon-video" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></template>
-                                <template x-if="!isPdf(file.original_name || file.name) && !isDoc(file.original_name || file.name) && !isXls(file.original_name || file.name) && !isPpt(file.original_name || file.name) && !isZip(file.original_name || file.name) && !isAudio(file.original_name || file.name) && !isVideo(file.original_name || file.name)"><svg class="w-9 h-9 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></template>
+                                <template x-if="!isPdf(file.original_name || file.name) &amp;&amp; !isDoc(file.original_name || file.name) &amp;&amp; !isXls(file.original_name || file.name) &amp;&amp; !isPpt(file.original_name || file.name) &amp;&amp; !isZip(file.original_name || file.name) &amp;&amp; !isAudio(file.original_name || file.name) &amp;&amp; !isVideo(file.original_name || file.name)"><svg class="w-9 h-9 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></template>
                             </template>
                         </div>
                         <div class="min-w-0 flex-1 mt-4">
@@ -212,7 +212,7 @@
                             <tr @click="previewFile(file); toggleFileSelection(file, $event)" @dblclick="downloadFile(file)" @contextmenu.prevent.stop="toggleFileSelection(file, $event); openFilesContextMenu($event, {type:'file', item: file})" class="cursor-pointer crm-file-row" :class="selectedFileIds.includes(String(file.id)) ? 'crm-file-row-selected' : ''">
                                 <td class="px-4 py-3">
                                     <div class="w-10 h-10 rounded-sm overflow-hidden crm-surface-card-soft flex items-center justify-center">
-                                        <template x-if="isImage(file.original_name || file.name)"><img :src="`api/index.php?endpoint=files/${file.id}/preview&_t=${Date.now()}&token=${encodeURIComponent(getToken() || '')}`" class="w-full h-full object-cover" alt=""></template>
+                                        <template x-if="isImage(file.original_name || file.name)"><img :src="`api/index.php?endpoint=files/${file.id}/preview&amp;_t=${Date.now()}&amp;token=${encodeURIComponent(getToken() || '')}`" class="w-full h-full object-cover" alt=""></template>
                                         <template x-if="!isImage(file.original_name || file.name)"><svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></template>
                                     </div>
                                 </td>
@@ -230,7 +230,7 @@
                 </table>
             </div>
 
-            <div x-show="!filesLoading && (folders || []).length === 0 && (filteredFilesUi || []).length === 0" class="flex items-center justify-center h-64 p-5">
+            <div x-show="!filesLoading &amp;&amp; (folders || []).length === 0 &amp;&amp; (filteredFilesUi || []).length === 0" class="flex items-center justify-center h-64 p-5">
                 <div class="text-center crm-empty-state w-full max-w-xl">
                     <svg class="w-24 h-24 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     <div class="crm-empty-state-title" x-text="fileSearch ? 'Ничего не найдено' : 'Папка пока пуста'"></div>
@@ -248,7 +248,7 @@
                 <button x-show="contextFile" @click="openFileInNewTab(contextFile); closeFilesContextMenu()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item">Открыть</button>
                 <button x-show="contextFile" @click="downloadFile(contextFile); closeFilesContextMenu()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item"><div class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Скачать</div></button>
                 <div class="h-px my-1 crm-muted-divider"></div>
-                <button x-show="contextFile || selectedFileIds.length > 0" @click="showMoveToFolderModal(); closeFilesContextMenu()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item"><div class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>Переместить</div></button>
+                <button x-show="contextFile || selectedFileIds.length &gt; 0" @click="showMoveToFolderModal(); closeFilesContextMenu()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item"><div class="flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>Переместить</div></button>
                 <button x-show="contextFolder" @click="renameContextFolder()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item">Переименовать</button>
                 <button x-show="contextFolder" @click="deleteContextFolder()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item crm-tone-danger">Удалить</button>
                 <button x-show="contextFile" @click="deleteContextFile()" class="w-full text-left px-3 py-2 rounded-sm crm-menu-item crm-tone-danger">Удалить</button>

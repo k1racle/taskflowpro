@@ -77,12 +77,12 @@
             <div class="crm-section-head__text" x-text="segment.subtitle"></div>
           </div>
           <div class="crm-section-head__meta">
-            <span class="crm-inline-badge" x-text="((crmClients || []).filter((c) => c.segment === segment.key).length) + ' шт.'"></span>
+            <span class="crm-inline-badge" x-text="((crmClients || []).filter((c) =&gt; c.segment === segment.key).length) + ' шт.'"></span>
           </div>
         </div>
 
         <div class="mt-4 space-y-2 max-h-[72vh] overflow-y-auto pr-1 crm-client-list-scroll">
-          <template x-for="c in (crmClients || []).filter((item) => item.segment === segment.key)" :key="c.id">
+          <template x-for="c in (crmClients || []).filter((item) =&gt; item.segment === segment.key)" :key="c.id">
             <button @click="crmOpenClientDrawer(c.id, c)" class="w-full text-left liquid-glass-pro rounded-sm p-3 transition-all crm-client-list-item"
                     :class="String(crmClientId) === String(c.id) ? 'crm-list-accent crm-client-list-item-active' : ''"
                     :style="String(crmClientId) === String(c.id) ? '' : 'border:1px solid var(--lg-border)'">
@@ -103,7 +103,7 @@
               </div>
               <div class="mt-2 flex items-center justify-between gap-2 text-[11px] crm-text-secondary">
                 <span x-text="c.referral_code ? ('Ref: ' + c.referral_code) : 'Ref не создан'"></span>
-                <span x-show="(c.referral_orders_count || 0) > 0" x-text="(c.referral_orders_count || 0) + ' заказ.'"></span>
+                <span x-show="(c.referral_orders_count || 0) &gt; 0" x-text="(c.referral_orders_count || 0) + ' заказ.'"></span>
               </div>
               <div class="mt-2 flex flex-wrap gap-1" x-show="(c.tags || []).length">
                 <template x-for="t in (c.tags || []).slice(0,5)" :key="t">
@@ -113,7 +113,7 @@
             </button>
           </template>
 
-          <div x-show="(crmClients || []).filter((item) => item.segment === segment.key).length === 0" class="crm-empty-state text-center">
+          <div x-show="(crmClients || []).filter((item) =&gt; item.segment === segment.key).length === 0" class="crm-empty-state text-center">
             <div class="crm-empty-state-title">Пусто</div>
             <div class="crm-empty-state-text">В этой группе пока нет клиентов.</div>
           </div>

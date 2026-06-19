@@ -42,7 +42,7 @@
           <div x-show="crmStoreSyncStatus?.latest?.trigger" x-text="'Тип: ' + crmStoreSyncAttemptLabel(crmStoreSyncStatus?.latest?.trigger)"></div>
         </div>
       </div>
-      <div class="mt-3 flex flex-wrap gap-2" x-show="(crmStoreSyncStatus?.recent || []).length > 0">
+      <div class="mt-3 flex flex-wrap gap-2" x-show="(crmStoreSyncStatus?.recent || []).length &gt; 0">
         <template x-for="item in (crmStoreSyncStatus?.recent || []).slice(0, 3)" :key="'store-sync-' + item.id">
           <div class="rounded-sm px-3 py-2 text-xs crm-ui-subcard" style="border:1px solid var(--lg-border);">
             <div class="font-medium crm-ui-title" x-text="crmStoreSyncAttemptLabel(item.trigger) + ' • ' + (item.success ? 'успех' : 'ошибка')"></div>
@@ -131,7 +131,7 @@
         </div>
 
         <div class="mt-5">
-          <div x-show="(crmStoreAnalytics?.monthly_totals || []).length > 0" class="relative min-h-[300px]">
+          <div x-show="(crmStoreAnalytics?.monthly_totals || []).length &gt; 0" class="relative min-h-[300px]">
             <canvas x-ref="crmStoreChartCanvas" class="w-full h-[300px] md:h-[340px]"></canvas>
           </div>
           <div x-show="(crmStoreAnalytics?.monthly_totals || []).length === 0" class="mt-4 crm-empty-state text-center">
@@ -190,7 +190,7 @@
 
     <div class="liquid-glass-pro rounded-sm p-5 crm-queue-card">
       <div class="font-bold crm-ui-title">Состав заказа</div>
-      <template x-if="(crmStoreAnalytics?.orders || []).find(x => Number(x.id || 0) === Number(crmStoreSelectedOrderId || 0))">
+      <template x-if="(crmStoreAnalytics?.orders || []).find(x =&gt; Number(x.id || 0) === Number(crmStoreSelectedOrderId || 0))">
         <div class="mt-4 space-y-4" x-data="{ order: (crmStoreAnalytics?.orders || []).find(x => Number(x.id || 0) === Number(crmStoreSelectedOrderId || 0)) }">
           <div class="rounded-sm p-4 crm-ui-subcard">
             <div class="font-semibold crm-ui-title" x-text="order.order_number || ('#' + order.external_order_id)"></div>

@@ -20,7 +20,7 @@
 
             <div class="crm-toolbar-actions">
                 <button x-show="can('admin.full') || currentUser?.role === 'root'"
-                        @click="openRoleModal && openRoleModal()"
+                        @click="openRoleModal &amp;&amp; openRoleModal()"
                         class="crm-btn-primary text-sm flex items-center gap-2 whitespace-nowrap">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -36,7 +36,7 @@
                     <div class="font-semibold crm-text-primary">Коротко о модели</div>
                     <div class="text-xs mt-1 crm-text-tertiary">Роль = что можно делать. Отделы = где можно делать. Один пользователь может быть в нескольких отделах.</div>
                 </div>
-                <button class="crm-btn-secondary text-sm" @click="refreshRolesList && refreshRolesList()">Обновить</button>
+                <button class="crm-btn-secondary text-sm" @click="refreshRolesList &amp;&amp; refreshRolesList()">Обновить</button>
             </div>
         </div>
     
@@ -45,7 +45,7 @@
                 <div class="crm-empty-state-title">Не удалось загрузить роли</div>
                 <div class="crm-empty-state-text" x-text="rolesError"></div>
                 <div class="crm-empty-state-actions">
-                    <button @click="refreshRolesList && refreshRolesList()" class="crm-btn-secondary text-sm flex items-center gap-2" :disabled="rolesLoading">
+                    <button @click="refreshRolesList &amp;&amp; refreshRolesList()" class="crm-btn-secondary text-sm flex items-center gap-2" :disabled="rolesLoading">
                         <svg class="w-4 h-4" :class="rolesLoading ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div x-show="!rolesLoading && !getFilteredRoles().length" x-cloak class="px-6 pb-6">
+        <div x-show="!rolesLoading &amp;&amp; !getFilteredRoles().length" x-cloak class="px-6 pb-6">
             <div class="crm-empty-state">
                 <div class="crm-empty-state-title">Роли не найдены</div>
                 <div class="crm-empty-state-text" x-text="rolesSearch ? 'Измените поисковый запрос или обновите список.' : 'Пока нет доступных ролей для отображения.'"></div>
@@ -80,7 +80,7 @@
             <div class="crm-section-head__meta">
                 <span class="crm-inline-badge">Показано: <span class="ml-1" x-text="getFilteredRoles().length"></span></span>
                 <span class="crm-inline-badge">Всего: <span class="ml-1" x-text="(roles || []).length"></span></span>
-                <button @click="refreshRolesList && refreshRolesList()" class="crm-btn-secondary text-sm flex items-center gap-2" :disabled="rolesLoading">
+                <button @click="refreshRolesList &amp;&amp; refreshRolesList()" class="crm-btn-secondary text-sm flex items-center gap-2" :disabled="rolesLoading">
                     <svg class="w-4 h-4" :class="rolesLoading ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                     </svg>
@@ -89,7 +89,7 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto" x-show="!rolesLoading && getFilteredRoles().length">
+        <div class="overflow-x-auto" x-show="!rolesLoading &amp;&amp; getFilteredRoles().length">
             <table class="w-full crm-data-table">
                 <thead>
                     <tr>
@@ -165,7 +165,7 @@
                                     </button>
                                     <button x-show="can('admin.full') || currentUser?.role === 'root'"
                                             class="crm-btn-secondary text-sm flex items-center gap-2"
-                                            @click.stop="canEditRole(r) && openRoleModal(r)"
+                                            @click.stop="canEditRole(r) &amp;&amp; openRoleModal(r)"
                                             :class="canEditRole(r) ? '' : 'opacity-50 cursor-not-allowed pointer-events-none'">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
@@ -174,7 +174,7 @@
                                     </button>
                                     <button x-show="can('admin.full') || currentUser?.role === 'root'"
                                             class="crm-btn-danger text-sm flex items-center gap-2"
-                                            @click.stop="canDeleteRole(r) && deleteRole(r)"
+                                            @click.stop="canDeleteRole(r) &amp;&amp; deleteRole(r)"
                                             :class="canDeleteRole(r) ? '' : 'opacity-50 cursor-not-allowed pointer-events-none'">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3M4 7h16"/>

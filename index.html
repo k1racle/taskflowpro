@@ -16,13 +16,13 @@
     <link rel="apple-touch-icon" href="app.png">
     <link rel="manifest" href="manifest.json">
 
-        <!-- Google Fonts: JetBrains Mono + Inter -->
+        <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Main application theme -->
-    <link rel="stylesheet" href="assets/css/crm-theme.css?v=12">
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=15">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
 
     <!-- Tailwind CSS -->
@@ -156,7 +156,7 @@
        :class="{ 'dark': isDark }">
 
     <!-- Loading Screen (перед логином) -->
-    <div x-show="preAuthLoading && !isAuthenticated" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 crm-auth-backdrop">
+    <div x-show="preAuthLoading &amp;&amp; !isAuthenticated" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 crm-auth-backdrop">
         <div class="crm-auth-panel crm-loading-shell">
             <div class="crm-auth-badge">CRM workspace</div>
             <div class="crm-auth-header mt-5">
@@ -172,7 +172,7 @@
     </div>
 
     <!-- Login transition (после ввода логина/пароля) -->
-    <div x-show="loginTransitionOpen && !isAuthenticated" x-cloak x-transition.opacity class="fixed inset-0 z-[60] flex items-center justify-center p-4 crm-auth-backdrop">
+    <div x-show="loginTransitionOpen &amp;&amp; !isAuthenticated" x-cloak x-transition.opacity class="fixed inset-0 z-[60] flex items-center justify-center p-4 crm-auth-backdrop">
         <div class="glass-card crm-auth-panel p-8 w-full max-w-md">
             <div class="text-center">
                 <div class="inline-flex items-center justify-center w-20 h-20 rounded-[26px] mb-5 crm-float crm-brand-mark-frame overflow-hidden">
@@ -193,7 +193,7 @@
     </div>
 
     <!-- Auth Modal -->
-    <div x-show="!isAuthenticated && !preAuthLoading && !loginTransitionOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 crm-auth-backdrop">
+    <div x-show="!isAuthenticated &amp;&amp; !preAuthLoading &amp;&amp; !loginTransitionOpen" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 crm-auth-backdrop">
         <div class="crm-auth-panel crm-auth-shell overflow-hidden">
             <div class="crm-auth-header">
                 <div class="crm-auth-mark mx-auto mt-4">
@@ -247,7 +247,7 @@
     </div>
 
     <!-- Основное приложение -->
-    <div x-show="isAuthenticated && permissionsReady" x-cloak class="crm-app-shell flex h-screen overflow-hidden p-3 lg:p-4 gap-3 lg:gap-4">
+    <div x-show="isAuthenticated &amp;&amp; permissionsReady" x-cloak class="crm-app-shell flex h-screen overflow-hidden p-3 lg:p-4 gap-3 lg:gap-4">
 
         <!-- Sidebar -->
         <aside x-show="sidebarOpen" @click="sidebarOpen = false" 
@@ -390,7 +390,7 @@
         </main>
 
         <!-- Mobile bottom navigation -->
-        <div class="crm-mobile-bottom-nav lg:hidden" x-show="isAuthenticated && permissionsReady" x-cloak>
+        <div class="crm-mobile-bottom-nav lg:hidden" x-show="isAuthenticated &amp;&amp; permissionsReady" x-cloak>
             <div class="crm-mobile-bottom-nav__inner liquid-glass-pro">
                 <div class="crm-mobile-bottom-nav__rail crm-mobile-bottom-nav__rail--left">
                 <template x-for="item in getMobilePrimaryNavItems().slice(0, 2)" :key="item.id">
@@ -750,7 +750,7 @@
     </div>
 
     <!-- Toasts / iOS-like banners (top-center) -->
-    <div x-show="isAuthenticated && permissionsReady" x-cloak class="lg-toast-container top-center fixed z-[150] pointer-events-none space-y-2">
+    <div x-show="isAuthenticated &amp;&amp; permissionsReady" x-cloak class="lg-toast-container top-center fixed z-[150] pointer-events-none space-y-2">
         <template x-for="t in (toasts || [])" :key="t.id">
             <div class="lg-toast liquid-glass-pro"
                  :class="t.visible ? '' : 'lg-toast-exit'"
@@ -773,7 +773,7 @@
     </div>
 
     <!-- Side panels: notifications (right) + widgets (right) -->
-    <div x-show="isAuthenticated && permissionsReady" x-cloak>
+    <div x-show="isAuthenticated &amp;&amp; permissionsReady" x-cloak>
         <!-- Notifications panel (right) -->
         <div x-show="notificationsPanelOpen" x-transition.opacity class="fixed inset-0 z-[65]" @keydown.escape.window="closeAllPanels()">
             <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="closeAllPanels()"></div>
@@ -983,7 +983,7 @@
                     <div x-show="enabledWidgets.includes('hot-tasks')" class="liquid-glass-pro rounded-2xl p-4">
                         <div class="text-xs font-semibold" style="color: var(--lg-text-tertiary)">Горящие задачи</div>
                         <div class="mt-2 space-y-2">
-                            <template x-for="t in (tasks || []).filter(x => x.priority === 'urgent').slice(0, 3)" :key="t.id">
+                            <template x-for="t in (tasks || []).filter(x =&gt; x.priority === 'urgent').slice(0, 3)" :key="t.id">
                                 <div class="flex items-center gap-2">
                                     <div class="w-2 h-2 rounded-full bg-red-500"></div>
                                     <div class="flex-1 min-w-0">
@@ -992,7 +992,7 @@
                                     </div>
                                 </div>
                             </template>
-                            <div x-show="!(tasks || []).filter(x => x.priority === 'urgent').length" class="text-sm crm-text-secondary">Нет горящих задач</div>
+                            <div x-show="!(tasks || []).filter(x =&gt; x.priority === 'urgent').length" class="text-sm crm-text-secondary">Нет горящих задач</div>
                         </div>
                     </div>
                 </div>
@@ -1008,8 +1008,8 @@
                 <div class="crm-mobile-profile-sheet__header">
                     <div class="crm-mobile-profile-sheet__identity min-w-0">
                         <div class="crm-mobile-profile-sheet__avatar-wrap">
-                            <img x-show="currentUser?.avatar && currentUser.avatar !== 'null' && currentUser.avatar !== ''"
-                                 :src="currentUser?.avatar && currentUser.avatar !== 'null' ? ('uploads/avatars/' + currentUser.avatar) : ''"
+                            <img x-show="currentUser?.avatar &amp;&amp; currentUser.avatar !== 'null' &amp;&amp; currentUser.avatar !== ''"
+                                 :src="currentUser?.avatar &amp;&amp; currentUser.avatar !== 'null' ? ('uploads/avatars/' + currentUser.avatar) : ''"
                                  class="crm-mobile-profile-sheet__avatar"
                                  alt="Аватар"
                                  @error="$el.style.display='none'">
@@ -1077,7 +1077,7 @@
                             <span class="crm-mobile-profile-action__title">Уведомления</span>
                             <span class="crm-mobile-profile-action__description">Быстрый вход в уже существующую панель событий и напоминаний.</span>
                         </span>
-                        <span class="crm-mobile-profile-action__status" x-text="notificationCount > 99 ? '99+' : notificationCount"></span>
+                        <span class="crm-mobile-profile-action__status" x-text="notificationCount &gt; 99 ? '99+' : notificationCount"></span>
                     </button>
 
                     <button type="button" class="crm-mobile-profile-action" @click="handleMobileProfileAction('search')">
@@ -1124,7 +1124,7 @@
         </div>
 
     <!-- Floating chat button (opens встроенный чат, чтобы шапка/сайдбар оставались видны) -->
-    <div x-show="isAuthenticated && permissionsReady" x-cloak>
+    <div x-show="isAuthenticated &amp;&amp; permissionsReady" x-cloak>
         <div class="fixed bottom-24 lg:bottom-6 right-4 lg:right-6 z-[70]" x-show="currentView !== 'chat'" x-transition.opacity>
             <button @click="currentView = 'chat'; sidebarOpen = false"
                     class="w-14 h-14 crm-chat-fab shadow-lg flex items-center justify-center transition-all hover:scale-[1.02]"
@@ -1132,10 +1132,10 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.96 9.96 0 01-4.243-.947L4 20l1.06-3.747A8.968 8.968 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                 </svg>
-                <span x-show="chatUnreadCount > 0"
+                <span x-show="chatUnreadCount &gt; 0"
                       class="absolute -top-2 -right-2 px-2 py-0.5 text-xs rounded-full text-white font-semibold"
                       style="background: var(--crm-danger-text)"
-                      x-text="chatUnreadCount > 99 ? '99+' : chatUnreadCount"></span>
+                      x-text="chatUnreadCount &gt; 99 ? '99+' : chatUnreadCount"></span>
             </button>
         </div>
     </div>

@@ -51,7 +51,7 @@
                 </div>
                 <div class="mt-3 space-y-2">
                     <template x-for="task in mobileHomeSnapshot.upcomingTasks" :key="'mobile-home-task-' + task.id">
-                        <button @click="currentView='my-tasks'; $nextTick(() => openTaskModal(task))" class="crm-mobile-home-list-item text-left">
+                        <button @click="currentView='my-tasks'; $nextTick(() =&gt; openTaskModal(task))" class="crm-mobile-home-list-item text-left">
                             <div class="min-w-0">
                                 <div class="text-sm font-semibold truncate crm-text-primary" x-text="task.title"></div>
                                 <div class="text-xs mt-1 crm-text-tertiary">
@@ -125,15 +125,15 @@
                     </div>
                     <div class="crm-summary-tile">
                         <div class="crm-summary-label">Просрочено</div>
-                        <div class="crm-summary-value" x-text="filteredTasks.filter(task => isOverdue(task.deadline)).length"></div>
+                        <div class="crm-summary-value" x-text="filteredTasks.filter(task =&gt; isOverdue(task.deadline)).length"></div>
                     </div>
                     <div class="crm-summary-tile">
                         <div class="crm-summary-label">Высокий приоритет</div>
-                        <div class="crm-summary-value" x-text="filteredTasks.filter(task => ['high', 'urgent'].includes(task.priority)).length"></div>
+                        <div class="crm-summary-value" x-text="filteredTasks.filter(task =&gt; ['high', 'urgent'].includes(task.priority)).length"></div>
                     </div>
                     <div class="crm-summary-tile">
                         <div class="crm-summary-label">Без исполнителя</div>
-                        <div class="crm-summary-value" x-text="filteredTasks.filter(task => !task.assignee_name).length"></div>
+                        <div class="crm-summary-value" x-text="filteredTasks.filter(task =&gt; !task.assignee_name).length"></div>
                     </div>
                 </div>
             </div>
@@ -167,11 +167,11 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m6 10a2 2 0 01-2 2h-2a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m6 10a2 2 0 01-2 2h-2a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <span>Канбан</span>
                 </button>
-                <button @click="tasksView = 'gantt'; $nextTick(() => initGantt('tasks-gantt', filteredTasks))" :class="tasksView === 'gantt' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button flex items-center justify-center gap-2 crm-tasks-view-button">
+                <button @click="tasksView = 'gantt'; $nextTick(() =&gt; initGantt('tasks-gantt', filteredTasks))" :class="tasksView === 'gantt' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button flex items-center justify-center gap-2 crm-tasks-view-button">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16m16-8H4m6-6v12m4-10v10m4-8v8" /></svg>
                     <span>Гант</span>
                 </button>
-                <button @click="tasksView = 'calendar'; $nextTick(() => initCalendar('tasks-calendar', tasks))" :class="tasksView === 'calendar' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button flex items-center justify-center gap-2 crm-tasks-view-button">
+                <button @click="tasksView = 'calendar'; $nextTick(() =&gt; initCalendar('tasks-calendar', tasks))" :class="tasksView === 'calendar' ? 'crm-tabbar-button-active' : ''" class="crm-tabbar-button flex items-center justify-center gap-2 crm-tasks-view-button">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     <span>Календарь</span>
                 </button>
@@ -182,7 +182,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 01.8 1.6L14 13.5V19a1 1 0 01-.553.894l-4 2A1 1 0 018 21v-7.5L3.2 4.6A1 1 0 013 4z"/>
                     </svg>
                     <span>Фильтры</span>
-                    <span x-show="(taskFilters.project_id ? 1 : 0) + (taskFilters.status ? 1 : 0) + (taskFilters.department_id ? 1 : 0) > 0"
+                    <span x-show="(taskFilters.project_id ? 1 : 0) + (taskFilters.status ? 1 : 0) + (taskFilters.department_id ? 1 : 0) &gt; 0"
                           class="crm-mobile-switcher-badge"
                           x-text="(taskFilters.project_id ? 1 : 0) + (taskFilters.status ? 1 : 0) + (taskFilters.department_id ? 1 : 0)"></span>
                 </button>
@@ -296,7 +296,7 @@
                                         <svg class="w-3.5 h-3.5 flex-shrink-0 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
-                                        <span class="truncate" x-text="task.department_name || task.department?.name || (task.departments && task.departments[0] ? task.departments[0].name : '') || '—'"></span>
+                                        <span class="truncate" x-text="task.department_name || task.department?.name || (task.departments &amp;&amp; task.departments[0] ? task.departments[0].name : '') || '—'"></span>
                                     </div>
                                 </div>
 
@@ -310,13 +310,13 @@
                             </div>
 
                             <!-- Checklist progress (if any) -->
-                            <div x-show="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); return (cl||[]).length > 0; } catch(e){ return false; } })()" class="mb-2">
+                            <div x-show="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); return (cl||[]).length &gt; 0; } catch(e){ return false; } })()" class="mb-2">
                                 <div class="w-full h-1.5 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--crm-surface-alt) 84%, var(--crm-surface));">
                                     <div class="h-full rounded-full"
-                                         :style="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i => i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
+                                         :style="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
                                 </div>
                                 <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
-                                     x-text="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i => i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
+                                     x-text="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
                             </div>
 
                             <!-- CRM связь (сделка/клиент) -->
@@ -325,19 +325,19 @@
                                     <span class="font-semibold">CRM:</span>
                                     <span x-text="task.deal_title || 'Сделка #' + task.deal_id"></span>
                                 </div>
-                                <div x-show="task.client_id && !task.deal_id" class="crm-status-pill crm-status-pill-alt text-[11px] min-w-0" style="white-space: normal; overflow-wrap: anywhere;">
+                                <div x-show="task.client_id &amp;&amp; !task.deal_id" class="crm-status-pill crm-status-pill-alt text-[11px] min-w-0" style="white-space: normal; overflow-wrap: anywhere;">
                                     <span class="font-semibold">Клиент:</span>
                                     <span x-text="task.client_name || 'Клиент #' + task.client_id"></span>
                                 </div>
                             </div>
 
                             <!-- Substage (крупно) -->
-                            <div x-show="task.current_substage_id && taskSubstages && taskSubstages.length" class="mb-3">
+                            <div x-show="task.current_substage_id &amp;&amp; taskSubstages &amp;&amp; taskSubstages.length" class="mb-3">
                                 <div class="liquid-glass-pro rounded-sm px-3 py-2 flex items-center gap-2"
-                                     :style="'border:1px solid ' + ((taskSubstages.find(s => String(s.id) === String(task.current_substage_id))?.color || '#6B7280'))">
+                                     :style="'border:1px solid ' + ((taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.color || '#6B7280'))">
                                     <div class="w-3 h-3 rounded-full flex-shrink-0"
-                                         :style="'background:' + ((taskSubstages.find(s => String(s.id) === String(task.current_substage_id))?.color || '#6B7280'))"></div>
-                                    <span class="text-sm font-semibold truncate crm-text-primary" x-text="taskSubstages.find(s => String(s.id) === String(task.current_substage_id))?.name || ''"></span>
+                                         :style="'background:' + ((taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.color || '#6B7280'))"></div>
+                                    <span class="text-sm font-semibold truncate crm-text-primary" x-text="taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.name || ''"></span>
                                 </div>
                             </div>
 
@@ -378,7 +378,7 @@
             </div>
             <div class="crm-section-head__meta">
                 <span class="crm-inline-badge">Всего: <span class="ml-1" x-text="filteredTasks.length"></span></span>
-                <span class="crm-inline-badge">Просрочено: <span class="ml-1" x-text="filteredTasks.filter(task => isOverdue(task.deadline)).length"></span></span>
+                <span class="crm-inline-badge">Просрочено: <span class="ml-1" x-text="filteredTasks.filter(task =&gt; isOverdue(task.deadline)).length"></span></span>
                 <template x-if="taskFilters.project_id || taskFilters.status || taskFilters.department_id">
                     <span class="crm-inline-badge crm-inline-badge-accent">Есть активные фильтры</span>
                 </template>
@@ -411,7 +411,7 @@
                             <td class="px-4 py-3" data-label="Контекст">
                             <div class="space-y-1 min-w-[180px]">
                                 <div class="text-xs font-medium crm-text-primary" x-text="task.project_name || 'Без проекта'"></div>
-                                <div class="text-xs crm-text-tertiary" x-text="task.department_name || task.department?.name || (task.departments && task.departments[0] ? task.departments[0].name : '') || 'Без отдела'"></div>
+                                <div class="text-xs crm-text-tertiary" x-text="task.department_name || task.department?.name || (task.departments &amp;&amp; task.departments[0] ? task.departments[0].name : '') || 'Без отдела'"></div>
                             </div>
                         </td>
                             <td class="px-4 py-3" data-label="CRM">
@@ -419,16 +419,16 @@
                                 <div x-show="task.deal_id" class="crm-status-pill crm-status-pill-accent text-xs inline-block truncate">
                                     <span x-text="task.deal_title || 'Сделка #' + task.deal_id"></span>
                                 </div>
-                                <div x-show="task.client_id && !task.deal_id" class="crm-status-pill crm-status-pill-alt text-xs inline-block truncate">
+                                <div x-show="task.client_id &amp;&amp; !task.deal_id" class="crm-status-pill crm-status-pill-alt text-xs inline-block truncate">
                                     <span x-text="task.client_name || 'Клиент #' + task.client_id"></span>
                                 </div>
-                                <span x-show="!task.deal_id && !task.client_id" class="text-xs text-gray-400">—</span>
+                                <span x-show="!task.deal_id &amp;&amp; !task.client_id" class="text-xs text-gray-400">—</span>
                             </div>
                         </td>
                             <td class="px-4 py-3" data-label="Статус">
                             <div class="space-y-1">
                                 <span class="crm-status-pill text-xs inline-flex" :style="'background: color-mix(in oklab, ' + task.status_color + ' 12%, var(--crm-surface)); color: ' + task.status_color + '; border-color: color-mix(in oklab, ' + task.status_color + ' 24%, var(--crm-border))'" x-text="task.status"></span>
-                                <div x-show="task.current_substage_id && taskSubstages && taskSubstages.length" class="text-[11px] crm-text-tertiary" x-text="taskSubstages.find(s => String(s.id) === String(task.current_substage_id))?.name || ''"></div>
+                                <div x-show="task.current_substage_id &amp;&amp; taskSubstages &amp;&amp; taskSubstages.length" class="text-[11px] crm-text-tertiary" x-text="taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.name || ''"></div>
                             </div>
                         </td>
                         <td class="px-4 py-3" data-label="Приоритет">

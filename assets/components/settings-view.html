@@ -62,11 +62,11 @@
                 <div>
                     <div class="flex items-center justify-between gap-3 mb-2">
                         <label for="settings-referral-shared-secret" class="block text-sm font-medium crm-text-secondary">Shared secret для webhook</label>
-                        <span class="text-xs px-2 py-1 rounded-full" style="border:1px solid var(--lg-border); color: var(--lg-text-tertiary)" x-text="'Источник: ' + getReferralSecretSourceLabel((referralIntegration && referralIntegration.sharedSecretSource) || 'none')"></span>
+                        <span class="text-xs px-2 py-1 rounded-full" style="border:1px solid var(--lg-border); color: var(--lg-text-tertiary)" x-text="'Источник: ' + getReferralSecretSourceLabel((referralIntegration &amp;&amp; referralIntegration.sharedSecretSource) || 'none')"></span>
                     </div>
                     <input id="settings-referral-shared-secret" name="referral_shared_secret" type="password" x-model="settingsForm.referral_shared_secret" class="w-full px-4 py-3 crm-control-input" placeholder="Введите новый secret или оставьте пустым, чтобы не менять текущий" autocomplete="new-password" />
                     <div class="text-xs mt-2 crm-text-tertiary">CRM сначала использует secret из настроек, а если он не сохранён - fallback на legacy `REFERRAL_SHARED_SECRET` из config/env. Пустое поле не перезаписывает текущий secret.</div>
-                    <div class="text-xs mt-1 crm-text-tertiary" x-text="(referralIntegration && referralIntegration.sharedSecretConfigured) ? 'Secret уже настроен. Для замены введите новое значение и сохраните настройки.' : 'Secret пока не настроен. CRM не упадёт, но webhook и visit endpoint будут отклонять запросы, пока secret не задан.'"></div>
+                    <div class="text-xs mt-1 crm-text-tertiary" x-text="(referralIntegration &amp;&amp; referralIntegration.sharedSecretConfigured) ? 'Secret уже настроен. Для замены введите новое значение и сохраните настройки.' : 'Secret пока не настроен. CRM не упадёт, но webhook и visit endpoint будут отклонять запросы, пока secret не задан.'"></div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -87,16 +87,16 @@
                     <div>
                         <label class="block text-sm font-medium mb-2 crm-text-secondary">Order webhook endpoint</label>
                         <div class="flex flex-col md:flex-row gap-2">
-                            <input type="text" readonly :value="(referralIntegration && referralIntegration.orderWebhookUrl) || ''" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
-                            <button type="button" class="crm-btn-secondary whitespace-nowrap" @click="copyReferralText((referralIntegration && referralIntegration.orderWebhookUrl) || '', 'Webhook endpoint скопирован')">Копировать</button>
+                            <input type="text" readonly :value="(referralIntegration &amp;&amp; referralIntegration.orderWebhookUrl) || ''" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
+                            <button type="button" class="crm-btn-secondary whitespace-nowrap" @click="copyReferralText((referralIntegration &amp;&amp; referralIntegration.orderWebhookUrl) || '', 'Webhook endpoint скопирован')">Копировать</button>
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium mb-2 crm-text-secondary">Visit endpoint</label>
                         <div class="flex flex-col md:flex-row gap-2">
-                            <input type="text" readonly :value="(referralIntegration && referralIntegration.visitEndpointUrl) || ''" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
-                            <button type="button" class="crm-btn-secondary whitespace-nowrap" @click="copyReferralText((referralIntegration && referralIntegration.visitEndpointUrl) || '', 'Visit endpoint скопирован')">Копировать</button>
+                            <input type="text" readonly :value="(referralIntegration &amp;&amp; referralIntegration.visitEndpointUrl) || ''" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
+                            <button type="button" class="crm-btn-secondary whitespace-nowrap" @click="copyReferralText((referralIntegration &amp;&amp; referralIntegration.visitEndpointUrl) || '', 'Visit endpoint скопирован')">Копировать</button>
                         </div>
                     </div>
                 </div>
@@ -141,9 +141,9 @@
                     <div>
                         <label class="block text-sm font-medium mb-2 crm-text-secondary">Webhook URL (для ProstieZvonki)</label>
                         <div class="flex flex-col md:flex-row gap-2">
-                            <input type="text" readonly :value="(new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
+                            <input type="text" readonly :value="(new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&amp;secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href" class="w-full px-4 py-3 crm-control-input crm-opacity-muted" />
                             <button type="button" class="crm-btn-secondary whitespace-nowrap"
-                                    @click="copyReferralText((new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href, 'Webhook URL скопирован')">
+                                    @click="copyReferralText((new URL('api/index.php?endpoint=integrations/prostiezvonki/webhook&amp;secret=' + encodeURIComponent(settingsForm.prostiezvonki_webhook_secret || ''), window.location.href)).href, 'Webhook URL скопирован')">
                                 Копировать
                             </button>
                         </div>
@@ -188,7 +188,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'omni'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') &amp;&amp; settingsAdminTab === 'omni'">
                 <div class="font-semibold mb-2 crm-text-primary">Омниканал: Telegram и MAX (HelpDesk)</div>
                 <div class="text-sm mb-4 crm-text-secondary">
                     Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
@@ -303,7 +303,7 @@
                 </div>
             </div>
 
-            <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') && settingsAdminTab === 'webrtc'">
+            <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') &amp;&amp; settingsAdminTab === 'webrtc'">
                 <div class="font-semibold mb-2 crm-text-primary">WebRTC (звонки и конференции)</div>
                 <div class="text-sm mb-4 crm-text-secondary">
                     Настройка ICE servers (STUN/TURN). Для обычных сетей достаточно STUN. TURN нужен, если у части пользователей не соединяются звонки из-за NAT/ограничений.
@@ -853,7 +853,7 @@
                         </div>
                     </div>
                     <div x-show="widgetAnalyticsLoading" class="text-sm py-4 crm-text-secondary">Загрузка…</div>
-                    <div x-show="!widgetAnalyticsLoading && widgetAnalytics">
+                    <div x-show="!widgetAnalyticsLoading &amp;&amp; widgetAnalytics">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                             <template x-for="item in (widgetAnalytics.summary || [])" :key="item.event">
                                 <div class="crm-panel-block p-3 text-center">

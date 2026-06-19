@@ -4,7 +4,7 @@
 
 <header class="crm-header liquid-glass-pro px-5 lg:px-6 py-3 rounded-sm mb-2 sticky top-3 lg:top-4 z-30 ios-nav-bar">
     <!-- License banner (domain-based) -->
-    <div x-show="license?.checked && license?.enabled && !license?.valid"
+    <div x-show="license?.checked &amp;&amp; license?.enabled &amp;&amp; !license?.valid"
          x-transition.opacity
          class="mb-3">
         <div class="liquid-glass-pro rounded-sm px-4 py-3 flex items-start justify-between gap-4 crm-banner-danger">
@@ -78,7 +78,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
-                        <span x-show="notificationCount > 0" class="crm-mobile-header-icons__badge" x-text="notificationCount > 9 ? '9+' : notificationCount"></span>
+                        <span x-show="notificationCount &gt; 0" class="crm-mobile-header-icons__badge" x-text="notificationCount &gt; 9 ? '9+' : notificationCount"></span>
                     </span>
                 </button>
                 <button type="button"
@@ -176,15 +176,15 @@
             <!-- Уведомления -->
             <button @click="toggleNotificationsPanel()"
                     class="relative crm-btn-ghost crm-icon-button"
-                    :class="notificationCount > 0 ? 'notifications-trigger-active' : ''"
+                    :class="notificationCount &gt; 0 ? 'notifications-trigger-active' : ''"
                     type="button"
                     title="Уведомления">
-                <svg class="w-5 h-5 crm-icon-color" :class="notificationCount > 0 ? 'text-primary' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-5 h-5 crm-icon-color" :class="notificationCount &gt; 0 ? 'text-primary' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                 </svg>
-                <span x-show="notificationCount > 0"
+                <span x-show="notificationCount &gt; 0"
                       class="absolute -top-1 -right-1 crm-notification-badge"
-                      x-text="notificationCount > 9 ? '9+' : notificationCount">
+                      x-text="notificationCount &gt; 9 ? '9+' : notificationCount">
                 </span>
             </button>
 
@@ -269,7 +269,7 @@
                          </template>
 
                         <div class="crm-mobile-search-results__empty"
-                             x-show="globalSearch.length >= 2 && !hasTopbarSearchResults()">
+                             x-show="globalSearch.length &gt;= 2 &amp;&amp; !hasTopbarSearchResults()">
                             Ничего не найдено. Попробуйте другой запрос.
                         </div>
                     </div>

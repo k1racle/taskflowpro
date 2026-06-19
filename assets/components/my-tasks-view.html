@@ -32,7 +32,7 @@
                         </svg>
                         Список
                     </button>
-                    <button @click="myTasksView = 'gantt'; $nextTick(() => initGantt('my-tasks-gantt', filteredMyTasks))"
+                    <button @click="myTasksView = 'gantt'; $nextTick(() =&gt; initGantt('my-tasks-gantt', filteredMyTasks))"
                             :class="myTasksView === 'gantt' ? 'crm-tabbar-button-active' : ''"
                             class="crm-tabbar-button flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,7 +40,7 @@
                         </svg>
                         Гант
                     </button>
-                    <button @click="myTasksView = 'calendar'; $nextTick(() => initCalendar('my-tasks-calendar', filteredMyTasks))"
+                    <button @click="myTasksView = 'calendar'; $nextTick(() =&gt; initCalendar('my-tasks-calendar', filteredMyTasks))"
                              :class="myTasksView === 'calendar' ? 'crm-tabbar-button-active' : ''"
                              class="crm-tabbar-button flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,13 +202,13 @@
                                 </div>
                             </div>
 
-                            <div x-show="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); return (cl||[]).length > 0; } catch(e){ return false; } })()" class="mb-2">
+                            <div x-show="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); return (cl||[]).length &gt; 0; } catch(e){ return false; } })()" class="mb-2">
                                 <div class="w-full h-1.5 rounded-full overflow-hidden" style="background: color-mix(in oklab, var(--lg-glass-bg) 70%, black);">
                                     <div class="h-full rounded-full"
-                                         :style="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i => i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
+                                         :style="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
                                 </div>
                                 <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
-                                     x-text="(() => { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i => i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
+                                     x-text="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
                             </div>
                             <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2" x-text="task.description"></p>
 

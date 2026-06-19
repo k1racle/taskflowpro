@@ -55,7 +55,7 @@
         </div>
     </div>
 
-    <div x-show="!bookingLoading && !bookingError && !bookingCanManage" x-cloak class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
+    <div x-show="!bookingLoading &amp;&amp; !bookingError &amp;&amp; !bookingCanManage" x-cloak class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
         <div class="crm-empty-state text-center py-4">
             <div class="crm-empty-state-title">Управление услугами и шахматка недоступны</div>
             <div class="crm-empty-state-text">Нужны права администратора (роль root или permission <span class="font-semibold">admin.full</span>).</div>
@@ -75,7 +75,7 @@
 
         <div class="mt-4 space-y-2">
             <template x-for="service in bookingServiceTypes" :key="'booking-service-admin-' + service.id">
-                <div class="rounded-sm p-4 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 72%, transparent);">
+                <div class="rounded-sm p-4 crm-glass">
                     <div class="flex items-start justify-between gap-3">
                         <div class="min-w-0">
                             <div class="flex items-center gap-2 flex-wrap">
@@ -87,7 +87,7 @@
                             <div class="mt-2 flex flex-wrap gap-2 text-xs crm-text-secondary">
                                 <span class="crm-inline-badge">Длительность: <span class="ml-1" x-text="service.duration_minutes"></span> мин</span>
                                 <span class="crm-inline-badge">Цена: <span class="ml-1" x-text="service.price_rub"></span> ₽</span>
-                                <template x-if="service.discount_type && service.discount_type !== 'none'">
+                                <template x-if="service.discount_type &amp;&amp; service.discount_type !== 'none'">
                                     <span class="crm-inline-badge crm-inline-badge-accent">
                                         Скидка:
                                         <span class="ml-1" x-text="service.discount_type === 'percent' ? (service.discount_value + '%') : ('-' + service.discount_value + ' ₽')"></span>
@@ -114,7 +114,7 @@
         </div>
     </div>
 
-    <div x-show="bookingCanManage && bookingServiceModalOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[90] flex items-center justify-center p-4" style="background: rgba(2,6,23,0.6)" @keydown.escape.window="bookingServiceModalOpen = false">
+    <div x-show="bookingCanManage &amp;&amp; bookingServiceModalOpen" x-cloak x-transition.opacity class="fixed inset-0 z-[90] flex items-center justify-center p-4 lg-modal-backdrop" @keydown.escape.window="bookingServiceModalOpen = false">
         <div class="liquid-glass-pro rounded-sm p-5 w-full max-w-2xl">
             <div class="flex items-start justify-between gap-3">
                 <div>
@@ -208,23 +208,23 @@
             </div>
         </div>
 
-        <div class="mt-4 overflow-x-auto rounded-sm border" style="border-color: var(--lg-border)">
+        <div class="mt-4 overflow-x-auto rounded-sm crm-border">
             <div class="min-w-[920px]">
                 <div class="grid" :style="'grid-template-columns: minmax(220px, 260px) repeat(' + (bookingScheduleSlots.length || 0) + ', minmax(96px, 1fr))'">
-                    <div class="sticky left-0 z-10 px-4 py-3 text-sm font-semibold" style="background: var(--lg-glass-bg); border-right: 1px solid var(--lg-border); color: var(--lg-text-secondary)">Услуга</div>
+                    <div class="sticky left-0 z-10 px-4 py-3 text-sm font-semibold crm-glass crm-text-secondary border-r">Услуга</div>
                     <template x-for="slot in bookingScheduleSlots" :key="'slot-head-' + slot">
-                        <div class="px-3 py-3 text-xs font-semibold text-center" style="background: var(--lg-glass-bg); border-left: 1px solid var(--lg-border); color: var(--lg-text-secondary)" x-text="slot"></div>
+                        <div class="px-3 py-3 text-xs font-semibold text-center crm-glass crm-text-secondary border-l" x-text="slot"></div>
                     </template>
 
-                    <template x-for="service in (bookingServiceTypes || []).filter(s => s && (s.is_active == null || s.is_active))" :key="'sched-service-' + service.id">
+                    <template x-for="service in (bookingServiceTypes || []).filter(s =&gt; s &amp;&amp; (s.is_active == null || s.is_active))" :key="'sched-service-' + service.id">
                         <template>
-                            <div class="sticky left-0 z-10 px-4 py-3 text-sm" style="background: color-mix(in oklab, var(--lg-glass-bg) 82%, transparent); border-top: 1px solid var(--lg-border); border-right: 1px solid var(--lg-border)">
+                            <div class="sticky left-0 z-10 px-4 py-3 text-sm crm-glass border-t border-r">
                                 <div class="font-semibold crm-text-primary" x-text="service.type_name"></div>
                                 <div class="text-xs crm-text-tertiary" x-text="(service.duration_minutes ? (service.duration_minutes + ' мин') : '')"></div>
                             </div>
                             <template x-for="slot in bookingScheduleSlots" :key="'sched-cell-' + service.id + '-' + slot">
-                                <div class="px-2 py-2" style="border-top: 1px solid var(--lg-border); border-left: 1px solid var(--lg-border)">
-                                    <template x-if="getBookingScheduleCell(service.id, slot) && getBookingScheduleCell(service.id, slot).length">
+                                <div class="px-2 py-2 border-t border-l crm-border">
+                                    <template x-if="getBookingScheduleCell(service.id, slot) &amp;&amp; getBookingScheduleCell(service.id, slot).length">
                                         <div class="space-y-1">
                                             <template x-for="req in getBookingScheduleCell(service.id, slot)" :key="'sched-req-' + req.id">
                                                 <button type="button" @click="selectBookingRequest(req)" class="w-full text-left rounded-sm px-2 py-1.5 text-[11px] border"
@@ -261,14 +261,14 @@
                     </div>
                 </div>
 
-                <div x-show="bookingServiceTypes && bookingServiceTypes.length > 0" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div x-show="bookingServiceTypes &amp;&amp; bookingServiceTypes.length &gt; 0" class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
                     <template x-for="service in bookingServiceTypes" :key="service.id">
                         <button type="button"
                                 class="w-full text-left rounded-sm p-4 border transition-all"
                                 @click="toggleServiceType(service.id)"
                                 :class="(Array.isArray(bookingForm.service_type_ids) ? bookingForm.service_type_ids.map(String).includes(String(service.id)) : false) ? 'border-blue-500/50 bg-blue-500/10' : 'border-[color:var(--lg-border)] bg-[color:color-mix(in_oklab,var(--lg-glass-bg)_70%,transparent)] hover:border-blue-400/40'">
                             <div class="flex items-start gap-3">
-                                <div class="w-11 h-11 rounded-sm flex items-center justify-center text-xl flex-shrink-0" style="background: color-mix(in oklab, var(--lg-primary) 18%, var(--lg-glass-bg));">
+                                <div class="w-11 h-11 rounded-sm flex items-center justify-center text-xl flex-shrink-0 crm-tone-accent">
                                     <span x-text="getBookingServiceIcon(service.icon)"></span>
                                 </div>
                                 <div class="min-w-0 flex-1">
@@ -285,7 +285,7 @@
                     </template>
                 </div>
 
-                <div x-show="!bookingLoading && (!bookingServiceTypes || bookingServiceTypes.length === 0)" class="mt-4 crm-empty-state text-center py-8">
+                <div x-show="!bookingLoading &amp;&amp; (!bookingServiceTypes || bookingServiceTypes.length === 0)" class="mt-4 crm-empty-state text-center py-8">
                     <div class="crm-empty-state-title">Услуги не найдены</div>
                     <div class="crm-empty-state-text">Проверьте справочник booking_service_types или загрузите страницу ещё раз.</div>
                 </div>

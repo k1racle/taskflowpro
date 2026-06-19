@@ -101,7 +101,7 @@
                     <div class="crm-section-head__text">Общий список обращений с быстрым открытием карточки и контролем приоритетов.</div>
                 </div>
                 <div class="crm-section-head__meta flex items-center gap-2 flex-wrap">
-                    <span class="crm-inline-badge">Срочные: <span class="ml-1" x-text="(helpdeskTickets || []).filter(ticket => ticket.priority === 'urgent').length"></span></span>
+                    <span class="crm-inline-badge">Срочные: <span class="ml-1" x-text="(helpdeskTickets || []).filter(ticket =&gt; ticket.priority === 'urgent').length"></span></span>
                 </div>
             </div>
             <div x-show="helpdeskError" class="mx-4 mt-4 crm-empty-state" data-state="error">
@@ -189,7 +189,7 @@
                     </template>
                 </tbody>
             </table>
-            <div x-show="!helpdeskLoading && (!helpdeskTickets || helpdeskTickets.length === 0)" class="crm-empty-state text-center px-4 py-8">
+            <div x-show="!helpdeskLoading &amp;&amp; (!helpdeskTickets || helpdeskTickets.length === 0)" class="crm-empty-state text-center px-4 py-8">
                 <div class="crm-empty-state-title">Заявок не найдено</div>
                 <div class="crm-empty-state-text">Измените фильтры или создайте новую заявку вручную.</div>
                 <div class="crm-empty-state-actions">
@@ -255,15 +255,15 @@
                 <div class="mt-4 space-y-3">
                     <div class="crm-queue-row crm-helpdesk-queue-row">
                         <div class="min-w-0 text-sm font-semibold crm-text-primary">Срочные</div>
-                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket => ticket.priority === 'urgent').length"></div>
+                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket =&gt; ticket.priority === 'urgent').length"></div>
                     </div>
                     <div class="crm-queue-row crm-helpdesk-queue-row">
                         <div class="min-w-0 text-sm font-semibold crm-text-primary">В работе</div>
-                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket => ticket.status_name === 'В работе').length"></div>
+                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket =&gt; ticket.status_name === 'В работе').length"></div>
                     </div>
                     <div class="crm-queue-row crm-helpdesk-queue-row">
                         <div class="min-w-0 text-sm font-semibold crm-text-primary">Без назначения</div>
-                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket => !ticket.assigned_to_name).length"></div>
+                        <div class="crm-helpdesk-queue-count" x-text="(helpdeskTickets || []).filter(ticket =&gt; !ticket.assigned_to_name).length"></div>
                     </div>
                 </div>
             </div>
@@ -408,7 +408,7 @@
                                     <div class="flex items-start justify-between gap-3">
                                         <div class="min-w-0">
                                             <div class="text-sm font-semibold crm-text-primary" x-text="'+' + (c.phone || '')"></div>
-                                            <div class="text-xs mt-1 crm-text-secondary" x-text="(c.status || '—') + (c.duration !== null && typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
+                                            <div class="text-xs mt-1 crm-text-secondary" x-text="(c.status || '—') + (c.duration !== null &amp;&amp; typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
                                             <div class="text-xs mt-1 crm-text-tertiary" x-text="c.ended_at || c.started_at || ''"></div>
                                         </div>
                                         <div class="flex items-center gap-2">

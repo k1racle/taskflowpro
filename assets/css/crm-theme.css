@@ -561,6 +561,12 @@ body.crm-theme [x-cloak] {
     color: #229ed9 !important;
 }
 
+.crm-tone-purple {
+    background: color-mix(in oklab, #8b5cf6 10%, var(--crm-surface-alt)) !important;
+    border-color: color-mix(in oklab, #8b5cf6 24%, var(--crm-border)) !important;
+    color: #7c3aed !important;
+}
+
 .crm-text-primary {
     color: var(--crm-text) !important;
 }
@@ -635,10 +641,6 @@ body.crm-theme [x-cloak] {
 .crm-code-preview {
     background: rgba(15, 23, 42, 0.08);
     color: var(--crm-text);
-}
-
-.crm-editor-mono {
-    font-family: Consolas, monospace;
 }
 
 .crm-panel-scroll-70 { max-height: 70vh; }
@@ -1201,6 +1203,17 @@ body.crm-theme .crm-chat-fab:focus-visible {
     border-color: color-mix(in oklab, var(--crm-danger-text) 22%, var(--crm-danger-border));
 }
 
+.crm-btn-success {
+    background: color-mix(in oklab, #10b981 12%, var(--crm-surface-alt));
+    border: 1px solid color-mix(in oklab, #10b981 30%, var(--crm-border));
+    color: #059669;
+}
+
+.crm-btn-success:hover {
+    background: color-mix(in oklab, #10b981 18%, var(--crm-surface-alt));
+    border-color: color-mix(in oklab, #10b981 42%, var(--crm-border));
+}
+
 .crm-ui-title,
 .crm-ui-heading {
     color: var(--crm-text);
@@ -1606,6 +1619,129 @@ body.crm-theme .crm-control-select {
     background: color-mix(in oklab, var(--crm-surface-alt) 86%, var(--crm-surface));
     border-color: var(--crm-border);
     color: var(--crm-text-muted);
+}
+
+.crm-status-pill-purple {
+    background: color-mix(in oklab, #8b5cf6 10%, var(--crm-surface));
+    border-color: color-mix(in oklab, #8b5cf6 24%, var(--crm-border));
+    color: #7c3aed;
+}
+
+.crm-metric-tile {
+    background: color-mix(in oklab, var(--crm-surface-alt) 86%, var(--crm-surface));
+    border: 1px solid var(--crm-border);
+    border-radius: var(--crm-radius-sm);
+}
+
+.crm-panel-header {
+    border-bottom: 1px solid var(--crm-border);
+    background: color-mix(in oklab, var(--crm-surface-alt) 65%, transparent);
+}
+
+.crm-panel-footer {
+    border-top: 1px solid var(--crm-border);
+    background: color-mix(in oklab, var(--crm-surface-alt) 65%, transparent);
+}
+
+.crm-video-overlay-label {
+    background: color-mix(in oklab, var(--crm-surface-alt) 75%, transparent);
+    border: 1px solid var(--crm-border);
+    border-radius: var(--crm-radius-sm);
+}
+
+.crm-glass {
+    background: color-mix(in oklab, var(--crm-surface-alt) 72%, transparent);
+    border: 1px solid var(--crm-border);
+}
+
+.crm-glass-dark {
+    background: color-mix(in oklab, var(--crm-surface-alt) 60%, #000);
+}
+
+.crm-divider-v {
+    width: 1px;
+    background: color-mix(in oklab, var(--crm-border) 70%, transparent);
+}
+
+.crm-border-t {
+    border-top: 1px solid var(--crm-border);
+}
+
+.crm-divide-y > * + * {
+    border-top: 1px solid var(--crm-border);
+}
+
+.crm-direction-ltr {
+    direction: ltr;
+    text-align: left;
+}
+
+.crm-text-warning-light { color: #fde68a; }
+.crm-text-success-light { color: #bbf7d0; }
+.crm-text-error-light  { color: #fecaca; }
+
+.crm-diag-ok,
+.crm-diag-warn,
+.crm-diag-error {
+    border-radius: var(--crm-radius-sm);
+    border: 1px solid transparent;
+}
+
+.crm-diag-ok {
+    border-color: rgba(34, 197, 94, 0.35);
+    color: #bbf7d0;
+    background: rgba(20, 83, 45, 0.18);
+}
+
+.crm-diag-warn {
+    border-color: rgba(245, 158, 11, 0.35);
+    color: #fde68a;
+    background: rgba(120, 53, 15, 0.18);
+}
+
+.crm-diag-error {
+    border-color: rgba(239, 68, 68, 0.35);
+    color: #fecaca;
+    background: rgba(127, 29, 29, 0.18);
+}
+
+.crm-diag-pill-ok,
+.crm-diag-pill-warn,
+.crm-diag-pill-error {
+    display: inline-flex;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.crm-diag-pill-ok { background: rgba(34, 197, 94, 0.18); color: #bbf7d0; }
+.crm-diag-pill-warn { background: rgba(245, 158, 11, 0.18); color: #fde68a; }
+.crm-diag-pill-error { background: rgba(239, 68, 68, 0.18); color: #fecaca; }
+
+.crm-diag-card-ok { border: 1px solid rgba(34, 197, 94, 0.25); background: rgba(15, 118, 110, 0.08); }
+.crm-diag-card-warn { border: 1px solid rgba(245, 158, 11, 0.25); background: rgba(120, 53, 15, 0.10); }
+.crm-diag-card-error { border: 1px solid rgba(239, 68, 68, 0.25); background: rgba(127, 29, 29, 0.10); }
+
+.crm-btn-tab {
+    flex: 1;
+    padding: 8px 12px;
+    border-radius: var(--crm-radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--crm-text-muted);
+    background: transparent;
+    transition: all 0.15s ease;
+}
+
+.crm-btn-tab-active,
+.crm-btn-tab[data-active="true"] {
+    background: var(--crm-accent);
+    color: #fff;
+}
+
+.crm-divider-dark {
+    border-bottom: 1px solid color-mix(in oklab, var(--crm-surface-alt) 60%, #000);
 }
 
 .crm-breadcrumb-button,
@@ -4246,6 +4382,7 @@ body.crm-theme.dark .conference-status-ended {
 .crm-text-warning   { color: var(--lg-warning) !important; }
 .crm-text-info      { color: var(--lg-info) !important; }
 .crm-text-accent    { color: var(--crm-accent) !important; }
+.crm-text-purple    { color: #7c3aed !important; }
 .crm-text-muted     { color: var(--crm-text-muted) !important; }
 
 .crm-bg-primary     { background: var(--lg-primary) !important; }
@@ -4259,6 +4396,10 @@ body.crm-theme.dark .conference-status-ended {
 .crm-border        { border: 1px solid var(--lg-border); }
 
 .crm-mono {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.crm-editor-mono {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
 }
 
@@ -4304,15 +4445,6 @@ body.crm-theme.dark {
     font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
-body.crm-theme .crm-mono,
-body.crm-theme .crm-metric-value,
-body.crm-theme .crm-screen-title,
-body.crm-theme .crm-stat-value,
-body.crm-theme .crm-count-badge,
-body.crm-theme .crm-summary-value {
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
-
 /* ── Glassmorphism panels ── */
 body.crm-theme .liquid-glass-pro,
 body.crm-theme [class*="liquid-glass"],
@@ -4348,11 +4480,11 @@ body.crm-theme input[type="date"],
 body.crm-theme input[type="time"],
 body.crm-theme select,
 body.crm-theme textarea {
-    background: var(--crm-surface) !important;
-    border: 1px solid var(--crm-border) !important;
+    background: var(--crm-surface-alt) !important;
+    border: 1px solid var(--crm-border-strong) !important;
     border-radius: 10px !important;
     color: var(--crm-text) !important;
-    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04) !important;
 }
 
 body.crm-theme .crm-control-input:focus,
@@ -4562,21 +4694,36 @@ body.crm-theme [class*="rounded-lg"] {
 }
 
 /* ── Modal / Drawer ── */
-body.crm-theme .crm-modal,
-body.crm-theme .crm-drawer,
-body.crm-theme [class*="modal"],
-body.crm-theme [class*="drawer"] {
+body.crm-theme .crm-modal-shell,
+body.crm-theme .lg-modal-shell {
     background: var(--crm-surface) !important;
     border: 1px solid var(--crm-border) !important;
     border-radius: 16px !important;
     box-shadow: var(--crm-shadow-lg) !important;
 }
 
+body.crm-theme .crm-drawer-shell {
+    background: var(--crm-surface) !important;
+    border-left: 1px solid var(--crm-border) !important;
+    box-shadow: var(--crm-shadow-lg) !important;
+}
+
 body.crm-theme .crm-modal-overlay,
-body.crm-theme [class*="overlay"] {
-    background: rgba(15, 23, 42, 0.45) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
+body.crm-theme .lg-modal-backdrop {
+    background: rgba(15, 23, 42, 0.12) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+}
+
+body.crm-theme .crm-drawer-overlay {
+    background: rgba(15, 23, 42, 0.08) !important;
+    backdrop-filter: blur(2px) !important;
+    -webkit-backdrop-filter: blur(2px) !important;
+}
+
+body.crm-theme .crm-option-tile {
+    background: color-mix(in oklab, var(--crm-accent) 8%, var(--crm-surface-alt));
+    border-radius: var(--crm-radius-md);
 }
 
 /* ── Sidebar ── */
@@ -4706,9 +4853,9 @@ body.crm-theme .fc .fc-daygrid-day.fc-day-today {
 body.crm-theme .crm-empty-state {
     color: var(--crm-text-faint);
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.8rem;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 1rem;
 }
 
 /* ── Fix: filter / summary tiles ── */

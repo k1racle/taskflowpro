@@ -177,8 +177,8 @@
                 <div>
                     <label for="user-role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Роль</label>
                     <select id="user-role" name="role" x-model="userForm.role" class="w-full px-4 py-3 crm-control-select" style="position: relative; z-index: 60;">
-                        <option value="" x-show="!(roles || []).filter(x => x.name !== 'root' && ((currentUser?.role === 'root') || (can && can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) && x.permission_codes.includes('admin.full')))).length">— Выберите роль —</option>
-                        <template x-for="r in (roles || []).filter(x => x.name !== 'root' && ((currentUser?.role === 'root') || (can && can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) && x.permission_codes.includes('admin.full'))))" :key="r.id">
+                        <option value="" x-show="!(roles || []).filter(x =&gt; x.name !== 'root' &amp;&amp; ((currentUser?.role === 'root') || (can &amp;&amp; can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) &amp;&amp; x.permission_codes.includes('admin.full')))).length">— Выберите роль —</option>
+                        <template x-for="r in (roles || []).filter(x =&gt; x.name !== 'root' &amp;&amp; ((currentUser?.role === 'root') || (can &amp;&amp; can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) &amp;&amp; x.permission_codes.includes('admin.full'))))" :key="r.id">
                             <option :value="r.name" x-text="r.name"></option>
                         </template>
                     </select>
@@ -201,7 +201,7 @@
                                 <div class="text-sm font-semibold crm-text-primary">Подсказка</div>
                                 <div class="text-xs mt-1 crm-text-secondary">Если роль не отображается — обновите список ролей в админке или проверьте права доступа.</div>
                             </div>
-                            <button type="button" class="crm-btn-secondary text-sm" @click="loadRoles && loadRoles()">Обновить роли</button>
+                            <button type="button" class="crm-btn-secondary text-sm" @click="loadRoles &amp;&amp; loadRoles()">Обновить роли</button>
                         </div>
                     </div>
                 </div>
@@ -209,8 +209,8 @@
         </form>
         <div class="crm-modal-footer crm-drawer-footer">
             <button
-                x-show="editingUser && canDeleteUser && canDeleteUser(editingUser)"
-                @click="deleteUser && deleteUser(editingUser)"
+                x-show="editingUser &amp;&amp; canDeleteUser &amp;&amp; canDeleteUser(editingUser)"
+                @click="deleteUser &amp;&amp; deleteUser(editingUser)"
                 class="crm-btn-danger"
                 :disabled="usersSaving">
                 Удалить сотрудника
@@ -306,7 +306,7 @@
             </div>
         </div>
         <div class="crm-modal-footer crm-drawer-footer">
-            <button x-show="editingRole && canDeleteRole(editingRole)"
+            <button x-show="editingRole &amp;&amp; canDeleteRole(editingRole)"
                     @click="deleteRole(editingRole)"
                     class="crm-btn-danger">
                 Удалить роль
@@ -418,7 +418,7 @@
                                 <label class="flex items-center justify-between gap-3">
                                     <span class="text-sm crm-text-secondary">
                                         <span x-text="({view:'Просмотр',create:'Создание',edit:'Редактирование',delete:'Удаление',upload:'Загрузка',send:'Отправка',forward:'Пересылка',create_group:'Создание групп',export:'Экспорт',stages_manage:'Управление этапами',shifts_manage:'Управление сменами',full:'Полный доступ'}[action] || action)"></span>
-                                        <span class="ml-2 text-xs crm-text-tertiary" x-text="(section==='crm' && action==='stages_manage') ? 'crm.stages.manage' : ((section==='leader' && action==='shifts_manage') ? 'leader.shifts.manage' : `${section}.${action}`)"></span>
+                                        <span class="ml-2 text-xs crm-text-tertiary" x-text="(section==='crm' &amp;&amp; action==='stages_manage') ? 'crm.stages.manage' : ((section==='leader' &amp;&amp; action==='shifts_manage') ? 'leader.shifts.manage' : `${section}.${action}`)"></span>
                                     </span>
                                     <button type="button" class="ios-toggle" :class="rolePermissions[section][action] ? 'on' : 'off'" @click="rolePermissions[section][action] = !rolePermissions[section][action]">
                                         <span class="ios-toggle-knob"></span>
@@ -470,7 +470,7 @@
                 Удалить
             </button>
 
-            <div x-show="mailContextMenuEmail" class="h-px my-1" style="background: color-mix(in oklab, var(--lg-glass-border) 40%, transparent);"></div>
+            <div x-show="mailContextMenuEmail" class="h-px my-1 crm-divider opacity-40"></div>
 
             <button x-show="!mailContextMenuEmail" @click="createTaskFromMenu(); closeContextMenu()"
                     class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
@@ -487,17 +487,17 @@
                 Удалить
             </button>
 
-            <div class="h-px my-1" style="background: color-mix(in oklab, var(--lg-glass-border) 40%, transparent);"></div>
+            <div class="h-px my-1 crm-divider opacity-40"></div>
 
-            <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="createStageFromMenu(); closeContextMenu()"
+            <button x-show="contextMenuStage &amp;&amp; contextMenuStage !== '__calendar__'" @click="createStageFromMenu(); closeContextMenu()"
                     class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Создать этап
             </button>
-            <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="editStageFromMenu(); closeContextMenu()"
+            <button x-show="contextMenuStage &amp;&amp; contextMenuStage !== '__calendar__'" @click="editStageFromMenu(); closeContextMenu()"
                     class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all">
                 Переименовать этап
             </button>
-            <button x-show="contextMenuStage && contextMenuStage !== '__calendar__'" @click="deleteStageFromMenu(); closeContextMenu()"
+            <button x-show="contextMenuStage &amp;&amp; contextMenuStage !== '__calendar__'" @click="deleteStageFromMenu(); closeContextMenu()"
                     class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
                 Удалить этап
             </button>
@@ -631,7 +631,7 @@
                 </button>
             </div>
 
-            <div class="mt-6" x-show="(can && can('admin.full')) || currentUser?.role === 'root'">
+            <div class="mt-6" x-show="(can &amp;&amp; can('admin.full')) || currentUser?.role === 'root'">
                 <div class="rounded-sm p-4 crm-border-subtle">
                     <div class="text-sm font-semibold crm-text-primary">WebRTC диагностика</div>
                     <div class="text-xs mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 crm-text-secondary">

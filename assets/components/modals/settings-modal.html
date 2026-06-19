@@ -37,7 +37,7 @@
                     class="crm-tabbar-button">
                 Уведомления
             </button>
-            <button @click="settingsTab = 'menu'; initMenuSettings && initMenuSettings()"
+            <button @click="settingsTab = 'menu'; initMenuSettings &amp;&amp; initMenuSettings()"
                     :class="settingsTab === 'menu' ? 'crm-tabbar-button-active' : ''"
                     class="crm-tabbar-button">
                 Меню
@@ -321,8 +321,8 @@
                             <div class="text-xs mt-1 crm-text-secondary">Перетаскивай пункты мышкой. Изменения сохраняются и будут после перезагрузки.</div>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button type="button" class="crm-btn-secondary" @click="resetMenuOrder && resetMenuOrder()">Сбросить</button>
-                            <button type="button" class="crm-btn-primary" @click="saveMenuOrder && saveMenuOrder()">Сохранить</button>
+                            <button type="button" class="crm-btn-secondary" @click="resetMenuOrder &amp;&amp; resetMenuOrder()">Сбросить</button>
+                            <button type="button" class="crm-btn-primary" @click="saveMenuOrder &amp;&amp; saveMenuOrder()">Сохранить</button>
                         </div>
                     </div>
                 </div>
@@ -330,7 +330,7 @@
                 <div class="crm-modal-section overflow-hidden">
                     <div class="px-4 py-3 flex items-center justify-between">
                         <div class="text-sm crm-text-secondary">Основное меню</div>
-                        <div class="text-xs crm-text-tertiary">drag & drop</div>
+                        <div class="text-xs crm-text-tertiary">drag &amp; drop</div>
                     </div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2" @dragover.prevent>
@@ -361,7 +361,7 @@
                 </div>
             </div>
 
-            <div x-show="settingsTab === 'admin-catalog' && canAdmin" class="space-y-4">
+            <div x-show="settingsTab === 'admin-catalog' &amp;&amp; canAdmin" class="space-y-4">
                 <div class="crm-modal-section">
                     <div class="flex items-start justify-between gap-4 flex-wrap">
                         <div>

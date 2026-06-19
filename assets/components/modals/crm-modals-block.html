@@ -1,5 +1,5 @@
 <!-- CRM: Client Detail Drawer -->
-<div x-show="crmClientDetailOpen && crmClient" x-cloak x-transition.opacity class="crm-drawer-overlay z-[119]" @keydown.escape.window="!crmClientModalOpen && crmCloseClientDetailView()">
+<div x-show="crmClientDetailOpen &amp;&amp; crmClient" x-cloak x-transition.opacity class="crm-drawer-overlay z-[119]" @keydown.escape.window="!crmClientModalOpen &amp;&amp; crmCloseClientDetailView()">
     <div class="crm-drawer-backdrop lg-modal-backdrop" @click="crmCloseClientDetailView()"></div>
     <div class="crm-drawer-shell crm-drawer-shell-xl liquid-glass-pro lg-modal-shell"
          x-transition:enter="transition ease-out duration-300"
@@ -262,7 +262,7 @@
                             <div class="flex items-start justify-between gap-4">
                                 <div class="min-w-0">
                                     <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="'+' + (c.phone || '')"></div>
-                                    <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null && typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
+                                    <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null &amp;&amp; typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
                                     <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="c.ended_at || c.started_at || ''"></div>
                                 </div>
                                 <div class="flex items-center gap-2">
@@ -604,9 +604,9 @@
                 <div class="space-y-2" x-show="crmDealForm.current_substage_id">
                     <div class="crm-list-row">
                         <div class="flex items-center gap-3 flex-1">
-                            <div class="w-3 h-3 rounded-full" :style="'background:' + ((crmDealSubstages || []).find(s => String(s.id) === String(crmDealForm.current_substage_id))?.color || '#6B7280')"></div>
+                            <div class="w-3 h-3 rounded-full" :style="'background:' + ((crmDealSubstages || []).find(s =&gt; String(s.id) === String(crmDealForm.current_substage_id))?.color || '#6B7280')"></div>
                             <span class="text-lg font-semibold" style="color: var(--lg-text-primary)"
-                                  x-text="(crmDealSubstages || []).find(s => String(s.id) === String(crmDealForm.current_substage_id))?.name"></span>
+                                  x-text="(crmDealSubstages || []).find(s =&gt; String(s.id) === String(crmDealForm.current_substage_id))?.name"></span>
                         </div>
                         <span class="crm-status-pill crm-status-pill-success text-xs">Текущий этап</span>
                     </div>
@@ -623,7 +623,7 @@
                         <div class="flex items-start justify-between gap-4">
                             <div class="min-w-0">
                                 <div class="font-semibold" style="color: var(--lg-text-primary)" x-text="'+' + (c.phone || '')"></div>
-                                <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null && typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
+                                <div class="text-xs mt-1" style="color: var(--lg-text-secondary)" x-text="(c.status || '—') + (c.duration !== null &amp;&amp; typeof c.duration !== 'undefined' ? (' • ' + c.duration + ' сек') : '')"></div>
                                 <div class="text-xs mt-1" style="color: var(--lg-text-tertiary)" x-text="c.ended_at || c.started_at || ''"></div>
                             </div>
                             <div class="flex items-center gap-2">
