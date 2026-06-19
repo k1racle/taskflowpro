@@ -22,7 +22,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Main application theme -->
-    <link rel="stylesheet" href="assets/css/crm-theme.css?v=15">
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=16">
     <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
 
     <!-- Tailwind CSS -->
@@ -130,7 +130,7 @@
                     }
                 } catch (e) {
                     console.error('[x-include]', e);
-                    el.innerHTML = '<div class="p-4 text-sm text-red-600 bg-red-50 rounded-xl border border-red-200">Ошибка загрузки компонента</div>';
+                    el.innerHTML = '<div class="p-4 text-sm rounded-xl crm-alert-error">Ошибка загрузки компонента</div>';
                 } finally {
                     setLoading(el, false);
                 }
@@ -185,7 +185,7 @@
                 <div class="mt-8 flex items-center justify-center">
                     <div class="relative w-14 h-14 crm-glow">
                         <div class="absolute inset-0 border-4 rounded-full border-[color:var(--crm-border)]"></div>
-                        <div class="absolute inset-0 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                        <div class="absolute inset-0 crm-spinner-accent rounded-full animate-spin"></div>
                     </div>
                 </div>
             </div>
@@ -557,7 +557,7 @@
                 <!-- Доступные виджеты -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Время -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('time') ? 'border-green-500/50 bg-green-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('time') ? 'crm-widget-active-green' : 'crm-widget-inactive'">
                         <div class="crm-widget-store-item">
                             <div class="crm-widget-store-item__meta">
                                 <div class="crm-widget-store-item__icon crm-widget-store-item__icon--neutral" style="--widget-accent: var(--lg-primary)">
@@ -577,7 +577,7 @@
                     </div>
 
                     <!-- Погода -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('weather') ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('weather') ? 'crm-widget-active-blue' : 'crm-widget-inactive'">
                         <div class="crm-widget-store-item">
                             <div class="crm-widget-store-item__meta">
                                 <div class="crm-widget-store-item__icon" style="--widget-accent: #3B82F6">
@@ -597,7 +597,7 @@
                     </div>
 
                     <!-- Моя смена -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('my-shift') ? 'border-green-500/50 bg-green-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('my-shift') ? 'crm-widget-active-green' : 'crm-widget-inactive'">
                         <div class="crm-widget-store-item">
                             <div class="crm-widget-store-item__meta">
                                 <div class="crm-widget-store-item__icon" style="--widget-accent: #10B981">
@@ -617,7 +617,7 @@
                     </div>
 
                     <!-- Календарь компании -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('company-calendar') ? 'border-purple-500/50 bg-purple-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('company-calendar') ? 'crm-widget-active-purple' : 'crm-widget-inactive'">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #8B5CF6 20%, var(--lg-glass-bg))">
@@ -631,13 +631,13 @@
                                 </div>
                             </div>
                             <button @click="toggleWidget('company-calendar')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
-                                    :style="enabledWidgets.includes('company-calendar') ? 'background: var(--lg-success); color: white' : ''"
+                                    :class="enabledWidgets.includes('company-calendar') ? 'crm-widget-toggle-active' : ''"
                                     x-text="enabledWidgets.includes('company-calendar') ? '✓' : '+'"></button>
                         </div>
                     </div>
 
                     <!-- Быстрые действия -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('quick-actions') ? 'border-blue-500/50 bg-blue-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('quick-actions') ? 'crm-widget-active-blue' : 'crm-widget-inactive'">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #3B82F6 20%, var(--lg-glass-bg))">
@@ -651,13 +651,13 @@
                                 </div>
                             </div>
                             <button @click="toggleWidget('quick-actions')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
-                                    :style="enabledWidgets.includes('quick-actions') ? 'background: var(--lg-success); color: white' : ''"
+                                    :class="enabledWidgets.includes('quick-actions') ? 'crm-widget-toggle-active' : ''"
                                     x-text="enabledWidgets.includes('quick-actions') ? '✓' : '+'"></button>
                         </div>
                     </div>
 
                     <!-- Кликер -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('clicker') ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('clicker') ? 'crm-widget-active-yellow' : 'crm-widget-inactive'">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #F59E0B 20%, var(--lg-glass-bg))">
@@ -671,13 +671,13 @@
                                 </div>
                             </div>
                             <button @click="toggleWidget('clicker')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
-                                    :style="enabledWidgets.includes('clicker') ? 'background: var(--lg-success); color: white' : ''"
+                                    :class="enabledWidgets.includes('clicker') ? 'crm-widget-toggle-active' : ''"
                                     x-text="enabledWidgets.includes('clicker') ? '✓' : '+'"></button>
                         </div>
                     </div>
 
                     <!-- Внешние ресурсы -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('external-links') ? 'border-indigo-500/50 bg-indigo-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('external-links') ? 'crm-widget-active-indigo' : 'crm-widget-inactive'">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #6366F1 20%, var(--lg-glass-bg))">
@@ -691,13 +691,13 @@
                                 </div>
                             </div>
                             <button @click="toggleWidget('external-links')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
-                                    :style="enabledWidgets.includes('external-links') ? 'background: var(--lg-success); color: white' : ''"
+                                    :class="enabledWidgets.includes('external-links') ? 'crm-widget-toggle-active' : ''"
                                     x-text="enabledWidgets.includes('external-links') ? '✓' : '+'"></button>
                         </div>
                     </div>
 
                     <!-- Горящие задачи -->
-                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('hot-tasks') ? 'border-red-500/50 bg-red-500/5' : 'border-gray-500/20'">
+                    <div class="liquid-glass-pro rounded-2xl p-4 border" :class="enabledWidgets.includes('hot-tasks') ? 'crm-widget-active-red' : 'crm-widget-inactive'">
                         <div class="flex items-start justify-between gap-3">
                             <div class="flex items-center gap-3">
                                 <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg))">
@@ -711,7 +711,7 @@
                                 </div>
                             </div>
                             <button @click="toggleWidget('hot-tasks')" class="px-3 py-1.5 rounded-xl text-xs ios-glass-button"
-                                    :style="enabledWidgets.includes('hot-tasks') ? 'background: var(--lg-success); color: white' : ''"
+                                    :class="enabledWidgets.includes('hot-tasks') ? 'crm-widget-toggle-active' : ''"
                                     x-text="enabledWidgets.includes('hot-tasks') ? '✓' : '+'"></button>
                         </div>
                     </div>
@@ -728,7 +728,7 @@
                             <div class="flex items-center gap-2">
                                 <input type="text" x-model="res.name" placeholder="Название (1С)" class="flex-1 px-3 py-2 rounded-xl ios-glass-input text-sm" />
                                 <input type="text" x-model="res.url" placeholder="https://..." class="flex-1 px-3 py-2 rounded-xl ios-glass-input text-sm" />
-                                <button @click="removeExternalResource(idx)" class="p-2 rounded-xl ios-glass-button text-red-500">
+                                <button @click="removeExternalResource(idx)" class="p-2 rounded-xl ios-glass-button crm-text-error">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                     </svg>
@@ -985,7 +985,7 @@
                         <div class="mt-2 space-y-2">
                             <template x-for="t in (tasks || []).filter(x =&gt; x.priority === 'urgent').slice(0, 3)" :key="t.id">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                                    <div class="w-2 h-2 rounded-full crm-bg-error"></div>
                                     <div class="flex-1 min-w-0">
                                         <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
                                         <div class="text-xs crm-text-tertiary" x-text="t.deadline ? 'До: ' + formatDate(t.deadline) : ''"></div>

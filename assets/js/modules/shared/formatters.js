@@ -45,16 +45,16 @@ window.TaskFlowSharedFormatters = (function () {
     }
 
     function getDeadlineClass(dateStr) {
-        if (!dateStr) return 'text-gray-500';
+        if (!dateStr) return 'crm-text-secondary';
         const deadline = new Date(dateStr);
         const today = new Date();
         const diffTime = deadline - today;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        if (diffDays < 0) return 'text-red-600 font-semibold';
-        if (diffDays === 0) return 'text-red-500 font-semibold';
-        if (diffDays < 3) return 'text-orange-500 font-semibold';
-        if (diffDays < 7) return 'text-yellow-600';
-        return 'text-gray-500';
+        if (diffDays < 0) return 'crm-text-error font-semibold';
+        if (diffDays === 0) return 'crm-text-error font-semibold';
+        if (diffDays < 3) return 'crm-text-warning font-semibold';
+        if (diffDays < 7) return 'crm-text-warning';
+        return 'crm-text-secondary';
     }
 
     function getInitials(name) {

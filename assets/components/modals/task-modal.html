@@ -47,7 +47,7 @@
             <div x-show="taskTab === 'task'" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Название</label>
                         <input type="text" x-model="taskForm.title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Подготовить отчёт" />
                     </div>
 
@@ -55,14 +55,14 @@
                     <input type="hidden" x-model="taskForm.deal_id">
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Описание</label>
                         <textarea x-model="taskForm.description" rows="4" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Коротко по сути..."></textarea>
                     </div>
 
                     <div class="md:col-span-2">
                         <div class="liquid-glass-pro rounded-2xl p-4">
                             <div class="flex items-center gap-2 mb-3">
-                                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                                 </svg>
                                 <span class="text-sm font-semibold">CRM связь</span>
@@ -70,7 +70,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Сделка</label>
+                                    <label class="block text-xs font-medium crm-text-secondary mb-2">Сделка</label>
                                     <select x-model="taskForm.deal_id" @change="taskForm.client_id = crmDeals.find(d =&gt; String(d.id) === String(taskForm.deal_id))?.client_id || taskForm.client_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                                         <option value="">- Не выбрана -</option>
                                         <template x-for="deal in (crmDeals || [])" :key="deal.id">
@@ -80,7 +80,7 @@
                                 </div>
 
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Клиент</label>
+                                    <label class="block text-xs font-medium crm-text-secondary mb-2">Клиент</label>
                                     <select x-model="taskForm.client_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                                         <option value="">- Не выбран -</option>
                                         <template x-for="client in (crmClients || [])" :key="client.id">
@@ -106,7 +106,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Проект</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Проект</label>
                         <select x-model="taskForm.project_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                             <option value="">-</option>
                             <template x-for="p in projects" :key="p.id">
@@ -116,7 +116,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Статус</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Статус</label>
                         <select x-model="taskForm.status" class="w-full px-4 py-3 rounded-xl crm-control-select">
                             <template x-for="s in stages" :key="s.id">
                                 <option :value="s.name" x-text="s.name"></option>
@@ -125,7 +125,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Приоритет</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Приоритет</label>
                         <select x-model="taskForm.priority" class="w-full px-4 py-3 rounded-xl crm-control-select">
                             <option value="low">Низкий</option>
                             <option value="medium">Средний</option>
@@ -134,13 +134,13 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Срок</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Срок</label>
                         <input type="date" x-model="taskForm.deadline" class="w-full px-4 py-3 rounded-xl crm-control-input" />
                     </div>
 
                     <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                            <label class="block text-sm font-medium crm-text-secondary mb-2">Отдел</label>
                             <select x-model="taskForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                                 <option value="">- Не выбран -</option>
                                 <template x-for="d in (departments || [])" :key="d.id">
@@ -150,7 +150,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ответственный</label>
+                            <label class="block text-sm font-medium crm-text-secondary mb-2">Ответственный</label>
                             <select x-model="taskForm.assigned_to" class="w-full px-4 py-3 rounded-xl crm-control-select">
                                 <option value="">- Не назначен -</option>
                                 <template x-for="u in (users || []).filter(u =&gt; u.id !== currentUser?.id)" :key="u.id">
@@ -165,7 +165,7 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Участники (упоминания)</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Участники (упоминания)</label>
 
                         <div class="liquid-glass-pro rounded-2xl p-3">
                             <div class="text-xs mb-2" style="color: var(--lg-text-tertiary)">
@@ -204,7 +204,7 @@
                 <div class="liquid-glass-pro rounded-2xl p-4">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="text-sm font-semibold" style="color: var(--lg-text-primary)">Чек-лист</div>
+                            <div class="text-sm font-semibold" style="color: var(--lg-crm-text-accent)">Чек-лист</div>
                             <div class="text-xs" style="color: var(--lg-text-secondary)">Подзадачи по задаче</div>
                         </div>
                         <button @click="addChecklistItem()" class="crm-btn-secondary">Добавить</button>
@@ -257,7 +257,7 @@
                     <div class="liquid-glass-pro rounded-2xl p-4 flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 flex-1">
                             <div class="w-3 h-3 rounded-full" :style="'background:' + ((taskSubstages || []).find(s =&gt; String(s.id) === String(editingTask?.current_substage_id))?.color || '#6B7280')"></div>
-                            <span class="text-lg font-semibold" style="color: var(--lg-text-primary)"
+                            <span class="text-lg font-semibold" style="color: var(--lg-crm-text-accent)"
                                   x-text="(taskSubstages || []).find(s =&gt; String(s.id) === String(editingTask?.current_substage_id))?.name || ''"></span>
                         </div>
                         <span class="text-xs px-3 py-1 rounded-full crm-current-stage-pill">Текущий этап</span>
@@ -280,10 +280,10 @@
                     <template x-for="c in (taskComments || []).filter(x =&gt; !x.parent_id)" :key="c.id">
                         <div class="liquid-glass-pro p-5 rounded-2xl">
                             <div class="flex items-center justify-between gap-4">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-white" x-text="c.author_name || '—'"></div>
-                                <div class="text-xs text-gray-500" x-text="formatDateTime(c.created_at)"></div>
+                                <div class="text-sm font-semibold crm-text-accent" x-text="c.author_name || '—'"></div>
+                                <div class="text-xs crm-text-secondary" x-text="formatDateTime(c.created_at)"></div>
                             </div>
-                            <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap" x-text="c.message"></div>
+                            <div class="mt-2 text-sm crm-text-secondary whitespace-pre-wrap" x-text="c.message"></div>
 
                             <div class="mt-3 flex items-center justify-between gap-3">
                                 <button type="button" class="crm-btn-secondary text-xs" @click="replyToTaskComment(c)">Ответить</button>
@@ -305,7 +305,7 @@
                                 <template x-for="r in (taskComments || []).filter(x =&gt; String(x.parent_id) === String(c.id))" :key="r.id">
                                     <div class="liquid-glass-pro rounded-2xl p-3 ml-4">
                                         <div class="flex items-center justify-between gap-4">
-                                            <div class="text-xs font-semibold" style="color: var(--lg-text-primary)" x-text="r.author_name || '—'"></div>
+                                            <div class="text-xs font-semibold" style="color: var(--lg-crm-text-accent)" x-text="r.author_name || '—'"></div>
                                             <div class="text-[11px]" style="color: var(--lg-text-tertiary)" x-text="formatDateTime(r.created_at)"></div>
                                         </div>
                                         <div class="mt-1 text-xs whitespace-pre-wrap" style="color: var(--lg-text-secondary)" x-text="r.message"></div>
@@ -317,13 +317,13 @@
                             </div>
                         </div>
                     </template>
-                    <div x-show="taskComments.length === 0" class="text-sm text-gray-500 dark:text-gray-400">Комментариев пока нет.</div>
+                    <div x-show="taskComments.length === 0" class="text-sm crm-text-secondary">Комментариев пока нет.</div>
                 </div>
             </div>
 
             <div x-show="taskTab === 'files'" class="space-y-4">
                 <div class="flex items-center justify-between gap-3">
-                    <div class="text-sm text-gray-500 dark:text-gray-400">Файлы задачи</div>
+                    <div class="text-sm crm-text-secondary">Файлы задачи</div>
                     <label class="crm-btn-primary cursor-pointer">
                         <input type="file" class="hidden" @change="attachFileToCurrentTask($event.target.files[0])" />
                         Прикрепить файл
@@ -334,13 +334,13 @@
                     <template x-for="f in taskFiles" :key="f.id">
                         <div class="liquid-glass-pro p-3 rounded-2xl flex items-center justify-between gap-4">
                             <button class="text-left min-w-0" @click="previewFile(f)">
-                                <div class="text-sm font-semibold text-gray-800 dark:text-white truncate" x-text="f.filename || f.name"></div>
-                                <div class="text-xs text-gray-500" x-text="formatFileSize(Number(f.size || 0))"></div>
+                                <div class="text-sm font-semibold crm-text-accent truncate" x-text="f.filename || f.name"></div>
+                                <div class="text-xs crm-text-secondary" x-text="formatFileSize(Number(f.size || 0))"></div>
                             </button>
                             <button @click="deleteFileFromTask(f.id)" class="crm-btn-danger text-xs">Удалить</button>
                         </div>
                     </template>
-                    <div x-show="taskFiles.length === 0" class="text-sm text-gray-500 dark:text-gray-400">Файлов пока нет.</div>
+                    <div x-show="taskFiles.length === 0" class="text-sm crm-text-secondary">Файлов пока нет.</div>
                 </div>
             </div>
 
@@ -348,13 +348,13 @@
                 <template x-for="h in taskHistory" :key="h.id">
                     <div class="liquid-glass-pro p-5 rounded-2xl">
                         <div class="flex items-center justify-between gap-4">
-                            <div class="text-sm font-semibold text-gray-800 dark:text-white" x-text="getHistoryActionText(h)"></div>
-                            <div class="text-xs text-gray-500" x-text="formatDateTime(h.created_at)"></div>
+                            <div class="text-sm font-semibold crm-text-accent" x-text="getHistoryActionText(h)"></div>
+                            <div class="text-xs crm-text-secondary" x-text="formatDateTime(h.created_at)"></div>
                         </div>
-                        <div class="mt-1 text-xs text-gray-500" x-text="h.user_name || ''"></div>
+                        <div class="mt-1 text-xs crm-text-secondary" x-text="h.user_name || ''"></div>
                     </div>
                 </template>
-                <div x-show="taskHistory.length === 0" class="text-sm text-gray-500 dark:text-gray-400">История пустая.</div>
+                <div x-show="taskHistory.length === 0" class="text-sm crm-text-secondary">История пустая.</div>
             </div>
         </div>
         <div class="crm-modal-footer crm-drawer-footer">

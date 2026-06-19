@@ -9,16 +9,16 @@
             <div class="inline-flex items-center justify-center w-20 h-20 rounded-sm shadow-lg mb-4 bg-white/10">
                 <img src="app.png" alt="TaskFlow" class="w-14 h-14 object-cover">
             </div>
-            <h1 class="text-3xl font-bold text-gray-800 dark:text-white" x-text="settings.company_name || 'TaskFlow Pro'"></h1>
-            <p class="text-gray-500 dark:text-gray-400 mt-2">Вход в систему</p>
+            <h1 class="text-3xl font-bold crm-text-accent" x-text="settings.company_name || 'TaskFlow Pro'"></h1>
+            <p class="crm-text-secondary mt-2">Вход в систему</p>
         </div>
 
         <!-- Форма входа -->
         <form @submit.prevent="login" class="space-y-5">
-            <div x-show="loginError" class="p-4 rounded-sm bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800" x-text="loginError"></div>
+            <div x-show="loginError" class="p-4 rounded-sm crm-alert-danger" x-text="loginError"></div>
 
             <div>
-                <label for="auth-login" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="auth-login" class="block text-sm font-medium crm-text-secondary mb-2">
                     <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
@@ -30,7 +30,7 @@
             </div>
 
             <div>
-                <label for="auth-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="auth-password" class="block text-sm font-medium crm-text-secondary mb-2">
                     <svg class="inline w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
                     </svg>
@@ -55,7 +55,7 @@
         </form>
 
         <div class="mt-6 text-center">
-            <a href="install.php" class="text-sm text-gray-500 dark:text-gray-400 hover:text-primary transition-colors">
+            <a href="install.php" class="text-sm crm-text-secondary hover:crm-text-accent transition-colors">
                 Переустановить базу данных →
             </a>
         </div>

@@ -353,8 +353,8 @@ const ModuleLoader = (function() {
             console.error(`Failed to load component '${componentName}':`, error);
             container.innerHTML = `
                 <div class="p-8 text-center">
-                    <div class="text-red-500 font-semibold">Ошибка загрузки компонента</div>
-                    <div class="text-sm text-gray-500 mt-2">${error.message}</div>
+                    <div class="crm-text-error font-semibold">Ошибка загрузки компонента</div>
+                    <div class="text-sm crm-text-secondary mt-2">${error.message}</div>
                 </div>
             `;
         } finally {

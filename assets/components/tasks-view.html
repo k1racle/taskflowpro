@@ -34,7 +34,7 @@
             <div class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
                 <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
-                        <div class="text-base font-semibold crm-text-primary">Оперативный фокус</div>
+                        <div class="text-base font-semibold crm-text-accent">Оперативный фокус</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Ближайшие личные задачи и статус дня</div>
                     </div>
                     <button @click="currentView='my-tasks'" class="crm-soft-action text-xs">Открыть</button>
@@ -53,7 +53,7 @@
                     <template x-for="task in mobileHomeSnapshot.upcomingTasks" :key="'mobile-home-task-' + task.id">
                         <button @click="currentView='my-tasks'; $nextTick(() =&gt; openTaskModal(task))" class="crm-mobile-home-list-item text-left">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold truncate crm-text-primary" x-text="task.title"></div>
+                                <div class="text-sm font-semibold truncate crm-text-accent" x-text="task.title"></div>
                                 <div class="text-xs mt-1 crm-text-tertiary">
                                     <span x-text="task.deadline ? formatDate(task.deadline) : 'Без срока'"></span>
                                     <span x-show="task.project_name">• <span x-text="task.project_name"></span></span>
@@ -69,7 +69,7 @@
             <div x-show="canCrm" class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
                 <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
-                        <div class="text-base font-semibold crm-text-primary">CRM snapshot</div>
+                        <div class="text-base font-semibold crm-text-accent">CRM snapshot</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Срез из текущего CRM dashboard</div>
                     </div>
                     <button @click="currentView='crm-dashboard'; ensureCrmLoaded()" class="crm-soft-action text-xs">Открыть CRM</button>
@@ -86,14 +86,14 @@
                 </div>
                 <div class="mt-3 crm-mobile-home-highlight-card">
                     <div class="text-xs font-semibold uppercase tracking-[0.16em] crm-text-tertiary">Сумма воронки</div>
-                    <div class="mt-2 text-xl font-bold crm-text-primary" x-text="crmFormatMoney(mobileHomeSnapshot.crmPipelineSum)"></div>
+                    <div class="mt-2 text-xl font-bold crm-text-accent" x-text="crmFormatMoney(mobileHomeSnapshot.crmPipelineSum)"></div>
                 </div>
             </div>
 
             <div x-show="can('leader.view')" class="liquid-glass-pro rounded-sm p-5 crm-screen-section">
                 <div class="flex items-center justify-between gap-3 mb-3">
                     <div>
-                        <div class="text-base font-semibold crm-text-primary">Команда</div>
+                        <div class="text-base font-semibold crm-text-accent">Команда</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Короткий срез из leader dashboard</div>
                     </div>
                     <button @click="currentView='leader-dashboard'; ensureLeaderLoaded()" class="crm-soft-action text-xs">Открыть</button>
@@ -252,7 +252,7 @@
                 <div class="flex items-center justify-between mb-4 crm-kanban-column-head">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="`background:${stage.color || 'var(--lg-primary)'}`"></span>
-                        <h3 class="font-bold text-gray-800 dark:text-white truncate" x-text="stage.name"></h3>
+                        <h3 class="font-bold crm-text-accent truncate" x-text="stage.name"></h3>
                     </div>
                     <span class="crm-stat-chip"
                           x-text="getTasksByStage(stage.name).length"></span>
@@ -270,7 +270,7 @@
                               @dragstart="draggingTask = task.id; $event.dataTransfer.effectAllowed='move'; $event.dataTransfer.setData('text/plain', String(task.id))"
                               class="p-4 cursor-pointer crm-kanban-card relative">
                             <div class="flex items-start justify-between mb-2">
-                                <h4 class="font-semibold text-sm leading-[1.35] crm-text-primary" x-text="task.title"></h4>
+                                <h4 class="font-semibold text-sm leading-[1.35] crm-text-accent" x-text="task.title"></h4>
                                  <span :class="'priority-' + task.priority" class="text-xs capitalize" x-text="translatePriority(task.priority)"></span>
                             </div>
                             <div class="crm-task-mobile-meta-row mb-3">
@@ -303,7 +303,7 @@
                                 <div class="text-right flex-shrink-0">
                                     <div x-show="(task.active_timer_seconds != null) || (task.timer_seconds != null)"
                                          class="text-[11px]"
-                                         :class="task.active_timer_running ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-400'">
+                                         :class="task.active_timer_running ? 'text-emerald-600 dark:text-emerald-400' : 'crm-text-secondary'">
                                         <span class="font-semibold" x-text="formatTimer(task.active_timer_seconds ?? task.timer_seconds ?? 0)"></span>
                                     </div>
                                 </div>
@@ -315,7 +315,7 @@
                                     <div class="h-full rounded-full"
                                          :style="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
                                 </div>
-                                <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
+                                <div class="mt-1 text-[11px] crm-text-secondary"
                                      x-text="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
                             </div>
 
@@ -337,7 +337,7 @@
                                      :style="'border:1px solid ' + ((taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.color || '#6B7280'))">
                                     <div class="w-3 h-3 rounded-full flex-shrink-0"
                                          :style="'background:' + ((taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.color || '#6B7280'))"></div>
-                                    <span class="text-sm font-semibold truncate crm-text-primary" x-text="taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.name || ''"></span>
+                                    <span class="text-sm font-semibold truncate crm-text-accent" x-text="taskSubstages.find(s =&gt; String(s.id) === String(task.current_substage_id))?.name || ''"></span>
                                 </div>
                             </div>
 
@@ -358,8 +358,8 @@
                                 </div>
                             </div>
 
-                            <div x-show="isOverdue(task.deadline)" class="mt-2 text-[11px] font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
-                                <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+                            <div x-show="isOverdue(task.deadline)" class="mt-2 text-[11px] font-semibold crm-text-error flex items-center gap-2">
+                                <span class="inline-block w-2 h-2 rounded-full crm-bg-error"></span>
                                 Просрочено
                             </div>
                         </div>
@@ -404,13 +404,13 @@
                         :class="isOverdue(task.deadline) ? 'crm-task-row-overdue' : ''">
                         <td class="px-4 py-3" data-label="Задача">
                             <div>
-                                <h4 class="font-semibold text-sm leading-[1.35] crm-text-primary" x-text="task.title"></h4>
+                                <h4 class="font-semibold text-sm leading-[1.35] crm-text-accent" x-text="task.title"></h4>
                                 <p class="text-xs line-clamp-1 crm-text-muted" x-text="task.description || task.project_name || 'Без описания'"></p>
                             </div>
                         </td>
                             <td class="px-4 py-3" data-label="Контекст">
                             <div class="space-y-1 min-w-[180px]">
-                                <div class="text-xs font-medium crm-text-primary" x-text="task.project_name || 'Без проекта'"></div>
+                                <div class="text-xs font-medium crm-text-accent" x-text="task.project_name || 'Без проекта'"></div>
                                 <div class="text-xs crm-text-tertiary" x-text="task.department_name || task.department?.name || (task.departments &amp;&amp; task.departments[0] ? task.departments[0].name : '') || 'Без отдела'"></div>
                             </div>
                         </td>
@@ -422,7 +422,7 @@
                                 <div x-show="task.client_id &amp;&amp; !task.deal_id" class="crm-status-pill crm-status-pill-alt text-xs inline-block truncate">
                                     <span x-text="task.client_name || 'Клиент #' + task.client_id"></span>
                                 </div>
-                                <span x-show="!task.deal_id &amp;&amp; !task.client_id" class="text-xs text-gray-400">—</span>
+                                <span x-show="!task.deal_id &amp;&amp; !task.client_id" class="text-xs crm-text-muted">—</span>
                             </div>
                         </td>
                             <td class="px-4 py-3" data-label="Статус">
@@ -437,13 +437,13 @@
                         <td class="px-4 py-3" data-label="Исполнитель">
                             <div class="flex items-center gap-2">
                                   <div class="crm-avatar crm-bg-primary" x-text="getInitials(task.assignee_name)"></div>
-                                <span class="text-sm crm-text-primary" x-text="task.assignee_name || '—'"></span>
+                                <span class="text-sm crm-text-accent" x-text="task.assignee_name || '—'"></span>
                             </div>
                         </td>
                         <td class="px-4 py-3" data-label="Срок">
                             <div>
-                                <span class="text-sm crm-text-primary" x-text="formatDate(task.deadline)"></span>
-                                <div class="text-[11px] mt-1" :class="isOverdue(task.deadline) ? 'text-red-600 dark:text-red-400 font-semibold' : ''" :style="!isOverdue(task.deadline) ? 'color: var(--crm-text-muted)' : ''" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>
+                                <span class="text-sm crm-text-accent" x-text="formatDate(task.deadline)"></span>
+                                <div class="text-[11px] mt-1" :class="isOverdue(task.deadline) ? 'crm-text-error font-semibold' : 'crm-text-muted'" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>
                                 <div x-show="taskCanOpenDocuments(task)" class="mt-3">
                                     <button @click.stop="documentsOpenForTask(task)" class="crm-btn-ghost text-xs">Документы</button>
                                 </div>

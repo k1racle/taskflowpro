@@ -11,9 +11,9 @@
     <div class="liquid-glass-pro rounded-sm shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden flex flex-col">
         
         <!-- Header -->
-        <div class="p-6 border-b border-gray-200/50">
+        <div class="p-6 crm-border-bottom">
             <div class="flex items-center justify-between mb-4">
-                <h2 class="crm-screen-title crm-text-primary" x-text="editingObjectId ? 'Редактировать объект' : 'Добавить объект'"></h2>
+                <h2 class="crm-screen-title crm-text-accent" x-text="editingObjectId ? 'Редактировать объект' : 'Добавить объект'"></h2>
                 <button @click="showObjectModal = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -134,11 +134,11 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div class="flex items-center gap-3 p-4 rounded-sm crm-tone-accent">
                         <input type="checkbox" x-model="objectForm.canHavePets" id="canHavePets" class="rounded">
-                        <label for="canHavePets" class="font-semibold crm-text-primary">Можно с животными</label>
+                        <label for="canHavePets" class="font-semibold crm-text-accent">Можно с животными</label>
                     </div>
                     <div class="flex items-center gap-3 p-4 rounded-sm crm-tone-accent">
                         <input type="checkbox" x-model="objectForm.canHaveChildren" id="canHaveChildren" class="rounded">
-                        <label for="canHaveChildren" class="font-semibold crm-text-primary">Можно с детьми</label>
+                        <label for="canHaveChildren" class="font-semibold crm-text-accent">Можно с детьми</label>
                     </div>
                 </div>
             </div>
@@ -146,16 +146,16 @@
             <!-- Вкладка: Фото -->
             <div x-show="objectModalTab === 'photos'" class="space-y-4">
                 <div class="p-6 border-2 border-dashed rounded-sm text-center"
-                     :class="dragOver ? 'border-blue-500 bg-blue-500/10' : 'border-gray-300'"
+                     :class="dragOver ? 'crm-option-active' : 'crm-option-inactive'"
                      @dragover.prevent="dragOver = true"
                      @dragleave.prevent="dragOver = false"
                      @drop.prevent="handlePhotoDrop">
-                    <svg class="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-16 h-16 mx-auto mb-4 crm-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
-                    <p class="text-sm text-gray-500 mb-4">Перетащите фото сюда или нажмите для выбора</p>
+                    <p class="text-sm crm-text-secondary mb-4">Перетащите фото сюда или нажмите для выбора</p>
                     <input type="file" id="photoUpload" accept="image/*" multiple @change="handlePhotoUpload" class="hidden">
-                    <button @click="$refs.photoUpload.click()" class="px-6 py-3 rounded-sm bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold hover:shadow-lg transition-shadow">
+                    <button @click="$refs.photoUpload.click()" class="px-6 py-3 rounded-sm crm-gradient-primary font-semibold crm-hover-shadow-lg transition-shadow">
                         Выбрать фото
                     </button>
                 </div>
@@ -164,25 +164,25 @@
                     <template x-for="(photo, index) in objectPhotos" :key="photo.id || index">
                         <div class="relative group">
                             <img :src="photo.file_path" :alt="'Фото ' + (index + 1)" class="w-full h-32 object-cover rounded-sm">
-                            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-sm">
-                                <button @click="setPrimaryPhoto(photo.id)" class="p-2 rounded-full bg-white/20 hover:bg-white/40 transition-colors" title="Сделать главным">
+                            <div class="absolute inset-0 crm-overlay-dark opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 rounded-sm">
+                                <button @click="setPrimaryPhoto(photo.id)" class="p-2 rounded-full crm-photo-primary-btn transition-colors" title="Сделать главным">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </button>
-                                <button @click="deletePhoto(photo.id)" class="p-2 rounded-full bg-red-500/50 hover:bg-red-500/80 transition-colors" title="Удалить">
+                                <button @click="deletePhoto(photo.id)" class="p-2 rounded-full crm-photo-delete-btn transition-colors" title="Удалить">
                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                     </svg>
                                 </button>
                             </div>
-                            <span x-show="photo.is_primary" class="absolute top-2 right-2 px-2 py-1 rounded-lg bg-blue-500 text-white text-xs font-semibold">
+                            <span x-show="photo.is_primary" class="absolute top-2 right-2 px-2 py-1 rounded-lg crm-badge-accent-solid text-xs font-semibold">
                                 Главное
                             </span>
                         </div>
                     </template>
                     <!-- Показываем сообщение, если фото нет -->
-                    <div x-show="objectPhotos.length === 0" class="col-span-full text-center py-8 text-gray-500">
+                    <div x-show="objectPhotos.length === 0" class="col-span-full text-center py-8 crm-text-secondary">
                         Нет фотографий. Загрузите первое фото.
                     </div>
                 </div>
@@ -191,98 +191,98 @@
             <!-- Вкладка: Удобства -->
             <div x-show="objectModalTab === 'amenities'" class="space-y-4">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('wifi') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('wifi') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="wifi" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">📶</span>
                         <span class="font-semibold">WiFi</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('parking') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('parking') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="parking" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🅿️</span>
                         <span class="font-semibold">Парковка</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('pool') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('pool') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="pool" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🏊</span>
                         <span class="font-semibold">Бассейн</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('ac') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('ac') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="ac" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">❄️</span>
                         <span class="font-semibold">Кондиционер</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('tv') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('tv') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="tv" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">📺</span>
                         <span class="font-semibold">TV</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('kitchen') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('kitchen') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="kitchen" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🍳</span>
                         <span class="font-semibold">Кухня</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('washing_machine') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('washing_machine') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="washing_machine" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🧺</span>
                         <span class="font-semibold">Стиральная машина</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('balcony') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('balcony') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="balcony" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🌅</span>
                         <span class="font-semibold">Балкон</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('gym') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('gym') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="gym" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">💪</span>
                         <span class="font-semibold">Спортзал</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('sauna') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('sauna') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="sauna" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🧖</span>
                         <span class="font-semibold">Сауна</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('jacuzzi') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('jacuzzi') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="jacuzzi" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🛁</span>
                         <span class="font-semibold">Джакузи</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('fireplace') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('fireplace') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="fireplace" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🔥</span>
                         <span class="font-semibold">Камин</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('bbq') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('bbq') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="bbq" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🍖</span>
                         <span class="font-semibold">Мангал</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('workspace') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('workspace') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="workspace" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">💻</span>
                         <span class="font-semibold">Рабочее место</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('elevator') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('elevator') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="elevator" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🛗</span>
                         <span class="font-semibold">Лифт</span>
                     </label>
-                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                           :class="objectForm.amenities?.includes('sea_view') ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                    <label class="flex items-center gap-3 p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                           :class="objectForm.amenities?.includes('sea_view') ? 'crm-option-active' : 'crm-option-inactive'">
                         <input type="checkbox" value="sea_view" x-model="objectForm.amenities" class="hidden">
                         <span class="text-2xl">🌊</span>
                         <span class="font-semibold">Вид на море</span>
@@ -297,19 +297,19 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <template x-for="service in availableServices" :key="service.id">
-                        <label class="flex items-center justify-between p-4 rounded-sm border cursor-pointer hover:border-blue-500/50 transition-colors"
-                               :class="objectForm.services?.includes(service.id) ? 'border-blue-500 bg-blue-500/10' : 'border-gray-200'">
+                        <label class="flex items-center justify-between p-4 rounded-sm border cursor-pointer crm-hover-accent-border transition-colors"
+                               :class="objectForm.services?.includes(service.id) ? 'crm-option-active' : 'crm-option-inactive'">
                             <div class="flex items-center gap-3">
                                 <input type="checkbox" :value="service.id" x-model="objectForm.services" class="hidden">
                                 <div class="w-10 h-10 rounded-sm bg-gradient-to-br from-blue-500/10 to-purple-600/10 flex items-center justify-center">
                                     <span class="text-xl"></span>
                                 </div>
                                 <div>
-                                    <div class="font-semibold crm-text-primary" x-text="service.service_name"></div>
+                                    <div class="font-semibold crm-text-accent" x-text="service.service_name"></div>
                                     <div class="text-xs crm-text-tertiary" x-text="formatCurrency(service.base_price) + ' ₽'"></div>
                                 </div>
                             </div>
-                            <svg class="w-5 h-5" :class="objectForm.services?.includes(service.id) ? 'text-blue-500' : 'text-gray-300'" fill="currentColor" viewBox="0 0 20 20">
+                            <svg class="w-5 h-5" :class="objectForm.services?.includes(service.id) ? 'crm-text-info' : 'crm-text-tertiary'" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                             </svg>
                         </label>
@@ -320,10 +320,10 @@
         </div>
 
         <!-- Footer -->
-        <div class="p-6 border-t border-gray-200/50 flex items-center justify-between">
+        <div class="p-6 crm-border-t flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <button type="button" @click="deleteObject()" x-show="editingObjectId"
-                        class="px-6 py-4 rounded-sm bg-red-500/10 text-red-500 font-semibold hover:bg-red-500/20 transition-colors">
+                        class="px-6 py-4 rounded-sm crm-btn-danger">
                     Удалить
                 </button>
             </div>

@@ -8,7 +8,7 @@
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div class="crm-toolbar-heading">
-                    <h2 class="crm-screen-title crm-text-primary">Руководитель</h2>
+                    <h2 class="crm-screen-title crm-text-accent">Руководитель</h2>
                 </div>
             </div>
 
@@ -68,11 +68,11 @@
         <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="rounded-sm p-4 crm-metric-tile">
                 <div class="text-xs mb-2 crm-text-tertiary">Клиентов</div>
-                <div class="crm-metric-value crm-text-primary" x-text="leaderOverview?.crm?.clients || 0"></div>
+                <div class="crm-metric-value crm-text-accent" x-text="leaderOverview?.crm?.clients || 0"></div>
             </div>
             <div class="rounded-sm p-4 crm-metric-tile">
                 <div class="text-xs mb-2 crm-text-tertiary">Сумма в воронке</div>
-                <div class="crm-metric-value crm-text-primary" x-text="formatMoney(leaderOverview?.crm?.pipeline_sum)"></div>
+                <div class="crm-metric-value crm-text-accent" x-text="formatMoney(leaderOverview?.crm?.pipeline_sum)"></div>
             </div>
             <div class="rounded-sm p-4 crm-metric-tile">
                 <div class="text-xs mb-2 crm-text-tertiary">Win rate</div>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="text-sm font-semibold crm-text-secondary">На смене</div>
             </div>
-            <div class="text-3xl font-bold crm-text-primary" x-text="leaderOverview?.on_shift?.length || 0"></div>
+            <div class="text-3xl font-bold crm-text-accent" x-text="leaderOverview?.on_shift?.length || 0"></div>
             <div class="text-xs mt-2 crm-text-tertiary">Сотрудников работает сейчас</div>
         </div>
 
@@ -101,7 +101,7 @@
                 </div>
                 <div class="text-sm font-semibold crm-text-secondary">В работе</div>
             </div>
-            <div class="text-3xl font-bold crm-text-primary" x-text="leaderOverview?.tasks_in_progress || 0"></div>
+            <div class="text-3xl font-bold crm-text-accent" x-text="leaderOverview?.tasks_in_progress || 0"></div>
             <div class="text-xs mt-2 crm-text-tertiary">Задач в работе</div>
         </div>
 
@@ -123,7 +123,7 @@
                 </div>
                 <div class="text-sm font-semibold crm-text-secondary">Проектов</div>
             </div>
-            <div class="text-3xl font-bold crm-text-primary" x-text="leaderOverview?.projects?.length || 0"></div>
+            <div class="text-3xl font-bold crm-text-accent" x-text="leaderOverview?.projects?.length || 0"></div>
             <div class="text-xs mt-2 crm-text-tertiary">Активных проектов</div>
         </div>
     </div>
@@ -137,7 +137,7 @@
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center crm-tone-success">
                             <svg class="w-4 h-4 crm-text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         </div>
-                        <div class="crm-section-head__title crm-text-primary">Кто на смене</div>
+                        <div class="crm-section-head__title crm-text-accent">Кто на смене</div>
                     </div>
                 </div>
                 <div class="crm-section-head__meta">
@@ -151,7 +151,7 @@
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 crm-bg-primary" x-text="getInitials(s.full_name)"></div>
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="s.full_name || 'Сотрудник'"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="s.full_name || 'Сотрудник'"></div>
                                     <div class="text-xs crm-text-tertiary" x-text="formatDateTime(s.started_at)"></div>
                                 </div>
                             </div>
@@ -175,7 +175,7 @@
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center crm-bg-error-soft">
                             <svg class="w-4 h-4 crm-text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
-                        <div class="crm-section-head__title crm-text-primary">Горящие задачи</div>
+                        <div class="crm-section-head__title crm-text-accent">Горящие задачи</div>
                     </div>
                 </div>
             </div>
@@ -184,7 +184,7 @@
                     <div class="liquid-glass-pro rounded-sm p-2 crm-border">
                         <div class="flex items-start justify-between gap-3">
                             <div class="min-w-0 flex-1">
-                                <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
+                                <div class="text-sm font-semibold truncate crm-text-accent" x-text="t.title"></div>
                                 <div class="text-xs mt-1 crm-text-tertiary" x-text="(t.project_name || 'Без проекта') + ' • ' + (t.assignee_name || '—')"></div>
                             </div>
                             <div class="text-xs px-3 py-1 rounded-sm flex-shrink-0 crm-status-pill-danger" x-text="t.deadline"></div>
@@ -206,7 +206,7 @@
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center crm-bg-error-soft">
                             <svg class="w-4 h-4 crm-text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         </div>
-                        <div class="crm-section-head__title crm-text-primary">Нарушения графика</div>
+                        <div class="crm-section-head__title crm-text-accent">Нарушения графика</div>
                     </div>
                 </div>
             </div>
@@ -217,7 +217,7 @@
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0 crm-bg-primary" x-text="getInitials(violation.user_name)"></div>
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="violation.user_name"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="violation.user_name"></div>
                                     <div class="text-xs crm-text-tertiary" x-text="formatDate(violation.schedule_date) + ' • ' + violation.shift_start + ' - ' + violation.shift_end"></div>
                                 </div>
                             </div>
@@ -303,17 +303,17 @@
                                     <td class="px-4 py-3">
                                         <div class="flex items-center gap-2">
                                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 crm-bg-primary" x-text="getInitials(s.user_name)"></div>
-                                            <span class="text-sm font-semibold crm-text-primary" x-text="s.user_name"></span>
+                                            <span class="text-sm font-semibold crm-text-accent" x-text="s.user_name"></span>
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-sm crm-text-secondary" x-text="formatDate(s.schedule_date)"></td>
-                                    <td class="px-4 py-3 text-sm crm-text-primary">
+                                    <td class="px-4 py-3 text-sm crm-text-accent">
                                         <span x-text="(s.shift_start || '—') + ' - ' + (s.shift_end || '—')"></span>
                                     </td>
                                     <td class="px-4 py-3 text-sm crm-text-secondary" x-text="(s.break_start || '—') + ' - ' + (s.break_end || '—')"></td>
                                     <td class="px-4 py-3">
                                         <span class="px-3 py-1 rounded-full text-xs font-medium"
-                                              :class="s.is_day_off ? 'bg-red-500/10 text-red-500' : 'bg-green-500/10 text-green-500'"
+                                              :class="s.is_day_off ? 'crm-tone-danger' : 'crm-tone-success'"
                                               x-text="s.is_day_off ? 'Выходной' : 'Рабочий'"></span>
                                     </td>
                                     <td class="px-4 py-3 text-sm truncate max-w-[200px] crm-text-secondary" x-text="s.note || '—'"></td>
@@ -396,7 +396,7 @@
             <!-- Задачи созданы -->
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="text-sm font-semibold mb-1 crm-text-secondary">Задачи созданы</div>
-                <div class="text-3xl font-bold crm-text-primary" x-text="analyticsData?.current?.tasks_created || 0"></div>
+                <div class="text-3xl font-bold crm-text-accent" x-text="analyticsData?.current?.tasks_created || 0"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :class="(analyticsData.current.tasks_created - analyticsData.compare.tasks_created) &gt;= 0 ? 'crm-text-success' : 'crm-text-error'">
@@ -410,7 +410,7 @@
             <!-- Задачи завершены -->
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="text-sm font-semibold mb-1 crm-text-secondary">Задачи завершены</div>
-                <div class="text-3xl font-bold crm-text-primary" x-text="analyticsData?.current?.tasks_completed || 0"></div>
+                <div class="text-3xl font-bold crm-text-accent" x-text="analyticsData?.current?.tasks_completed || 0"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :class="(analyticsData.current.tasks_completed - analyticsData.compare.tasks_completed) &gt;= 0 ? 'crm-text-success' : 'crm-text-error'">
@@ -424,7 +424,7 @@
             <!-- Часы работы -->
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="text-sm font-semibold mb-1 crm-text-secondary">Часы работы</div>
-                <div class="text-3xl font-bold crm-text-primary" x-text="(analyticsData?.current?.total_worked_hours || 0) + 'ч'"></div>
+                <div class="text-3xl font-bold crm-text-accent" x-text="(analyticsData?.current?.total_worked_hours || 0) + 'ч'"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :class="(analyticsData.current.total_worked_hours - analyticsData.compare.total_worked_hours) &gt;= 0 ? 'crm-text-success' : 'crm-text-error'">
@@ -438,7 +438,7 @@
             <!-- Новые клиенты -->
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="text-sm font-semibold mb-1 crm-text-secondary">Новые клиенты</div>
-                <div class="text-3xl font-bold crm-text-primary" x-text="analyticsData?.current?.new_clients || 0"></div>
+                <div class="text-3xl font-bold crm-text-accent" x-text="analyticsData?.current?.new_clients || 0"></div>
                 <template x-if="analyticsData?.compare">
                     <div class="text-xs mt-2 flex items-center gap-1"
                          :class="(analyticsData.current.new_clients - analyticsData.compare.new_clients) &gt;= 0 ? 'crm-text-success' : 'crm-text-error'">
@@ -517,7 +517,7 @@
                     <template x-for="stage in (analyticsCRMData?.funnel || [])" :key="stage.name">
                         <div class="rounded-sm p-3 crm-metric-tile">
                             <div class="flex items-center justify-between">
-                                <div class="text-sm font-semibold crm-text-primary" x-text="stage.name"></div>
+                                <div class="text-sm font-semibold crm-text-accent" x-text="stage.name"></div>
                                 <div class="text-sm crm-text-secondary">
                                     <span x-text="stage.cnt"></span> сделок ·
                                     <span x-text="formatMoney(stage.total_amount)"></span>
@@ -641,7 +641,7 @@
             <label class="crm-filter-field crm-filter-field--compact flex items-center gap-3">
                 <input id="schedule-day-off" name="is_day_off" type="checkbox" x-model="scheduleForm.is_day_off" class="w-5 h-5" />
                 <div>
-                    <div class="text-sm font-semibold crm-text-primary">Выходной</div>
+                    <div class="text-sm font-semibold crm-text-accent">Выходной</div>
                     <div class="text-xs crm-text-tertiary">Сотрудник не работает в этот день</div>
                 </div>
             </label>

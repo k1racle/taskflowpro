@@ -9,7 +9,7 @@
                         </svg>
                     </div>
                     <div class="crm-section-head__content">
-                        <h1 class="crm-section-head__title crm-text-primary">Виджеты сайта</h1>
+                        <h1 class="crm-section-head__title crm-text-accent">Виджеты сайта</h1>
                         <p class="crm-section-head__text crm-text-secondary">Два понятных сценария: кнопка с чатом или встроенная форма.</p>
                     </div>
                 </div>
@@ -20,7 +20,7 @@
 
             <div class="crm-widget-note crm-toolbar-actions rounded-sm p-4 max-w-md">
                 <div class="text-xs font-semibold uppercase tracking-[0.16em] mb-2 crm-text-tertiary">Активный профиль</div>
-                <div class="text-sm font-semibold mb-1 crm-text-primary" x-text="getSelectedSiteWidgetProfileName()"></div>
+                <div class="text-sm font-semibold mb-1 crm-text-accent" x-text="getSelectedSiteWidgetProfileName()"></div>
                 <div class="text-sm crm-text-secondary">
                     Один профиль управляет и плавающим чатом, и формой заявки.
                 </div>
@@ -38,7 +38,7 @@
                         </svg>
                     </div>
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title crm-text-primary">Основные настройки</h2>
+                        <h2 class="crm-section-head__title crm-text-accent">Основные настройки</h2>
                         <p class="crm-section-head__text crm-text-secondary">Общий профиль, тексты и бренд для всех публичных сценариев.</p>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                             <p class="crm-section-head__text crm-text-secondary">Отдельные профили помогают держать разные сайты и бренды без лишних переключений.</p>
                         </div>
                         <div class="crm-section-head__meta crm-panel-muted rounded-sm px-4 py-3 text-sm">
-                            <div class="font-semibold crm-text-primary">Статус</div>
+                            <div class="font-semibold crm-text-accent">Статус</div>
                             <div class="crm-text-secondary" x-text="getSelectedSiteWidgetProfileSnippetLabel()"></div>
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                                         @click="selectSiteWidgetProfile(profile.id)"
                                         class="min-w-0 flex-1 text-left">
                                         <div class="flex flex-wrap items-center gap-2 mb-1">
-                                            <span class="font-semibold crm-text-primary" x-text="profile.name"></span>
+                                            <span class="font-semibold crm-text-accent" x-text="profile.name"></span>
                                             <span class="crm-widget-profile-badge" x-show="profile.is_active">Активный</span>
                                         </div>
                                         <div class="text-xs uppercase tracking-[0.14em] crm-text-tertiary" x-text="profile.slug"></div>
@@ -119,12 +119,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
                         <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2 crm-text-tertiary">Сценарий 1</div>
-                        <div class="font-semibold mb-1 crm-text-primary">Кнопка и чат</div>
+                        <div class="font-semibold mb-1 crm-text-accent">Кнопка и чат</div>
                         <p class="text-sm crm-text-secondary">Подходит для большинства сайтов: компактная кнопка, внутри - чат и форма обращения.</p>
                     </div>
                     <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
                         <div class="text-xs font-semibold uppercase tracking-[0.14em] mb-2 crm-text-tertiary">Сценарий 2</div>
-                        <div class="font-semibold mb-1 crm-text-primary">Встроенная форма</div>
+                        <div class="font-semibold mb-1 crm-text-accent">Встроенная форма</div>
                         <p class="text-sm crm-text-secondary">Нужна, когда на странице уже предусмотрен отдельный блок для входящего обращения.</p>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                 <div class="space-y-4">
                     <div class="crm-section-head">
                         <div class="crm-section-head__content">
-                            <h3 class="crm-section-head__title crm-text-primary">Кнопка виджета</h3>
+                            <h3 class="crm-section-head__title crm-text-accent">Кнопка виджета</h3>
                             <p class="crm-section-head__text crm-text-secondary">Плавающий сценарий на `site-widgets.js`: открывает чат и форму прямо на сайте, без `iframe`.</p>
                         </div>
                     </div>
@@ -175,7 +175,7 @@
                 <div class="space-y-4">
                     <div class="crm-section-head">
                         <div class="crm-section-head__content">
-                            <h3 class="crm-section-head__title crm-text-primary">Виджет с полями</h3>
+                            <h3 class="crm-section-head__title crm-text-accent">Виджет с полями</h3>
                             <p class="crm-section-head__text crm-text-secondary">Отдельная встроенная форма для страниц, где не нужен плавающий чат.</p>
                         </div>
                     </div>
@@ -217,7 +217,7 @@
             <div class="liquid-glass-pro p-5 rounded-sm space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title crm-text-primary">Кнопка-виджет</h2>
+                        <h2 class="crm-section-head__title crm-text-accent">Кнопка-виджет</h2>
                         <p class="crm-section-head__text crm-text-secondary">Плавающая кнопка открывает интерфейс сайта в фирменном стиле.</p>
                     </div>
                     <div class="crm-section-head__meta">
@@ -226,7 +226,7 @@
                 </div>
 
                 <div class="crm-panel-muted rounded-sm px-4 py-3 text-sm crm-text-secondary">
-                    Профиль для вставки: <span class="font-semibold crm-text-primary" x-text="getSelectedSiteWidgetProfileName()"></span>
+                    Профиль для вставки: <span class="font-semibold crm-text-accent" x-text="getSelectedSiteWidgetProfileName()"></span>
                 </div>
 
                 <pre class="crm-code-block" x-text="getSiteWidgetScriptCode()"></pre>
@@ -248,7 +248,7 @@
             <div class="liquid-glass-pro p-5 rounded-sm space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title crm-text-primary">Встраиваемая форма</h2>
+                        <h2 class="crm-section-head__title crm-text-accent">Встраиваемая форма</h2>
                         <p class="crm-section-head__text crm-text-secondary">Отдельная форма для страниц с выделенным местом под заявку.</p>
                     </div>
                 </div>
@@ -272,7 +272,7 @@
             <div class="liquid-glass-pro p-5 rounded-sm space-y-4 crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title crm-text-primary">Виджет «Запись»</h2>
+                        <h2 class="crm-section-head__title crm-text-accent">Виджет «Запись»</h2>
                         <p class="crm-section-head__text crm-text-secondary">Плавающая кнопка с записью на услуги (без мастеров). Заявка создается со статусом ожидания и требует подтверждения в CRM.</p>
                     </div>
                 </div>
@@ -296,17 +296,17 @@
             <div class="liquid-glass-pro p-5 rounded-sm crm-card-compact crm-card-equal">
                 <div class="crm-table-toolbar crm-table-toolbar--compact crm-section-head mb-4">
                     <div class="crm-section-head__content">
-                        <h2 class="crm-section-head__title crm-text-primary">Что настраивается</h2>
+                        <h2 class="crm-section-head__title crm-text-accent">Что настраивается</h2>
                         <p class="crm-section-head__text crm-text-secondary">Быстрый срез по двум публичным сценариям без отдельного редизайна экрана.</p>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
-                        <div class="font-semibold mb-2 crm-text-primary">Кнопка и чат</div>
+                        <div class="font-semibold mb-2 crm-text-accent">Кнопка и чат</div>
                         <p class="crm-text-secondary">Позиция, тексты, заголовок окна и общий визуальный стиль.</p>
                     </div>
                     <div class="crm-panel-muted rounded-sm p-4 crm-card-compact crm-card-equal">
-                        <div class="font-semibold mb-2 crm-text-primary">Форма заявки</div>
+                        <div class="font-semibold mb-2 crm-text-accent">Форма заявки</div>
                         <p class="crm-text-secondary">Заголовок, краткое описание и размеры iframe-вставки.</p>
                     </div>
                 </div>

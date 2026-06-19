@@ -49,7 +49,7 @@
         <div x-show="settingsAdminTab === 'integrations'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="md:col-span-3 crm-panel-block p-4 space-y-4">
                 <div>
-                    <div class="font-semibold crm-text-primary">WooCommerce Referral integration</div>
+                    <div class="font-semibold crm-text-accent">WooCommerce Referral integration</div>
                     <div class="text-sm mt-1 crm-text-secondary">Настройка CRM для плагина WorkHub Woo Referrals: URL магазина, общий секрет и готовые endpoint'ы для вставки в WooCommerce.</div>
                 </div>
 
@@ -102,7 +102,7 @@
                 </div>
 
                 <div class="rounded-sm p-4 crm-border-subtle">
-                    <div class="text-sm font-medium mb-2 crm-text-primary">Что вставить в WooCommerce-плагин</div>
+                    <div class="text-sm font-medium mb-2 crm-text-accent">Что вставить в WooCommerce-плагин</div>
                     <ol class="text-sm space-y-1" style="color: var(--lg-text-secondary); padding-left: 18px;">
                         <li>В поле <strong>CRM webhook URL</strong> вставьте <strong>Order webhook endpoint</strong>.</li>
                         <li>В поле <strong>Shared secret</strong> укажите тот же secret, который сохранён в CRM.</li>
@@ -114,7 +114,7 @@
 
             <div class="md:col-span-3 crm-panel-block p-4 space-y-4">
                 <div>
-                    <div class="font-semibold crm-text-primary">ProstieZvonki.ru</div>
+                    <div class="font-semibold crm-text-accent">ProstieZvonki.ru</div>
                     <div class="text-sm mt-1 crm-text-secondary">Интеграция телефонии: хранение ключей доступа и секрета вебхуков. Логику обработки звонков добавим следующим шагом.</div>
                 </div>
 
@@ -162,7 +162,7 @@
 
         <div x-show="can('admin.full')" class="space-y-6">
             <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'omni'">
-                <div class="font-semibold mb-2 crm-text-primary">Telegram уведомления</div>
+                <div class="font-semibold mb-2 crm-text-accent">Telegram уведомления</div>
                 <div class="text-sm mb-4 crm-text-secondary">Настройте бота для получения уведомлений администраторам.</div>
 
                 <div class="space-y-3">
@@ -189,7 +189,7 @@
             </div>
 
             <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') &amp;&amp; settingsAdminTab === 'omni'">
-                <div class="font-semibold mb-2 crm-text-primary">Омниканал: Telegram и MAX (HelpDesk)</div>
+                <div class="font-semibold mb-2 crm-text-accent">Омниканал: Telegram и MAX (HelpDesk)</div>
                 <div class="text-sm mb-4 crm-text-secondary">
                     Настройки для приёма обращений в HelpDesk из Telegram/MAX и отправки ответов обратно в мессенджер.
                     Пока домен не выбран, заполните секреты и токены позже.
@@ -205,7 +205,7 @@
 
                     <div class="crm-panel-block p-4">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <div class="font-semibold crm-text-primary">Telegram</div>
+                            <div class="font-semibold crm-text-accent">Telegram</div>
                             <label class="flex items-center gap-2 text-sm crm-text-secondary">
                                 <span>Включить</span>
                                 <input type="checkbox" x-model="omniForm.tg_enabled" class="rounded" />
@@ -235,7 +235,7 @@
 
                     <div class="crm-panel-block p-4">
                         <div class="flex items-center justify-between gap-3 mb-3">
-                            <div class="font-semibold crm-text-primary">MAX</div>
+                            <div class="font-semibold crm-text-accent">MAX</div>
                             <label class="flex items-center gap-2 text-sm crm-text-secondary">
                                 <span>Включить</span>
                                 <input type="checkbox" x-model="omniForm.max_enabled" class="rounded" />
@@ -265,7 +265,7 @@
                 </div>
 
                 <div class="crm-panel-block p-4 mt-4 crm-border-subtle">
-                    <div class="font-semibold mb-2 crm-text-primary">Telegram бот для записи</div>
+                    <div class="font-semibold mb-2 crm-text-accent">Telegram бот для записи</div>
                     <div class="text-sm mb-4 crm-text-secondary">
                         Автоматический чат-бот для приёма заявок на запись через Telegram.
                         Использует тот же Bot token и webhook secret, что и омниканал Telegram (HelpDesk).
@@ -304,7 +304,7 @@
             </div>
 
             <div class="crm-panel-block p-4 lg:p-5" x-show="(can('admin.full') || currentUser?.role === 'root') &amp;&amp; settingsAdminTab === 'webrtc'">
-                <div class="font-semibold mb-2 crm-text-primary">WebRTC (звонки и конференции)</div>
+                <div class="font-semibold mb-2 crm-text-accent">WebRTC (звонки и конференции)</div>
                 <div class="text-sm mb-4 crm-text-secondary">
                     Настройка ICE servers (STUN/TURN). Для обычных сетей достаточно STUN. TURN нужен, если у части пользователей не соединяются звонки из-за NAT/ограничений.
                 </div>
@@ -323,7 +323,7 @@
             </div>
 
             <div class="crm-panel-block p-4 lg:p-5" x-show="settingsAdminTab === 'weather'">
-                <div class="font-semibold mb-2 crm-text-primary">Погода (OpenWeatherMap)</div>
+                <div class="font-semibold mb-2 crm-text-accent">Погода (OpenWeatherMap)</div>
                 <div class="text-sm mb-4 crm-text-secondary">Настройте погодный виджет под общий интерфейс.</div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -383,29 +383,29 @@
                             </div>
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Blocking issues</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="(adminHealth?.blocking_issues || []).length"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="(adminHealth?.blocking_issues || []).length"></div>
                             </div>
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Check source</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
                             </div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 mt-4 text-sm">
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">RBAC source</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="adminHealth?.rbac_source_of_truth || 'unknown'"></div>
                             </div>
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Break-glass</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.break_glass_role || 'unknown'"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="adminHealth?.break_glass_role || 'unknown'"></div>
                             </div>
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Administrator break-glass</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.administrator_break_glass ? 'yes' : 'no'"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="adminHealth?.administrator_break_glass ? 'yes' : 'no'"></div>
                             </div>
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Chat realtime</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="adminHealth?.chat_realtime || 'unknown'"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="adminHealth?.chat_realtime || 'unknown'"></div>
                             </div>
                         </div>
                         <div class="mt-4">
@@ -441,7 +441,7 @@
                     <div class="rounded-sm p-4 crm-border-subtle">
                         <div class="flex items-center justify-between gap-3 flex-wrap">
                             <div>
-                                <div class="text-sm font-semibold crm-text-primary">Release gate control</div>
+                                <div class="text-sm font-semibold crm-text-accent">Release gate control</div>
                                 <div class="text-xs mt-1 crm-text-tertiary">Сбросьте устаревшие данные и запустите проверку перед передачей клиенту.</div>
                             </div>
                             <button class="crm-btn-primary text-sm" :disabled="adminHealthLoading || diagnosticsBaseline.loading" @click="runReleaseGate()">
@@ -488,7 +488,7 @@
                     <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 text-sm">
                         <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="text-xs crm-text-tertiary">Всего проверок</div>
-                            <div class="font-semibold mt-1 crm-text-primary" x-text="diagnosticsBaseline.data?.summary?.total_count ?? 0"></div>
+                            <div class="font-semibold mt-1 crm-text-accent" x-text="diagnosticsBaseline.data?.summary?.total_count ?? 0"></div>
                         </div>
                         <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-success">
                             <div class="text-xs crm-text-tertiary">OK</div>
@@ -507,15 +507,15 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs" x-show="diagnosticsBaseline.data?.environment">
                         <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="crm-text-tertiary">PHP</div>
-                            <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.php_version || '—'"></div>
+                            <div class="mt-1 font-semibold crm-text-accent" x-text="diagnosticsBaseline.data?.environment?.php_version || '—'"></div>
                         </div>
                         <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="crm-text-tertiary">SAPI</div>
-                            <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.sapi || '—'"></div>
+                            <div class="mt-1 font-semibold crm-text-accent" x-text="diagnosticsBaseline.data?.environment?.sapi || '—'"></div>
                         </div>
                         <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                             <div class="crm-text-tertiary">OS family</div>
-                            <div class="mt-1 font-semibold crm-text-primary" x-text="diagnosticsBaseline.data?.environment?.os_family || '—'"></div>
+                            <div class="mt-1 font-semibold crm-text-accent" x-text="diagnosticsBaseline.data?.environment?.os_family || '—'"></div>
                         </div>
                     </div>
 
@@ -531,7 +531,7 @@
                         <div class="grid grid-cols-2 xl:grid-cols-4 gap-3 text-sm">
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-subtle">
                                 <div class="text-xs crm-text-tertiary">Всего сигналов</div>
-                                <div class="font-semibold mt-1 crm-text-primary" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.total_count ?? 0"></div>
+                                <div class="font-semibold mt-1 crm-text-accent" x-text="diagnosticsBaseline.data?.box_readiness?.summary?.total_count ?? 0"></div>
                             </div>
                             <div class="crm-card-compact crm-card-equal rounded-sm p-3 crm-border-success">
                                 <div class="text-xs crm-text-tertiary">Подтверждено</div>
@@ -570,7 +570,7 @@
                             <template x-for="signal in (diagnosticsBaseline.data?.box_readiness?.signals || [])" :key="signal.key">
                                 <div class="crm-card-compact crm-card-equal rounded-sm p-4" :style="signal.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)'">
                                     <div class="flex items-center justify-between gap-3">
-                                        <div class="font-semibold text-sm uppercase tracking-wide crm-text-primary" x-text="signal.label"></div>
+                                        <div class="font-semibold text-sm uppercase tracking-wide crm-text-accent" x-text="signal.label"></div>
                                         <span class="text-xs px-2 py-1 rounded-full" :style="signal.ok ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : 'background:rgba(245,158,11,.18); color:#fde68a'" x-text="signal.ok ? 'OK' : 'WARN'"></span>
                                     </div>
                                     <div class="text-sm mt-2 crm-text-secondary" x-text="signal.message"></div>
@@ -586,7 +586,7 @@
                         <template x-for="(check, key) in (diagnosticsBaseline.data?.checks || {})" :key="key">
                             <div class="crm-card-compact crm-card-equal rounded-sm p-4" :style="check.ok ? 'border:1px solid rgba(34,197,94,.25); background:rgba(15,118,110,.08)' : (check.severity === 'error' ? 'border:1px solid rgba(239,68,68,.25); background:rgba(127,29,29,.10)' : 'border:1px solid rgba(245,158,11,.25); background:rgba(120,53,15,.10)')">
                                 <div class="flex items-center justify-between gap-3">
-                                    <div class="font-semibold text-sm uppercase tracking-wide crm-text-primary" x-text="key.replace(/_/g, ' ')"></div>
+                                    <div class="font-semibold text-sm uppercase tracking-wide crm-text-accent" x-text="key.replace(/_/g, ' ')"></div>
                                     <span class="text-xs px-2 py-1 rounded-full" :style="check.ok ? 'background:rgba(34,197,94,.18); color:#bbf7d0' : (check.severity === 'error' ? 'background:rgba(239,68,68,.18); color:#fecaca' : 'background:rgba(245,158,11,.18); color:#fde68a')" x-text="check.ok ? 'OK' : (check.severity === 'error' ? 'ERROR' : 'WARN')"></span>
                                 </div>
                                 <div class="text-sm mt-2 crm-text-secondary" x-text="check.message"></div>
@@ -606,7 +606,7 @@
             <div class="grid grid-cols-1 gap-4">
                 <div class="crm-panel-block p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="font-semibold crm-text-primary">Шаблоны уведомлений</div>
+                        <div class="font-semibold crm-text-accent">Шаблоны уведомлений</div>
                         <button class="crm-btn-secondary text-sm" @click="loadNotificationTemplates()">Обновить</button>
                     </div>
                     <div class="overflow-auto">
@@ -640,7 +640,7 @@
                 </div>
 
                 <div class="crm-panel-block p-4" x-show="editingTemplate">
-                    <div class="font-semibold mb-3 crm-text-primary">
+                    <div class="font-semibold mb-3 crm-text-accent">
                         Редактирование: <span x-text="editingTemplate?.event + ' (' + editingTemplate?.channel + ')'"></span>
                     </div>
                     <div class="space-y-3">
@@ -671,7 +671,7 @@
                 </div>
 
                 <div class="crm-panel-block p-4">
-                    <div class="font-semibold mb-3 crm-text-primary">Логи отправки</div>
+                    <div class="font-semibold mb-3 crm-text-accent">Логи отправки</div>
                     <div class="overflow-auto">
                         <table class="w-full text-sm crm-min-w-table">
                             <thead>
@@ -706,9 +706,9 @@
         <div x-show="settingsAdminTab === 'license'" x-data="licenseTab()" x-init="loadLicenseStatus()">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="crm-panel-block p-4">
-                    <div class="font-semibold mb-3 crm-text-primary">Текущая лицензия</div>
+                    <div class="font-semibold mb-3 crm-text-accent">Текущая лицензия</div>
                     <div class="space-y-2 text-sm crm-text-secondary">
-                        <div class="flex justify-between"><span>Тариф:</span> <strong class="crm-text-primary" x-text="licenseStatus?.tier?.name || '-'"></strong></div>
+                        <div class="flex justify-between"><span>Тариф:</span> <strong class="crm-text-accent" x-text="licenseStatus?.tier?.name || '-'"></strong></div>
                         <div class="flex justify-between"><span>Статус:</span> <span :style="licenseStatus?.valid ? 'color:#4ade80' : 'color:#f87171'" x-text="licenseStatus?.valid ? 'Действительна' : 'Недействительна'"></span></div>
                         <div class="flex justify-between"><span>Срок:</span> <span x-text="licenseStatus?.tier?.expires_at ? new Date(licenseStatus.tier.expires_at).toLocaleDateString('ru-RU') : 'Бессрочно'"></span></div>
                         <div class="flex justify-between"><span>Пользователи:</span> <span x-text="(licenseStatus?.tier?.max_users ?? '∞') + ' макс'"></span></div>
@@ -723,7 +723,7 @@
                 </div>
 
                 <div class="crm-panel-block p-4">
-                    <div class="font-semibold mb-3 crm-text-primary">Запросить коммерческое предложение</div>
+                    <div class="font-semibold mb-3 crm-text-accent">Запросить коммерческое предложение</div>
                     <div class="space-y-3">
                         <div>
                             <label class="block text-xs mb-1 crm-text-tertiary">Ваше имя</label>
@@ -760,7 +760,7 @@
             <div class="grid grid-cols-1 gap-4">
                 <div class="crm-panel-block p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="font-semibold crm-text-primary">Профили виджетов записи</div>
+                        <div class="font-semibold crm-text-accent">Профили виджетов записи</div>
                         <button class="crm-btn-primary text-sm" @click="createNewProfile()">Новый профиль</button>
                     </div>
                     <div class="overflow-auto">
@@ -793,7 +793,7 @@
                 </div>
 
                 <div class="crm-panel-block p-4" x-show="editingProfile">
-                    <div class="font-semibold mb-3 crm-text-primary">
+                    <div class="font-semibold mb-3 crm-text-accent">
                         <span x-text="editingProfile?.id ? 'Редактирование' : 'Новый профиль'"></span>
                     </div>
                     <div class="space-y-3">
@@ -832,7 +832,7 @@
                 </div>
 
                 <div class="crm-panel-block p-4" x-show="generatedCode">
-                    <div class="font-semibold mb-2 crm-text-primary">Код для вставки</div>
+                    <div class="font-semibold mb-2 crm-text-accent">Код для вставки</div>
                     <textarea readonly class="w-full px-4 py-3 crm-control-input text-sm" style="min-height:120px" x-text="generatedCode"></textarea>
                     <div class="flex items-center justify-end gap-3 mt-3">
                         <button class="crm-btn-secondary text-sm" @click="copyCode()">Копировать</button>
@@ -842,7 +842,7 @@
 
                 <div class="crm-panel-block p-4">
                     <div class="flex items-center justify-between mb-4">
-                        <div class="font-semibold crm-text-primary">Аналитика виджетов</div>
+                        <div class="font-semibold crm-text-accent">Аналитика виджетов</div>
                         <div class="flex items-center gap-2">
                             <select x-model="widgetAnalyticsDays" @change="loadWidgetAnalytics()" class="px-3 py-2 crm-control-input text-sm">
                                 <option value="7">7 дней</option>
@@ -857,7 +857,7 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
                             <template x-for="item in (widgetAnalytics.summary || [])" :key="item.event">
                                 <div class="crm-panel-block p-3 text-center">
-                                    <div class="crm-metric-value crm-text-primary" x-text="item.cnt"></div>
+                                    <div class="crm-metric-value crm-text-accent" x-text="item.cnt"></div>
                                     <div class="text-xs mt-1 crm-text-secondary" x-text="item.event === 'view' ? 'Просмотры' : (item.event === 'open' ? 'Открытия' : (item.event === 'submit' ? 'Отправки' : item.event))"></div>
                                 </div>
                             </template>

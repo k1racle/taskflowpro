@@ -11,6 +11,9 @@
     --crm-danger-soft: rgba(239, 68, 68, 0.08);
     --crm-danger-border: rgba(239, 68, 68, 0.30);
     --crm-danger-text: #EF4444;
+    --crm-success: #10B981;
+    --crm-success-strong: #059669;
+    --crm-error: #EF4444;
     --crm-bg: #F8FAFC;
     --crm-surface: #FFFFFF;
     --crm-surface-alt: #F1F5F9;
@@ -43,7 +46,7 @@
     --lg-primary-dark: var(--crm-accent-strong);
     --lg-primary-gradient: linear-gradient(180deg, var(--crm-accent) 0%, var(--crm-accent-strong) 100%);
     --lg-accent: #0F172A;
-    --lg-success: #10B981;
+    --lg-success: var(--crm-success);
     --lg-error: #EF4444;
     --lg-warning: #F59E0B;
     --lg-info: #3B82F6;
@@ -548,6 +551,10 @@ body.crm-theme [x-cloak] {
     background: color-mix(in oklab, var(--crm-accent) 10%, var(--crm-surface-alt)) !important;
     border-color: color-mix(in oklab, var(--crm-accent) 24%, var(--crm-border)) !important;
     color: var(--crm-accent-strong) !important;
+}
+.crm-tone-muted {
+    background: color-mix(in srgb, var(--crm-text-muted) 10%, transparent) !important;
+    color: var(--crm-text-muted) !important;
 }
 
 [class*="crm-tone-"] .crm-summary-label,
@@ -1665,6 +1672,10 @@ body.crm-theme .crm-control-select {
 
 .crm-border-t {
     border-top: 1px solid var(--crm-border);
+}
+
+.crm-border-danger {
+    border: 1px solid rgba(239, 68, 68, 0.20);
 }
 
 .crm-divide-y > * + * {
@@ -4394,6 +4405,77 @@ body.crm-theme.dark .conference-status-ended {
 }
 .crm-border-bottom { border-bottom: 1px solid var(--lg-border); }
 .crm-border        { border: 1px solid var(--lg-border); }
+.crm-border-default { border-color: var(--crm-border) !important; }
+
+.crm-hover-surface:hover { background-color: color-mix(in srgb, var(--crm-text-muted) 12%, transparent); }
+.crm-hover-surface-soft:hover { background-color: color-mix(in oklab, var(--crm-surface-alt) 82%, var(--crm-surface)); }
+.crm-hover-danger:hover  { background-color: color-mix(in srgb, var(--lg-error) 12%, transparent); }
+.crm-hover-white-10:hover { background-color: rgba(255, 255, 255, 0.10); }
+.crm-hover-white-50:hover { background-color: rgba(255, 255, 255, 0.50); }
+body.crm-theme.dark .crm-hover-white-50:hover { background-color: rgba(51, 65, 85, 0.50); }
+.crm-hover-accent-10:hover { background-color: color-mix(in srgb, var(--crm-accent) 10%, transparent); }
+
+.crm-chat-tab-active {
+    background: var(--crm-accent);
+    color: #fff;
+}
+.crm-chat-tab-inactive {
+    background: transparent;
+    color: var(--crm-text-muted);
+}
+.crm-chat-member-toggle-active {
+    background: var(--crm-accent);
+    color: #fff;
+}
+.crm-chat-member-toggle-inactive {
+    background: var(--crm-surface-alt);
+    color: var(--crm-text-muted);
+}
+.crm-chat-pack-active {
+    background: var(--crm-accent);
+    color: #fff;
+}
+.crm-chat-pack-inactive {
+    background: var(--crm-surface-alt);
+    color: var(--crm-text-muted);
+}
+
+.crm-overlay-dark { background: rgba(0, 0, 0, 0.5); }
+.crm-gradient-primary { background: linear-gradient(90deg, var(--crm-accent), #9333ea); color: #fff; }
+.crm-hover-shadow-lg:hover { box-shadow: var(--crm-shadow-lg); }
+.crm-hover-accent-border:hover { border-color: color-mix(in srgb, var(--crm-accent) 50%, var(--crm-border)); }
+.crm-option-active { border-color: var(--crm-accent) !important; background: var(--crm-accent-soft) !important; }
+.crm-option-inactive { border-color: var(--crm-border) !important; }
+.crm-photo-primary-btn { background: rgba(255, 255, 255, 0.2); }
+.crm-photo-primary-btn:hover { background: rgba(255, 255, 255, 0.4); }
+.crm-photo-delete-btn { background: rgba(239, 68, 68, 0.5); }
+.crm-photo-delete-btn:hover { background: rgba(239, 68, 68, 0.8); }
+.crm-badge-accent-solid { background: var(--crm-accent); color: #fff; }
+
+.crm-bg-error { background: var(--crm-error) !important; }
+.crm-bg-success { background: var(--crm-success) !important; }
+.crm-border-b-accent { border-bottom-color: var(--crm-accent) !important; }
+.crm-mail-unread-bg { background: color-mix(in srgb, var(--crm-accent) 6%, transparent); }
+body.crm-theme.dark .crm-mail-unread-bg { background: color-mix(in srgb, var(--crm-accent) 14%, transparent); }
+.crm-card-active-blue { border-color: rgba(59, 130, 246, 0.5) !important; background: rgba(59, 130, 246, 0.1) !important; }
+.crm-card-inactive { border-color: var(--crm-border) !important; background: color-mix(in oklab, var(--crm-surface) 70%, transparent) !important; }
+.crm-alert-error { color: var(--crm-error); background: var(--crm-danger-soft); border: 1px solid var(--crm-danger-border); }
+.crm-spinner-accent { border: 4px solid color-mix(in srgb, var(--crm-accent) 30%, transparent); border-top-color: transparent; }
+
+.crm-widget-active-green { border-color: rgba(16, 185, 129, 0.5) !important; background: rgba(16, 185, 129, 0.05) !important; }
+.crm-widget-active-blue { border-color: rgba(59, 130, 246, 0.5) !important; background: rgba(59, 130, 246, 0.05) !important; }
+.crm-widget-active-purple { border-color: rgba(139, 92, 246, 0.5) !important; background: rgba(139, 92, 246, 0.05) !important; }
+.crm-widget-active-yellow { border-color: rgba(245, 158, 11, 0.5) !important; background: rgba(245, 158, 11, 0.05) !important; }
+.crm-widget-active-indigo { border-color: rgba(99, 102, 241, 0.5) !important; background: rgba(99, 102, 241, 0.05) !important; }
+.crm-widget-active-red { border-color: rgba(239, 68, 68, 0.5) !important; background: rgba(239, 68, 68, 0.05) !important; }
+.crm-widget-inactive { border-color: rgba(100, 116, 139, 0.2) !important; }
+.crm-widget-toggle-active { background: var(--lg-success); color: #fff; }
+
+.crm-focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--crm-accent) 28%, transparent);
+    border-color: var(--crm-accent);
+}
 
 .crm-mono {
     font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -4420,11 +4502,61 @@ body.crm-theme.dark .conference-status-ended {
     background: rgba(20,83,45,.08);
 }
 .crm-bg-error-soft {
-    background: color-mix(in oklab, #EF4444 20%, var(--lg-glass-bg));
+    background: color-mix(in oklab, #EF4444 12%, var(--crm-surface-alt));
+}
+.crm-bg-success-soft {
+    background: color-mix(in oklab, #10B981 12%, var(--crm-surface-alt));
+}
+.crm-bg-info-soft {
+    background: color-mix(in oklab, #3B82F6 12%, var(--crm-surface-alt));
+}
+.crm-bg-warning-soft {
+    background: color-mix(in oklab, #F59E0B 12%, var(--crm-surface-alt));
 }
 .crm-bg-dark-soft {
-    border: 1px solid var(--lg-border);
-    background: color-mix(in oklab, #000 35%, var(--lg-glass-bg));
+    border: 1px solid var(--crm-border);
+    background: color-mix(in oklab, #000 35%, var(--crm-surface-alt));
+}
+
+.crm-alert-danger {
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    background: rgba(127, 29, 29, 0.10);
+    color: #fecaca;
+}
+.crm-alert-warning {
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    background: rgba(120, 53, 15, 0.10);
+    color: #fde68a;
+}
+.crm-alert-info {
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    background: rgba(15, 23, 42, 0.08);
+    color: #bfdbfe;
+}
+.crm-alert-success {
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    background: rgba(20, 83, 45, 0.10);
+    color: #bbf7d0;
+}
+
+.crm-hover-glass:hover,
+.crm-hover-glass:focus-visible {
+    background: color-mix(in oklab, var(--crm-surface-alt) 70%, var(--crm-surface));
+}
+
+.crm-hover-error:hover,
+.crm-hover-error:focus-visible {
+    background: color-mix(in oklab, #EF4444 12%, var(--crm-surface-alt));
+}
+
+.crm-hover-info:hover,
+.crm-hover-info:focus-visible {
+    background: color-mix(in oklab, #3B82F6 12%, var(--crm-surface-alt));
+}
+
+.crm-hover-warning:hover,
+.crm-hover-warning:focus-visible {
+    background: color-mix(in oklab, #F59E0B 12%, var(--crm-surface-alt));
 }
 
 .crm-metric-value {

@@ -148,7 +148,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="w-2.5 h-2.5 rounded-full flex-shrink-0" :style="`background:${stage.color || 'var(--lg-primary)'}`"></span>
-                        <h3 class="font-bold text-gray-800 dark:text-white truncate" x-text="stage.name"></h3>
+                        <h3 class="font-bold crm-text-accent truncate" x-text="stage.name"></h3>
                     </div>
                     <span class="px-2 py-1 text-xs rounded-full font-semibold"
                           style="background: color-mix(in oklab, var(--primary-color) 14%, transparent); color: var(--primary-color)"
@@ -166,7 +166,7 @@
                              @dragstart="draggingTask = task.id; $event.dataTransfer.effectAllowed='move'; $event.dataTransfer.setData('text/plain', String(task.id))"
                                class="p-4 cursor-pointer crm-kanban-card relative">
                             <div class="flex items-start justify-between mb-2">
-                                <h4 class="font-semibold text-gray-800 dark:text-white text-sm" x-text="task.title"></h4>
+                                <h4 class="font-semibold crm-text-accent text-sm" x-text="task.title"></h4>
                                 <span :class="'priority-' + task.priority" class="px-2 py-0.5 rounded-full text-xs capitalize" x-text="translatePriority(task.priority)"></span>
                             </div>
                             <div class="crm-task-mobile-meta-row mb-3">
@@ -181,13 +181,13 @@
                             </div>
                             <div class="flex items-center justify-between gap-3 mb-2">
                                 <div class="min-w-0">
-                                    <div class="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-2" style="max-width: 220px">
+                                    <div class="text-xs crm-text-secondary truncate flex items-center gap-2" style="max-width: 220px">
                                         <svg class="w-3.5 h-3.5 flex-shrink-0 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                         </svg>
                                         <span class="truncate" x-text="task.project_name || '—'"></span>
                                     </div>
-                                    <div class="text-[11px] text-gray-500 dark:text-gray-400 truncate flex items-center gap-2">
+                                    <div class="text-[11px] crm-text-secondary truncate flex items-center gap-2">
                                         <svg class="w-3.5 h-3.5 flex-shrink-0 crm-text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
@@ -196,7 +196,7 @@
                                 </div>
 
                                 <div class="text-right flex-shrink-0">
-                                    <div x-show="(task.active_timer_seconds != null) || (task.timer_seconds != null)" class="text-[11px] text-gray-500 dark:text-gray-400">
+                                    <div x-show="(task.active_timer_seconds != null) || (task.timer_seconds != null)" class="text-[11px] crm-text-secondary">
                                         <span class="font-semibold" x-text="formatTimer(task.active_timer_seconds ?? task.timer_seconds ?? 0)"></span>
                                     </div>
                                 </div>
@@ -207,26 +207,26 @@
                                     <div class="h-full rounded-full"
                                          :style="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; const pct = (cl||[]).length ? Math.round((done/(cl||[]).length)*100) : 0; return `width:${pct}%; background: linear-gradient(90deg, color-mix(in oklab, var(--primary-color) 85%, white), color-mix(in oklab, var(--accent-color) 70%, white));`; } catch(e){ return 'width:0%'; } })()"></div>
                                 </div>
-                                <div class="mt-1 text-[11px] text-gray-500 dark:text-gray-400"
+                                <div class="mt-1 text-[11px] crm-text-secondary"
                                      x-text="(() =&gt; { try { const cl = typeof task.checklist === 'string' ? JSON.parse(task.checklist) : (task.checklist || []); const done = (cl||[]).filter(i =&gt; i.done).length; return `${done}/${(cl||[]).length}`; } catch(e){ return ''; } })()"></div>
                             </div>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 line-clamp-2" x-text="task.description"></p>
+                            <p class="text-xs crm-text-secondary line-clamp-2" x-text="task.description"></p>
 
                             <!-- Status color accent -->
                             <div class="absolute left-0 top-0 bottom-0 w-1 rounded-l-[var(--lg-radius)]"
                                  :style="`background: ${task.status_color || 'transparent'}`"></div>
                             <div class="flex items-center justify-between mt-3 crm-task-card-footer">
                                 <div class="flex items-center gap-2 min-w-0">
-                                    <span class="text-xs text-gray-500 dark:text-gray-400 truncate" x-text="task.assignee_name || ''"></span>
+                                    <span class="text-xs crm-text-secondary truncate" x-text="task.assignee_name || ''"></span>
                                 </div>
                                 <div class="text-right crm-task-card-deadline">
-                                    <div class="text-xs text-gray-400" x-text="formatDate(task.deadline)"></div>
-                                    <div class="text-[11px] text-gray-500 dark:text-gray-400" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : ''"></div>
+                                    <div class="text-xs crm-text-muted" x-text="formatDate(task.deadline)"></div>
+                                    <div class="text-[11px] crm-text-secondary" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : ''"></div>
                                 </div>
                             </div>
 
-                            <div x-show="isOverdue(task.deadline)" class="mt-2 text-[11px] font-semibold text-red-600 dark:text-red-400 flex items-center gap-2">
-                                <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+                            <div x-show="isOverdue(task.deadline)" class="mt-2 text-[11px] font-semibold crm-text-error flex items-center gap-2">
+                                <span class="inline-block w-2 h-2 rounded-full crm-bg-error"></span>
                                 Просрочено
                             </div>
                         </div>
@@ -263,8 +263,8 @@
                     <tr @click="openTaskModal(task)" class="cursor-pointer crm-task-row" :class="isOverdue(task.deadline) ? 'crm-task-row-overdue' : ''">
                         <td class="px-4 py-3" data-label="Задача">
                             <div>
-                                <h4 class="font-semibold text-gray-800 dark:text-white text-sm" x-text="task.title"></h4>
-                                <p class="text-xs text-gray-500 dark:text-gray-400" x-text="task.project_name"></p>
+                                <h4 class="font-semibold crm-text-accent text-sm" x-text="task.title"></h4>
+                                <p class="text-xs crm-text-secondary" x-text="task.project_name"></p>
                             </div>
                         </td>
                         <td class="px-4 py-3" data-label="Статус">
@@ -275,8 +275,8 @@
                         </td>
                         <td class="px-4 py-3" data-label="Срок">
                             <div>
-                                <span class="text-sm text-gray-700 dark:text-gray-300" x-text="formatDate(task.deadline)"></span>
-                                <div class="text-[11px] text-gray-500 dark:text-gray-400 mt-1" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>
+                                <span class="text-sm crm-text-secondary" x-text="formatDate(task.deadline)"></span>
+                                <div class="text-[11px] crm-text-secondary mt-1" x-text="task.deadline ? getDaysUntilDeadline(task.deadline) : 'Без срока'"></div>
                             </div>
                         </td>
                     </tr>

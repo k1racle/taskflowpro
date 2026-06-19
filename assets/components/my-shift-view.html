@@ -28,7 +28,7 @@
             </div>
 
             <div class="mt-5">
-                <div class="text-5xl font-semibold tracking-tight crm-text-primary" x-text="shiftTimer"></div>
+                <div class="text-5xl font-semibold tracking-tight crm-text-accent" x-text="shiftTimer"></div>
                 <div class="mt-2 text-sm crm-text-tertiary">
                     <span>Старт:</span>
                     <span class="font-semibold crm-text-secondary" x-text="shiftStart ? formatDateTime(shiftStart) : '—'"></span>
@@ -38,11 +38,11 @@
             <div class="mt-5 grid grid-cols-2 gap-3">
                 <div class="rounded-sm p-4 crm-surface-card-soft">
                     <div class="text-xs crm-text-tertiary">Перерыв</div>
-                    <div class="mt-1 text-lg font-semibold crm-text-primary" x-text="breakTime"></div>
+                    <div class="mt-1 text-lg font-semibold crm-text-accent" x-text="breakTime"></div>
                 </div>
                 <div class="rounded-sm p-4 crm-surface-card-soft">
                     <div class="text-xs crm-text-tertiary">Отработано</div>
-                    <div class="mt-1 text-lg font-semibold crm-text-primary" x-text="workedTime"></div>
+                    <div class="mt-1 text-lg font-semibold crm-text-accent" x-text="workedTime"></div>
                 </div>
             </div>
 
@@ -82,7 +82,7 @@
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-7 gap-2">
                     <template x-for="day in weekSchedule" :key="day.date">
                         <div class="rounded-sm p-3 text-center" :class="day.isToday ? 'crm-tone-accent' : 'crm-glass'">
-                            <div class="text-sm font-semibold crm-text-primary" x-text="day.name"></div>
+                            <div class="text-sm font-semibold crm-text-accent" x-text="day.name"></div>
                             <div class="text-[11px] mt-1 crm-text-tertiary" x-text="day.status"></div>
                         </div>
                     </template>
@@ -117,14 +117,14 @@
                 <tbody class="divide-y divide-gray-200/50 dark:divide-gray-700/50">
                     <template x-for="shift in (shiftHistory || [])" :key="shift.id">
                         <tr>
-                            <td class="px-4 py-3 text-sm text-gray-800 dark:text-white" x-text="shift.date"></td>
-                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" x-text="shift.start"></td>
-                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" x-text="shift.end"></td>
-                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400" x-text="shift.break"></td>
-                            <td class="px-4 py-3 text-sm font-semibold text-green-500" x-text="shift.worked"></td>
+                            <td class="px-4 py-3 text-sm crm-text-accent" x-text="shift.date"></td>
+                            <td class="px-4 py-3 text-sm crm-text-secondary" x-text="shift.start"></td>
+                            <td class="px-4 py-3 text-sm crm-text-secondary" x-text="shift.end"></td>
+                            <td class="px-4 py-3 text-sm crm-text-secondary" x-text="shift.break"></td>
+                            <td class="px-4 py-3 text-sm font-semibold crm-text-success" x-text="shift.worked"></td>
                             <td class="px-4 py-3">
                                 <span class="px-3 py-1 rounded-full text-xs font-medium"
-                                      :class="shift.status === 'completed' ? 'bg-green-500/10 text-green-500' : 'bg-gray-500/10 text-gray-500'"
+                                      :class="shift.status === 'completed' ? 'crm-tone-success' : 'crm-tone-muted'"
                                       x-text="shift.status === 'completed' ? 'Завершена' : 'В процессе'"></span>
                             </td>
                         </tr>

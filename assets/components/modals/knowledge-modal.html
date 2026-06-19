@@ -32,15 +32,15 @@
         <div class="crm-modal-body crm-modal-body--compact crm-drawer-body crm-modal-form crm-modal-form--compact">
             <div x-show="knowledgeModalTab === 'article'" class="crm-form-stack--compact">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Заголовок</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Заголовок</label>
                     <input type="text" x-model="knowledgeForm.title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Как оформить отпуск" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Текст</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Текст</label>
                     <textarea x-model="knowledgeForm.content" rows="10" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Текст статьи..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Отдел</label>
                     <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                         <option value="">Все отделы</option>
                         <template x-for="d in (departments || [])" :key="d.id">
@@ -52,16 +52,16 @@
 
             <div x-show="knowledgeModalTab === 'video'" class="crm-form-stack--compact">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Название</label>
                     <input type="text" x-model="knowledgeMediaForm.video_title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Инструкция по CRM" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ссылка на видео</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Ссылка на видео</label>
                     <input type="url" x-model="knowledgeMediaForm.video_url" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="https://..." />
                     <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">YouTube / Vimeo / прямой mp4.</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Отдел</label>
                     <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                         <option value="">Все отделы</option>
                         <template x-for="d in (departments || [])" :key="d.id">
@@ -73,16 +73,16 @@
 
             <div x-show="knowledgeModalTab === 'slides'" class="crm-form-stack--compact">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Название</label>
                     <input type="text" x-model="knowledgeMediaForm.slides_title" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Презентация продукта" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ссылка на презентацию</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Ссылка на презентацию</label>
                     <input type="url" x-model="knowledgeMediaForm.slides_url" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="https://..." />
                     <div class="text-xs mt-2" style="color: var(--lg-text-tertiary)">Google Slides / PDF / ссылка на файл.</div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Отдел</label>
                     <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                         <option value="">Все отделы</option>
                         <template x-for="d in (departments || [])" :key="d.id">
@@ -94,15 +94,15 @@
 
             <div x-show="knowledgeModalTab === 'faq'" class="crm-form-stack--compact">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Вопрос</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Вопрос</label>
                     <input type="text" x-model="knowledgeMediaForm.faq_question" class="w-full px-4 py-3 rounded-xl crm-control-input" placeholder="Например: Где взять доступ?" />
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ответ</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Ответ</label>
                     <textarea x-model="knowledgeMediaForm.faq_answer" rows="8" class="w-full px-4 py-3 rounded-xl crm-control-textarea" placeholder="Ответ..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                    <label class="block text-sm font-medium crm-text-secondary mb-2">Отдел</label>
                     <select x-model="knowledgeForm.department_id" class="w-full px-4 py-3 rounded-xl crm-control-select">
                         <option value="">Все отделы</option>
                         <template x-for="d in (departments || [])" :key="d.id">

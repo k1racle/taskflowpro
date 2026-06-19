@@ -87,13 +87,13 @@ window.TaskFlowFiles = (function () {
                      @dragleave="onFolderDragLeave($event)">
                     <div @click="navigateToFolder(${folder.id})" 
                          @contextmenu.prevent.stop="openFilesContextMenu($event, {type:'folder', item: folder})"
-                         class="flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-all ${isSelected ? 'liquid-glass-pro' : ''}"
+                         class="flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer crm-hover-surface transition-all ${isSelected ? 'liquid-glass-pro' : ''}"
                          style="font-size: 13px;">
-                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 crm-text-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
                         </svg>
                         <span class="flex-1 truncate" style="color: var(--lg-text-primary)">${ctx.escapeHtml(folder.name)}</span>
-                        <span class="text-xs text-gray-400">${folder.files_count || 0}</span>
+                        <span class="text-xs crm-text-tertiary">${folder.files_count || 0}</span>
                     </div>
                     ${hasChildren && folder.children ? `
                         <div class="folder-children">
@@ -384,11 +384,11 @@ window.TaskFlowFiles = (function () {
                     <button @click="moveFilesToFolder(${folder.id})"
                             class="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:liquid-glass-pro transition-all"
                             style="font-size: 13px;">
-                        <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 crm-text-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/>
                         </svg>
                         <span class="flex-1 truncate" style="color: var(--lg-text-primary)">${ctx.escapeHtml(folder.name)}</span>
-                        <span class="text-xs text-gray-400">${folder.files_count || 0}</span>
+                        <span class="text-xs crm-text-tertiary">${folder.files_count || 0}</span>
                     </button>
                     ${hasChildren && folder.children ? `
                         <div class="folder-children">

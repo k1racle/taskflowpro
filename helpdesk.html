@@ -12,8 +12,8 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="app.png">
 
-    <link rel="stylesheet" href="assets/css/crm-theme.css?v=3">
-    <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=5">
+    <link rel="stylesheet" href="assets/css/crm-theme.css?v=16">
+    <link rel="stylesheet" href="assets/css/mobile-responsive.css?v=7">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -212,10 +212,10 @@
          class="fixed bottom-4 right-4 z-[120] liquid-glass-pro px-6 py-4 rounded-2xl"
          :class="notification.type === 'success' ? 'crm-notice-success' : 'crm-notice-danger'">
         <div class="flex items-center gap-3">
-            <svg x-show="notification.type === 'success'" class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg x-show="notification.type === 'success'" class="w-6 h-6 crm-text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
             </svg>
-            <svg x-show="notification.type === 'error'" class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg x-show="notification.type === 'error'" class="w-6 h-6 crm-text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             <span x-text="notification.message"></span>

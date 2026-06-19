@@ -11,7 +11,7 @@
     <!-- Хэдер почты -->
     <div class="liquid-glass-pro mb-6 p-6 rounded-sm">
         <div class="flex items-center justify-between mb-4">
-            <h1 class="text-3xl font-semibold crm-text-primary">Почта</h1>
+            <h1 class="text-3xl font-semibold crm-text-accent">Почта</h1>
             <button @click="openMailComposeModal()"
                      class="crm-btn-primary crm-btn-lg flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -76,12 +76,12 @@
                 <h3 class="text-sm font-semibold px-4 crm-text-muted">Аккаунты</h3>
                 <template x-for="account in mailAccounts" :key="account.id">
                     <div class="liquid-glass-pro p-3 text-sm rounded-sm">
-                        <p class="font-medium crm-text-primary" x-text="account.email"></p>
+                        <p class="font-medium crm-text-accent" x-text="account.email"></p>
                         <p class="text-xs crm-text-faint" x-text="account.smtp_host"></p>
                     </div>
                 </template>
                 <button @click="openMailSettings()"
-                        class="w-full flex items-center gap-3 px-4 py-3 rounded-sm crm-text-muted hover:bg-[color:color-mix(in_oklab,var(--crm-surface-alt)_82%,var(--crm-surface))] transition-all">
+                        class="w-full flex items-center gap-3 px-4 py-3 rounded-sm crm-text-muted crm-hover-surface-soft transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -95,7 +95,7 @@
         <div class="flex-1 liquid-glass-pro rounded-sm overflow-hidden flex flex-col">
             <!-- Хэдер списка -->
             <div class="p-4 border-b border-[color:var(--crm-border)] flex items-center justify-between">
-                <h2 class="text-xl font-semibold crm-text-primary" x-text="getFolderName(currentMailFolder)"></h2>
+                <h2 class="text-xl font-semibold crm-text-accent" x-text="getFolderName(currentMailFolder)"></h2>
                 <div class="flex items-center gap-2">
                     <button @click="refreshMail()" class="crm-btn-ghost crm-icon-button transition-all" aria-label="Обновить">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,7 +109,7 @@
             <div class="flex-1 overflow-y-auto p-4 space-y-3">
                 <!-- Загрузка -->
                 <div x-show="mailLoading" class="flex items-center justify-center h-full">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 crm-border-b-accent"></div>
                 </div>
 
                 <!-- Нет писем -->
@@ -126,7 +126,7 @@
                 <template x-for="email in mailList" :key="email.id">
                     <div @click="openEmail(email.id)"
                          class="mail-item-premium cursor-pointer"
-                         :class="!email.is_read ? 'bg-blue-50/50 dark:bg-blue-900/20' : ''">
+                         :class="!email.is_read ? 'crm-mail-unread-bg' : ''">
                         <div class="flex items-start gap-4">
                             <!-- Аватар -->
                             <div class="w-12 h-12 rounded-full crm-brand-mark flex items-center justify-center text-white font-semibold flex-shrink-0"
@@ -136,7 +136,7 @@
                             <!-- Информация -->
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between gap-2 mb-1">
-                                    <h3 class="font-semibold truncate crm-text-primary" x-text="email.sender_name || email.recipient_name"></h3>
+                                    <h3 class="font-semibold truncate crm-text-accent" x-text="email.sender_name || email.recipient_name"></h3>
                                     <span class="text-xs crm-text-faint whitespace-nowrap" 
                                           x-text="formatDate(email.sent_at)"></span>
                                 </div>
@@ -146,13 +146,13 @@
 
                             <!-- Иконки -->
                             <div class="flex items-center gap-2 flex-shrink-0">
-                                <svg x-show="email.is_starred" class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                                <svg x-show="email.is_starred" class="w-5 h-5 crm-text-warning" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                                 </svg>
-                                <svg x-show="email.has_attachments" class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg x-show="email.has_attachments" class="w-5 h-5 crm-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 00-6 6 6 6 0 006 6 6 6 0 006-6 6 6 0 00-6-6 6 6 0 00-6 6z"/>
                                 </svg>
-                                <svg x-show="!email.is_read" class="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                <svg x-show="!email.is_read" class="w-5 h-5 crm-text-info" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
                                 </svg>
                             </div>
@@ -172,7 +172,7 @@
         <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-sm">
             <!-- Хэдер -->
             <div class="p-6 border-b border-[color:var(--crm-border)] flex items-center justify-between">
-                <h3 class="text-xl font-semibold crm-text-primary">Новое письмо</h3>
+                <h3 class="text-xl font-semibold crm-text-accent">Новое письмо</h3>
                 <button @click="mailComposeModalOpen = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -231,7 +231,7 @@
         <div class="liquid-glass-pro w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col rounded-sm">
             <!-- Хэдер -->
             <div class="p-6 border-b border-[color:var(--crm-border)] flex items-center justify-between">
-                <h3 class="text-xl font-semibold crm-text-primary" x-text="viewingEmail?.subject"></h3>
+                <h3 class="text-xl font-semibold crm-text-accent" x-text="viewingEmail?.subject"></h3>
                 <button @click="emailViewModalOpen = false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -246,7 +246,7 @@
                          x-text="getInitials(viewingEmail?.sender_name)">
                     </div>
                     <div>
-                        <p class="font-semibold crm-text-primary" x-text="viewingEmail?.sender_name"></p>
+                        <p class="font-semibold crm-text-accent" x-text="viewingEmail?.sender_name"></p>
                         <p class="text-sm crm-text-faint" x-text="formatDate(viewingEmail?.sent_at)"></p>
                     </div>
                 </div>

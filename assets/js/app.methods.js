@@ -163,22 +163,22 @@ function getDaysUntilDeadline(dateStr) {
  * Получить класс для дедлайна
  */
 function getDeadlineClass(dateStr) {
-    if (!dateStr) return 'text-gray-500 dark:text-gray-400';
+    if (!dateStr) return 'crm-text-secondary';
     const deadline = new Date(dateStr);
     const today = new Date();
     const diffTime = deadline - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-        return 'text-red-600 dark:text-red-400 font-semibold';
+        return 'crm-text-error font-semibold';
     } else if (diffDays === 0) {
-        return 'text-red-500 dark:text-red-400 font-semibold';
+        return 'crm-text-error font-semibold';
     } else if (diffDays < 3) {
-        return 'text-orange-500 dark:text-orange-400 font-semibold';
+        return 'crm-text-warning font-semibold';
     } else if (diffDays < 7) {
-        return 'text-yellow-600 dark:text-yellow-400';
+        return 'crm-text-warning';
     } else {
-        return 'text-gray-500 dark:text-gray-400';
+        return 'crm-text-secondary';
     }
 }
 

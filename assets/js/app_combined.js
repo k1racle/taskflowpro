@@ -3609,7 +3609,7 @@ window.app = function() {
         },
 
         getDeadlineClass(dateStr) {
-            return window.TaskFlowSharedFormatters?.getDeadlineClass?.(dateStr) || 'text-gray-500';
+            return window.TaskFlowSharedFormatters?.getDeadlineClass?.(dateStr) || 'crm-text-secondary';
         },
 
         getDaysUntilDeadline(dateStr) {

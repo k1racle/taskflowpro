@@ -75,24 +75,24 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ФИО</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">ФИО</label>
                         <input type="text" x-model="settingsForm.full_name"
                                class="w-full px-4 py-2 crm-control-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Телефон</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Телефон</label>
                         <input type="tel" x-model="settingsForm.phone"
                                class="w-full px-4 py-2 crm-control-input">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ProstieZvonki: внутренний номер</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">ProstieZvonki: внутренний номер</label>
                         <input type="text" x-model="settingsForm.prostiezvonki_user"
                                class="w-full px-4 py-2 crm-control-input" placeholder="например: 100">
                         <div class="mt-1 text-xs crm-text-tertiary">Нужен для звонка по клику (передаётся как <code>user</code> в makecall).</div>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отдел</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Отдел</label>
                         <select x-model="settingsForm.department_id"
                                 class="w-full px-4 py-2 crm-control-select">
                             <option value="">Не выбран</option>
@@ -102,31 +102,31 @@
                         </select>
                     </div>
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">О себе</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">О себе</label>
                         <textarea x-model="settingsForm.bio" rows="4"
                                   class="w-full px-4 py-2 crm-control-textarea"></textarea>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">День рождения</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">День рождения</label>
                         <input type="date" x-model="settingsForm.birthday"
                                class="w-full px-4 py-2 crm-control-input">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Город (для погоды)</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Город (для погоды)</label>
                         <input type="text" x-model="settingsForm.weather_city"
                                class="w-full px-4 py-2 crm-control-input" placeholder="Москва">
-                        <div class="text-xs mt-1 text-gray-500">Используется в виджете погоды</div>
+                        <div class="text-xs mt-1 crm-text-secondary">Используется в виджете погоды</div>
                     </div>
-                    <div class="col-span-2 border-t border-gray-200 dark:border-gray-700 pt-4 mt-2">
-                        <div class="text-sm font-semibold crm-text-primary mb-3">Смена пароля</div>
+                    <div class="col-span-2 crm-border-t pt-4 mt-2">
+                        <div class="text-sm font-semibold crm-text-accent mb-3">Смена пароля</div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Новый пароль</label>
+                                <label class="block text-sm font-medium crm-text-secondary mb-2">Новый пароль</label>
                                 <input type="password" x-model="settingsForm.new_password"
                                        class="w-full px-4 py-2 crm-control-input" placeholder="••••••••" autocomplete="new-password">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Повторите пароль</label>
+                                <label class="block text-sm font-medium crm-text-secondary mb-2">Повторите пароль</label>
                                 <input type="password" x-model="settingsForm.confirm_password"
                                        class="w-full px-4 py-2 crm-control-input" placeholder="••••••••" autocomplete="new-password">
                             </div>
@@ -139,17 +139,17 @@
             <div x-show="settingsTab === 'email'" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SMTP хост</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">SMTP хост</label>
                         <input type="text" x-model="mailForm.host" class="w-full px-4 py-2 crm-control-input" placeholder="smtp.gmail.com">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Порт</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Порт</label>
                         <input type="number" x-model="mailForm.port" class="w-full px-4 py-2 crm-control-input" placeholder="587">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Шифрование</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Шифрование</label>
                         <select x-model="mailForm.encryption" class="w-full px-4 py-2 crm-control-select">
                             <option value="tls">TLS</option>
                             <option value="ssl">SSL</option>
@@ -158,18 +158,18 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email (логин)</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Email (логин)</label>
                         <input type="text" x-model="mailForm.email" class="w-full px-4 py-2 crm-control-input" placeholder="your@email.com">
                         <div class="mt-1 text-xs crm-text-tertiary">Обычно это и есть username для SMTP/IMAP.</div>
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SMTP username (если отличается)</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">SMTP username (если отличается)</label>
                         <input type="text" x-model="mailForm.smtp_username" class="w-full px-4 py-2 crm-control-input" placeholder="(необязательно)">
                     </div>
 
                     <div class="md:col-span-2">
-                        <label for="mail-settings-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Пароль (не показываем, только сохраняем)</label>
+                        <label for="mail-settings-password" class="block text-sm font-medium crm-text-secondary mb-2">Пароль (не показываем, только сохраняем)</label>
                         <input id="mail-settings-password" name="mail_password" type="password" x-model="mailForm.password" class="w-full px-4 py-2 crm-control-input" placeholder="••••••••" autocomplete="off">
                         <div class="mt-1 text-xs crm-text-tertiary">Оставьте пустым, если менять не нужно.</div>
                     </div>
@@ -177,7 +177,7 @@
                     <div class="md:col-span-2">
                         <div class="flex items-center justify-between">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IMAP хост (входящая почта)</label>
+                                <label class="block text-sm font-medium crm-text-secondary mb-2">IMAP хост (входящая почта)</label>
                                 <div class="text-xs crm-text-tertiary">Нужен для загрузки «Входящих/Отправленных» с реального ящика.</div>
                             </div>
                         </div>
@@ -185,12 +185,12 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IMAP порт</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">IMAP порт</label>
                         <input type="number" x-model="mailForm.imap_port" class="w-full px-4 py-2 crm-control-input" placeholder="993">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">IMAP шифрование</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">IMAP шифрование</label>
                         <select x-model="mailForm.imap_encryption" class="w-full px-4 py-2 crm-control-select">
                             <option value="ssl">SSL</option>
                             <option value="tls">TLS</option>
@@ -199,12 +199,12 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Имя отправителя</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Имя отправителя</label>
                         <input type="text" x-model="mailForm.display_name" class="w-full px-4 py-2 crm-control-input" placeholder="TaskFlow Pro">
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Подпись</label>
+                        <label class="block text-sm font-medium crm-text-secondary mb-2">Подпись</label>
                         <textarea rows="3" x-model="mailForm.signature" class="w-full px-4 py-2 crm-control-textarea" placeholder="—\nС уважением, ..."></textarea>
                     </div>
                 </div>
@@ -224,7 +224,7 @@
                             </svg>
                         </div>
                         <div>
-                            <div class="font-semibold crm-text-primary">Email уведомления</div>
+                            <div class="font-semibold crm-text-accent">Email уведомления</div>
                             <div class="text-xs crm-text-tertiary">На вашу рабочую почту</div>
                         </div>
                     </div>
@@ -232,7 +232,7 @@
                     <div class="space-y-3">
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Новая задача</div>
+                                <div class="text-sm font-semibold crm-text-accent">Новая задача</div>
                                 <div class="text-xs crm-text-tertiary">Когда вам назначают задачу</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.email.new_tasks" class="w-5 h-5"/>
@@ -240,7 +240,7 @@
 
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Изменение статуса</div>
+                                <div class="text-sm font-semibold crm-text-accent">Изменение статуса</div>
                                 <div class="text-xs crm-text-tertiary">Статус задачи изменился</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.email.status_changed" class="w-5 h-5"/>
@@ -248,7 +248,7 @@
 
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Комментарий</div>
+                                <div class="text-sm font-semibold crm-text-accent">Комментарий</div>
                                 <div class="text-xs crm-text-tertiary">Новый комментарий в задаче</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.email.comments" class="w-5 h-5"/>
@@ -256,7 +256,7 @@
 
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Упоминание</div>
+                                <div class="text-sm font-semibold crm-text-accent">Упоминание</div>
                                 <div class="text-xs crm-text-tertiary">Кто-то упомянул вас</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.email.mentions" class="w-5 h-5"/>
@@ -272,7 +272,7 @@
                             </svg>
                         </div>
                         <div>
-                            <div class="font-semibold crm-text-primary">Telegram уведомления</div>
+                            <div class="font-semibold crm-text-accent">Telegram уведомления</div>
                             <div class="text-xs crm-text-tertiary">Мгновенные уведомления в мессенджере</div>
                         </div>
                     </div>
@@ -280,7 +280,7 @@
                     <div class="space-y-3">
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Новая задача</div>
+                                <div class="text-sm font-semibold crm-text-accent">Новая задача</div>
                                 <div class="text-xs crm-text-tertiary">Когда вам назначают задачу</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.telegram.new_tasks" class="w-5 h-5"/>
@@ -288,7 +288,7 @@
 
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Изменение статуса</div>
+                                <div class="text-sm font-semibold crm-text-accent">Изменение статуса</div>
                                 <div class="text-xs crm-text-tertiary">Статус задачи изменился</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.telegram.status_changed" class="w-5 h-5"/>
@@ -296,7 +296,7 @@
 
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Комментарий</div>
+                                <div class="text-sm font-semibold crm-text-accent">Комментарий</div>
                                 <div class="text-xs crm-text-tertiary">Новый комментарий в задаче</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.telegram.comments" class="w-5 h-5"/>
@@ -304,7 +304,7 @@
 
                         <label class="crm-notification-row">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Упоминание</div>
+                                <div class="text-sm font-semibold crm-text-accent">Упоминание</div>
                                 <div class="text-xs crm-text-tertiary">Кто-то упомянул вас</div>
                             </div>
                             <input type="checkbox" x-model="notificationSettings.telegram.mentions" class="w-5 h-5"/>
@@ -317,7 +317,7 @@
                 <div class="crm-modal-section">
                     <div class="flex items-start justify-between gap-4 flex-wrap">
                         <div>
-                            <div class="font-semibold crm-text-primary">Порядок пунктов бокового меню</div>
+                            <div class="font-semibold crm-text-accent">Порядок пунктов бокового меню</div>
                             <div class="text-xs mt-1 crm-text-secondary">Перетаскивай пункты мышкой. Изменения сохраняются и будут после перезагрузки.</div>
                         </div>
                         <div class="flex items-center gap-2">
@@ -342,12 +342,12 @@
                                  @dragenter.prevent>
                                 <div class="flex items-center gap-3 min-w-0">
                                     <div class="w-9 h-9 rounded-2xl flex items-center justify-center crm-tone-accent">
-                                        <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 9h16M4 15h16" />
                                         </svg>
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="text-sm font-semibold truncate crm-text-primary" x-text="it.label"></div>
+                                        <div class="text-sm font-semibold truncate crm-text-accent" x-text="it.label"></div>
                                         <div class="text-xs truncate crm-text-tertiary" x-text="it.id"></div>
                                     </div>
                                 </div>
@@ -365,7 +365,7 @@
                 <div class="crm-modal-section">
                     <div class="flex items-start justify-between gap-4 flex-wrap">
                         <div>
-                            <div class="font-semibold crm-text-primary">Каталог администрирования</div>
+                            <div class="font-semibold crm-text-accent">Каталог администрирования</div>
                             <div class="text-xs mt-1 crm-text-secondary">Быстрые переходы к настройкам и справочникам, которые уже можно поддерживать без правки БД и кода.</div>
                         </div>
                         <div class="text-xs px-3 py-1 rounded-xl" style="border:1px solid var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 92%, transparent); color: var(--lg-text-tertiary)">
@@ -380,7 +380,7 @@
                             @click="currentView='users'; closeSettingsModal()"
                             class="crm-list-row text-left">
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold crm-text-primary">Сотрудники и роли</div>
+                            <div class="text-sm font-semibold crm-text-accent">Сотрудники и роли</div>
                             <div class="text-xs crm-text-tertiary">Пользователи, роли, права доступа и назначение ответственности.</div>
                         </div>
                     </button>
@@ -390,7 +390,7 @@
                             @click="currentView='departments'; closeSettingsModal()"
                             class="crm-list-row text-left">
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold crm-text-primary">Отделы</div>
+                            <div class="text-sm font-semibold crm-text-accent">Отделы</div>
                             <div class="text-xs crm-text-tertiary">Оргструктура, описание отделов и связь с сотрудниками, проектами и задачами.</div>
                         </div>
                     </button>
@@ -400,7 +400,7 @@
                             @click="currentView='stages-manager'; refreshStagesManager('tasks'); closeSettingsModal()"
                             class="crm-list-row text-left">
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold crm-text-primary">Этапы и справочники</div>
+                            <div class="text-sm font-semibold crm-text-accent">Этапы и справочники</div>
                             <div class="text-xs crm-text-tertiary">Этапы задач, подэтапы и CRM-этапы сделок по воронкам.</div>
                         </div>
                     </button>
@@ -410,7 +410,7 @@
                             @click="currentView='settings'; closeSettingsModal()"
                             class="crm-list-row text-left">
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold crm-text-primary">Системные настройки</div>
+                            <div class="text-sm font-semibold crm-text-accent">Системные настройки</div>
                             <div class="text-xs crm-text-tertiary">Полный экран admin-настроек: компания, приложение, логотип, интеграции, омниканал, WebRTC, погода и диагностика.</div>
                         </div>
                     </button>
@@ -420,7 +420,7 @@
                             @click="settingsTab='email'"
                             class="crm-list-row text-left">
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold crm-text-primary">Почта и каналы уведомлений</div>
+                            <div class="text-sm font-semibold crm-text-accent">Почта и каналы уведомлений</div>
                             <div class="text-xs crm-text-tertiary">SMTP/IMAP, тесты отправки, персональные email и Telegram уведомления.</div>
                         </div>
                     </button>
@@ -430,21 +430,21 @@
                             @click="settingsTab='notifications'"
                             class="crm-list-row text-left">
                         <div class="min-w-0">
-                            <div class="text-sm font-semibold crm-text-primary">Пользовательские уведомления</div>
+                            <div class="text-sm font-semibold crm-text-accent">Пользовательские уведомления</div>
                             <div class="text-xs crm-text-tertiary">Какие уведомления приходят по email и в Telegram для текущего пользователя.</div>
                         </div>
                     </button>
                 </div>
 
                 <div class="crm-modal-section">
-                    <div class="font-semibold crm-text-primary">Интеграции и инфраструктурные настройки</div>
+                    <div class="font-semibold crm-text-accent">Интеграции и инфраструктурные настройки</div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <button type="button"
                                 x-show="can('admin.full')"
                                 @click="currentView='settings'; closeSettingsModal()"
                                 class="crm-list-row text-left">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">WooCommerce referral integration</div>
+                                <div class="text-sm font-semibold crm-text-accent">WooCommerce referral integration</div>
                                 <div class="text-xs crm-text-tertiary">URL магазина, shared secret, webhook endpoint и visit endpoint сейчас настраиваются на основном экране системных настроек.</div>
                             </div>
                         </button>
@@ -454,7 +454,7 @@
                                 @click="currentView='settings'; closeSettingsModal()"
                                 class="crm-list-row text-left">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">IP-телефония</div>
+                                <div class="text-sm font-semibold crm-text-accent">IP-телефония</div>
                                 <div class="text-xs crm-text-tertiary">Настройки телефонии и интеграций доступны на основном экране системных настроек.</div>
                             </div>
                         </button>
@@ -464,7 +464,7 @@
                                 @click="currentView='settings'; closeSettingsModal()"
                                 class="crm-list-row text-left">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Диагностика и box readiness</div>
+                                <div class="text-sm font-semibold crm-text-accent">Диагностика и box readiness</div>
                                 <div class="text-xs crm-text-tertiary">Безопасная read-only диагностика, baseline-проверка ядра и признаки коробочной готовности доступны на основном admin settings screen.</div>
                             </div>
                         </button>
@@ -475,7 +475,7 @@
                 </div>
 
                 <div class="crm-modal-section">
-                    <div class="font-semibold crm-text-primary">Что уже можно менять без разработчика</div>
+                    <div class="font-semibold crm-text-accent">Что уже можно менять без разработчика</div>
                     <div class="text-xs mt-2 crm-text-secondary">
                         Роли и права, сотрудники, отделы, этапы задач, подэтапы, CRM-воронки и этапы сделок, часть системных настроек, site widgets и WooCommerce referral integration.
                     </div>

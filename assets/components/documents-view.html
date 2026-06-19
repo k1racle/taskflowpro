@@ -3,7 +3,7 @@
         <div class="crm-toolbar crm-toolbar--dense">
             <div class="crm-toolbar-main">
                 <div>
-                    <h2 class="crm-screen-title crm-text-primary">Документы</h2>
+                    <h2 class="crm-screen-title crm-text-accent">Документы</h2>
                     <p class="text-sm mt-1 crm-text-secondary">Шаблоны, переменные CRM и быстрая генерация пакета документов по клиенту.</p>
                 </div>
             </div>
@@ -51,7 +51,7 @@
                     <div class="flex items-center justify-between gap-3 flex-wrap">
                         <div>
                             <div class="crm-documents-context-label">Контекст запуска</div>
-                            <div class="text-sm mt-1 crm-text-primary">
+                            <div class="text-sm mt-1 crm-text-accent">
                                 Документы открыты из задачи
                                 <span class="font-semibold" x-text="documentsSourceContext?.label || ''"></span>
                             </div>
@@ -66,7 +66,7 @@
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <div class="font-semibold crm-text-primary">Шаблоны</div>
+                        <div class="font-semibold crm-text-accent">Шаблоны</div>
                         <div class="text-xs mt-1 crm-text-tertiary">HTML- и DOCX-шаблоны для подготовки документов</div>
                     </div>
                 </div>
@@ -77,7 +77,7 @@
                                 :style="documentsSelectedTemplateId === template.id ? '' : 'border:1px solid var(--lg-border)'">
                             <div class="flex items-start justify-between gap-3">
                                 <div class="min-w-0">
-                                    <div class="font-semibold truncate crm-text-primary" x-text="template.name"></div>
+                                    <div class="font-semibold truncate crm-text-accent" x-text="template.name"></div>
                                     <div class="text-xs mt-1 truncate crm-text-secondary" x-text="template.description || 'Без описания'"></div>
                                     <div x-show="template.output_format === 'docx'" class="mt-2 flex flex-wrap gap-2">
                                         <span x-show="template.docx_priority_label" class="text-[10px] px-2 py-1 rounded-full whitespace-nowrap crm-documents-priority-badge"
@@ -116,7 +116,7 @@
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-start justify-between gap-3 flex-wrap">
                     <div>
-                        <div class="font-semibold crm-text-primary">Генерация</div>
+                        <div class="font-semibold crm-text-accent">Генерация</div>
                         <div class="text-sm mt-1 crm-text-secondary">Выберите клиента и шаблон, чтобы сформировать документ или пакет документов.</div>
                     </div>
                     <div class="flex gap-2 flex-wrap">
@@ -144,7 +144,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-2 crm-text-secondary">Текущий шаблон</label>
-                        <div class="crm-panel-block rounded-sm px-4 py-3 crm-text-primary">
+                        <div class="crm-panel-block rounded-sm px-4 py-3 crm-text-accent">
                             <span x-text="documentsSelectedTemplate?.name || 'Не выбран'"></span>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
 
                 <div class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div class="crm-documents-token-card rounded-sm p-4">
-                        <div class="text-sm font-semibold crm-text-primary">Поддерживаемые переменные</div>
+                        <div class="text-sm font-semibold crm-text-accent">Поддерживаемые переменные</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Нажмите на токен, чтобы скопировать его в формате <code>{{token}}</code>. Для DOCX в первую очередь используйте простые текстовые поля клиента, компании, банка, подписанта и системные даты.</div>
                         <div class="mt-3 space-y-3 max-h-72 overflow-y-auto pr-1">
                             <template x-for="group in (documentFieldGroups || [])" :key="group.title">
@@ -191,7 +191,7 @@
                                             <button @click="documentsCopyField(field.key)" class="text-left rounded-sm px-3 py-3 crm-modal-list-item crm-text-secondary">
                                                 <div class="flex items-start justify-between gap-3 flex-wrap">
                                                     <div class="min-w-0">
-                                                        <div class="text-xs font-semibold crm-text-primary" x-text="field.token || ('{{' + field.key + '}}')"></div>
+                                                        <div class="text-xs font-semibold crm-text-accent" x-text="field.token || ('{{' + field.key + '}}')"></div>
                                                         <div class="text-[11px] mt-1 crm-text-secondary" x-text="field.label"></div>
                                                         <div x-show="field.description" class="text-[11px] mt-1 crm-text-tertiary" x-text="field.description"></div>
                                                     </div>
@@ -206,7 +206,7 @@
                     </div>
 
                     <div class="crm-documents-preview-card rounded-sm">
-                        <div class="text-sm font-semibold crm-text-primary">Данные клиента</div>
+                        <div class="text-sm font-semibold crm-text-accent">Данные клиента</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Контекст подстановки для выбранного клиента и шаблона.</div>
                         <pre class="mt-3 text-xs whitespace-pre-wrap break-words rounded-sm p-3 overflow-auto max-h-72 crm-code-preview" x-text="documentsPreviewJson"></pre>
                     </div>
@@ -214,7 +214,7 @@
 
                 <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div class="crm-documents-token-card rounded-sm p-4">
-                        <div class="text-sm font-semibold crm-text-primary" x-text="documentsIsDocxTemplate() &amp;&amp; documentsSelectedTemplate ? 'Карта токенов выбранного DOCX' : 'Рекомендуемые токены для документов'"></div>
+                        <div class="text-sm font-semibold crm-text-accent" x-text="documentsIsDocxTemplate() &amp;&amp; documentsSelectedTemplate ? 'Карта токенов выбранного DOCX' : 'Рекомендуемые токены для документов'"></div>
                         <div class="text-xs mt-1 crm-text-tertiary" x-text="documentsIsDocxTemplate() &amp;&amp; documentsSelectedTemplate ? 'Подборка токенов для выбранного DOCX-шаблона.' : 'Подборка токенов для коммерческих предложений, договоров и карточек клиента.'"></div>
                         <div class="mt-3 flex flex-wrap gap-2">
                             <template x-for="token in (documentsDocxRecommendedTokens() || [])" :key="token">
@@ -238,7 +238,7 @@
                 <div x-show="documentsIsDocxTemplate() &amp;&amp; documentsSelectedTemplate" class="mt-4 crm-documents-preview-card rounded-sm">
                     <div class="flex items-start justify-between gap-3 flex-wrap">
                         <div>
-                            <div class="text-sm font-semibold crm-text-primary">Готовность выбранного DOCX</div>
+                            <div class="text-sm font-semibold crm-text-accent">Готовность выбранного DOCX</div>
                             <div class="text-xs mt-1 crm-text-tertiary" x-text="documentsSelectedTemplate?.docx_practical_use || 'Проверьте шаблон перед использованием.'"></div>
                         </div>
                         <div class="flex items-center gap-2 flex-wrap">
@@ -255,15 +255,15 @@
                         </template>
                     </ul>
                     <div x-show="documentsSelectedTemplate?.docx_studied_basis" class="mt-4 crm-documents-token-card rounded-sm p-4">
-                        <div class="text-sm font-semibold crm-text-primary">Примечания по шаблону</div>
+                        <div class="text-sm font-semibold crm-text-accent">Примечания по шаблону</div>
                         <div class="text-xs mt-2 crm-text-secondary" x-text="documentsSelectedTemplate?.docx_studied_basis"></div>
                     </div>
                     <div x-show="(documentsTemplateTokenMap(documentsSelectedTemplate) || []).length" class="mt-4 crm-documents-token-card rounded-sm p-4">
-                        <div class="text-sm font-semibold crm-text-primary">Рекомендуемая карта токенов</div>
+                        <div class="text-sm font-semibold crm-text-accent">Рекомендуемая карта токенов</div>
                         <div class="mt-3 space-y-2">
                             <template x-for="item in (documentsTemplateTokenMap(documentsSelectedTemplate) || [])" :key="`${item.token}-${item.purpose}`">
                                 <button @click="copyText(item.token)" class="w-full text-left rounded-sm px-3 py-3 crm-modal-list-item">
-                                    <div class="text-xs font-semibold crm-text-primary" x-text="item.token"></div>
+                                    <div class="text-xs font-semibold crm-text-accent" x-text="item.token"></div>
                                     <div class="text-xs mt-1 crm-text-secondary" x-text="item.purpose"></div>
                                 </button>
                             </template>
@@ -280,7 +280,7 @@
                 </div>
 
                 <div x-show="documentsSelectedClientId &amp;&amp; documentsSelectedTemplate &amp;&amp; !documentsIsLoading" class="mt-4 crm-documents-token-card rounded-sm p-4">
-                    <div class="text-sm font-semibold crm-text-primary">Проверка перед генерацией</div>
+                    <div class="text-sm font-semibold crm-text-accent">Проверка перед генерацией</div>
                     <div class="text-xs mt-1 crm-text-tertiary">
                         <span x-show="documentsSelectedClientName">Клиент: <strong x-text="documentsSelectedClientName"></strong>. </span>
                         <span>Проверьте реквизиты, подписанта и email/телефон в JSON-превью выше. Пустые поля из CRM останутся пустыми и в документе.</span>
@@ -291,7 +291,7 @@
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="font-semibold crm-text-primary">Результаты генерации</div>
+                            <div class="font-semibold crm-text-accent">Результаты генерации</div>
                             <div class="text-sm mt-1 crm-text-secondary">Готовые HTML и DOCX-файлы сохраняются в <code>uploads/documents</code>. Пакет скачивается как ZIP или как fallback-страница со ссылками.</div>
                     </div>
                     <button @click="documentsDownloadBatch()" class="crm-btn-secondary text-sm" :disabled="!(documentGeneratedItems || []).length &amp;&amp; !documentsBatchArchive?.file_url">
@@ -302,7 +302,7 @@
                 <div x-show="documentsBatchArchive?.available" class="mt-4 rounded-sm p-4 crm-documents-download-card">
                     <div class="flex items-start justify-between gap-4 flex-wrap">
                         <div>
-                            <div class="font-semibold crm-text-primary">
+                            <div class="font-semibold crm-text-accent">
                                 <span x-text="documentsBatchArchive?.download_mode === 'zip' ? 'ZIP-пакет готов' : 'Fallback-пакет готов'"></span>
                             </div>
                             <div class="text-sm mt-1 crm-text-secondary" x-text="documentsBatchArchive?.file_name || ''"></div>
@@ -313,7 +313,7 @@
                 </div>
 
                 <div x-show="documentsLastGenerationMeta &amp;&amp; documentsGenerationFeedback(documentsLastGenerationMeta)" class="mt-4 crm-documents-token-card rounded-sm p-4">
-                    <div class="text-sm font-semibold crm-text-primary">Что произошло при последней генерации</div>
+                    <div class="text-sm font-semibold crm-text-accent">Что произошло при последней генерации</div>
                     <div class="text-sm mt-2 crm-text-secondary" x-text="documentsGenerationFeedback(documentsLastGenerationMeta)"></div>
                 </div>
 
@@ -322,7 +322,7 @@
                         <div class="liquid-glass-pro rounded-sm p-5 border border-[color:var(--crm-border)]">
                             <div class="flex items-start justify-between gap-4 flex-wrap">
                                 <div class="min-w-0">
-                                    <div class="font-semibold truncate crm-text-primary" x-text="item.template_name"></div>
+                                    <div class="font-semibold truncate crm-text-accent" x-text="item.template_name"></div>
                                     <div class="text-xs mt-1 crm-text-secondary" x-text="item.file_name"></div>
                                     <div x-show="documentsGenerationFeedback(item)" class="text-xs mt-2 crm-text-tertiary" x-text="documentsGenerationFeedback(item)"></div>
                                 </div>
@@ -343,7 +343,7 @@
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-start justify-between gap-3 flex-wrap">
                     <div>
-                        <div class="font-semibold crm-text-primary">История генераций</div>
+                        <div class="font-semibold crm-text-accent">История генераций</div>
                         <div class="text-sm mt-1 crm-text-secondary">Последние документы и пакеты по выбранному клиенту. Можно быстро открыть готовый файл или проверить, что уже формировалось.</div>
                     </div>
                     <button @click="documentsRefreshHistory()" class="crm-btn-secondary text-sm" :disabled="documentsIsHistoryLoading || documentsIsLoading">
@@ -362,7 +362,7 @@
                             <div class="flex items-start justify-between gap-4 flex-wrap">
                                 <div class="min-w-0 flex-1">
                                     <div class="flex items-center gap-2 flex-wrap">
-                                        <div class="font-semibold truncate crm-text-primary" x-text="item.template_name || 'Документ'"></div>
+                                        <div class="font-semibold truncate crm-text-accent" x-text="item.template_name || 'Документ'"></div>
                                         <span class="crm-inline-badge" x-text="item.mode_label || item.mode"></span>
                                         <span x-show="documentsHistorySourceLabel(item)" class="crm-inline-badge crm-inline-badge-accent" x-text="documentsHistorySourceLabel(item)"></span>
                                     </div>
@@ -404,7 +404,7 @@
             <div class="liquid-glass-pro rounded-sm p-5">
                 <div class="flex items-center justify-between gap-3">
                     <div>
-                        <div class="font-semibold crm-text-primary">Редактор шаблона</div>
+                        <div class="font-semibold crm-text-accent">Редактор шаблона</div>
                         <div class="text-sm mt-1 crm-text-secondary">Редактирование доступно для HTML-шаблонов.</div>
                     </div>
                     <div class="flex gap-2">

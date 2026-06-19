@@ -42,15 +42,15 @@
         <div class="crm-modal-body crm-drawer-body p-6 space-y-4">
             <div x-show="departmentModalTab === 'department'" class="space-y-4">
             <div>
-                <label for="department-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                <label for="department-name" class="block text-sm font-medium crm-text-secondary mb-2">Название</label>
                 <input id="department-name" name="department_name" type="text" x-model="departmentForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Маркетинг" />
             </div>
             <div>
-                <label for="department-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
+                <label for="department-description" class="block text-sm font-medium crm-text-secondary mb-2">Описание</label>
                 <textarea id="department-description" name="department_description" x-model="departmentForm.description" rows="4" class="w-full px-4 py-3 crm-control-textarea" placeholder="Чем занимается отдел..."></textarea>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Иконка</label>
+                <label class="block text-sm font-medium crm-text-secondary mb-2">Иконка</label>
                 <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
                     <template x-for="ic in departmentIcons" :key="ic">
                         <button type="button"
@@ -69,14 +69,14 @@
 
             <div x-show="departmentModalTab === 'employees'" class="space-y-3">
                 <div class="liquid-glass-pro rounded-sm overflow-hidden">
-                    <div class="p-4 font-semibold crm-text-primary">Сотрудники отдела</div>
+                    <div class="p-4 font-semibold crm-text-accent">Сотрудники отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="u in (departmentEmployees || [])" :key="u.id">
                             <div class="liquid-glass-pro rounded-sm p-3 flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold crm-bg-primary" x-text="getInitials(u.full_name || u.login)"></div>
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="u.full_name || u.login"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="u.full_name || u.login"></div>
                                     <div class="text-xs truncate crm-text-secondary" x-text="translateRole(u.role)"></div>
                                 </div>
                             </div>
@@ -88,13 +88,13 @@
 
             <div x-show="departmentModalTab === 'projects'" class="space-y-3">
                 <div class="liquid-glass-pro rounded-sm overflow-hidden">
-                    <div class="p-4 font-semibold crm-text-primary">Проекты отдела</div>
+                    <div class="p-4 font-semibold crm-text-accent">Проекты отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="p in (departmentProjects || [])" :key="p.id">
                             <div class="liquid-glass-pro rounded-sm p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="p.name"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="p.name"></div>
                                     <div class="text-xs crm-text-secondary" x-text="p.description || ''"></div>
                                 </div>
                                 <button @click="openProjectModal(p)" class="crm-btn-secondary text-sm">Открыть</button>
@@ -107,13 +107,13 @@
 
             <div x-show="departmentModalTab === 'tasks'" class="space-y-3">
                 <div class="liquid-glass-pro rounded-sm overflow-hidden">
-                    <div class="p-4 font-semibold crm-text-primary">Задачи отдела</div>
+                    <div class="p-4 font-semibold crm-text-accent">Задачи отдела</div>
                     <div class="px-4 pb-4"><div class="crm-divider opacity-70"></div></div>
                     <div class="p-4 space-y-2">
                         <template x-for="t in (departmentTasks || [])" :key="t.id">
                             <div class="liquid-glass-pro rounded-sm p-3 flex items-center justify-between gap-4">
                                 <div class="min-w-0">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="t.title"></div>
                                     <div class="text-xs crm-text-secondary" x-text="t.status || ''"></div>
                                 </div>
                                 <button @click="openTaskModal(t)" class="crm-btn-secondary text-sm">Открыть</button>
@@ -157,12 +157,12 @@
         <form id="user-modal-form" @submit.prevent="saveUser()" class="crm-modal-body crm-drawer-body p-6 space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
-                    <label for="user-login" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Логин / Email</label>
+                    <label for="user-login" class="block text-sm font-medium crm-text-secondary mb-2">Логин / Email</label>
                     <input id="user-login" name="user_login" type="text" x-model="userForm.login" class="w-full px-4 py-3 crm-control-input" placeholder="user@company.ru" autocomplete="off" />
                 </div>
 
                 <div>
-                    <label for="user-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    <label for="user-password" class="block text-sm font-medium crm-text-secondary mb-2">
                         Пароль
                         <span class="text-xs font-normal crm-text-secondary" x-show="editingUser">(оставьте пустым, чтобы не менять)</span>
                     </label>
@@ -170,12 +170,12 @@
                 </div>
 
                 <div>
-                    <label for="user-full-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ФИО</label>
+                    <label for="user-full-name" class="block text-sm font-medium crm-text-secondary mb-2">ФИО</label>
                     <input id="user-full-name" name="full_name" type="text" x-model="userForm.full_name" class="w-full px-4 py-3 crm-control-input" placeholder="Иванов Иван" />
                 </div>
 
                 <div>
-                    <label for="user-role" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Роль</label>
+                    <label for="user-role" class="block text-sm font-medium crm-text-secondary mb-2">Роль</label>
                     <select id="user-role" name="role" x-model="userForm.role" class="w-full px-4 py-3 crm-control-select" style="position: relative; z-index: 60;">
                         <option value="" x-show="!(roles || []).filter(x =&gt; x.name !== 'root' &amp;&amp; ((currentUser?.role === 'root') || (can &amp;&amp; can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) &amp;&amp; x.permission_codes.includes('admin.full')))).length">— Выберите роль —</option>
                         <template x-for="r in (roles || []).filter(x =&gt; x.name !== 'root' &amp;&amp; ((currentUser?.role === 'root') || (can &amp;&amp; can('admin.full')) || x.name === userForm.role || !(Array.isArray(x.permission_codes) &amp;&amp; x.permission_codes.includes('admin.full'))))" :key="r.id">
@@ -185,7 +185,7 @@
                 </div>
 
                 <div class="md:col-span-2">
-                    <label for="user-departments" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Отделы</label>
+                    <label for="user-departments" class="block text-sm font-medium crm-text-secondary mb-2">Отделы</label>
                     <select id="user-departments" name="department_ids" x-model="userForm.department_ids" class="w-full px-4 py-3 crm-control-select" multiple size="5">
                         <template x-for="d in (departments || [])" :key="d.id">
                             <option :value="String(d.id)" x-text="d.name"></option>
@@ -198,7 +198,7 @@
                     <div class="liquid-glass-pro rounded-sm p-5 relative z-0">
                         <div class="flex items-start justify-between gap-4">
                             <div class="min-w-0">
-                                <div class="text-sm font-semibold crm-text-primary">Подсказка</div>
+                                <div class="text-sm font-semibold crm-text-accent">Подсказка</div>
                                 <div class="text-xs mt-1 crm-text-secondary">Если роль не отображается — обновите список ролей в админке или проверьте права доступа.</div>
                             </div>
                             <button type="button" class="crm-btn-secondary text-sm" @click="loadRoles &amp;&amp; loadRoles()">Обновить роли</button>
@@ -245,15 +245,15 @@
 
         <div class="crm-modal-body crm-drawer-body p-6 space-y-4">
             <div>
-                <label for="role-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Название</label>
+                <label for="role-name" class="block text-sm font-medium crm-text-secondary mb-2">Название</label>
                 <input id="role-name" name="role_name" type="text" x-model="roleForm.name" class="w-full px-4 py-3 crm-control-input" placeholder="Например: Менеджер" />
             </div>
             <div>
-                <label for="role-description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Описание</label>
+                <label for="role-description" class="block text-sm font-medium crm-text-secondary mb-2">Описание</label>
                 <textarea id="role-description" name="role_description" x-model="roleForm.description" rows="3" class="w-full px-4 py-3 crm-control-textarea" placeholder="Коротко о роли..."></textarea>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Иконка</label>
+                <label class="block text-sm font-medium crm-text-secondary mb-2">Иконка</label>
                 <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
                     <template x-for="ic in roleIcons" :key="ic">
                         <button type="button"
@@ -262,43 +262,43 @@
                                 @click="roleForm.icon = ic"
                                 :title="ic">
                             <template x-if="ic === 'shield'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 5-3 9-7 9s-7-4-7-9V7l7-4z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l7 4v5c0 5-3 9-7 9s-7-4-7-9V7l7-4z"/></svg>
                             </template>
                             <template x-if="ic === 'users'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h5m6-4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-4-4h-1m-4 6H2v-2a4 4 0 014-4h5m6-4a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                             </template>
                             <template x-if="ic === 'user-check'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11a4 4 0 100-8 4 4 0 000 8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l2 2 4-4"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.5 11a4 4 0 100-8 4 4 0 000 8z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11l2 2 4-4"/></svg>
                             </template>
                             <template x-if="ic === 'lock'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 00-8 0v4m10 0h-8a2 2 0 00-2 2v7a2 2 0 002 2h8a2 2 0 002-2v-7a2 2 0 00-2-2z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11V7a4 4 0 00-8 0v4m10 0h-8a2 2 0 00-2 2v7a2 2 0 002 2h8a2 2 0 002-2v-7a2 2 0 00-2-2z"/></svg>
                             </template>
                             <template x-if="ic === 'key'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a4 4 0 11-8 0 4 4 0 018 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11l-6 6v3h3l6-6"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a4 4 0 11-8 0 4 4 0 018 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11l-6 6v3h3l6-6"/></svg>
                             </template>
                             <template x-if="ic === 'briefcase'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6V5a2 2 0 012-2h2a2 2 0 012 2v1"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 6V5a2 2 0 012-2h2a2 2 0 012 2v1"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12h18"/></svg>
                             </template>
                             <template x-if="ic === 'folder'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7a2 2 0 012-2h5l2 2h9a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
                             </template>
                             <template x-if="ic === 'document'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                             </template>
                             <template x-if="ic === 'clipboard'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5a2 2 0 002 2h2a2 2 0 002-2"/></svg>
                             </template>
                             <template x-if="ic === 'chart-bar'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 19V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 19v-4"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 19V8"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 19V10"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19V7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 19v-4"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 19V8"/></svg>
                             </template>
                             <template x-if="ic === 'cog'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </template>
                             <template x-if="ic === 'star'">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.03 6.24a1 1 0 00.95.69h6.56c.969 0 1.371 1.24.588 1.81l-5.307 3.855a1 1 0 00-.364 1.118l2.03 6.24c.3.921-.755 1.688-1.539 1.118l-5.307-3.855a1 1 0 00-1.175 0l-5.307 3.855c-.784.57-1.838-.197-1.539-1.118l2.03-6.24a1 1 0 00-.364-1.118L.93 11.667c-.783-.57-.38-1.81.588-1.81h6.56a1 1 0 00.95-.69l2.03-6.24z"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.03 6.24a1 1 0 00.95.69h6.56c.969 0 1.371 1.24.588 1.81l-5.307 3.855a1 1 0 00-.364 1.118l2.03 6.24c.3.921-.755 1.688-1.539 1.118l-5.307-3.855a1 1 0 00-1.175 0l-5.307 3.855c-.784.57-1.838-.197-1.539-1.118l2.03-6.24a1 1 0 00-.364-1.118L.93 11.667c-.783-.57-.38-1.81.588-1.81h6.56a1 1 0 00.95-.69l2.03-6.24z"/></svg>
                             </template>
                             <template x-if="!['shield','users','user-check','lock','key','briefcase','folder','document','clipboard','chart-bar','cog','star'].includes(ic)">
-                                <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
+                                <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"/></svg>
                             </template>
                         </button>
                     </template>
@@ -344,7 +344,7 @@
             <div class="mb-4 rounded-sm p-4 crm-border-subtle">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div>
-                        <div class="font-semibold crm-text-primary">Быстрый пресет</div>
+                        <div class="font-semibold crm-text-accent">Быстрый пресет</div>
                         <div class="text-xs mt-1 crm-text-tertiary">Выберите базовую модель и потом уточните отдельные права вручную.</div>
                     </div>
                     <select class="crm-control-select text-sm min-w-[220px]" x-model="rolePermissionPreset" @change="applyRolePermissionPreset($data, rolePermissionPreset)">
@@ -397,7 +397,7 @@
                             </div>
 
                             <div class="min-w-0">
-                                <div class="font-semibold crm-text-primary" x-text="({tasks:'Задачи',projects:'Проекты',departments:'Отделы',files:'Файлы',knowledge:'База знаний',chat:'Чат',crm:'CRM',leader:'Руководитель',mail:'Почта',users:'Пользователи',admin:'Администрирование'}[section] || section)"></div>
+                                <div class="font-semibold crm-text-accent" x-text="({tasks:'Задачи',projects:'Проекты',departments:'Отделы',files:'Файлы',knowledge:'База знаний',chat:'Чат',crm:'CRM',leader:'Руководитель',mail:'Почта',users:'Пользователи',admin:'Администрирование'}[section] || section)"></div>
                                 <div class="text-xs crm-text-secondary">Доступы к разделу</div>
                             </div>
                         </div>
@@ -466,7 +466,7 @@
             </button>
 
             <button x-show="mailContextMenuEmail" @click="deleteMailFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all crm-text-error">
                 Удалить
             </button>
 
@@ -483,7 +483,7 @@
             </button>
 
             <button x-show="contextMenuTask" @click="deleteTaskFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all crm-text-error">
                 Удалить
             </button>
 
@@ -498,7 +498,7 @@
                 Переименовать этап
             </button>
             <button x-show="contextMenuStage &amp;&amp; contextMenuStage !== '__calendar__'" @click="deleteStageFromMenu(); closeContextMenu()"
-                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all text-red-600 dark:text-red-400">
+                    class="w-full text-left px-3 py-2 rounded-sm hover:liquid-glass-pro transition-all crm-text-error">
                 Удалить этап
             </button>
         </div>
@@ -513,14 +513,14 @@
     <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-5xl overflow-hidden chat-image-preview-shell">
         <div class="p-4 flex items-center justify-between gap-3">
             <div class="min-w-0">
-                <div class="text-sm font-semibold truncate crm-text-primary" x-text="imagePreviewName || 'Изображение'"></div>
+                <div class="text-sm font-semibold truncate crm-text-accent" x-text="imagePreviewName || 'Изображение'"></div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
                 <a :href="imagePreviewSrc" :download="imagePreviewName || 'image'" class="crm-btn-secondary text-sm chat-image-preview-action" @click.stop>
                     Скачать
                 </a>
                 <button @click="imagePreviewOpen=false" class="crm-btn-ghost crm-icon-button" aria-label="Закрыть">
-                    <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
@@ -542,7 +542,7 @@
     <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-sm overflow-hidden">
         <div class="p-6 text-center">
             <div class="w-20 h-20 rounded-full mx-auto flex items-center justify-center text-white font-bold text-xl crm-avatar-accent" x-text="getInitials(incomingCaller?.name || ' ')" ></div>
-            <div class="mt-4 text-lg font-bold crm-text-primary" x-text="incomingCaller?.name || 'Входящий звонок'"></div>
+            <div class="mt-4 text-lg font-bold crm-text-accent" x-text="incomingCaller?.name || 'Входящий звонок'"></div>
             <div class="mt-1 text-sm crm-text-tertiary" x-text="incomingCaller?.type === 'video' ? 'Видеозвонок' : 'Аудиозвонок'"></div>
 
             <div class="mt-6 flex items-center justify-center gap-6">
@@ -568,7 +568,7 @@
 <div x-show="showCallModal" x-transition.opacity x-cloak class="fixed inset-0 z-[141] flex items-center justify-center p-4 backdrop-blur-sm lg-modal-backdrop">
     <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-3xl overflow-hidden">
         <div class="p-5 text-center">
-            <div class="text-base font-bold crm-text-primary" x-text="callType === 'video' ? 'Видеозвонок' : 'Аудиозвонок'"></div>
+            <div class="text-base font-bold crm-text-accent" x-text="callType === 'video' ? 'Видеозвонок' : 'Аудиозвонок'"></div>
             <div class="mt-1 text-sm crm-text-tertiary" x-text="callStatus === 'connected' ? formatCallTime(callTimer) : 'Звоним…'"></div>
         </div>
 
@@ -580,11 +580,11 @@
             <div x-show="callType === 'video'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative aspect-video rounded-sm overflow-hidden crm-video-surface">
                     <video id="remote-video" autoplay playsinline class="w-full h-full object-cover"></video>
-                    <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-primary">Собеседник</div>
+                    <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-accent">Собеседник</div>
                 </div>
                 <div class="relative aspect-video rounded-sm overflow-hidden crm-video-surface">
                     <video id="local-video" autoplay muted playsinline class="w-full h-full object-cover"></video>
-                    <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-primary">Вы</div>
+                    <div class="absolute left-3 bottom-3 text-xs px-3 py-1 rounded-full crm-inline-badge crm-text-accent">Вы</div>
                 </div>
             </div>
 
@@ -595,12 +595,12 @@
 
             <div class="mt-6 flex items-center justify-center gap-6">
                 <button @click="toggleMute()" class="w-14 h-14 rounded-full flex items-center justify-center crm-btn-ghost" :aria-label="isMuted ? 'Микрофон выключен' : 'Микрофон включен'">
-                    <svg x-show="!isMuted" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="!isMuted" class="w-6 h-6 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 10v2a7 7 0 01-14 0v-2"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v4m-4 0h8"/>
                     </svg>
-                    <svg x-show="isMuted" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="isMuted" class="w-6 h-6 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-9 6.71"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 1a3 3 0 00-3 3v4"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
@@ -608,10 +608,10 @@
                 </button>
 
                 <button x-show="callType === 'video'" @click="toggleCamera()" class="w-14 h-14 rounded-full flex items-center justify-center crm-btn-ghost" :aria-label="isCameraOff ? 'Камера выключена' : 'Камера включена'">
-                    <svg x-show="!isCameraOff" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="!isCameraOff" class="w-6 h-6 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                     </svg>
-                    <svg x-show="isCameraOff" class="w-6 h-6 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg x-show="isCameraOff" class="w-6 h-6 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 8H5a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2v-1"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14"/>
@@ -633,7 +633,7 @@
 
             <div class="mt-6" x-show="(can &amp;&amp; can('admin.full')) || currentUser?.role === 'root'">
                 <div class="rounded-sm p-4 crm-border-subtle">
-                    <div class="text-sm font-semibold crm-text-primary">WebRTC диагностика</div>
+                    <div class="text-sm font-semibold crm-text-accent">WebRTC диагностика</div>
                     <div class="text-xs mt-2 grid grid-cols-1 md:grid-cols-2 gap-2 crm-text-secondary">
                         <div><span class="crm-text-tertiary">ICE:</span> <span x-text="callDebug?.iceConnectionState || '—'"></span></div>
                         <div><span class="crm-text-tertiary">Conn:</span> <span x-text="callDebug?.connectionState || '—'"></span></div>

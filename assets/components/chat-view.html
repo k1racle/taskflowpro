@@ -16,16 +16,16 @@
         <div class="p-4 lg:p-5 crm-toolbar crm-toolbar--dense chat-sidebar-top">
             <div class="flex items-center justify-between gap-3">
                 <div class="min-w-0">
-                    <div class="crm-section-head__title crm-text-primary">Чаты</div>
+                    <div class="crm-section-head__title crm-text-accent">Чаты</div>
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <button @click="openCreateChatModal()" class="crm-btn-ghost crm-icon-button" aria-label="Новый чат">
-                        <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                     </button>
                     <button @click="openGroupModal()" class="crm-btn-ghost crm-icon-button" aria-label="Новая группа">
-                        <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m10-4a4 4 0 10-8 0 4 4 0 008 0z"/>
                         </svg>
                     </button>
@@ -35,11 +35,11 @@
             <div class="mt-3 grid grid-cols-2 gap-2">
                 <div class="rounded-sm px-3 py-2 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent);">
                     <div class="text-[11px] crm-text-tertiary">Диалоги</div>
-                    <div class="text-sm font-semibold crm-text-primary" x-text="(chatRooms || []).length"></div>
+                    <div class="text-sm font-semibold crm-text-accent" x-text="(chatRooms || []).length"></div>
                 </div>
                 <div class="rounded-sm px-3 py-2 border" style="border-color: var(--lg-border); background: color-mix(in oklab, var(--lg-glass-bg) 70%, transparent);">
                     <div class="text-[11px] crm-text-tertiary">Непрочитано</div>
-                    <div class="text-sm font-semibold crm-text-primary" x-text="(chatRooms || []).reduce((sum, room) =&gt; sum + Number(room.unread_count || 0), 0)"></div>
+                    <div class="text-sm font-semibold crm-text-accent" x-text="(chatRooms || []).reduce((sum, room) =&gt; sum + Number(room.unread_count || 0), 0)"></div>
                 </div>
             </div>
 
@@ -102,7 +102,7 @@
                             </div>
                               <div class="flex-1 text-left min-w-0 emoji-text">
                                   <div class="flex items-center gap-2">
-                                      <h3 class="font-semibold text-sm truncate emoji-text crm-text-primary" x-text="room.interlocutor_name || room.room_name"></h3>
+                                      <h3 class="font-semibold text-sm truncate emoji-text crm-text-accent" x-text="room.interlocutor_name || room.room_name"></h3>
                                       <span x-show="Number(room.unread_count || 0) &gt; 0" x-cloak class="crm-inline-badge crm-inline-badge-accent chat-room-chip">Новые</span>
                                   </div>
                                   <p class="mt-1 text-[11px] truncate crm-text-tertiary" x-text="getChatRoomContextLabel(room)"></p>
@@ -181,11 +181,11 @@
         <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
             <div class="crm-modal-header">
                 <div class="min-w-0">
-                    <div class="text-lg font-semibold crm-text-primary">Новый чат</div>
+                    <div class="text-lg font-semibold crm-text-accent">Новый чат</div>
                     <div class="text-sm crm-text-tertiary">Выберите сотрудника</div>
                 </div>
                 <button @click="closeCreateChatModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
-                    <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
@@ -201,7 +201,7 @@
                         <button @click="startPrivateChatWith(u.id)" class="w-full liquid-glass-pro rounded-sm p-3 flex items-center gap-3 hover:shadow-sm transition-all">
                             <div class="w-10 h-10 rounded-sm flex items-center justify-center text-white font-semibold flex-shrink-0 crm-bg-accent" x-text="getInitials(u.full_name || u.login)"></div>
                             <div class="min-w-0 text-left">
-                                <div class="text-sm font-semibold truncate crm-text-primary" x-text="u.full_name || u.login"></div>
+                                <div class="text-sm font-semibold truncate crm-text-accent" x-text="u.full_name || u.login"></div>
                                 <div class="text-xs truncate crm-text-tertiary" x-text="u.login ? ('@' + u.login) : ''"></div>
                             </div>
                         </button>
@@ -217,11 +217,11 @@
         <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
             <div class="crm-modal-header">
                 <div class="min-w-0">
-                    <div class="text-lg font-semibold crm-text-primary">Новая группа</div>
+                    <div class="text-lg font-semibold crm-text-accent">Новая группа</div>
                     <div class="text-sm crm-text-tertiary">Выберите участников</div>
                 </div>
                 <button @click="closeGroupModal()" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
-                    <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
@@ -242,11 +242,12 @@
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="w-10 h-10 rounded-sm flex items-center justify-center text-white font-semibold flex-shrink-0 crm-bg-accent" x-text="getInitials(u.full_name || u.login)"></div>
                                 <div class="min-w-0 text-left">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="u.full_name || u.login"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="u.full_name || u.login"></div>
                                     <div class="text-xs truncate crm-text-tertiary" x-text="u.login ? ('@' + u.login) : ''"></div>
                                 </div>
                             </div>
-                            <div class="w-6 h-6 rounded-sm flex items-center justify-center" :style="groupForm.members.includes(u.id) ? 'background: var(--lg-primary); color: white' : 'background: color-mix(in oklab, var(--lg-glass-bg) 70%, black); color: var(--lg-text-tertiary)'">
+                            <div class="w-6 h-6 rounded-sm flex items-center justify-center"
+                                 :class="groupForm.members.includes(u.id) ? 'crm-chat-member-toggle-active' : 'crm-chat-member-toggle-inactive'">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
@@ -297,7 +298,7 @@
                     </div>
                      <div class="min-w-0">
                          <div class="flex items-center gap-2 flex-wrap">
-                             <h3 class="font-semibold truncate crm-text-primary" x-text="activeChatRoom?.interlocutor_name || activeChatRoom?.room_name"></h3>
+                             <h3 class="font-semibold truncate crm-text-accent" x-text="activeChatRoom?.interlocutor_name || activeChatRoom?.room_name"></h3>
                              <span class="crm-status-pill chat-status-chip" x-show="activeChatRoomPresence?.otherTyping">печатает...</span>
                              <span class="crm-status-pill chat-status-chip" x-show="!activeChatRoomPresence?.otherTyping &amp;&amp; activeChatRoomPresence?.otherOnline">онлайн</span>
                          </div>
@@ -306,17 +307,17 @@
                 </div>
                 <div class="flex items-center gap-2 flex-shrink-0 chat-room-header-actions">
                     <button @click="loadChatRooms(); if (activeChatRoom) selectChatRoom(activeChatRoom)" class="crm-btn-ghost crm-icon-button chat-room-header-action" aria-label="Обновить чат">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 crm-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
                         </svg>
                     </button>
                     <button @click="startAudioCall()" class="crm-btn-ghost crm-icon-button chat-room-header-action chat-room-call-action" aria-label="Аудиозвонок">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 crm-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
                     </button>
                     <button @click="startVideoCall()" class="crm-btn-ghost crm-icon-button chat-room-header-action chat-room-call-action" aria-label="Видеозвонок">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 crm-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                         </svg>
                     </button>
@@ -393,7 +394,7 @@
                                 <div x-show="item.msg.message_type === 'task' &amp;&amp; item.msg.task_id">
                                     <button class="w-full text-left liquid-glass-pro rounded-sm p-5 chat-attachment-card" @click="openTaskFromMessage(item.msg.task_id)">
                                         <div class="text-xs chat-attachment-card__eyebrow crm-text-tertiary">Задача</div>
-                                        <div class="mt-1 font-semibold crm-text-primary" x-text="item.msg.task_title || item.msg.message"></div>
+                                        <div class="mt-1 font-semibold crm-text-accent" x-text="item.msg.task_title || item.msg.message"></div>
                                         <div class="mt-1 text-xs chat-attachment-card__meta crm-text-tertiary" x-text="item.msg.task_status || ''"></div>
                                     </button>
                                 </div>
@@ -401,7 +402,7 @@
                                 <div x-show="item.msg.message_type === 'project' &amp;&amp; item.msg.project_id">
                                     <button class="w-full text-left liquid-glass-pro rounded-sm p-5 chat-attachment-card" @click="openProjectFromMessage(item.msg.project_id)">
                                         <div class="text-xs chat-attachment-card__eyebrow crm-text-tertiary">Проект</div>
-                                        <div class="mt-1 font-semibold crm-text-primary" x-text="item.msg.project_name || item.msg.message"></div>
+                                        <div class="mt-1 font-semibold crm-text-accent" x-text="item.msg.project_name || item.msg.message"></div>
                                     </button>
                                 </div>
 
@@ -410,7 +411,7 @@
                                     <button x-show="item.msg.message_type === 'image'" class="mt-2 w-full overflow-hidden rounded-sm" @click="previewChatImage(item.msg)">
                                         <img :src="item.msg.file_url" class="w-full max-h-[260px] object-cover" alt="" />
                                     </button>
-                                    <button class="mt-2 text-sm font-semibold text-left w-full truncate crm-text-primary" @click="openFileInNewTab(item.msg.file_url)" x-text="item.msg.file_name || item.msg.message"></button>
+                                    <button class="mt-2 text-sm font-semibold text-left w-full truncate crm-text-accent" @click="openFileInNewTab(item.msg.file_url)" x-text="item.msg.file_name || item.msg.message"></button>
                                 </div>
 
                                  <div x-show="item.msg.message_type === 'sticker'" class="pt-1">
@@ -427,16 +428,16 @@
                                          <button class="w-10 h-10 crm-btn-ghost flex items-center justify-center"
                                                   @click="toggleVoicePlayback(item.msg)"
                                                   :aria-label="(playingVoiceId === item.msg.id) ? 'Пауза' : 'Воспроизвести'">
-                                             <svg x-show="playingVoiceId !== item.msg.id" class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <svg x-show="playingVoiceId !== item.msg.id" class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
                                              </svg>
-                                             <svg x-show="playingVoiceId === item.msg.id" class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                             <svg x-show="playingVoiceId === item.msg.id" class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6"/>
                                              </svg>
                                          </button>
                                          <div class="flex-1 min-w-0">
                                              <div class="text-xs chat-attachment-card__eyebrow crm-text-tertiary">Голосовое</div>
-                                             <div class="text-sm font-semibold crm-text-primary" x-text="formatVoiceDuration(item.msg.voice_duration || 0)"></div>
+                                             <div class="text-sm font-semibold crm-text-accent" x-text="formatVoiceDuration(item.msg.voice_duration || 0)"></div>
                                          </div>
                                      </div>
                                  </div>
@@ -445,7 +446,7 @@
                                      class="chat-bubble-text chat-bubble-text--deleted whitespace-pre-wrap break-words"
                                      x-text="'Сообщение удалено'"></div>
 
-                                <div x-show="!item.msg.deleted_at &amp;&amp; !['task','project','file','image','sticker','voice'].includes(item.msg.message_type)" class="chat-bubble-text whitespace-pre-wrap break-words crm-text-primary" x-text="item.msg.message"></div>
+                                <div x-show="!item.msg.deleted_at &amp;&amp; !['task','project','file','image','sticker','voice'].includes(item.msg.message_type)" class="chat-bubble-text whitespace-pre-wrap break-words crm-text-accent" x-text="item.msg.message"></div>
 
                                 <div class="mt-2 flex items-center justify-end gap-2 chat-bubble-meta text-xs">
                                     <span x-show="!!item.msg.edited_at &amp;&amp; !item.msg.deleted_at" class="chat-bubble-meta-edited">(ред.)</span>
@@ -486,7 +487,7 @@
                             <div class="text-xs truncate crm-text-secondary" x-text="(editingMessage?.message || replyToMessage?.message || '').slice(0,120)"></div>
                         </div>
                         <button @click="cancelEditOrReply()" class="crm-btn-ghost crm-icon-button" aria-label="Отменить">
-                            <svg class="w-4 h-4 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
@@ -585,15 +586,15 @@
                         <div class="flex items-center gap-1 p-2" style="border-bottom: 1px solid color-mix(in oklab, var(--lg-glass-bg) 60%, black);">
                             <button @click="composerMediaTab = 'emoji'" 
                                     class="flex-1 px-3 py-2 rounded-sm text-xs font-medium transition-all"
-                                    :style="composerMediaTab === 'emoji' ? 'background: var(--lg-primary); color: #fff' : 'color: var(--lg-text-secondary)'">Эмодзи</button>
+                                    :class="composerMediaTab === 'emoji' ? 'crm-chat-tab-active' : 'crm-chat-tab-inactive'">Эмодзи</button>
                             <button @click="composerMediaTab = 'stickers'" 
                                     class="flex-1 px-3 py-2 rounded-sm text-xs font-medium transition-all"
-                                    :style="composerMediaTab === 'stickers' ? 'background: var(--lg-primary); color: #fff' : 'color: var(--lg-text-secondary)'">Стикеры</button>
+                                    :class="composerMediaTab === 'stickers' ? 'crm-chat-tab-active' : 'crm-chat-tab-inactive'">Стикеры</button>
                         </div>
 
                         <div x-show="composerMediaTab === 'emoji'" class="p-3 grid grid-cols-8 gap-1 text-lg emoji-text max-h-[300px] overflow-y-auto">
                             <template x-for="e in ['☺','☻','☹','❤','★','☆','✦','✧','✓','✗','☕','☎','✉','✈','','♪','☀','','☂','☾','☯','','✪','✺','✨','⭐','💫','','💕','💗','💓','💔','🔥','⭐','✅','❌','️','💡','❓','']" :key="e">
-                                <button @click="addEmoji(e)" class="w-10 h-10 rounded-sm chat-composer-button flex items-center justify-center hover:bg-white/10" x-text="e"></button>
+                                <button @click="addEmoji(e)" class="w-10 h-10 rounded-sm chat-composer-button flex items-center justify-center crm-hover-white-10" x-text="e"></button>
                             </template>
                         </div>
 
@@ -603,7 +604,7 @@
                                 <template x-for="p in (stickerPacks || [])" :key="p.id">
                                     <button @click="activeStickerPackId = p.id"
                                             class="px-4 py-2 rounded-sm text-xs font-medium flex items-center gap-1.5 flex-shrink-0 transition-all"
-                                            :style="activeStickerPackId === p.id ? 'background: var(--lg-primary); color:#fff' : 'background: color-mix(in oklab, var(--lg-glass-bg) 50%, transparent); color: var(--lg-text-secondary)'">
+                                            :class="activeStickerPackId === p.id ? 'crm-chat-pack-active' : 'crm-chat-pack-inactive'">
                                         <span x-text="p.icon"></span>
                                         <span x-text="p.name"></span>
                                     </button>
@@ -615,7 +616,7 @@
                                     <div>
                                         <button x-show="(stickers || []).find(s =&gt; String(s.id) === String(sid))"
                                                 @click="sendSticker((stickers || []).find(s =&gt; String(s.id) === String(sid)))"
-                                                class="rounded-sm p-3 flex items-center justify-center hover:bg-white/10 transition-all text-4xl leading-none w-full"
+                                                class="rounded-sm p-3 flex items-center justify-center crm-hover-white-10 transition-all text-4xl leading-none w-full"
                                                 :title="((stickers || []).find(s =&gt; String(s.id) === String(sid)) || {}).name || ''">
                                             <span x-text="((stickers || []).find(s =&gt; String(s.id) === String(sid)) || {}).emoji || ''"></span>
                                         </button>
@@ -632,11 +633,11 @@
                 <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
                     <div class="crm-modal-header">
                         <div class="min-w-0">
-                            <div class="text-lg font-bold crm-text-primary">Прикрепить задачу</div>
+                            <div class="text-lg font-bold crm-text-accent">Прикрепить задачу</div>
                             <div class="text-sm crm-text-tertiary">Выберите задачу</div>
                         </div>
                         <button @click="showTaskSelector=false" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
-                            <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
@@ -648,7 +649,7 @@
                         <div class="mt-4 max-h-[50vh] overflow-y-auto space-y-2">
                             <template x-for="t in (tasks || []).filter(x =&gt; !messageSearchQuery || String(x.title||'').toLowerCase().includes(String(messageSearchQuery).toLowerCase()))" :key="t.id">
                                 <button @click="attachTaskToMessage(t.id)" class="w-full liquid-glass-pro rounded-sm p-3 text-left hover:shadow-sm transition-all">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="t.title"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="t.title"></div>
                                     <div class="text-xs mt-1 crm-text-tertiary">ID: <span x-text="t.id"></span></div>
                                 </button>
                             </template>
@@ -662,11 +663,11 @@
                 <div class="liquid-glass-pro lg-modal-shell rounded-sm shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col">
                     <div class="crm-modal-header">
                         <div class="min-w-0">
-                            <div class="text-lg font-bold crm-text-primary">Прикрепить проект</div>
+                            <div class="text-lg font-bold crm-text-accent">Прикрепить проект</div>
                             <div class="text-sm crm-text-tertiary">Выберите проект</div>
                         </div>
                         <button @click="showProjectSelector=false" class="crm-btn-ghost crm-icon-button crm-drawer-close" aria-label="Закрыть">
-                            <svg class="w-5 h-5 crm-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 crm-text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
                         </button>
@@ -678,7 +679,7 @@
                         <div class="mt-4 max-h-[50vh] overflow-y-auto space-y-2">
                             <template x-for="p in (projects || []).filter(x =&gt; !messageSearchQuery || String(x.name||'').toLowerCase().includes(String(messageSearchQuery).toLowerCase()))" :key="p.id">
                                 <button @click="attachProjectToMessage(p.id)" class="w-full liquid-glass-pro rounded-sm p-3 text-left hover:shadow-sm transition-all">
-                                    <div class="text-sm font-semibold truncate crm-text-primary" x-text="p.name"></div>
+                                    <div class="text-sm font-semibold truncate crm-text-accent" x-text="p.name"></div>
                                     <div class="text-xs mt-1 crm-text-tertiary">ID: <span x-text="p.id"></span></div>
                                 </button>
                             </template>
