@@ -4842,15 +4842,19 @@ body.crm-theme .crm-drawer-shell {
 
 body.crm-theme .crm-modal-overlay,
 body.crm-theme .lg-modal-backdrop {
-    background: rgba(15, 23, 42, 0.12) !important;
-    backdrop-filter: blur(2px) !important;
-    -webkit-backdrop-filter: blur(2px) !important;
+    background: rgba(15, 23, 42, 0.45) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
 }
 
 body.crm-theme .crm-drawer-overlay {
-    background: rgba(15, 23, 42, 0.08) !important;
-    backdrop-filter: blur(2px) !important;
-    -webkit-backdrop-filter: blur(2px) !important;
+    background: rgba(15, 23, 42, 0.40) !important;
+    backdrop-filter: blur(3px) !important;
+    -webkit-backdrop-filter: blur(3px) !important;
+}
+
+body.crm-theme .crm-drawer-backdrop {
+    background: rgba(15, 23, 42, 0.45) !important;
 }
 
 body.crm-theme .crm-option-tile {
